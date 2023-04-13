@@ -14,7 +14,8 @@ public enum LoginMenuCommands {
     SLOGAN("-s\\s+((?<random>random)|(?<slogan>\\S*|(\".*\")))"),
     QUESTION_NUMBER("-q\\s+(?<questionNumber>\\d+)"),
     ANSWER("-a\\s+(?<answer>\\S+|(\".+\"))"),
-    ANSWER_CONFIRM("-c\\s+(?<answerConfirm>\\S+|(\".+\"))");
+    ANSWER_CONFIRM("-c\\s+(?<answerConfirm>\\S+|(\".+\"))"),
+    CHANGE_PASSWORD("^-u\\s+(?<username>\\S*|(\".*\"))\\s+-p\\s+(?<password>\\S*|(\".*\"))$");
     
     private String regex;
     private LoginMenuCommands(String regex){

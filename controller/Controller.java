@@ -51,16 +51,7 @@ public class Controller {
         captchaPrinter.print(captchaPrint);
         return captcha;
     }
-    public static boolean checkCaptcha(Scanner scanner){
-        CaptchaPrinter captchaPrinter = new CaptchaPrinter();
-        while (true){
-            String captcha = generateCaptcha(captchaPrinter);
-            System.out.println("enter the security code :");
-            String input = scanner.nextLine();
-            if(input.equals("cancel")) return false;
-            else if(input.equals(captcha)) return true;
-        }
-    }
+    
     public static void addUser(User user) {
         users.add(user);
     }
