@@ -1,6 +1,7 @@
 package view;
 import controller.LoginMenuCommands;
 import controller.Messages;
+import model.CaptchaPrinter;
 import controller.LoginMenuController;
 import controller.Controller;
 import java.io.*;
@@ -8,18 +9,18 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 import java.util.regex.*;
 public class LoginMenu {
+    private static Scanner scanner;
     private LoginMenuController loginMenuController = new LoginMenuController();
     public void run(Scanner scanner) throws IOException, NoSuchAlgorithmException{
+        LoginMenu.scanner = scanner;
         while(true){
             String input = scanner.nextLine();
             if(LoginMenuCommands.getMatcher(input, LoginMenuCommands.CREATE_USER)!=null && createUserFormat(input))
                 System.out.println(createUser(input, scanner));
             else if(LoginMenuCommands.getMatcher(input, LoginMenuCommands.USER_LOGIN)!=null){
-                System.out.println(userLogin(input, scanner));
-                if(userLogin(input, scanner).equals("Login successful!")){
-                    ProfileMenu profileMenu = new ProfileMenu();
-                    profileMenu.run(scanner);
-                }
+                System.out.println(userLogin(input));
+                if(userLogin(input).equals("Login successful!"))
+                    new MainMenu().run(scanner);
             }
             else if(LoginMenuCommands.getMatcher(input, LoginMenuCommands.FORGOT_MY_PASSWORD)!=null)
                 System.out.println(forgotMyPassword(scanner));
@@ -43,7 +44,7 @@ public class LoginMenu {
             slogan = Controller.trimmer(LoginMenuCommands.getMatcher(input, LoginMenuCommands.SLOGAN).group("slogan"));
             if(slogan.length()==0) return "there's an empty field!";
         }
-        switch (loginMenuController.signUp(username,password,passwordConfirm,email,slogan,nickname,scanner)) {
+        switch (loginMenuController.signUp(username,password,passwordConfirm,email,slogan,nickname)) {
             case EMPTY_FIELD:
                 return "There's is an empty field!";
             case INVALID_USERNAME:
@@ -77,10 +78,10 @@ public class LoginMenu {
         }
         return null;
     }
-    private String userLogin(String input,Scanner scanner) throws IOException ,NoSuchAlgorithmException{
+    private String userLogin(String input) throws IOException ,NoSuchAlgorithmException{
         String username = Controller.trimmer(LoginMenuCommands.getMatcher(input, LoginMenuCommands.USERNAME).group("username"));
         String password = Controller.trimmer(LoginMenuCommands.getMatcher(input, LoginMenuCommands.PASSWORD_LOGIN).group("password"));
-        switch (loginMenuController.login(username, password, scanner, false)) {
+        switch (loginMenuController.login(username, password, false)) {
             case USERNAME_NOT_FOUND:
                 return "Username and password didn't match!";
             case WAIT_FOR_LOGIN:
@@ -88,14 +89,30 @@ public class LoginMenu {
             case INCORRECT_PASSWORD:
                 return "Incorrect password!";
             case EXIT_CAPTCHA:
-                return "login cancelled!";
+                return "Login cancelled!";
             case LOGIN_SUCCESSFUL:
-                return "Login successful!";
+                return "Logged in successful!";
             default:
                 break;
         }
         return null;
     }
+    public static boolean doYouWantSuggestedUsername(String suggestedUsername){
+        System.out.println("this username already exists! here is a valid username: " + suggestedUsername +"\nenter yes to continue:");
+        return LoginMenu.scanner.nextLine().equals("yes");
+    }
+    public static String confirmeRandomPassword(String randomPassword){
+        System.out.println("Your random password is: "+ randomPassword);
+        System.out.println("Please re-enter your password here:");
+        return LoginMenu.scanner.nextLine();
+    }
+    public static String pickRecoveryQuestion(){
+        String questionInput = "";
+        while(LoginMenuCommands.getMatcher(questionInput, LoginMenuCommands.QUESTION_PICK)==null)
+            questionInput = LoginMenu.scanner.nextLine();
+        return questionInput;
+    }
+
     private boolean createUserFormat(String input){
         if(LoginMenuCommands.getMatcher(input, LoginMenuCommands.USERNAME)==null) return false;
         if(LoginMenuCommands.getMatcher(input, LoginMenuCommands.PASSWORD)==null) return false;
@@ -104,7 +121,15 @@ public class LoginMenu {
         return true;
     }
     private String forgotMyPassword(Scanner scanner) throws IOException, NoSuchAlgorithmException{
-        switch(loginMenuController.forgotPassword(scanner)) {
+        System.out.println("please enter your username and new password:");
+        String input = scanner.nextLine();
+        String username,password;
+        if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.CHANGE_PASSWORD)!=null){
+            username = LoginMenuCommands.getMatcher(input, LoginMenuCommands.USERNAME).group("username");
+            password = LoginMenuCommands.getMatcher(input, LoginMenuCommands.PASSWORD_LOGIN).group("password");
+        }
+        else return "Invalid format!";
+        switch(loginMenuController.forgotPassword(username,password)) {
             case USERNAME_NOT_FOUND:
                 return "Username not found!";
             case INCORRECT_ANSWER:
@@ -124,4 +149,20 @@ public class LoginMenu {
         }
         return "Password changed successfully!";
     }
+    public static String getPasswordRecoveryAnswer(String recoveryQuestion) {
+        System.out.println(recoveryQuestion);
+        return LoginMenu.scanner.nextLine();
+    }
+    public static boolean checkCaptcha(){
+        CaptchaPrinter captchaPrinter = new CaptchaPrinter();
+        while (true){
+            String captcha = Controller.generateCaptcha(captchaPrinter);
+            System.out.println("enter the security code :");
+            String input = LoginMenu.scanner.nextLine();
+            if(input.equals("cancel")) return false;
+            else if(input.equals(captcha)) return true;
+        }
+    }
+
+    
 }

@@ -5,7 +5,7 @@ import java.io.IOException;
 import controller.Controller;
 public class CaptchaPrinter {
     public void print(String captcha){
-        int width = 120;
+        int width = 170;
         int height = 30;
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics g = image.getGraphics();
