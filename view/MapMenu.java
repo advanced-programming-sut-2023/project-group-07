@@ -2,12 +2,11 @@ package view;
 
 import controller.MapMenuController;
 import controller.MapMenuCommands;
-import controller.Controller;
 
 import java.util.Scanner;
 import java.util.ArrayList;
 
-import model.TypeOfPixel;
+import model.Texture;
 
 public class MapMenu {
     private MapMenuController mapMenuController = new MapMenuController();
@@ -54,7 +53,7 @@ public class MapMenu {
             String rightString = MapMenuCommands.getMatcher(input, MapMenuCommands.MOVE_RIGHT).group("right");
             right = (rightString == null) ? 1 : Integer.parseInt(rightString);
         }
-        if (!mapMenuController.checkCordinates(this.x, this.y, up, down, left, right))
+        if (!mapMenuController.checkMoveCordinates(this.x, this.y, up, down, left, right))
             System.out.println("Cordinates out of bounds or invalid!");
         else {
             this.x += up + down;
@@ -105,20 +104,20 @@ public class MapMenu {
 
     private void mapGuide() {
 
-        printGuide(TypeOfPixel.LAND);
-        printGuide(TypeOfPixel.PEBBLE);
-        printGuide(TypeOfPixel.ROCK);
-        printGuide(TypeOfPixel.STONE);
-        printGuide(TypeOfPixel.GRASS);
-        printGuide(TypeOfPixel.FIELD);
-        printGuide(TypeOfPixel.MEADOW);
+        printGuide(Texture.LAND);
+        printGuide(Texture.PEBBLE);
+        printGuide(Texture.ROCK);
+        printGuide(Texture.STONE);
+        printGuide(Texture.GRASS);
+        printGuide(Texture.FIELD);
+        printGuide(Texture.MEADOW);
     }
 
-    private void printGuide(TypeOfPixel typeOfPixel) {
-        System.out.print(TypeOfPixel.getColor(typeOfPixel));
+    private void printGuide(Texture texture) {
+        System.out.print(Texture.getColor(texture));
         System.out.print(" ");
         System.out.print(Colors.RESET);
-        System.out.println(" : " + TypeOfPixel.getTypeOfPixel(typeOfPixel));
+        System.out.println(" : " + Texture.getTypeOfPixel(texture));
     }
 
 }

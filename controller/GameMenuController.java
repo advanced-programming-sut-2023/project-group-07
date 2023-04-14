@@ -6,7 +6,7 @@ import model.Government;
 import model.Map;
 import model.User;
 public class GameMenuController {
-     Game game = new Game();
+     Game game = Controller.currentGame;
     private User currentUser;
     private ArrayList<Government> governments = new ArrayList<>();
     private Map map;

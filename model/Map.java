@@ -9,7 +9,7 @@ public class Map {
         for (int i = 0; i < size; i++) {
             field.add(new ArrayList<MapPixel>());
             for (int j = 0; j < size; j++)
-                field.get(i).add(new MapPixel(TypeOfPixel.LAND, false, true));
+                field.get(i).add(new MapPixel(Texture.LAND, false, true));
         }
     }
     public Map(int size) {
