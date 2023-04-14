@@ -5,8 +5,12 @@ import java.util.Scanner;
 import controller.GameMenuCommands;
 
 import controller.GameMenuController;
+import model.Government;
+
 public class GameMenu {
     GameMenuController gameMenuController = new GameMenuController();
+
+
     public void run(Scanner scanner) {
         while(true){
             String input = scanner.nextLine();
@@ -25,6 +29,8 @@ public class GameMenu {
 
     }
     private String showTaxRate(){
+        // government ro chejory bezanam?
+        // tarif nashode
         System.out.println("Your tax rate: "+government.getTaxAmount()+"coins\n" +
                 "Popularity effect: "+government.getTaxPopularity());
     }

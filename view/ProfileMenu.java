@@ -9,7 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
 public class ProfileMenu {
-    private ProfileMenuController profileMenuController = new ProfileMenuController(Controller.getCurrentUser());
+    private ProfileMenuController profileMenuController = new ProfileMenuController(Controller.currentUser);
 
     public void run(Scanner scanner) throws IOException, NoSuchAlgorithmException {
         while (true) {

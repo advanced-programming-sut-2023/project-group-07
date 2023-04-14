@@ -1,6 +1,6 @@
 package model;
 import java.util.*;
-import controller.TypeOfPixel;
+import model.Texture;
 
 public class MapPixel {
     private Texture texture;

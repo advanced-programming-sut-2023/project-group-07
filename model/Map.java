@@ -33,12 +33,8 @@ public class Map {
     public MapPixel getMapPixel(int row, int column){
         return field.get(row).get(column);
     }
-    private ArrayList<ArrayList<MapPixel>> field = new ArrayList<ArrayList<MapPixel>>();
     public Map() {
 
     }
-    public String showMap(int x , int y){
-        String output = "";
-        
-    }
+
 }

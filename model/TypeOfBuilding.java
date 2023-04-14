@@ -1,10 +1,6 @@
 
 package model;
 
-import java.util.ArrayList;
-
-import javax.tools.Diagnostic.Kind;
-
 public enum TypeOfBuilding {
     LITTLE_STONE_GATE(1000,5,5,0),
     LARGE_STONE_GATE(2000,7,7,0),
@@ -70,7 +66,7 @@ public enum TypeOfBuilding {
     public int getWidth() {
         return width;
     }
-    public TypeOfBuilding getBuilding(String input){ // todo : make this for
+    public model.TypeOfBuilding getBuilding(String input){ // todo : make this for
         switch (input){
             case "little stone gate":
                 return LITTLE_STONE_GATE;
@@ -163,8 +159,4 @@ public enum TypeOfBuilding {
         }
     }
 
-package controller;
-
-public class TypeOfBuilding() {
-// todo
 }
