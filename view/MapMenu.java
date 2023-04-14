@@ -47,13 +47,9 @@ public class MapMenu {
             String rightString = MapMenuCommands.getMatcher(input, MapMenuCommands.MOVE_RIGHT).group("right");
             right = (rightString == null) ? 1 : Integer.parseInt(rightString);
         }
-<<<<<<< HEAD
         if(up == 0 && down == 0 && left == 0 && right == 0)
             System.out.println("Choose at least one direction to move the map!");
         else if(!mapMenuController.checkMoveCordinates(this.x, this.y, up, down, left, right))
-=======
-        if(!mapMenuController.checkCordinates(this.x, this.y, up, down, left, right))
->>>>>>> 95362dc23a1e9e7afd19cb23842b424c73a9b6af
             System.out.println("Cordinates out of bounds or invalid!");
         else{
             this.x += up + down;
@@ -97,7 +93,6 @@ public class MapMenu {
         }
     }
     private String showDetails(String input){
-<<<<<<< HEAD
         if(MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_DETAILS_ROW) == null)
             return "Enter the row number!";
         if(MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_DETAILS_COLUMN) == null)
@@ -107,9 +102,6 @@ public class MapMenu {
         if(!mapMenuController.checkCordinates(row-1, column-1))
             return "Invalid coordinates!";
         return mapMenuController.getDetails(row-1, column-1);
-=======
-        return null;
->>>>>>> 95362dc23a1e9e7afd19cb23842b424c73a9b6af
     }
     private void mapGuide(){
         printGuide(TypeOfPixel.LAND);
