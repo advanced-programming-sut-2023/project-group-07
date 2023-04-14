@@ -10,7 +10,8 @@ import model.*;
 import view.*;
 public class Controller {
     private static ArrayList<User> users = new ArrayList<User>();
-    private static User currentUser;
+    public static User currentUser;
+    public static Game currentGame;
     public static int randomNumber(int max) {
         Random random = new Random();
         return random.nextInt(max);
@@ -51,24 +52,9 @@ public class Controller {
         captchaPrinter.print(captchaPrint);
         return captcha;
     }
-    public static boolean checkCaptcha(Scanner scanner){
-        CaptchaPrinter captchaPrinter = new CaptchaPrinter();
-        while (true){
-            String captcha = generateCaptcha(captchaPrinter);
-            System.out.println("enter the security code :");
-            String input = scanner.nextLine();
-            if(input.equals("cancel")) return false;
-            else if(input.equals(captcha)) return true;
-        }
-    }
+    
     public static void addUser(User user) {
         users.add(user);
-    }
-    public static User getCurrentUser() {
-        return currentUser;
-    }
-    public static void setCurrentUser(User user) {
-        currentUser = user;
     }
     public static String toSHA256(String string) throws NoSuchAlgorithmException{
         MessageDigest md = MessageDigest.getInstance("SHA-256");
