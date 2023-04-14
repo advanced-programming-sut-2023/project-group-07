@@ -2,6 +2,7 @@ package view;
 import java.util.Scanner;
 
 
+import controller.Controller;
 import controller.GameMenuCommands;
 
 import controller.GameMenuController;
@@ -20,18 +21,18 @@ public class GameMenu {
         }
     }
     private String getPopulation(){
-
+        return null;
     }
     private String getPopularity(){
         //System.out.println("Your popularity: "+.getPopularity()+);
+        return null;
     }
     private String setTaxRate(){
-
+        return null;
     }
     private String showTaxRate(){
-        // government ro chejory bezanam?
-        // tarif nashode
-        System.out.println("Your tax rate: "+government.getTaxAmount()+"coins\n" +
+        Government government = Controller.currentGame.getCurrentGovernment();
+        return ("Your tax rate: "+government.getTaxAmount()+"coins\n" +
                 "Popularity effect: "+government.getTaxPopularity());
     }
     private void endOfTurn(){
@@ -45,6 +46,7 @@ public class GameMenu {
         int column = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.DROP_BUILDING).group("y"));
         String type = GameMenuCommands.getMatcher(input, GameMenuCommands.DROP_BUILDING).group("type");
         //String returnMessage = gameMenuController.dropBuilding(row, column, type);
+        return null;
     }
 
 }
