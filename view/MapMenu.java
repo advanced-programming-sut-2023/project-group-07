@@ -104,6 +104,7 @@ public class MapMenu {
     }
 
     private void mapGuide() {
+
         printGuide(TypeOfPixel.LAND);
         printGuide(TypeOfPixel.PEBBLE);
         printGuide(TypeOfPixel.ROCK);

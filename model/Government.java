@@ -7,6 +7,7 @@ public class Government {
     private double gold;
     private double taxAmount;
     private int taxPopularity;
+    private int fearRate;
 
     public Government(User user,double gold){
         population=10;
@@ -46,4 +47,12 @@ public class Government {
     public void setTaxPopularity(int taxPopularity) {
         this.taxPopularity = taxPopularity;
     }
+
+    public void setFearRate(int fearRate) {
+        this.fearRate = fearRate;
+    }
+    public int getFearRate() {
+        return fearRate;
+    }
+
 }

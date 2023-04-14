@@ -218,6 +218,4 @@ public class LoginMenu {
             else if (input.equals(captcha)) return true;
         }
     }
-
-
 }

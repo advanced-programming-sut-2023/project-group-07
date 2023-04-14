@@ -126,7 +126,7 @@ public class LoginMenuController {
         if(!LoginMenu.checkCaptcha()) return Messages.EXIT_CAPTCHA;
         user.setLastAttempt();
         user.resetAttempt();
-        Controller.setCurrentUser(user);
+        Controller.currentUser = user;
         return Messages.LOGIN_SUCCESSFUL;
     }
     public Messages forgotPassword(String username,String password) throws IOException, NoSuchAlgorithmException{

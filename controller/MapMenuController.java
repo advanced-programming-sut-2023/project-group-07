@@ -6,6 +6,19 @@ import model.MapPixel;
 import model.TypeOfPixel;
 public class MapMenuController {
     private Map map = Controller.currentGame.getMap();
+
+    public ArrayList<ArrayList<Colors>> getMapColorList(int x , int y) {
+        ArrayList<ArrayList<Colors>> output = new ArrayList<ArrayList<Colors>>();
+        int x1 = getCornersRow(x)[0] , x2 = getCornersRow(x)[1];
+        int y1 = getCornersColumn(y)[0] , y2 = getCornersColumn(y)[1];
+        ArrayList<ArrayList<MapPixel>> field = map.getField(x1 , y1 , x2 , y2);
+        for(int i = 0; i < field.size(); i++) {
+            output.add(new ArrayList<Colors>());
+            for(int j = 0; j < field.get(i).size(); j++)
+                output.get(i).add(TypeOfPixel.getColor(field.get(i).get(j).getTypeOfPixel()));
+        }
+        return output;
+    }
     private int[] getCornersRow(int x){
         int[] output = new int[2];
         if(x >= map.getSize() - 1) {
@@ -38,6 +51,11 @@ public class MapMenuController {
         }
         return output;
     }
+
+    public boolean checkMoveCordinates(int x , int y , int up , int down , int left , int right){
+        // todo : complete this method
+    }
+
     public ArrayList<ArrayList<Colors>> getMapColorList(int x , int y) {
         ArrayList<ArrayList<Colors>> output = new ArrayList<ArrayList<Colors>>();
         int x1 = getCornersRow(x)[0] , x2 = getCornersRow(x)[1];
@@ -55,5 +73,8 @@ public class MapMenuController {
         if(x + up < 0 || x + down >= map.getSize())return false;
         if(y + left < 0 || y + right >= map.getSize())return false;
         return true;
+    }
+    public String getDetails(int row , int column){
+        return null;
     }
 }
