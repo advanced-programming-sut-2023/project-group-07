@@ -64,7 +64,7 @@ public class LoginMenuController {
         }
         else if(password.equals("random")){
             String randomPassword = randomPasswordGenerator();
-            String newPassword = LoginMenu.confirmeRandomPassword(randomPassword) ;
+            String newPassword = LoginMenu.confirmeRandomPassword(randomPassword);
             if(newPassword.equals(randomPassword)){
                 password = randomPassword;
                 passwordConfirm = randomPassword;

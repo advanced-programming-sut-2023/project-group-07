@@ -1,6 +1,9 @@
 package model;
 
+import java.net.DatagramPacket;
 import java.util.ArrayList;
+
+import javax.swing.plaf.basic.BasicTableHeaderUI;
 
 import controller.Messages;
 
@@ -57,14 +60,46 @@ public class Game {
         return this.map;
     }
     public Messages dropBuilding(int row,int column,TypeOfBuilding typeOfBuilding){
-        if(row<0 || row>399 || column<0 || column>399){
+        if(row<0 || row>map.getSize() || column<0 || column>map.getSize()){
             return Messages.INVALID_ROW_OR_COLUMN;
         }
+        for(int i = 0; i < typeOfBuilding.getLength();i++)
+            for(int j = 0; j < typeOfBuilding.getWidth();j++)
+                if(map.getMapPixel(row+j, column+i).getBuildings().size()!=0) return Messages.THERES_ALREADY_BUILDING;
+        for(int i = 0; i < typeOfBuilding.getLength();i++)
+            for(int j = 0; j < typeOfBuilding.getWidth();j++)
+                if(map.getMapPixel(row+j, column+i).getPeople().size()!=0) return Messages.THERES_ALREADY_UNIT;
+        for(int i = 0; i < typeOfBuilding.getLength();i++)
+            for(int j = 0; j < typeOfBuilding.getWidth();j++){
+                Texture landType = map.getMapPixel(row+j, column+i).getTexture();
+                if(landType.equals(Texture.RIVER) ||
+                landType.equals(Texture.SEA) ||
+                landType.equals(Texture.ROCK) ||
+                landType.equals(Texture.SMALL_POND) ||
+                landType.equals(Texture.LARGE_POND) ||
+                landType.equals(Texture.FORD)) return Messages.CANT_PLACE_THIS;
+            }
+        if(typeOfBuilding.equals(TypeOfBuilding.APPLE_ORCHARD) ||
+           typeOfBuilding.equals(TypeOfBuilding.DIARY_FARMER) ||
+           typeOfBuilding.equals(TypeOfBuilding.HOPS_FARMER) ||
+           typeOfBuilding.equals(TypeOfBuilding.WHEAT_FARMER)){
+               for(int i = 0; i < typeOfBuilding.getLength();i++)
+                  for(int j = 0; j < typeOfBuilding.getWidth();j++){
+                    if(!map.getMapPixel(row+j, column+i).getTexture().equals(Texture.MEADOW)) return  Messages.CANT_PLACE_THIS;
+                  }
+        }
+        int acceptedPixels = 0;
+        if(typeOfBuilding.equals(TypeOfBuilding.QUARRY) || typeOfBuilding.equals(TypeOfBuilding.IRON_MINE) || typeOfBuilding.equals(TypeOfBuilding.PITCH_RIG)){
+            for(int i = 0; i < typeOfBuilding.getLength();i++)
+                for(int j = 0; j < typeOfBuilding.getWidth();j++)
+                    if(!map.getMapPixel(row+j, column+i).getTexture().equals(typeOfBuilding.getTexture())) acceptedPixels++;
+        }
+        if(acceptedPixels*4<typeOfBuilding.getLength()*typeOfBuilding.getWidth()) return Messages.CANT_PLACE_THIS;
         Building building = new Building(getCurrentGovernment(),typeOfBuilding, row, column);
         map.addBuilding(building);
         for(int i = 0; i < typeOfBuilding.getLength();i++)
             for(int j = 0; j < typeOfBuilding.getWidth();j++)
-                map.getMapPixel(row+j, column+i);
+                map.getMapPixel(row+j, column+i).addBuilding(building);
         return Messages.DEPLOYMENT_SUCCESSFULL;
     }
     

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import model.Game;
 import model.Government;
 import model.Map;
+import model.TypeOfBuilding;
 import model.User;
 public class GameMenuController {
      Game game = Controller.currentGame;
@@ -42,5 +43,8 @@ public class GameMenuController {
             government.setPopularity(government.getPopularity() + government.getTaxPopularity());
             government.setGold(government.getGold() + government.getTaxAmount() * government.getPopulation());
         }
+    }
+    public Messages dropBuilding(int row,int column,String name) {
+        return game.dropBuilding(row, column, TypeOfBuilding.getBuilding(name));
     }
 }

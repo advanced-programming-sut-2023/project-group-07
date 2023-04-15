@@ -95,7 +95,7 @@ public class User {
         boolean containsSmallLetter = Pattern.compile("[a-z]").matcher(password).find();
         boolean containsCapitalLetter = Pattern.compile("[A-Z]").matcher(password).find();
         boolean containsDigit = Pattern.compile("\\d").matcher(password).find();
-        boolean containsNonWord = Pattern.compile("\\W").matcher(password).find();
+        boolean containsNonWord = Pattern.compile("[\\W_]").matcher(password).find();
         if(password.length() < 6) return Messages.WEAK_PASSWORD_LENGTH;
         if(!containsSmallLetter || !containsCapitalLetter || !containsDigit || !containsNonWord) 
             return Messages.WEAK_PASSWORD_CHARACTERS;

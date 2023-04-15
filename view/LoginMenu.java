@@ -13,8 +13,8 @@ import java.util.regex.*;
 
 public class LoginMenu {
     private static Scanner scanner;
-    private LoginMenuController loginMenuController = new LoginMenuController();
-
+    private final LoginMenuController controller = new LoginMenuController();
+    private final MainMenu mainMenu = new MainMenu();
     public void run(Scanner scanner) throws IOException, NoSuchAlgorithmException {
         LoginMenu.scanner = scanner;
         while (true) {
@@ -22,10 +22,12 @@ public class LoginMenu {
             if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.CREATE_USER) != null && createUserFormat(input))
                 System.out.println(createUser(input));
             else if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.USER_LOGIN) != null) {
-                System.out.println(userLogin(input));
-                if (userLogin(input).equals("Login successful!"))
-                    new MainMenu().run(scanner);
-            } else if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.FORGOT_MY_PASSWORD) != null)
+                String login = userLogin(input);
+                System.out.println(login);
+                if (login.equals("Login successful!"))
+                    mainMenu.run(scanner);
+            } 
+            else if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.FORGOT_MY_PASSWORD) != null)
                 System.out.println(forgotMyPassword(scanner));
             else
                 System.out.println("Invalid command!");
@@ -41,7 +43,7 @@ public class LoginMenu {
         String slogan = extractSlogan(input);
         if (slogan == null) return "there's an empty field!";
 
-        switch (loginMenuController.signUp(username, password, passwordConfirm, email, slogan, nickname)) {
+        switch (controller.signUp(username, password, passwordConfirm, email, slogan, nickname)) {
             case EMPTY_FIELD:
                 return "There's is an empty field!";
             case INVALID_USERNAME:
@@ -95,7 +97,7 @@ public class LoginMenu {
 
     private String extractPassword(String input) {
         Matcher passwordMatcher = LoginMenuCommands.getMatcher(input, LoginMenuCommands.PASSWORD);
-        if (passwordMatcher.group("random") != null) return "";
+        if (passwordMatcher.group("random") != null) return "random";
         else return Controller.trimmer(passwordMatcher.group("passwordConfirm"));
 
     }
@@ -125,7 +127,7 @@ public class LoginMenu {
     private String userLogin(String input) throws IOException, NoSuchAlgorithmException {
         String username = Controller.trimmer(LoginMenuCommands.getMatcher(input, LoginMenuCommands.USERNAME).group("username"));
         String password = Controller.trimmer(LoginMenuCommands.getMatcher(input, LoginMenuCommands.PASSWORD_LOGIN).group("password"));
-        switch (loginMenuController.login(username, password, false)) {
+        switch (controller.login(username, password, false)) {
             case USERNAME_NOT_FOUND:
                 return "Username and password didn't match!";
             case WAIT_FOR_LOGIN:
@@ -136,7 +138,7 @@ public class LoginMenu {
             case EXIT_CAPTCHA:
                 return "Login cancelled!";
             case LOGIN_SUCCESSFUL:
-                return "Logged in successful!";
+                return "Login successful!";
             default:
                 break;
         }
@@ -178,7 +180,7 @@ public class LoginMenu {
             username = LoginMenuCommands.getMatcher(input, LoginMenuCommands.USERNAME).group("username");
             password = LoginMenuCommands.getMatcher(input, LoginMenuCommands.PASSWORD_LOGIN).group("password");
         } else return "Invalid format!";
-        switch (loginMenuController.forgotPassword(username, password)) {
+        switch (controller.forgotPassword(username, password)) {
             case USERNAME_NOT_FOUND:
                 return "Username not found!";
             case INCORRECT_ANSWER:

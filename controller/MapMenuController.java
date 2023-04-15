@@ -19,7 +19,7 @@ public class MapMenuController {
         for (int i = 0; i < field.size(); i++) {
             output.add(new ArrayList<Colors>());
             for (int j = 0; j < field.get(i).size(); j++)
-                output.get(i).add(Texture.getColor(field.get(i).get(j).getTypeOfPixel()));
+                output.get(i).add(Texture.getColor(field.get(i).get(j).getTexture()));
         }
         return output;
     }
@@ -62,9 +62,7 @@ public class MapMenuController {
     }
 
     public boolean checkCordinates(int row, int column) {
-        int size = map.getSize();
-        if (row < 0 || row > size || column < 0 || column > size) return false;
-        return true;
+        return map.checkCordinates(row, column);
     }
 
     public String getDetails(int row, int column) {

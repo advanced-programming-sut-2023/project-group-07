@@ -9,12 +9,16 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
 public class ProfileMenu {
-    private ProfileMenuController profileMenuController = new ProfileMenuController(Controller.currentUser);
+    private final ProfileMenuController controller = new ProfileMenuController(Controller.currentUser);
 
     public void run(Scanner scanner) throws IOException, NoSuchAlgorithmException {
         while (true) {
             String input = scanner.nextLine();
-            if (ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_USERNAME) != null)
+            if(input.matches("exit")){
+                System.out.println("Back to main menu!");
+                return;
+            }
+            else if (ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_USERNAME) != null)
                 System.out.println(changeUsername(input));
             else if (ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_NICKNAME) != null)
                 System.out.println(changeNickname(input));
@@ -25,15 +29,15 @@ public class ProfileMenu {
             else if (ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_SLOGAN) != null)
                 System.out.println(changeSlogan(input));
             else if (ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.REMOVE_SLOGAN) != null)
-                System.out.println(profileMenuController.removeSlogan());
+                System.out.println(controller.removeSlogan());
             else if (ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.SHOW_HIGHSCORE) != null)
-                System.out.println(profileMenuController.showHighScore());
+                System.out.println(controller.showHighScore());
             else if (ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.SHOW_RANK) != null)
-                System.out.println(profileMenuController.showRank());
+                System.out.println(controller.showRank());
             else if (ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.SHOW_SLOGAN) != null)
-                System.out.println(profileMenuController.showSlogan());
+                System.out.println(controller.showSlogan());
             else if (ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.SHOW_INFO) != null)
-                System.out.println(profileMenuController.showInfo());
+                System.out.println(controller.showInfo());
             else
                 System.out.println("Invalid command!");
         }
@@ -42,7 +46,7 @@ public class ProfileMenu {
     private String changeUsername(String input) throws IOException, NoSuchAlgorithmException {
         String username =
                 ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_USERNAME).group("username");
-        switch (profileMenuController.changeUsername(username)) {
+        switch (controller.changeUsername(username)) {
             case INVALID_USERNAME:
                 return "Invalid username format!";
             case USERNAME_EXISTS:
@@ -58,7 +62,7 @@ public class ProfileMenu {
     private String changeNickname(String input) throws IOException, NoSuchAlgorithmException {
         String nickname =
                 ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_NICKNAME).group("nickname");
-        profileMenuController.changeNickname(nickname);
+       controller.changeNickname(nickname);
         return "Your nickname changed successfully!";
     }
 
@@ -67,7 +71,7 @@ public class ProfileMenu {
                 ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_PASSWORD).group("new"),
                 oldPassword =
                         ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_PASSWORD).group("old");
-        switch (profileMenuController.changePassword(oldPassword, newPassword)) {
+        switch (controller.changePassword(oldPassword, newPassword)) {
             case INCORRECT_PASSWORD:
                 return "Incorrect password!";
             case WEAK_PASSWORD_LENGTH:
@@ -91,14 +95,14 @@ public class ProfileMenu {
     private String changeSlogan(String input) throws IOException, NoSuchAlgorithmException {
         String slogan =
                 ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_SLOGAN).group("slogan");
-        profileMenuController.changeSlogan(slogan);
+        controller.changeSlogan(slogan);
         return "Your slogan changed successfully!";
     }
 
     private String changeEmail(String input) throws IOException, NoSuchAlgorithmException {
         String email =
                 ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_EMAIL).group("email");
-        switch (profileMenuController.changeEmail(email)) {
+        switch (controller.changeEmail(email)) {
             case EMAIL_EXISTS:
                 return "This email already exists!";
             case INVALID_EMAIL_FORMAT:

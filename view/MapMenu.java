@@ -5,11 +5,11 @@ import controller.MapMenuCommands;
 
 import java.util.Scanner;
 import java.util.ArrayList;
-
+import java.util.regex.Matcher;
 import model.Texture;
 
 public class MapMenu {
-    private MapMenuController mapMenuController = new MapMenuController();
+    private final MapMenuController controller = new MapMenuController();
     private int x;
     private int y;
 
@@ -53,7 +53,7 @@ public class MapMenu {
             String rightString = MapMenuCommands.getMatcher(input, MapMenuCommands.MOVE_RIGHT).group("right");
             right = (rightString == null) ? 1 : Integer.parseInt(rightString);
         }
-        if (!mapMenuController.checkMoveCordinates(this.x, this.y, up, down, left, right))
+        if (!controller.checkMoveCordinates(this.x, this.y, up, down, left, right))
             System.out.println("Cordinates out of bounds or invalid!");
         else {
             this.x += up + down;
@@ -63,7 +63,7 @@ public class MapMenu {
     }
 
     private void printMap(int x, int y) {
-        ArrayList<ArrayList<Colors>> mapColorList = mapMenuController.getMapColorList(x, y);
+        ArrayList<ArrayList<Colors>> mapColorList = controller.getMapColorList(x, y);
         int numberOfRows = mapColorList.size();
         int numberOfColumns = mapColorList.get(0).size();
         int numberOfRowSplitters = numberOfColumns * 7 + 1;
@@ -97,27 +97,44 @@ public class MapMenu {
             System.out.println();
         }
     }
-
     private String showDetails(String input) {
-        return null;
+        Matcher rowMatcher = 
+            MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_DETAILS_ROW);
+        Matcher columnMatcher = 
+            MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_DETAILS_COLUMN);
+        if(rowMatcher == null || rowMatcher.group("row") == null)
+            return "Enter the row number!";
+        if(columnMatcher == null || columnMatcher.group("column") == null)
+            return "Enter the column number!";
+        int row = Integer.parseInt(rowMatcher.group("row"));
+        int column = Integer.parseInt(columnMatcher.group("column"));
+        if(!controller.checkCordinates(row, column))
+            return "Invalid cordinates!";
+        return controller.getDetails(row, column);
     }
-
     private void mapGuide() {
-
         printGuide(Texture.LAND);
         printGuide(Texture.PEBBLE);
         printGuide(Texture.ROCK);
         printGuide(Texture.STONE);
+        printGuide(Texture.IRON);
         printGuide(Texture.GRASS);
         printGuide(Texture.FIELD);
         printGuide(Texture.MEADOW);
+        printGuide(Texture.OIL);
+        printGuide(Texture.BEACH);
+        printGuide(Texture.MARSH);
+        printGuide(Texture.FORD);
+        printGuide(Texture.RIVER);
+        printGuide(Texture.LARGE_POND);
+        printGuide(Texture.SMALL_POND);
+        printGuide(Texture.SEA);
     }
-
     private void printGuide(Texture texture) {
         System.out.print(Texture.getColor(texture));
         System.out.print(" ");
         System.out.print(Colors.RESET);
-        System.out.println(" : " + Texture.getTypeOfPixel(texture));
+        System.out.println(" : " + Texture.getTexture(texture));
     }
 
 }

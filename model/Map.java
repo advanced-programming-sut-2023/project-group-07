@@ -2,6 +2,8 @@ package model;
 import java.util.*; 
 
 public class Map {
+    private static ArrayList<Map> maps = new ArrayList<Map>();
+
     private int size;
     private ArrayList<ArrayList<MapPixel>> field = new ArrayList<ArrayList<MapPixel>>();
     private ArrayList<Building> buildings = new ArrayList<Building>();
@@ -33,8 +35,9 @@ public class Map {
     public MapPixel getMapPixel(int row, int column){
         return field.get(row).get(column);
     }
-    public Map() {
-
+    public boolean checkCordinates(int row, int column){
+        if (row < 0 || row > this.size || column < 0 || column > this.size) return false;
+        return true;
     }
 
 }

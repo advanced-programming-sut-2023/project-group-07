@@ -1,6 +1,6 @@
-package controller;
+package model;
 
-public enum TypeOfSoldier {
+public enum TypeOfPerson {
     ARCHER("archer"),
     CROSSBOWMAN("crossbowman"),
     SPEARMAN("spearman"),
@@ -21,11 +21,11 @@ public enum TypeOfSoldier {
     FIRE_THROWERS("fire throwers");
     
     private String type;
-    private TypeOfSoldier(String type){
+    private TypeOfPerson(String type){
         this.type = type;
     }
-    public static String getTypeOfSoldier(TypeOfSoldier typeOfSoldier){
-        return typeOfSoldier.type;
+    public static String getTypeOfPerson(TypeOfPerson typeOfPerson){
+        return typeOfPerson.type;
     }
     
 }

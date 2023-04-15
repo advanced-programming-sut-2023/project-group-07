@@ -12,8 +12,10 @@ public enum Colors {
     WHITE_BACKGROUND("\033[47m"),
     GREEN_BACKGROUND_BRIGHT("\033[0;102m"),
     PURPLE_BACKGROUND_BRIGHT("\033[0;105m"),
-    YELLOW_BACKGROUND_BRIGHT("\033[0;103m");
-  
+    YELLOW_BACKGROUND_BRIGHT("\033[0;103m"),
+    BLUE_BACKGROUND_BRIGHT("\033[0;104m"),
+    RED_BACKGROUND_BRIGHT("\033[0;101m"),
+    MAGENTA_BACKGROUND_BRIGHT("\033[0;105m");
 
     private final String code;
     private Colors (String code){

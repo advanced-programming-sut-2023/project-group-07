@@ -4,7 +4,7 @@ import model.Texture;
 
 public class MapPixel {
     private Texture texture;
-    private ArrayList <Soldier> soldiers = new ArrayList<Soldier>();
+    private ArrayList <Person> people = new ArrayList<Person>();
     private ArrayList <Building> buildings = new ArrayList<Building>();
     private boolean doesHaveOil;
     private boolean isPassable;
@@ -13,11 +13,18 @@ public class MapPixel {
         this.doesHaveOil = doesHaveOil;
         this.isPassable = isPassable;
     }
-    public Texture getTypeOfPixel() {
-        return texture;
-    }
     public void addBuilding(Building building){
         buildings.add(building);
     }
+    public ArrayList<Building> getBuildings() {
+        return buildings;
+    }
+    public ArrayList<Person> getPeople() {
+        return people;
+    }
+    public Texture getTexture() {
+        return texture;
+    }
+    
 
 }
