@@ -2,21 +2,24 @@ package model;
 import java.util.*; 
 
 public class Map {
-    private static ArrayList<Map> maps = new ArrayList<Map>();
-
     private int size;
     private ArrayList<ArrayList<MapPixel>> field = new ArrayList<ArrayList<MapPixel>>();
     private ArrayList<Building> buildings = new ArrayList<Building>();
+    private String name;
+
+    public static ArrayList<Map> maps = new ArrayList<Map>();
+    
+    public Map(int size , String name) {
+        this.size = size;
+        this.name = name;
+        buildMap();
+    }
     private void buildMap() {
         for (int i = 0; i < size; i++) {
             field.add(new ArrayList<MapPixel>());
             for (int j = 0; j < size; j++)
                 field.get(i).add(new MapPixel(Texture.LAND, false, true));
         }
-    }
-    public Map(int size) {
-        this.size = size;
-        buildMap();
     }
     public ArrayList<ArrayList<MapPixel>> getField(int x1 , int y1 , int x2 , int y2) {
         ArrayList<ArrayList<MapPixel>> output = new ArrayList<ArrayList<MapPixel>>();
@@ -38,6 +41,9 @@ public class Map {
     public boolean checkCordinates(int row, int column){
         if (row < 0 || row > this.size || column < 0 || column > this.size) return false;
         return true;
+    }
+    public String getName() {
+        return this.name;
     }
 
 }

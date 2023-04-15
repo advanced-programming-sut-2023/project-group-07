@@ -68,4 +68,7 @@ public class MapMenuController {
     public String getDetails(int row, int column) {
         return null;
     }
+    public void refreshMap(Map map){
+        this.map = map;
+    }
 }

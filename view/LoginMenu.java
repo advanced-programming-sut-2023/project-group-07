@@ -2,7 +2,6 @@ package view;
 
 import controller.LoginMenuCommands;
 import controller.Messages;
-import model.CaptchaPrinter;
 import controller.LoginMenuController;
 import controller.Controller;
 

@@ -6,8 +6,10 @@ import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.*;
-import model.*;
-import view.*;
+import model.User;
+import model.Game;
+import model.Map;
+import view.CaptchaPrinter;
 public class Controller {
     private static ArrayList<User> users = new ArrayList<User>();
     public static User currentUser;

@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import model.Texture;
 
 public class MapMenu {
-    private final MapMenuController controller = new MapMenuController();
+    protected final MapMenuController controller = new MapMenuController();
     private int x;
     private int y;
 
@@ -35,7 +35,7 @@ public class MapMenu {
         }
     }
 
-    private void moveMap(String input) {
+    protected void moveMap(String input) {
         int up = 0, down = 0, left = 0, right = 0;
         if (MapMenuCommands.getMatcher(input, MapMenuCommands.MOVE_UP) != null) {
             String upString = MapMenuCommands.getMatcher(input, MapMenuCommands.MOVE_UP).group("up");
@@ -62,7 +62,7 @@ public class MapMenu {
         }
     }
 
-    private void printMap(int x, int y) {
+    protected void printMap(int x, int y) {
         ArrayList<ArrayList<Colors>> mapColorList = controller.getMapColorList(x, y);
         int numberOfRows = mapColorList.size();
         int numberOfColumns = mapColorList.get(0).size();
@@ -112,7 +112,7 @@ public class MapMenu {
             return "Invalid cordinates!";
         return controller.getDetails(row, column);
     }
-    private void mapGuide() {
+    protected void mapGuide() {
         printGuide(Texture.LAND);
         printGuide(Texture.PEBBLE);
         printGuide(Texture.ROCK);

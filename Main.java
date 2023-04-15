@@ -11,10 +11,10 @@ import model.*; // TODO : remove this
 public class Main {
    
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException{
-        Game game = new Game(100);
-        Controller.currentGame = game;
-        MapMenu mn = new MapMenu(30 , 40);
-        mn.run(new Scanner(System.in));
+        // Game game = new Game(100);
+        // Controller.currentGame = game;
+        // MapMenu mn = new MapMenu(30 , 40);
+        // mn.run(new Scanner(System.in));
         if(Controller.isLoggedIn()){
             
         }
