@@ -13,17 +13,20 @@ public class CreateMapMenuController {
        return Map.getNamesOfMaps();
     }
     public void setExistingMap(int index){
-        this.map = Map.maps.get(index);
+        this.map = Map.getMaps().get(index);
         this.indexOfMap = index;
         this.mapMenuController.refreshMap(this.map);
     }
     public void setNewMap(int size , String name){
-        this.map = new Map(size, name);
-        this.indexOfMap = Map.maps.size();
+        this.map = new Map(size, name,3);
+        this.indexOfMap = Map.getMaps().size();
         this.mapMenuController.refreshMap(this.map);
     }
     public void saveMap(){
-        Map.maps.set(this.indexOfMap, this.map);
+        if(this.indexOfMap>=Map.getMaps().size())
+            Map.getMaps().add(this.map);
+        else
+            Map.getMaps().set(this.indexOfMap, this.map);
     }
     public Messages setPixelTexture(int row , int column , String textureName){
         int size = this.map.getSize();
