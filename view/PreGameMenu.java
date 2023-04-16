@@ -23,19 +23,20 @@ public class PreGameMenu {
         players.add(Controller.currentUser);
         int numberOfPlayers = getNumberOfPlayers();
         getPlayers(scanner, players, numberOfPlayers);
-        Map map = getChosenMap(scanner);
-        Game game = new Game(map,players);
+        Map map = getChosenMap(scanner, numberOfPlayers);
+        Game game = new Game(map, players);
         Controller.currentGame = game;
         // todo : go to next menu
     }
 
-    private Map getChosenMap(Scanner scanner) {
+    private Map getChosenMap(Scanner scanner, int numberOfPlayers) {
         // todo: check number of players in each map
-        ArrayList<String> mapsName = Map.getNamesOfMaps();
+        ArrayList<Map> maps = Map.getMaps();
         System.out.println("choose a map number");
         int number = 1;
-        for (String name : mapsName) {
-            System.out.println(number + ". " + name);
+        for (Map map : maps) {
+            System.out.println(number + ". " + map.getName() +
+                    " maximum number of players : " + map.getNumberOfPlayers());
             number++;
         }
         String input = scanner.next();
@@ -43,11 +44,18 @@ public class PreGameMenu {
         while (true) {
             if (input.matches("\\d+")) {
                 mapIndex = Integer.parseInt(input);
-                if (mapIndex > 0 && mapIndex <= mapsName.size()) break;
+                if (mapIndex > 0 && mapIndex <= maps.size()) {
+                    mapIndex--;
+                    if (maps.get(mapIndex).getNumberOfPlayers() < numberOfPlayers){
+                        System.out.println("you can't choose this map because of its number of players is too few");
+                        continue;
+                    }
+                    else break;
+                }
             }
-            System.out.println("enter a number between 1 and " + mapsName.size());
+            System.out.println("enter a number between 1 and " + maps.size());
         }
-        return Map.getMapByName(mapsName.get(mapIndex));
+        return maps.get(mapIndex);
     }
 
 
