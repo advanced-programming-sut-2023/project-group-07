@@ -29,6 +29,10 @@ public class CreateMapMenu extends MapMenu{
                 }
                 else if(input.matches("\\s*save\\s*"))
                     saveChanges();
+                else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_MAP) != null){
+                    String showMapStr = super.showMap(input);
+                    if(showMapStr != null) System.out.println(showMapStr);
+                }
                 else if(CreateMapMenuCommands.getMatcher(input,CreateMapMenuCommands.SET_PIXEL_TEXTURE)!=null)
                     System.out.println(setPixelTexture(input));
                 else if(CreateMapMenuCommands.getMatcher(input,CreateMapMenuCommands.SET_REGION_TEXTURE)!=null)

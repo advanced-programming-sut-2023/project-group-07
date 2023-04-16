@@ -27,7 +27,7 @@ public class CreateMapMenuController {
     }
     public Messages setPixelTexture(int row , int column , String textureName){
         int size = this.map.getSize();
-        Texture texture = Texture.getTexture(textureName);
+        Texture texture = Texture.getTexture(textureName.trim());
         if(row < 0 || row >= size || column < 0 || column >= size)
             return Messages.INVALID_CORDINATES;
         if(texture == null)
@@ -37,7 +37,7 @@ public class CreateMapMenuController {
     }
     public Messages setRegionTexture(int x1 , int y1 , int x2 , int y2 , String textureName){
         int size = this.map.getSize();
-        Texture texture = Texture.getTexture(textureName);
+        Texture texture = Texture.getTexture(textureName.trim());
         if(x1 < 0 || x1 >= size || y1 < 0 || y1 >= size)
             return Messages.INVALID_CORDINATES;
         if(x2 < 0 || x2 >= size || y2 < 0 || y2 >= size)
