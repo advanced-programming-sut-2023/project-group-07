@@ -3,18 +3,22 @@ package model;
 import java.util.*;
 
 public class Map {
-    private int size;
+    private static ArrayList<Map> maps = new ArrayList<Map>();
+    private static int maxPlayerOfMaps = 2;
+
+
+    private final int size;
     private ArrayList<ArrayList<MapPixel>> field = new ArrayList<ArrayList<MapPixel>>();
     private ArrayList<Building> buildings = new ArrayList<Building>();
-    private String name;
-    private int numberOfPlayers;
+    private final String name;
+    private final int numberOfPlayers;
 
-    private static ArrayList<Map> maps = new ArrayList<Map>();
 
     public Map(int size, String name, int numberOfPlayers) {
         this.size = size;
         this.name = name;
         this.numberOfPlayers = numberOfPlayers;
+        if (numberOfPlayers > maxPlayerOfMaps) maxPlayerOfMaps = numberOfPlayers;
         buildMap();
     }
 
@@ -32,8 +36,13 @@ public class Map {
     }
 
     public static ArrayList<Map> getMaps() {
-        return (ArrayList<Map>)maps.clone();
+        return (ArrayList<Map>) maps.clone();
     }
+
+    public static int maxPlayerOfMaps() {
+        return maxPlayerOfMaps;
+    }
+
 
     private void buildMap() {
         for (int i = 0; i < size; i++) {
