@@ -23,11 +23,17 @@ public enum Texture {
         this.texture = texture;
         this.color = color;
     }
-    public static String getTexture(Texture texture){
+    public static String getName(Texture texture){
         return texture.texture;
     }
     public static Colors getColor(Texture texture){
         return texture.color;
+    }
+    public static Texture getTexture(String name){
+        for(Texture texture : Texture.values())
+            if(Texture.getName(texture).equals(name))
+                return texture;
+        return null;
     }
 
 }

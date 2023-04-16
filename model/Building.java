@@ -2,11 +2,11 @@ package model;
 
 public class Building {
 
-    Government government;
-    int hp;
-    TypeOfBuilding typeOfBuilding;
-    int row;
-    int column;
+    protected Government government;
+    protected int hp;
+    protected TypeOfBuilding typeOfBuilding;
+    protected int row;
+    protected int column;
     
     public Building(Government government,TypeOfBuilding typeOfBuilding,int row,int column) {
         this.government=government;
@@ -14,5 +14,8 @@ public class Building {
         this.row=row;
         this.column=column;
         this.hp=typeOfBuilding.getHp();
+    }
+    public TypeOfBuilding getTypeOfBuilding() {
+        return typeOfBuilding;
     }
 }

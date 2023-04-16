@@ -19,6 +19,8 @@ public class Main {
             
         }
         else{
+            GameMenu gameMenu = new GameMenu();
+            gameMenu.run(new Scanner(System.in));
             LoginMenu loginMenu = new LoginMenu();
             loginMenu.run(new Scanner(System.in));
         }

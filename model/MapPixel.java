@@ -25,6 +25,16 @@ public class MapPixel {
     public Texture getTexture() {
         return texture;
     }
+    public void setTexture(Texture texture){
+        this.texture = texture;
+    }
+    public void backToDefault() {
+        this.texture = Texture.LAND;
+        this.doesHaveOil = false;
+        this.isPassable = true;
+        this.buildings.clear();
+        this.people.clear();
+    }
     
 
 }

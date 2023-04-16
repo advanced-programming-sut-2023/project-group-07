@@ -1,6 +1,5 @@
 package model;
 import java.util.*; 
-
 public class Map {
     private int size;
     private ArrayList<ArrayList<MapPixel>> field = new ArrayList<ArrayList<MapPixel>>();
@@ -45,5 +44,18 @@ public class Map {
     public String getName() {
         return this.name;
     }
+    public void setPixelTexture(int row, int column , Texture texture){
+        this.field.get(row).get(column).setTexture(texture);
+    }
+    public void setRegionTexture(int x1 , int y1 , int x2 , int y2 , Texture texture){
+        for(int i = x1 ; i < x2 ; i++){
+            for(int j = y1 ; j < y2 ; j++)
+                this.field.get(i).get(j).setTexture(texture);
+        }
+    }
+    public void clearPixel(int row , int column){
+        this.field.get(row).get(column).backToDefault();
+    }
+
 
 }

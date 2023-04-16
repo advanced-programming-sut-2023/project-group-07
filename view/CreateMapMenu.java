@@ -31,6 +31,8 @@ public class CreateMapMenu extends MapMenu{
                     saveChanges();
                 else if(CreateMapMenuCommands.getMatcher(input,CreateMapMenuCommands.SET_PIXEL_TEXTURE)!=null)
                     System.out.println(setPixelTexture(input));
+                else if(CreateMapMenuCommands.getMatcher(input,CreateMapMenuCommands.SET_REGION_TEXTURE)!=null)
+                    System.out.println(setRegionTexture(input));
                 else
                     System.out.println("Invalid command!");
 
@@ -107,12 +109,88 @@ public class CreateMapMenu extends MapMenu{
     }
     private String setPixelTexture(String input){
         Matcher rowMatcher = 
-            CreateMapMenuCommands.getMatcher(input , CreateMapMenuCommands.SET_PIXEL_TEXTURE_ROW);
+            CreateMapMenuCommands.getMatcher(input , CreateMapMenuCommands.GET_ROW);
         Matcher columnMatcher = 
-            CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.SET_PIXEL_TEXTURE_COLOUMN);
-        //if(rowMatcher == null || columnMatcher == null)
+            CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_COLOUMN);
+        Matcher textureMatcher = 
+            CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.SET_TEXTURE_TYPE);
+        String checkFormat = checkSetPixelTextureFormat(rowMatcher, columnMatcher, textureMatcher);
+        if(checkFormat!=null) return checkFormat;
+        int row = Integer.parseInt(rowMatcher.group("row"));
+        int column = Integer.parseInt(columnMatcher.group("column"));
+        String textureName = textureMatcher.group("type");
+        switch(controller.setPixelTexture(row, column, textureName)){
+            case INVALID_CORDINATES:
+                return "Invalid cordinates!";
+            case INVALID_TEXTURE:
+                return "Invalid type/texture!";
+            case SET_TEXTURE_SUCCESSFULL:
+                return "Set type/texture successfull!";
+            default:
+                break;
+        }
         return null;
+    }
+    private String checkSetPixelTextureFormat(Matcher rowMatcher , Matcher columnMatcher , Matcher textureMatcher){
+        if(rowMatcher == null || rowMatcher.group("row") == null)
+            return "Enter the row number!";
+        if(columnMatcher == null || columnMatcher.group("column") == null)
+            return "Enter the column number!";
+        if(!rowMatcher.group("row").matches("\\-?\\d+") 
+            || !columnMatcher.group("column").matches("\\-?\\d+"))
+            return "Enter whole number for cordinates!";
+        if(textureMatcher == null || textureMatcher.group("type") == null)
+            return "Enter the type/texture you want to set!";
+        return null;
+    }
 
+    private String setRegionTexture(String input){
+        Matcher x1Matcher = 
+            CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_FIRST_ROW);
+        Matcher y1Matcher = 
+            CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_FIRST_COLUMN);
+        Matcher x2Matcher = 
+            CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_SECOND_ROW);
+        Matcher y2Matcher =
+            CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_SECOND_COLUMN);
+        Matcher textureMatcher =
+            CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.SET_TEXTURE_TYPE);
+        String checkFormat = checkSetRegionTextureFormat(x1Matcher, y1Matcher, x2Matcher, y2Matcher, textureMatcher);
+        if(checkFormat != null) return checkFormat;
+        int x1 = Integer.parseInt(x1Matcher.group("frow"));
+        int y1 = Integer.parseInt(y1Matcher.group("fcolumn"));
+        int x2 = Integer.parseInt(x2Matcher.group("srow"));
+        int y2 = Integer.parseInt(y2Matcher.group("scolumn"));
+        String textureName = textureMatcher.group("type");
+        switch(controller.setRegionTexture(x1, y1, x2, y2, textureName)){
+            case INVALID_CORDINATES:
+                return "Invalid cordinates!";
+            case INVALID_TEXTURE:
+                return "Invalid type/texture!";
+            case SET_TEXTURE_SUCCESSFULL:
+                return "Set type/texture successfull!";
+            default:
+                break;
+        }
+        return null;
+    }
+    private String checkSetRegionTextureFormat(Matcher x1Matcher , Matcher y1Matcher , Matcher x2Matcher , Matcher y2Matcher , Matcher textureMatcher){
+        if(x1Matcher == null || x1Matcher.group("frow") == null)
+            return "Enter first row number!";
+        if(y1Matcher == null || y1Matcher.group("fcolumn") == null)
+            return "Enter first column number!";
+        if(x2Matcher == null || x2Matcher.group("srow") == null)
+            return "Enter second row number!";
+        if(y2Matcher == null || y2Matcher.group("scolumn") == null)
+            return "Enter second column number!";
+        if(!x1Matcher.group("frow").matches("\\-?\\d+") 
+            || !y1Matcher.group("fcolumn").matches("\\-?\\d+")
+            || !x2Matcher.group("srow").matches("\\-?\\d+")
+            || !y2Matcher.group("scolumn").matches("\\-?\\d+"))
+            return "Enter whole number for cordinates!";
+        if(textureMatcher == null || textureMatcher.group("type") == null)
+            return "Enter the type/texture you want to set!";
+        return null;
     }
     
     

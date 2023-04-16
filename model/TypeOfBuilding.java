@@ -13,7 +13,7 @@ public enum TypeOfBuilding {
     ARMOURY(500,4,4,0,"armoury",null),
     MERCENARY_POST(400,10,10,0,"mercenary post",null),
     BARRACKS(500,10,10,0,"barracks",null),
-    ENGINEERS_GUILD(400,5,10,0,"engineers guild",null),
+    ENGINEERS_GUILD(400,5,10,0,"engineer's guild",null),
     KILLING_PIT(-1,1,1,0,"killing pit",null),
     INN(400,6,6,1,"inn",null),
     MILL(200,3,3,3,"mill",null),
@@ -73,7 +73,7 @@ public enum TypeOfBuilding {
     public Texture getTexture() {
         return texture;
     }
-    public static model.TypeOfBuilding getBuilding(String input){ // todo : make this for
+    public static TypeOfBuilding getBuilding(String input){ // todo : make this for
         for(TypeOfBuilding typeOfBuilding: TypeOfBuilding.values()){
             if(typeOfBuilding.buildingName.equals(input)) return typeOfBuilding;
         }

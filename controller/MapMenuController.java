@@ -9,7 +9,7 @@ import model.MapPixel;
 import model.Texture;
 
 public class MapMenuController {
-    private Map map = Controller.currentGame.getMap();
+    private Map map;
 
     public ArrayList<ArrayList<Colors>> getMapColorList(int x, int y) {
         ArrayList<ArrayList<Colors>> output = new ArrayList<ArrayList<Colors>>();

@@ -1,5 +1,7 @@
 package model;
 
+import java.util.HashMap;
+
 public class Government {
     private int population;
     private int popularity;
@@ -8,6 +10,7 @@ public class Government {
     private double taxAmount;
     private int taxPopularity;
     private int fearRate;
+    private HashMap<Resources,Integer> resources = new HashMap<Resources,Integer>();
 
     public Government(User user,double gold){
         population=10;
@@ -53,6 +56,12 @@ public class Government {
     }
     public int getFearRate() {
         return fearRate;
+    }
+    public HashMap<Resources, Integer> getResources() {
+        return resources;
+    }
+    public void changeResources(Resources resource,int amount) {
+        resources.put(resource, resources.get(resource)+amount);
     }
 
 }

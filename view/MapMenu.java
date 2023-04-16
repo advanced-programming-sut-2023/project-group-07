@@ -134,7 +134,7 @@ public class MapMenu {
         System.out.print(Texture.getColor(texture));
         System.out.print(" ");
         System.out.print(Colors.RESET);
-        System.out.println(" : " + Texture.getTexture(texture));
+        System.out.println(" : " + Texture.getName(texture));
     }
 
 }

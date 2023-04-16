@@ -10,6 +10,7 @@ import controller.Messages;
 public class Game {
     private User currentUser;
     private ArrayList<Government> governments = new ArrayList<>();
+    private MilitaryCampType currentMilitaryCamp;
     private Map map;
     public Game (int size){
         this.map = new Map(size);
@@ -67,9 +68,6 @@ public class Game {
             for(int j = 0; j < typeOfBuilding.getWidth();j++)
                 if(map.getMapPixel(row+j, column+i).getBuildings().size()!=0) return Messages.THERES_ALREADY_BUILDING;
         for(int i = 0; i < typeOfBuilding.getLength();i++)
-            for(int j = 0; j < typeOfBuilding.getWidth();j++)
-                if(map.getMapPixel(row+j, column+i).getPeople().size()!=0) return Messages.THERES_ALREADY_UNIT;
-        for(int i = 0; i < typeOfBuilding.getLength();i++)
             for(int j = 0; j < typeOfBuilding.getWidth();j++){
                 Texture landType = map.getMapPixel(row+j, column+i).getTexture();
                 if(landType.equals(Texture.RIVER) ||
@@ -102,5 +100,44 @@ public class Game {
                 map.getMapPixel(row+j, column+i).addBuilding(building);
         return Messages.DEPLOYMENT_SUCCESSFULL;
     }
+    public Messages selectBuilding(int row, int column){
+        if(row<0 || row>map.getSize() || column<0 || column>map.getSize()){
+            return Messages.INVALID_ROW_OR_COLUMN;
+        }
+        if(map.getMapPixel(row, column).getBuildings().size()==0) return Messages.NO_BUILDING_HERE;
+        if(!map.getMapPixel(row, column).getBuildings().get(0).government.equals(getCurrentGovernment())) return Messages.ENEMY_BUILDING;
+        if(map.getMapPixel(row, column).getBuildings().get(0) instanceof Tower){
+            return Messages.ENTERED_TOWER;
+        }
+        if(map.getMapPixel(row,column).getBuildings().get(0) instanceof GateHouse){
+            return Messages.ENTERED_GATEHOUSE;
+        }
+        if(map.getMapPixel(row, column).getBuildings().get(0) instanceof MilitaryCamp){
+            MilitaryCamp militaryCamp = (MilitaryCamp)map.getMapPixel(row, column).getBuildings().get(0);
+            if(militaryCamp.getTypeOfBuilding().equals(TypeOfBuilding.BARRACKS)) currentMilitaryCamp = MilitaryCampType.BARRACKS;
+            if(militaryCamp.getTypeOfBuilding().equals(TypeOfBuilding.MERCENARY_POST)) currentMilitaryCamp = MilitaryCampType.MERCENARY_POST;
+            if(militaryCamp.getTypeOfBuilding().equals(TypeOfBuilding.ENGINEERS_GUILD)) currentMilitaryCamp = MilitaryCampType.ENGINEER_GUILD;
+            return Messages.ENTERED_MILITARY_CAMP;
+        }
+        return null;
+        
+    }
+    public Messages createTroop(String type,int count){
+        TypeOfPerson typeOfPerson = TypeOfPerson.getTypeOfPersonFromString(type);
+        if(typeOfPerson.equals(null)) return Messages.INVALID_UNIT_NAME;
+        if(count<0 || count>24) return Messages.INVALID_NUMBER;
+        if(typeOfPerson.getGoldNeeded()*count<getCurrentGovernment().getGold()) return Messages.NOT_ENOUGH_GOLD;
+        for(Resources resource: typeOfPerson.getResourcesNeeded())
+            if(getCurrentGovernment().getResources().get(resource)<count) return Messages.NOT_ENOUGH_RESOURCES;
+        if(!currentMilitaryCamp.equals(typeOfPerson.getMilitaryCampType())) return Messages.CANT_CREATE_THIS_UNIT_HERE;
+        getCurrentGovernment().setGold(-count*typeOfPerson.getGoldNeeded());
+        for(Resources resource: typeOfPerson.getResourcesNeeded())
+            getCurrentGovernment().changeResources(resource, -count);
+        return Messages.UNIT_CREATED_SUCCESSFULLY;
+    }
+    public MilitaryCampType getCurrentMilitaryCamp() {
+        return currentMilitaryCamp;
+    }
+
     
 }
