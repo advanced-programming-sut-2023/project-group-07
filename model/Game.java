@@ -10,10 +10,18 @@ import controller.Messages;
 public class Game {
     private User currentUser;
     private ArrayList<Government> governments = new ArrayList<>();
+    private ArrayList<User> users;
     private MilitaryCampType currentMilitaryCamp;
     private Map map;
-    public Game (int size){
-        this.map = new Map(size);
+    public Game (Map map, ArrayList<User> users){
+        this.map = map;
+        this.users = users;
+        currentUser = users.get(0); // todo: we can randomize order of players
+        for (User user : users){
+            governments.add(new Government(user, ));// todo
+        }
+
+        // todo : militaryCamp
     }
     public Messages taxRate(int rate,Government government){
         if(rate<-3 || rate>8) return Messages.INVALID_RATE;

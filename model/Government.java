@@ -14,7 +14,7 @@ public class Government {
 
     public Government(User user,double gold){
         population=10;
-        popularity=100;
+        popularity=100; // todo: we can make a variable that show starting population and popularity
         this.user=user;
         this.gold=gold;
         taxAmount=0;

@@ -19,6 +19,14 @@ public class Map {
         for(Map map : maps)out.add(map.getName());
         return out;
     }
+
+    public static Map getMapByName(String mapName) {
+        for( Map map : maps){
+            if (map.name.equals(mapName)) return map;
+        }
+        return null;
+    }
+
     private void buildMap() {
         for (int i = 0; i < size; i++) {
             field.add(new ArrayList<MapPixel>());

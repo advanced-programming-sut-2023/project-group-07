@@ -14,6 +14,7 @@ public class Controller {
     private static ArrayList<User> users = new ArrayList<User>();
     public static User currentUser;
     public static Game currentGame;
+    private static int maxPlayers = 4;
     public static int randomNumber(int max) {
         Random random = new Random();
         return random.nextInt(max);
@@ -64,5 +65,9 @@ public class Controller {
         byte[] digest = md.digest();
         String hex = String.format("%064x",new BigInteger(1,digest));
         return hex;
+    }
+
+    public static int maxPlayers() {
+        return maxPlayers;
     }
 }
