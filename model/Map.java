@@ -9,7 +9,7 @@ public class Map {
     private String name;
     private int numberOfPlayers;
 
-    public static ArrayList<Map> maps = new ArrayList<Map>();
+    private static ArrayList<Map> maps = new ArrayList<Map>();
 
     public Map(int size, String name, int numberOfPlayers) {
         this.size = size;

@@ -10,9 +10,11 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class PreGameMenu {
+    //todo : make first letters of each sentence capital
+    //todo : input each player gold at the beginning of the game
     private Scanner scanner;
-    private PreGameMenuController controller;
-
+    private final PreGameMenuController controller;
+    private final GameMenu gameMenu = new GameMenu();
     public PreGameMenu() {
         controller = new PreGameMenuController();
     }
@@ -22,11 +24,12 @@ public class PreGameMenu {
         ArrayList<User> players = new ArrayList<>();
         players.add(Controller.currentUser);
         int numberOfPlayers = getNumberOfPlayers();
+        //todo : delete scanner input
         getPlayers(scanner, players, numberOfPlayers);
         Map map = getChosenMap(scanner, numberOfPlayers);
         Game game = new Game(map, players);
         Controller.currentGame = game;
-        // todo : go to next menu
+        gameMenu.run(scanner);
     }
 
     private Map getChosenMap(Scanner scanner, int numberOfPlayers) {
@@ -60,11 +63,13 @@ public class PreGameMenu {
 
 
     private int getNumberOfPlayers() {
+        //todo : handling exit
+        //todo :  fix return 
         int numberOfPlayers;
         System.out.println("how many players are in the game?");
         int maxPlayers = Controller.maxPlayers();
         while (true) {
-            String input = scanner.next();
+            String input = scanner.nextLine();
             if (input.matches("\\d+")) {
                 int inputNumber = Integer.parseInt(input);
                 if (inputNumber >= 2 && inputNumber <= maxPlayers) {
@@ -72,7 +77,7 @@ public class PreGameMenu {
                     break;
                 }
             }
-            System.out.println("write a number between 2 to " + maxPlayers);
+            System.out.println("write a whole number between 2 to " + maxPlayers);
         }
         return numberOfPlayers;
     }

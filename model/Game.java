@@ -20,8 +20,6 @@ public class Game {
         for (User user : users){
             governments.add(new Government(user, ));// todo
         }
-
-        // todo : militaryCamp
     }
     public Messages taxRate(int rate,Government government){
         if(rate<-3 || rate>8) return Messages.INVALID_RATE;

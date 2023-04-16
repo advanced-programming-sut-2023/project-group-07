@@ -7,8 +7,9 @@ import controller.Controller;
 import model.*;
 public class ProfileMenuController {
     private User currentUser;
-
-
+    public ProfileMenuController(User currentUser) {
+        this.currentUser = currentUser;
+    }
     public Messages changeUsername(String username) throws IOException,NoSuchAlgorithmException{
         if(!User.isUsernameValid(username))return Messages.INVALID_USERNAME;
         else if(Controller.getUserByUsername(username)!=null)return Messages.USERNAME_EXISTS;
