@@ -101,7 +101,7 @@ public class MapMenu {
             System.out.println();
         }
     }
-    private String showDetails(String input) {
+    protected String showDetails(String input) {
         Matcher rowMatcher = 
             MapMenuCommands.getMatcher(input, MapMenuCommands.GET_ROW);
         Matcher columnMatcher = 
@@ -152,15 +152,15 @@ public class MapMenu {
             return "Enter the row number!";
         if(columnMatcher == null || columnMatcher.group("column") == null)
             return "Enter the column number!";
-            if(!rowMatcher.group("row").matches("\\-?\\d+")
+        if(!rowMatcher.group("row").matches("\\-?\\d+")
             || !columnMatcher.group("column").matches("\\-?\\d+"))
             return "Enter whole number for cordinates!";
         int row = Integer.parseInt(rowMatcher.group("row"));
         int column = Integer.parseInt(columnMatcher.group("column"));
         if(!controller.checkCordinates(row, column))
             return "Invalid cordinates!";
-        this.x = row;
-        this.y = column;
+        this.x = row - 1;
+        this.y = column - 1;
         printMap(this.x, this.y);
         return null;
     }

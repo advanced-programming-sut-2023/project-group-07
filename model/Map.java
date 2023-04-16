@@ -2,16 +2,16 @@ package model;
 
 import java.util.*;
 
-public class Map {
+public class Map implements Cloneable{
     private static ArrayList<Map> maps = new ArrayList<Map>();
     private static int maxPlayerOfMaps = 2;
 
 
-    private final int size;
+    private int size;
     private ArrayList<ArrayList<MapPixel>> field = new ArrayList<ArrayList<MapPixel>>();
     private ArrayList<Building> buildings = new ArrayList<Building>();
-    private final String name;
-    private final int numberOfPlayers;
+    private String name;
+    private int numberOfPlayers;
 
 
     public Map(int size, String name, int numberOfPlayers) {
@@ -20,12 +20,6 @@ public class Map {
         this.numberOfPlayers = numberOfPlayers;
         if (numberOfPlayers > maxPlayerOfMaps) maxPlayerOfMaps = numberOfPlayers;
         buildMap();
-    }
-
-    public static ArrayList<String> getNamesOfMaps() {
-        ArrayList<String> out = new ArrayList<String>();
-        for (Map map : maps) out.add(map.getName());
-        return out;
     }
 
     public static Map getMapByName(String mapName) {
@@ -59,6 +53,9 @@ public class Map {
             for (int j = y1; j <= y2; j++) output.get(i - x1).add(this.field.get(i).get(j));
         }
         return output;
+    }
+    public ArrayList<ArrayList<MapPixel>> getFullField(){
+        return (ArrayList<ArrayList<MapPixel>>)field.clone();
     }
 
     public int getSize() {
@@ -101,5 +98,23 @@ public class Map {
         this.field.get(row).get(column).backToDefault();
     }
 
+    public static void changeMaps(Map map , int index){
+        if(index >= maps.size()) maps.add(map);
+        else maps.set(index, map);
+    }
 
+    public ArrayList<Building> getBuildings() {
+        return (ArrayList<Building>)buildings.clone();
+    }
+
+    public static int getMaxPlayerOfMaps() {
+        return maxPlayerOfMaps;
+    }
+    public void clone(Map map){
+        this.size = map.getSize();
+        this.buildings = map.getBuildings();
+        this.field = map.getFullField();
+        this.name = map.getName();
+        this.numberOfPlayers = map.getNumberOfPlayers();
+    }
 }

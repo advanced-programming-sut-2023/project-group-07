@@ -33,6 +33,12 @@ public class CreateMapMenu extends MapMenu{
                     String showMapStr = super.showMap(input);
                     if(showMapStr != null) System.out.println(showMapStr);
                 }
+                else if (MapMenuCommands.getMatcher(input, MapMenuCommands.MOVE_MAP) != null)
+                    super.moveMap(input);
+                else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_DETAILS) != null)
+                    System.out.println(super.showDetails(input));
+                else if (MapMenuCommands.getMatcher(input, MapMenuCommands.MAP_GUIDE) != null)
+                    super.mapGuide();
                 else if(CreateMapMenuCommands.getMatcher(input,CreateMapMenuCommands.SET_PIXEL_TEXTURE)!=null)
                     System.out.println(setPixelTexture(input));
                 else if(CreateMapMenuCommands.getMatcher(input,CreateMapMenuCommands.SET_REGION_TEXTURE)!=null)
@@ -123,7 +129,7 @@ public class CreateMapMenu extends MapMenu{
         int row = Integer.parseInt(rowMatcher.group("row"));
         int column = Integer.parseInt(columnMatcher.group("column"));
         String textureName = textureMatcher.group("type");
-        switch(controller.setPixelTexture(row, column, textureName)){
+        switch(controller.setPixelTexture(row - 1 , column - 1 , textureName)){
             case INVALID_CORDINATES:
                 return "Invalid cordinates!";
             case INVALID_TEXTURE:
@@ -166,7 +172,7 @@ public class CreateMapMenu extends MapMenu{
         int x2 = Integer.parseInt(x2Matcher.group("srow"));
         int y2 = Integer.parseInt(y2Matcher.group("scolumn"));
         String textureName = textureMatcher.group("type");
-        switch(controller.setRegionTexture(x1, y1, x2, y2, textureName)){
+        switch(controller.setRegionTexture(x1 - 1, y1 - 1, x2 - 1, y2 - 1, textureName)){
             case INVALID_CORDINATES:
                 return "Invalid cordinates!";
             case INVALID_TEXTURE:

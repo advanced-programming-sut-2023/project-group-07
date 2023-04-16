@@ -10,10 +10,14 @@ public class CreateMapMenuController {
         this.mapMenuController = mapMenuController;
     }
     public ArrayList<String> getMaps(){
-       return Map.getNamesOfMaps();
+       ArrayList <String> out = new ArrayList<String>();
+       for(Map map : Map.getMaps()) out.add(map.getName());
+       return out;
     }
     public void setExistingMap(int index){
-        this.map = Map.getMaps().get(index);
+        Map tmp = new Map(0 , null , 0);
+        tmp.clone(Map.getMaps().get(index));
+        this.map = tmp;
         this.indexOfMap = index;
         this.mapMenuController.refreshMap(this.map);
     }
@@ -23,10 +27,9 @@ public class CreateMapMenuController {
         this.mapMenuController.refreshMap(this.map);
     }
     public void saveMap(){
-        if(this.indexOfMap>=Map.getMaps().size())
-            Map.getMaps().add(this.map);
-        else
-            Map.getMaps().set(this.indexOfMap, this.map);
+        Map savedMap = new Map(0 , null , 0);
+        savedMap.clone(this.map);
+        Map.changeMaps(savedMap, indexOfMap);
     }
     public Messages setPixelTexture(int row , int column , String textureName){
         int size = this.map.getSize();
