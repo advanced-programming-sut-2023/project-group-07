@@ -24,6 +24,10 @@ public class MapMenu {
             String input = scanner.nextLine();
             if (MapMenuCommands.getMatcher(input, MapMenuCommands.EXIT) != null)
                 return;
+            else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_MAP) != null){
+                String showMapStr = showMap(input);
+                if(showMapStr != null) System.out.println(showMapStr);
+            }
             else if (MapMenuCommands.getMatcher(input, MapMenuCommands.MOVE_MAP) != null)
                 moveMap(input);
             else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_DETAILS) != null)
@@ -99,13 +103,16 @@ public class MapMenu {
     }
     private String showDetails(String input) {
         Matcher rowMatcher = 
-            MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_DETAILS_ROW);
+            MapMenuCommands.getMatcher(input, MapMenuCommands.GET_ROW);
         Matcher columnMatcher = 
-            MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_DETAILS_COLUMN);
+            MapMenuCommands.getMatcher(input, MapMenuCommands.GET_COLUMN);
         if(rowMatcher == null || rowMatcher.group("row") == null)
             return "Enter the row number!";
         if(columnMatcher == null || columnMatcher.group("column") == null)
             return "Enter the column number!";
+        if(!rowMatcher.group("row").matches("\\-?\\d+")
+            || !columnMatcher.group("column").matches("\\-?\\d+"))
+            return "Enter whole number for cordinates!";
         int row = Integer.parseInt(rowMatcher.group("row"));
         int column = Integer.parseInt(columnMatcher.group("column"));
         if(!controller.checkCordinates(row, column))
@@ -135,6 +142,27 @@ public class MapMenu {
         System.out.print(" ");
         System.out.print(Colors.RESET);
         System.out.println(" : " + Texture.getName(texture));
+    }
+    protected String showMap(String input){
+        Matcher rowMatcher =
+            MapMenuCommands.getMatcher(input, MapMenuCommands.GET_ROW);
+        Matcher columnMatcher =
+            MapMenuCommands.getMatcher(input, MapMenuCommands.GET_COLUMN);
+        if(rowMatcher == null || rowMatcher.group("row") == null)
+            return "Enter the row number!";
+        if(columnMatcher == null || columnMatcher.group("column") == null)
+            return "Enter the column number!";
+            if(!rowMatcher.group("row").matches("\\-?\\d+")
+            || !columnMatcher.group("column").matches("\\-?\\d+"))
+            return "Enter whole number for cordinates!";
+        int row = Integer.parseInt(rowMatcher.group("row"));
+        int column = Integer.parseInt(columnMatcher.group("column"));
+        if(!controller.checkCordinates(row, column))
+            return "Invalid cordinates!";
+        this.x = row;
+        this.y = column;
+        printMap(this.x, this.y);
+        return null;
     }
 
 }
