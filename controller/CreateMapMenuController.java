@@ -10,9 +10,7 @@ public class CreateMapMenuController {
         this.mapMenuController = mapMenuController;
     }
     public ArrayList<String> getMaps(){
-        ArrayList<String> out = new ArrayList<String>();
-        for(Map map : Map.maps)out.add(map.getName());
-        return out;
+       return Map.getNamesOfMaps();
     }
     public void setExistingMap(int index){
         this.map = Map.maps.get(index);

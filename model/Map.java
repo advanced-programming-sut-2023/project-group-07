@@ -13,6 +13,12 @@ public class Map {
         this.name = name;
         buildMap();
     }
+
+    public static ArrayList<String> getNamesOfMaps(){
+        ArrayList <String> out = new ArrayList<String>();
+        for(Map map : maps)out.add(map.getName());
+        return out;
+    }
     private void buildMap() {
         for (int i = 0; i < size; i++) {
             field.add(new ArrayList<MapPixel>());
