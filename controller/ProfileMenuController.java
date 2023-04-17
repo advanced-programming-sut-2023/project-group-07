@@ -2,8 +2,7 @@ package controller;
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Scanner;
-import controller.Controller;
+
 import model.*;
 public class ProfileMenuController {
     private User currentUser;
@@ -18,7 +17,7 @@ public class ProfileMenuController {
         this.currentUser.createFile(this.currentUser);
         File file = new File(oldUsername+".txt");
         file.delete();
-        return Messages.CHANGE_USERNAME_SUCCESSFULL;
+        return Messages.CHANGE_USERNAME_SUCCESSFUL;
     }
     public Messages changePassword(String oldPassword,String newPassword) throws IOException,NoSuchAlgorithmException{
         if(!User.getPasswordFromFile(this.currentUser.getUsername()).equals(Controller.toSHA256(oldPassword)))
@@ -26,7 +25,7 @@ public class ProfileMenuController {
         else if(!User.isPasswordStrong(newPassword).equals(Messages.STRONG_PASSWORD)) return User.isPasswordStrong(newPassword);
         this.currentUser.setNewPassword(newPassword);
         this.currentUser.createFile(this.currentUser);
-        return Messages.CHANGE_PASSWORD_SUCCESSFULL;
+        return Messages.CHANGE_PASSWORD_SUCCESSFUL;
     }
     public void changeNickname(String nickName) throws IOException,NoSuchAlgorithmException{
         this.currentUser.setNewNickname(nickName);
@@ -37,7 +36,7 @@ public class ProfileMenuController {
         else if(!User.isEmailValid(email))return Messages.INVALID_EMAIL_FORMAT;
         this.currentUser.setNewEmail(email);
         this.currentUser.createFile(this.currentUser);
-        return Messages.CHANGE_EMAIL_SUCCESSFULL;
+        return Messages.CHANGE_EMAIL_SUCCESSFUL;
     }
     public void changeSlogan(String slogan) throws IOException,NoSuchAlgorithmException{
         this.currentUser.setNewSlogan(slogan);

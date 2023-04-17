@@ -69,7 +69,7 @@ public class CreateMapMenu extends MapMenu{
                 System.out.println("Enter a number between 1 and " + maps.size());
             else{
                 controller.setExistingMap(Integer.parseInt(input)-1);
-                return Messages.SET_MAP_SUCCESSFULL;
+                return Messages.SET_MAP_SUCCESSFUL;
             }
 
         }
@@ -80,7 +80,7 @@ public class CreateMapMenu extends MapMenu{
         String mapName = getNewMapName();
         if(mapName == null)return Messages.EXIT_CREATE_MAP_MENU;
         controller.setNewMap(mapSize, mapName);
-        return Messages.SET_MAP_SUCCESSFULL;
+        return Messages.SET_MAP_SUCCESSFUL;
     }
     private int getNewMapSize(){
         System.out.println("Choose the size of the new map:");
@@ -134,7 +134,7 @@ public class CreateMapMenu extends MapMenu{
                 return "Invalid cordinates!";
             case INVALID_TEXTURE:
                 return "Invalid type/texture!";
-            case SET_TEXTURE_SUCCESSFULL:
+            case SET_TEXTURE_SUCCESSFUL:
                 return "Set type/texture successfull!";
             default:
                 break;
@@ -177,7 +177,7 @@ public class CreateMapMenu extends MapMenu{
                 return "Invalid cordinates!";
             case INVALID_TEXTURE:
                 return "Invalid type/texture!";
-            case SET_TEXTURE_SUCCESSFULL:
+            case SET_TEXTURE_SUCCESSFUL:
                 return "Set type/texture successfull!";
             default:
                 break;

@@ -1,9 +1,6 @@
 package model;
 
-import java.net.DatagramPacket;
 import java.util.ArrayList;
-
-import javax.swing.plaf.basic.BasicTableHeaderUI;
 
 import controller.Messages;
 
@@ -38,7 +35,7 @@ public class Game {
             else
                 government.setTaxPopularity((rate - 2) * 4);
         }
-        return Messages.RATE_CHANGE_SUCCESSFULL;
+        return Messages.RATE_CHANGE_SUCCESSFUL;
     }
 
     public ArrayList<Government> getGovernments() {
@@ -66,7 +63,7 @@ public class Game {
     public Messages fearRate(int rate, Government government) {
         if (rate > 5 || rate < -5) return Messages.INVALID_RATE;
         government.setFearRate(rate);
-        return Messages.RATE_CHANGE_SUCCESSFULL;
+        return Messages.RATE_CHANGE_SUCCESSFUL;
     }
 
     public Map getMap() {
@@ -115,7 +112,7 @@ public class Game {
         for (int i = 0; i < typeOfBuilding.getLength(); i++)
             for (int j = 0; j < typeOfBuilding.getWidth(); j++)
                 map.getMapPixel(row + j, column + i).addBuilding(building);
-        return Messages.DEPLOYMENT_SUCCESSFULL;
+        return Messages.DEPLOYMENT_SUCCESSFUL;
     }
 
     public Messages selectBuilding(int row, int column) {

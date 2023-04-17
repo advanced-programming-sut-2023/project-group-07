@@ -1,72 +1,111 @@
 package view;
+
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 
 import controller.Controller;
-import controller.CreateMapMenuCommands;
 import controller.GameMenuCommands;
 
 import controller.GameMenuController;
 import controller.Messages;
 import model.Government;
+import model.Resources;
 
 public class GameMenu {
     private final GameMenuController gameMenuController = new GameMenuController();
+
     public void run(Scanner scanner) {
-        while(true){
+        Matcher matcher;
+        while (true) {
             String input = scanner.nextLine();
-            if(GameMenuCommands.getMatcher(input, GameMenuCommands.DROP_BUILDING)!=null){
-                
-            }
-            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_BUILDING)!=null){
+            if (GameMenuCommands.getMatcher(input, GameMenuCommands.DROP_BUILDING) != null) {
+
+            } else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_BUILDING) != null)
                 System.out.println(selectBuilding(input, scanner));
-            }
-            else{
+            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULARITY) != null)
+                System.out.println("Your popularity is : " + gameMenuController.getPopularity());
+            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.FOOD_RATE_SHOW) != null)
+                System.out.println("Your food rate is : " + gameMenuController.getFoodRate());
+            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_FOOD_LIST) != null)
+                System.out.println(getFoodList());
+            else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.FOOD_RATE)) != null)
+                System.out.println(setFoodList(matcher));
+            else {
                 System.out.println("Invalid command!");
             }
         }
+
     }
-    private String getPopulation(){
+
+    private String setFoodList(Matcher matcher) {
+        int rate = Integer.parseInt(matcher.group("rate"));
+        switch (gameMenuController.setFoodList(rate)) {
+            case INVALID_RATE:
+                return "Rate is not in valid range.";
+            case SET_FOOD_RATE_SUCCESSFUL:
+                return "Setting food rate was successful.";
+        }
         return null;
     }
-    private String getPopularity(){
+
+    private String getFoodList() { // todo: haven't been checked
+        String result = "";
+        HashMap<Resources, Integer> foodList = gameMenuController.getFoodList();
+        for (Resources food : foodList.keySet()) {
+            result += "you have " + foodList.get(food) + " of " + food.printingName() + "\n";
+        }
+        return result;
+    }
+
+    private String getPopulation() {
+        return null;
+    }
+
+    private String getPopularity() {
         //System.out.println("Your popularity: "+.getPopularity()+);
         return null;
     }
-    private String setTaxRate(){
+
+    private String setTaxRate() {
         return null;
     }
-    private String showTaxRate(){
+
+    private String showTaxRate() {
         Government government = Controller.currentGame.getCurrentGovernment();
-        return ("Your tax rate: "+government.getTaxAmount()+"coins\n" +
-                "Popularity effect: "+government.getTaxPopularity());
+        return ("Your tax rate: " + government.getTaxAmount() + "coins\n" +
+                "Popularity effect: " + government.getTaxPopularity());
     }
-    private void endOfTurn(){
-        
-    }
-    private void showMap(){
+
+    private void endOfTurn() {
 
     }
-    private String dropBuilding(String input,Scanner scanner){
+
+    private void showMap() {
+
+    }
+
+    private String dropBuilding(String input, Scanner scanner) {
         int row = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.DROP_BUILDING).group("x"));
         int column = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.DROP_BUILDING).group("y"));
         String type = GameMenuCommands.getMatcher(input, GameMenuCommands.DROP_BUILDING).group("type");
         Messages returnMessage = gameMenuController.dropBuilding(row, column, type);
-        switch(returnMessage){
+        switch (returnMessage) {
             case INVALID_ROW_OR_COLUMN:
                 return "Invalid row or column!";
-            case DEPLOYMENT_SUCCESSFULL:
-                return type+" deployed successfully!";
+            case DEPLOYMENT_SUCCESSFUL:
+                return type + " deployed successfully!";
             default:
                 break;
         }
         return null;
     }
-    private String selectBuilding(String input,Scanner scanner){
-        int row = Integer.parseInt(GameMenuCommands.getMatcher(input,GameMenuCommands.SELECT_BUILDING).group("row"));
+
+    private String selectBuilding(String input, Scanner scanner) {
+        int row = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_BUILDING).group("row"));
         int column = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_BUILDING).group("column"));
         Messages returnMessage = gameMenuController.selectBuilding(row, column);
-        switch(returnMessage){
+        switch (returnMessage) {
             case NO_BUILDING_HERE:
                 return "No building here!";
             case ENEMY_BUILDING:
@@ -76,12 +115,12 @@ public class GameMenu {
             case ENTERED_GATEHOUSE:
                 return "";
             case ENTERED_MILITARY_CAMP:
-                System.out.println("you have entered "+gameMenuController.getCurrentMilitaryCamp()+"!");
-                while(true){
+                System.out.println("you have entered " + gameMenuController.getCurrentMilitaryCamp() + "!");
+                while (true) {
                     String command = scanner.nextLine();
-                    if(GameMenuCommands.getMatcher(command, GameMenuCommands.CREATE_UNIT)!=null){
+                    if (GameMenuCommands.getMatcher(command, GameMenuCommands.CREATE_UNIT) != null) {
                         returnMessage = gameMenuController.createUnit(command);
-                        switch(returnMessage) {
+                        switch (returnMessage) {
                             case INVALID_UNIT_NAME:
                                 System.out.println("Invalid unit name!");
                             case INVALID_NUMBER:
@@ -97,13 +136,11 @@ public class GameMenu {
                             default:
                                 break;
                         }
-                    }
-                    else if(GameMenuCommands.getMatcher(command, GameMenuCommands.SHOW_UNITS)!=null){
+                    } else if (GameMenuCommands.getMatcher(command, GameMenuCommands.SHOW_UNITS) != null) {
                         System.out.print(gameMenuController.getUnitsInfo(gameMenuController.getCurrentMilitaryCamp()));
                         return "";
-                    }
-                    else if(GameMenuCommands.getMatcher(command, GameMenuCommands.EXIT)!=null) break;
-                    else{
+                    } else if (GameMenuCommands.getMatcher(command, GameMenuCommands.EXIT) != null) break;
+                    else {
                         System.out.println("Invalid command!");
                         break;
                     }
@@ -113,6 +150,6 @@ public class GameMenu {
         }
         return "";
     }
- 
+
 
 }

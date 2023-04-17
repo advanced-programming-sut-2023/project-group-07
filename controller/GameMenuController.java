@@ -1,15 +1,11 @@
 package controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 
-import model.Game;
-import model.Government;
-import model.Map;
-import model.MilitaryCampType;
-import model.TypeOfBuilding;
-import model.TypeOfPerson;
-import model.User;
+import model.*;
+
 public class GameMenuController {
     Game game = Controller.currentGame;
     private User currentUser;
@@ -31,7 +27,7 @@ public class GameMenuController {
             else
                 government.setTaxPopularity((rate - 2) * 4);
         }
-        return Messages.RATE_CHANGE_SUCCESSFULL;
+        return Messages.RATE_CHANGE_SUCCESSFUL;
     }
 
     public ArrayList<Government> getGovernments() {
@@ -95,5 +91,23 @@ public class GameMenuController {
             }
         }
         return null;
+    }
+
+    public int getPopularity() {
+        return game.getCurrentGovernment().getPopularity();
+    }
+
+    public int getFoodRate() {
+        return game.getCurrentGovernment().getFoodRate();
+    }
+
+    public HashMap<Resources, Integer> getFoodList() {
+        return game.getCurrentGovernment().getFoodList();
+    }
+
+    public Messages setFoodList(int rate) {
+        if (rate < -2 || rate > 2) return Messages.INVALID_RATE;
+        game.getCurrentGovernment().setFoodRate(rate);
+        return Messages.SET_FOOD_RATE_SUCCESSFUL;
     }
 }

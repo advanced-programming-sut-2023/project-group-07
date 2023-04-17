@@ -51,7 +51,7 @@ public class ProfileMenu {
                 return "Invalid username format!";
             case USERNAME_EXISTS:
                 return "This username already exists!";
-            case CHANGE_USERNAME_SUCCESSFULL:
+            case CHANGE_USERNAME_SUCCESSFUL:
                 return "Your username changed successfully!";
             default:
                 break;
@@ -107,7 +107,7 @@ public class ProfileMenu {
                 return "This email already exists!";
             case INVALID_EMAIL_FORMAT:
                 return "Invalid email format!";
-            case CHANGE_EMAIL_SUCCESSFULL:
+            case CHANGE_EMAIL_SUCCESSFUL:
                 return "Your email changed successfully!";
             default:
                 break;

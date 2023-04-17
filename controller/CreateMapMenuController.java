@@ -39,7 +39,7 @@ public class CreateMapMenuController {
         if(texture == null)
             return Messages.INVALID_TEXTURE;
         this.map.setPixelTexture(row, column, texture);
-        return Messages.SET_TEXTURE_SUCCESSFULL;
+        return Messages.SET_TEXTURE_SUCCESSFUL;
     }
     public Messages setRegionTexture(int x1 , int y1 , int x2 , int y2 , String textureName){
         int size = this.map.getSize();
@@ -53,14 +53,14 @@ public class CreateMapMenuController {
         if(texture == null)
             return Messages.INVALID_TEXTURE;
         this.map.setRegionTexture(x1, y1, x2, y2, texture);
-        return Messages.SET_TEXTURE_SUCCESSFULL;
+        return Messages.SET_TEXTURE_SUCCESSFUL;
     }
     public Messages clearPixel(int row , int column){
         int size = this.map.getSize();
         if(row < 0 || row >= size || column < 0 || column >= size)
             return Messages.INVALID_CORDINATES;
         this.map.clearPixel(row, column); 
-        return Messages.CLEAR_PIXEL_SUCCESSFULL;
+        return Messages.CLEAR_PIXEL_SUCCESSFUL;
     }
 
 }
