@@ -12,7 +12,7 @@ public class Government {
     private int fearRate;
     private int foodRate;
     private int foodsNumber;
-    private HashMap<Resources, Integer> resources = new HashMap<Resources, Integer>();
+    private HashMap<Resources, Double> resources = new HashMap<>();
 
     public Government(User user, double gold) {
         population = 10;
@@ -71,7 +71,7 @@ public class Government {
         return fearRate;
     }
 
-    public HashMap<Resources, Integer> getResources() {
+    public HashMap<Resources, Double> getResources() {
         return resources;
     } // todo: make this clone.
 
@@ -87,8 +87,8 @@ public class Government {
         this.foodRate = foodRate;
     }
 
-    public HashMap<Resources, Integer> getFoodList() {
-        HashMap<Resources, Integer> foodList = new HashMap<>();
+    public HashMap<Resources, Double> getFoodList() {
+        HashMap<Resources, Double> foodList = new HashMap<>();
         for (Resources resource : resources.keySet()) {
             if (resource.type() == TypeOfResource.FOOD)
                 foodList.put(resource, resources.get(resource));// todo : can be cleaner
@@ -96,14 +96,38 @@ public class Government {
         }
         return foodList;
     }
-    public void updateFoodsNumber(){
+
+    public void updateFoodsNumber() {
         foodsNumber = 0;
         for (Resources resource : resources.keySet()) {
             if (resource.type() == TypeOfResource.FOOD) foodsNumber += resources.get(resource);
         }
     }
-    public int getFoodsNumber(){
+
+    public int getFoodsNumber() {
         updateFoodsNumber();
         return foodsNumber;
+    }
+
+    public void giveFood() {
+        double foodPerPerson = foodPerPerson();
+        double foodsToGive = foodPerPerson * population;
+        for (Resources resource : resources.keySet()) {
+            if (resource.type() == TypeOfResource.FOOD) {
+                double amountOfResource = resources.get(resource);
+                if (amountOfResource >= foodsToGive) {
+                    foodsToGive = 0;
+                    resources.replace(resource, amountOfResource - foodsToGive);
+                }
+                else{
+                    foodsToGive -= amountOfResource;
+                    resources.replace(resource, (double)0);
+                }
+            }
+        }
+    }
+
+    public double foodPerPerson() {
+        return (foodRate + 2) * 0.5;
     }
 }

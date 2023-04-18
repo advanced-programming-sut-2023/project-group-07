@@ -103,7 +103,7 @@ public class GameMenuController {
         return game.getCurrentGovernment().getFoodRate();
     }
 
-    public HashMap<Resources, Integer> getFoodList() {
+    public HashMap<Resources, Double> getFoodList() {
         return game.getCurrentGovernment().getFoodList();
     }
 
@@ -113,5 +113,10 @@ public class GameMenuController {
         if (government.getFoodsNumber() == 0) return Messages.NOT_ENOUGH_FOOD;
         government.setFoodRate(rate);
         return Messages.SET_FOOD_RATE_SUCCESSFUL;
+    }
+    public void nextTurn(){
+        Government government = game.getCurrentGovernment();
+        User currentUser = game.getCurrentUser();
+        game.endOfTurn();
     }
 }

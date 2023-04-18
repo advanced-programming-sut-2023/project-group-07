@@ -48,8 +48,9 @@ public class Game {
 
     public void endOfTurn() {
         for (Government government : getGovernments()) {
-            government.setPopularity(government.getPopularity() + government.getTaxPopularity());
+            government.setPopularity(government.getPopularity() + government.getTaxPopularity()); // todo: update
             government.setGold(government.getGold() + government.getTaxAmount() * government.getPopulation());
+            government.giveFood();
         }
     }
 
