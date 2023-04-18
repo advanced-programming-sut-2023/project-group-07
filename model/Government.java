@@ -11,6 +11,7 @@ public class Government {
     private int taxPopularity;
     private int fearRate;
     private int foodRate;
+    private int foodsNumber;
     private HashMap<Resources, Integer> resources = new HashMap<Resources, Integer>();
 
     public Government(User user, double gold) {
@@ -27,7 +28,7 @@ public class Government {
     }
 
     public int getPopularity() {
-        return popularity;
+        return popularity; // todo: must be calculated
     }
 
     public void setPopularity(int popularity) {
@@ -94,5 +95,15 @@ public class Government {
 
         }
         return foodList;
+    }
+    public void updateFoodsNumber(){
+        foodsNumber = 0;
+        for (Resources resource : resources.keySet()) {
+            if (resource.type() == TypeOfResource.FOOD) foodsNumber += resources.get(resource);
+        }
+    }
+    public int getFoodsNumber(){
+        updateFoodsNumber();
+        return foodsNumber;
     }
 }

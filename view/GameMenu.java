@@ -28,7 +28,7 @@ public class GameMenu {
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.FOOD_RATE_SHOW) != null)
                 System.out.println("Your food rate is : " + gameMenuController.getFoodRate());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_FOOD_LIST) != null)
-                System.out.println(getFoodList());
+                System.out.print(getFoodList());
             else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.FOOD_RATE)) != null)
                 System.out.println(setFoodList(matcher));
             else {
@@ -45,6 +45,8 @@ public class GameMenu {
                 return "Rate is not in valid range.";
             case SET_FOOD_RATE_SUCCESSFUL:
                 return "Setting food rate was successful.";
+            case NOT_ENOUGH_FOOD:
+                return "You don't have any food. So food rate must be -2";
         }
         return null;
     }

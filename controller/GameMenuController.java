@@ -44,50 +44,52 @@ public class GameMenuController {
             government.setGold(government.getGold() + government.getTaxAmount() * government.getPopulation());
         }
     }
-    public Messages dropBuilding(int row,int column,String name) {
+
+    public Messages dropBuilding(int row, int column, String name) {
         return game.dropBuilding(row, column, TypeOfBuilding.getBuilding(name));
     }
-    public Messages selectBuilding(int row,int column){
+
+    public Messages selectBuilding(int row, int column) {
         return game.selectBuilding(row, column);
     }
-    public String getCurrentMilitaryCamp(){
-        if(game.getCurrentMilitaryCamp().equals(MilitaryCampType.BARRACKS)) return "barracks";
-        if(game.getCurrentMilitaryCamp().equals(MilitaryCampType.MERCENARY_POST)) return "mercenary post";
-        if(game.getCurrentMilitaryCamp().equals(MilitaryCampType.ENGINEER_GUILD)) return "engineer's guild";
+
+    public String getCurrentMilitaryCamp() {
+        if (game.getCurrentMilitaryCamp().equals(MilitaryCampType.BARRACKS)) return "barracks";
+        if (game.getCurrentMilitaryCamp().equals(MilitaryCampType.MERCENARY_POST)) return "mercenary post";
+        if (game.getCurrentMilitaryCamp().equals(MilitaryCampType.ENGINEER_GUILD)) return "engineer's guild";
         return null;
     }
-    public Messages createUnit(String input){
-        String type="";
-        int count=0;
+
+    public Messages createUnit(String input) {
+        String type = "";
+        int count = 0;
         Matcher matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.CREATE_UNIT);
-        if(matcher.group("type1")==null){
+        if (matcher.group("type1") == null) {
             type = matcher.group("type2");
             count = Integer.parseInt(matcher.group("count2"));
-        }
-        else{
+        } else {
             type = matcher.group("type1");
             count = Integer.parseInt(matcher.group("count1"));
         }
         return game.createTroop(type, count);
     }
-    public String getUnitsInfo(String militaryCamp){
-        String output="";
-        if(militaryCamp.equals("barracks")){
-            for(TypeOfPerson typeOfPerson: TypeOfPerson.values()){
-                if(typeOfPerson.getMilitaryCampType().equals(MilitaryCampType.BARRACKS))
-                    output+=typeOfPerson.getType()+"    "+typeOfPerson.getGoldNeeded()+" gold\n";
+
+    public String getUnitsInfo(String militaryCamp) {
+        String output = "";
+        if (militaryCamp.equals("barracks")) {
+            for (TypeOfPerson typeOfPerson : TypeOfPerson.values()) {
+                if (typeOfPerson.getMilitaryCampType().equals(MilitaryCampType.BARRACKS))
+                    output += typeOfPerson.getType() + "    " + typeOfPerson.getGoldNeeded() + " gold\n";
             }
-        }
-        else if(militaryCamp.equals("mercenary post")){
-            for(TypeOfPerson typeOfPerson: TypeOfPerson.values()){
-                if(typeOfPerson.getMilitaryCampType().equals(MilitaryCampType.MERCENARY_POST))
-                    output+=typeOfPerson.getType()+"    "+typeOfPerson.getGoldNeeded()+" gold\n";
+        } else if (militaryCamp.equals("mercenary post")) {
+            for (TypeOfPerson typeOfPerson : TypeOfPerson.values()) {
+                if (typeOfPerson.getMilitaryCampType().equals(MilitaryCampType.MERCENARY_POST))
+                    output += typeOfPerson.getType() + "    " + typeOfPerson.getGoldNeeded() + " gold\n";
             }
-        }
-        else if(militaryCamp.equals("engineer's guild")){
-            for(TypeOfPerson typeOfPerson: TypeOfPerson.values()){
-                if(typeOfPerson.getMilitaryCampType().equals(MilitaryCampType.ENGINEER_GUILD))
-                    output+=typeOfPerson.getType()+"    "+typeOfPerson.getGoldNeeded()+" gold\n";
+        } else if (militaryCamp.equals("engineer's guild")) {
+            for (TypeOfPerson typeOfPerson : TypeOfPerson.values()) {
+                if (typeOfPerson.getMilitaryCampType().equals(MilitaryCampType.ENGINEER_GUILD))
+                    output += typeOfPerson.getType() + "    " + typeOfPerson.getGoldNeeded() + " gold\n";
             }
         }
         return null;
@@ -106,8 +108,10 @@ public class GameMenuController {
     }
 
     public Messages setFoodList(int rate) {
+        Government government = game.getCurrentGovernment();
         if (rate < -2 || rate > 2) return Messages.INVALID_RATE;
-        game.getCurrentGovernment().setFoodRate(rate);
+        if (government.getFoodsNumber() == 0) return Messages.NOT_ENOUGH_FOOD;
+        government.setFoodRate(rate);
         return Messages.SET_FOOD_RATE_SUCCESSFUL;
     }
 }
