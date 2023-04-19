@@ -11,7 +11,6 @@ import model.Game;
 import model.Map;
 import view.CaptchaPrinter;
 public class Controller {
-    private static ArrayList<User> users = new ArrayList<User>();
     public static User currentUser;
     public static Game currentGame;
     private static int maxPlayers = 4;
@@ -26,14 +25,14 @@ public class Controller {
         return false;
     }
     public static User getUserByUsername(String username){
-        for(User user : users){
+        for(User user : User.getUsers()){
             if(user.getUsername().equals(username))return user;
         }
         return null;
     }
     public static User getUserByEmail(String email){
         email = email.toLowerCase();
-        for(User user : users){
+        for(User user : User.getUsers()){
             if(user.getEmail().toLowerCase().equals(email))return user;
         }
         return null;
@@ -54,10 +53,6 @@ public class Controller {
         }
         captchaPrinter.print(captchaPrint);
         return captcha;
-    }
-    
-    public static void addUser(User user) {
-        users.add(user);
     }
     public static String toSHA256(String string) throws NoSuchAlgorithmException{
         MessageDigest md = MessageDigest.getInstance("SHA-256");

@@ -53,7 +53,7 @@ public class CreateMapMenu extends MapMenu{
     }
     private Messages setMap(){
         ArrayList<String> maps = controller.getMaps();
-        System.out.println("Your maps:");
+        System.out.println("Available maps:");
         for(int i = 0; i<maps.size() ; i++)
             System.out.println((i+1) + ". " + maps.get(i));
         System.out.println("Enter the number of the map you want to edit or enter \"new map\" to create a new map:");

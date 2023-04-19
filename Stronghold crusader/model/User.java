@@ -1,7 +1,7 @@
 package model;
 import controller.Controller;
 import controller.Messages;
-
+import java.util.ArrayList;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,6 +20,9 @@ public class User {
     private int numberOfAttempts;
     private int highScore;
     private int rank;
+
+    private static ArrayList<User> users = new ArrayList<User>();
+
     public User(String username, String password, String email, String nickname, String slogan,
                 RecoveryQuestion passwordRecoveryQuestion, String passwordRecoveryAnswer) {
         this.username = username;
@@ -131,5 +134,11 @@ public class User {
                     user.getRank()+"\n");
         file.close();
     }
-    
+    public static ArrayList<User> getUsers(){
+        return users;
+    }
+    public static void addUser(User user){
+        users.add(user);
+    }
+
 }

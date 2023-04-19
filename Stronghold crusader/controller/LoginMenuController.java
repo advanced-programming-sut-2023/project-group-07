@@ -85,7 +85,7 @@ public class LoginMenuController {
         }
         if(!LoginMenu.checkCaptcha()) return Messages.EXIT_CAPTCHA;
         User user = new User(username, password, email, nickname, slogan, recoveryQuestion, answer);
-        Controller.addUser(user);
+        User.addUser(user);
         user.createFile(user);
         return Messages.SIGNUP_SUCCESSFUL;
     }
