@@ -97,16 +97,11 @@ public class Map implements Cloneable{
         else maps.set(index, map);
     }
 
-    public ArrayList<Building> getBuildings() {
-        return (ArrayList<Building>)buildings.clone();
-    }
-
     public static int getMaxPlayerOfMaps() {
         return maxPlayerOfMaps;
     }
     public void clone(Map map){
         this.size = map.getSize();
-        this.buildings = map.getBuildings();
         this.field = map.getFullField();
         this.name = map.getName();
         this.numberOfPlayers = map.getNumberOfPlayers();
