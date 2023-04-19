@@ -9,7 +9,6 @@ public class Map implements Cloneable{
 
     private int size;
     private ArrayList<ArrayList<MapPixel>> field = new ArrayList<ArrayList<MapPixel>>();
-    private ArrayList<Building> buildings = new ArrayList<Building>();
     private String name;
     private int numberOfPlayers;
 
@@ -65,11 +64,6 @@ public class Map implements Cloneable{
     public int getNumberOfPlayers() {
         return numberOfPlayers;
     }
-
-    public void addBuilding(Building building) {
-        buildings.add(building);
-    }
-
     public MapPixel getMapPixel(int row, int column) {
         return field.get(row).get(column);
     }

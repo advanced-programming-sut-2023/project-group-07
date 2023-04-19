@@ -21,4 +21,7 @@ public class Building {
     public void repair(){
         hp = typeOfBuilding.getHp();
     }
+    public int getHp() {
+        return hp;
+    }
 }

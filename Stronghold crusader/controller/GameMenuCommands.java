@@ -16,7 +16,8 @@ public enum GameMenuCommands {
     SELECT_BUILDING("\\s*select\\s+building\\s+-x\\s+(?<row>\\d+)\\s+-y\\s+(?<column>\\d+)\\s*"),
     CREATE_UNIT("\\s*createunit\\s+((-t\\s+(?<type1>\\w+)\\s+-c\\s+(?<count1>\\w+)\\s*)|(-c\\s+(?<count2>\\w+)-t\\s+(?<type2>\\w+)\\s*))"),
     EXIT("\\s*exit\\s*"),
-    SHOW_UNITS("\\s*show\\s+units\\s*");
+    SHOW_UNITS("\\s*show\\s+units\\s*"),
+    REPAIR("\\s*repair\\s*");
 
     private String regex;
     private GameMenuCommands(String regex) {

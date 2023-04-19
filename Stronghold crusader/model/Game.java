@@ -109,8 +109,11 @@ public class Game {
         }
         if (acceptedPixels * 4 < typeOfBuilding.getLength() * typeOfBuilding.getWidth())
             return Messages.CANT_PLACE_THIS;
+        if(typeOfBuilding.getCost()>getCurrentGovernment().getGold())
+            return Messages.NOT_ENOUGH_GOLD;
+        if(typeOfBuilding.getResourceAmount()>getCurrentGovernment().getResources().get(typeOfBuilding.getResourceNeeded()))
+            return Messages.NOT_ENOUGH_RESOURCES;
         Building building = new Building(getCurrentGovernment(), typeOfBuilding, row, column);
-        map.addBuilding(building);
         for (int i = 0; i < typeOfBuilding.getLength(); i++)
             for (int j = 0; j < typeOfBuilding.getWidth(); j++)
                 map.getMapPixel(row + j, column + i).addBuilding(building);
@@ -124,6 +127,7 @@ public class Game {
         if (map.getMapPixel(row, column).getBuildings().size() == 0) return Messages.NO_BUILDING_HERE;
         if (!map.getMapPixel(row, column).getBuildings().get(0).government.equals(getCurrentGovernment()))
             return Messages.ENEMY_BUILDING;
+        this.selectedBuilding = map.getMapPixel(row, column).getBuildings().get(0);
         if (map.getMapPixel(row, column).getBuildings().get(0) instanceof Tower) {
             return Messages.ENTERED_TOWER;
         }
@@ -161,12 +165,20 @@ public class Game {
     public MilitaryCampType getCurrentMilitaryCamp() {
         return currentMilitaryCamp;
     }
-    public void setSelectedBuilding(Building selectedBuilding) {
-        this.selectedBuilding = selectedBuilding;
-    }
     public Building getSelectedBuilding() {
         return selectedBuilding;
     }
-
+    public Messages repair() {
+        if(!(selectedBuilding instanceof Tower || selectedBuilding instanceof GateHouse))
+            return Messages.CANT_REPAIR_THIS;
+        int buildResource = selectedBuilding.getTypeOfBuilding().getResourceAmount();
+        int damagedResource = (int)(selectedBuilding.getTypeOfBuilding().getResourceAmount()*selectedBuilding.getHp()/selectedBuilding.getTypeOfBuilding().getHp());
+        if(buildResource-damagedResource>getCurrentGovernment().getResources().get(selectedBuilding.getTypeOfBuilding().getResourceNeeded()))
+            return Messages.NOT_ENOUGH_RESOURCES;
+            selectedBuilding.repair();
+        Resources resourceNeeded=selectedBuilding.getTypeOfBuilding().getResourceNeeded();
+        getCurrentGovernment().getResources().put(resourceNeeded, getCurrentGovernment().getResources().get(resourceNeeded)-(buildResource-damagedResource));
+        return Messages.REPAIRED_SUCCESSFULLY;
+    }
 
 }

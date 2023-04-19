@@ -58,6 +58,9 @@ public class GameMenuController {
         return game.getSelectedBuilding().getTypeOfBuilding().getBuildingName();
     }
 
+    public Messages repair() {
+        return game.repair();
+    }
     public Messages createUnit(String input) {
         String type = "";
         int count = 0;
@@ -120,4 +123,5 @@ public class GameMenuController {
         User currentUser = game.getCurrentUser();
         game.endOfTurn();
     }
+
 }

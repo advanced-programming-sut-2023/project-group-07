@@ -95,6 +95,10 @@ public class GameMenu {
         switch (returnMessage) {
             case INVALID_ROW_OR_COLUMN:
                 return "Invalid row or column!";
+            case NOT_ENOUGH_GOLD:
+                return "Not enough gold!";
+            case NOT_ENOUGH_RESOURCES:
+                return "Not enough resources!";
             case DEPLOYMENT_SUCCESSFUL:
                 return type + " deployed successfully!";
             default:
@@ -115,12 +119,20 @@ public class GameMenu {
         System.out.println("you have entered " + gameMenuController.getSelectedBuilding() + "!");
         switch (returnMessage) {
             case ENTERED_TOWER:
-                while (true) {
-
-                }
-                //return "";
             case ENTERED_GATEHOUSE:
-                return "";
+                while (true) {
+                    String command = scanner.nextLine();
+                    if(GameMenuCommands.getMatcher(command, GameMenuCommands.REPAIR)!=null) {
+                        returnMessage = gameMenuController.repair();
+                        switch (returnMessage) {
+                            case NOT_ENOUGH_RESOURCES:
+                                return "Not enough resources!";
+                        
+                            default:
+                                break;
+                        }
+                    }
+                }
             case ENTERED_MILITARY_CAMP:
                 while (true) {
                     String command = scanner.nextLine();
@@ -129,27 +141,35 @@ public class GameMenu {
                         switch (returnMessage) {
                             case INVALID_UNIT_NAME:
                                 System.out.println("Invalid unit name!");
+                                break;
                             case INVALID_NUMBER:
                                 System.out.println("Invalid number!");
+                                break;
                             case NOT_ENOUGH_GOLD:
                                 System.out.println("Not enough gold!");
+                                break;
                             case NOT_ENOUGH_RESOURCES:
                                 System.out.println("Not enough resources!");
+                                break;
                             case CANT_CREATE_THIS_UNIT_HERE:
                                 System.out.println("Can't create this unit here!");
+                                break;
                             case UNIT_CREATED_SUCCESSFULLY:
                                 System.out.println("Unit created successfully!");
+                                break;
                             default:
                                 break;
                         }
-                    } else if (GameMenuCommands.getMatcher(command, GameMenuCommands.SHOW_UNITS) != null) {
+                    }
+                    else if (GameMenuCommands.getMatcher(command, GameMenuCommands.SHOW_UNITS) != null) {
                         System.out.print(gameMenuController.getUnitsInfo(gameMenuController.getSelectedBuilding()));
-                        return "";
-                    } else if (GameMenuCommands.getMatcher(command, GameMenuCommands.EXIT) != null)
+                    }
+                    else if (GameMenuCommands.getMatcher(command, GameMenuCommands.EXIT) != null){
+                        System.out.println("Exit was successful!");
                         break;
+                    }    
                     else {
                         System.out.println("Invalid command!");
-                        break;
                     }
                 }
             default:
