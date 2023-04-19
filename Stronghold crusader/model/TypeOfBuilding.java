@@ -73,6 +73,9 @@ public enum TypeOfBuilding {
     public Texture getTexture() {
         return texture;
     }
+    public String getBuildingName() {
+        return buildingName;
+    }
     public static TypeOfBuilding getBuilding(String input){ // todo : make this for
         for(TypeOfBuilding typeOfBuilding: TypeOfBuilding.values()){
             if(typeOfBuilding.buildingName.equals(input)) return typeOfBuilding;

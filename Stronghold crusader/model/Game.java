@@ -9,6 +9,7 @@ public class Game {
     private ArrayList<Government> governments = new ArrayList<>();
     private ArrayList<User> users;
     private MilitaryCampType currentMilitaryCamp;
+    private Building selectedBuilding;
     private Map map;
 
     public Game(Map map, ArrayList<User> users, int goldToBeginWith) {
@@ -159,6 +160,12 @@ public class Game {
 
     public MilitaryCampType getCurrentMilitaryCamp() {
         return currentMilitaryCamp;
+    }
+    public void setSelectedBuilding(Building selectedBuilding) {
+        this.selectedBuilding = selectedBuilding;
+    }
+    public Building getSelectedBuilding() {
+        return selectedBuilding;
     }
 
 

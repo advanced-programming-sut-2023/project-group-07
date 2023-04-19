@@ -13,7 +13,8 @@ public class GameMenuController {
     private Map map;
 
     public Messages taxRate(int rate, Government government) {
-        if (rate < -3 || rate > 8) return Messages.INVALID_RATE;
+        if (rate < -3 || rate > 8)
+            return Messages.INVALID_RATE;
         if (rate < 0) {
             government.setTaxAmount(1 - (rate + 3) * 0.2);
             government.setTaxPopularity(7 - (rate + 3) * 2);
@@ -53,11 +54,8 @@ public class GameMenuController {
         return game.selectBuilding(row, column);
     }
 
-    public String getCurrentMilitaryCamp() {
-        if (game.getCurrentMilitaryCamp().equals(MilitaryCampType.BARRACKS)) return "barracks";
-        if (game.getCurrentMilitaryCamp().equals(MilitaryCampType.MERCENARY_POST)) return "mercenary post";
-        if (game.getCurrentMilitaryCamp().equals(MilitaryCampType.ENGINEER_GUILD)) return "engineer's guild";
-        return null;
+    public String getSelectedBuilding() {
+        return game.getSelectedBuilding().getTypeOfBuilding().getBuildingName();
     }
 
     public Messages createUnit(String input) {
@@ -109,12 +107,15 @@ public class GameMenuController {
 
     public Messages setFoodList(int rate) {
         Government government = game.getCurrentGovernment();
-        if (rate < -2 || rate > 2) return Messages.INVALID_RATE;
-        if (government.getFoodsNumber() == 0) return Messages.NOT_ENOUGH_FOOD;
+        if (rate < -2 || rate > 2)
+            return Messages.INVALID_RATE;
+        if (government.getFoodsNumber() == 0)
+            return Messages.NOT_ENOUGH_FOOD;
         government.setFoodRate(rate);
         return Messages.SET_FOOD_RATE_SUCCESSFUL;
     }
-    public void nextTurn(){
+
+    public void nextTurn() {
         Government government = game.getCurrentGovernment();
         User currentUser = game.getCurrentUser();
         game.endOfTurn();

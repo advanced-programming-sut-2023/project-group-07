@@ -65,7 +65,7 @@ public class GameMenu {
     }
 
     private String getPopularity() {
-        //System.out.println("Your popularity: "+.getPopularity()+);
+        // System.out.println("Your popularity: "+.getPopularity()+);
         return null;
     }
 
@@ -105,19 +105,23 @@ public class GameMenu {
 
     private String selectBuilding(String input, Scanner scanner) {
         int row = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_BUILDING).group("row"));
-        int column = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_BUILDING).group("column"));
+        int column = Integer
+                .parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_BUILDING).group("column"));
         Messages returnMessage = gameMenuController.selectBuilding(row, column);
+        if (returnMessage.equals(Messages.NO_BUILDING_HERE))
+            return "No building here!";
+        else if (returnMessage.equals(Messages.ENEMY_BUILDING))
+            return "Enemy building!";
+        System.out.println("you have entered " + gameMenuController.getSelectedBuilding() + "!");
         switch (returnMessage) {
-            case NO_BUILDING_HERE:
-                return "No building here!";
-            case ENEMY_BUILDING:
-                return "Enemy building!";
             case ENTERED_TOWER:
-                return "";
+                while (true) {
+
+                }
+                //return "";
             case ENTERED_GATEHOUSE:
                 return "";
             case ENTERED_MILITARY_CAMP:
-                System.out.println("you have entered " + gameMenuController.getCurrentMilitaryCamp() + "!");
                 while (true) {
                     String command = scanner.nextLine();
                     if (GameMenuCommands.getMatcher(command, GameMenuCommands.CREATE_UNIT) != null) {
@@ -139,9 +143,10 @@ public class GameMenu {
                                 break;
                         }
                     } else if (GameMenuCommands.getMatcher(command, GameMenuCommands.SHOW_UNITS) != null) {
-                        System.out.print(gameMenuController.getUnitsInfo(gameMenuController.getCurrentMilitaryCamp()));
+                        System.out.print(gameMenuController.getUnitsInfo(gameMenuController.getSelectedBuilding()));
                         return "";
-                    } else if (GameMenuCommands.getMatcher(command, GameMenuCommands.EXIT) != null) break;
+                    } else if (GameMenuCommands.getMatcher(command, GameMenuCommands.EXIT) != null)
+                        break;
                     else {
                         System.out.println("Invalid command!");
                         break;
@@ -152,6 +157,5 @@ public class GameMenu {
         }
         return "";
     }
-
 
 }

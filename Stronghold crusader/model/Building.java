@@ -18,4 +18,7 @@ public class Building {
     public TypeOfBuilding getTypeOfBuilding() {
         return typeOfBuilding;
     }
+    public void repair(){
+        hp = typeOfBuilding.getHp();
+    }
 }

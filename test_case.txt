@@ -1,0 +1,9 @@
+user create -u Richard -p Poop@2 Poop@2 -e Richard85@gmail.com -n "Lion heart"
+question pick -q 1 -a "Richard Senior" -c "Richard Senior"
+--------------------------------------
+user login -u Richard -p Poop@2
+--------------------------------------
+create map
+new map
+250
+Circus
