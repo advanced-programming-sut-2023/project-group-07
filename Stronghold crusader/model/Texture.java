@@ -17,23 +17,24 @@ public enum Texture {
     FORD ("ford" , Colors.BLUE_BACKGROUND_BRIGHT),
     MARSH("marsh" , Colors.PURPLE_BACKGROUND_BRIGHT),
     SEA("sea" , Colors.BLUE_BACKGROUND);
-    private final String texture;
+    private final String type;
     private final Colors color;
-    private Texture(String texture , Colors color) {
-        this.texture = texture;
+    private Texture(String type , Colors color) {
+        this.type = type;
         this.color = color;
-    }
-    public static String getName(Texture texture){
-        return texture.texture;
     }
     public static Colors getColor(Texture texture){
         return texture.color;
     }
     public static Texture getTexture(String name){
         for(Texture texture : Texture.values())
-            if(Texture.getName(texture).equals(name))
+            if(texture.type.equals(name))
                 return texture;
         return null;
+    }
+    @Override
+    public String toString() {
+        return this.type;
     }
 
 }

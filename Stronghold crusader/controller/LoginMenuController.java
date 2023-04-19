@@ -77,9 +77,9 @@ public class LoginMenuController {
         if(!User.isEmailValid(email)) return Messages.INVALID_EMAIL_FORMAT;
         else{
             System.out.println("Pick your security question:" +
-                                "\n1. " + RecoveryQuestion.getQuestion(RecoveryQuestion.FATHERNAME) + 
-                                "\n2. " + RecoveryQuestion.getQuestion(RecoveryQuestion.MOTHERNAME) +
-                                "\n3. " + RecoveryQuestion.getQuestion(RecoveryQuestion.PETNAME));
+                                "\n1. " + RecoveryQuestion.FATHERNAME + 
+                                "\n2. " + RecoveryQuestion.MOTHERNAME +
+                                "\n3. " + RecoveryQuestion.PETNAME);
             Messages recoveryAnswer = recoveryQuestion();
             if(!recoveryAnswer.equals(Messages.ANSWER_ACCEPTED)) return recoveryAnswer;
         }

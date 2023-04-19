@@ -13,4 +13,8 @@ public enum RecoveryQuestion{
     public static String getQuestion(RecoveryQuestion recoveryQuestion){
         return recoveryQuestion.question;
     }
+    @Override
+    public String toString() {
+        return this.question;
+    }
 }
