@@ -8,8 +8,7 @@ public class GateHouse extends Building{
     public boolean getState() {
         return isClosed;
     }
-    public void changeState() {
-        if(isClosed) isClosed=false;
-        else isClosed=true;
+    public void setClosed(boolean isClosed) {
+        this.isClosed = isClosed;
     }
 }

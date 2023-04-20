@@ -19,7 +19,7 @@ public class MapMenuController {
         for (int i = 0; i < field.size(); i++) {
             output.add(new ArrayList<Colors>());
             for (int j = 0; j < field.get(i).size(); j++)
-                output.get(i).add(Texture.getColor(field.get(i).get(j).getTexture()));
+                output.get(i).add(field.get(i).get(j).getTexture().getColor());
         }
         return output;
     }

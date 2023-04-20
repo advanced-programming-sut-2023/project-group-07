@@ -2,7 +2,7 @@ package model;
 
 import java.util.*;
 
-public class Map implements Cloneable{
+public class Map {
     private static ArrayList<Map> maps = new ArrayList<Map>();
     private static int maxPlayerOfMaps = 2;
 
@@ -11,13 +11,13 @@ public class Map implements Cloneable{
     private ArrayList<ArrayList<MapPixel>> field = new ArrayList<ArrayList<MapPixel>>();
     private String name;
     private int numberOfPlayers;
+    private ArrayList<int[]> lordsPositions;
 
-
-    public Map(int size, String name, int numberOfPlayers) {
+    public Map(int size, String name, int numberOfPlayers, ArrayList<int[]> lordsPositions) {
         this.size = size;
         this.name = name;
         this.numberOfPlayers = numberOfPlayers;
-        if (numberOfPlayers > maxPlayerOfMaps) maxPlayerOfMaps = numberOfPlayers;
+        this.lordsPositions = lordsPositions;
         buildMap();
     }
 
@@ -30,6 +30,10 @@ public class Map implements Cloneable{
 
     public static ArrayList<Map> getMaps() {
         return (ArrayList<Map>) maps.clone();
+    }
+
+    public static void removeMap(Map map) {
+        maps.remove(map);
     }
 
     public static int maxPlayerOfMaps() {
@@ -53,9 +57,6 @@ public class Map implements Cloneable{
         }
         return output;
     }
-    public ArrayList<ArrayList<MapPixel>> getFullField(){
-        return (ArrayList<ArrayList<MapPixel>>)field.clone();
-    }
 
     public int getSize() {
         return this.size;
@@ -64,6 +65,8 @@ public class Map implements Cloneable{
     public int getNumberOfPlayers() {
         return numberOfPlayers;
     }
+
+
     public MapPixel getMapPixel(int row, int column) {
         return field.get(row).get(column);
     }
@@ -77,33 +80,22 @@ public class Map implements Cloneable{
         return this.name;
     }
 
-    public void setPixelTexture(int row, int column, Texture texture) {
-        this.field.get(row).get(column).setTexture(texture);
-    }
 
     public void setRegionTexture(int x1, int y1, int x2, int y2, Texture texture) {
-        for (int i = x1; i < x2; i++) {
-            for (int j = y1; j < y2; j++)
+        for (int i = x1; i <= x2; i++) {
+            for (int j = y1; j <= y2; j++)
                 this.field.get(i).get(j).setTexture(texture);
         }
-    }
-
-    public void clearPixel(int row, int column) {
-        this.field.get(row).get(column).backToDefault();
     }
 
     public static void changeMaps(Map map , int index){
         if(index >= maps.size()) maps.add(map);
         else maps.set(index, map);
     }
-
     public static int getMaxPlayerOfMaps() {
         return maxPlayerOfMaps;
     }
-    public void clone(Map map){
-        this.size = map.getSize();
-        this.field = map.getFullField();
-        this.name = map.getName();
-        this.numberOfPlayers = map.getNumberOfPlayers();
+    public ArrayList<int[]> getLordsPositions() {
+        return (ArrayList<int[]>)lordsPositions.clone();
     }
 }

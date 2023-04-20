@@ -1,9 +1,14 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class Government {
     private int population;
+    private final int row;
+    private final int column;
+    private int peasant;
     private int popularity;
     private User user;
     private double gold;
@@ -13,14 +18,20 @@ public class Government {
     private int foodRate;
     private int foodsNumber;
     private HashMap<Resources, Double> resources = new HashMap<>();
+    private ArrayList<Building> buildings = new ArrayList<>();
+    private HashSet<Building> buildingsWaitingForWorkers = new HashSet<>();
+    private HashSet<TypeOfBuilding> noLaborBuildings = new HashSet<>();
 
-    public Government(User user, double gold) {
+    public Government(User user, double gold,int row,int column) {
         population = 10;
         popularity = 100; // todo: we can make a variable that show starting population and popularity
         this.user = user;
         this.gold = gold;
         taxAmount = 0;
         taxPopularity = 1;
+        peasant = 10;
+        this.row=row;
+        this.column=column;
     }
 
     public int getPopulation() {
@@ -70,13 +81,46 @@ public class Government {
     public int getFearRate() {
         return fearRate;
     }
-
+    public int getPeasant() {
+        return peasant;
+    }
+    public void changePeasant(int count){
+        peasant+=count;
+        if(peasant<0) peasant=0;
+    }
     public HashMap<Resources, Double> getResources() {
         return resources;
     } // todo: make this clone.
 
     public void changeResources(Resources resource, int amount) {
         resources.put(resource, resources.get(resource) + amount);
+    }
+    public ArrayList<Building> getBuildings() {
+        return buildings;
+    }
+    public void addBuilding(Building building) {
+        buildings.add(building);
+    }
+    public void removeBuilding(Building building){
+        this.buildings.remove(building);
+    }
+    public HashSet<Building> getBuildingsWaitingForWorkers() {
+        return buildingsWaitingForWorkers;
+    }
+    public void addBuildingsWaitingForWorkers(Building building) {
+        buildingsWaitingForWorkers.add(building);
+    }
+    public void removeBuildingsWaitingForWorkers(HashSet<Building> buildings) {
+        buildingsWaitingForWorkers.removeAll(buildings);
+    }
+    public HashSet<TypeOfBuilding> getNoLaborBuildings() {
+        return noLaborBuildings;
+    }
+    public void addNoLaborBuildings(TypeOfBuilding typeOfBuilding) {
+        noLaborBuildings.add(typeOfBuilding);
+    }
+    public void removeNoLaborBuildings(TypeOfBuilding typeOfBuilding) {
+        noLaborBuildings.remove(typeOfBuilding);
     }
 
     public int getFoodRate() {

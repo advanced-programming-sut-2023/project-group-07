@@ -1,46 +1,41 @@
 package model;
 
 public enum Resources {
-    WOOD,
-    STONE,
-    WHEAL,
-    FLOUR,
-    HOPS,
-    ALE,
-    IRON,
-    PITCH,
-    ARMOR,
-    SWORD,
-    SPEAR,
-    PIKE,
-    MACE,
-    LEATHER_ARMOR,
-    METAL_ARMOR,
-    HORSE,
-    BOW,
-    CROSS_BOW,
+    WOOD("wood",null),
+    STONE("stone",null),
+    WHEAT("wheat",null),
+    FLOUR("flour",null),
+    HOPS("hops",null),
+    ALE("ale",null),
+    IRON("iron",null),
+    PITCH("pitch",null),
+    ARMOR("armor",null),
+    SWORD("sword",null),
+    SPEAR("spear",null),
+    PIKE("pike",null),
+    MACE("mace",null),
+    LEATHER_ARMOR("leather armor",null),
+    METAL_ARMOR("metal armor",null),
+    HORSE("horse",null),
+    BOW("bow",null),
+    CROSSBOW("crossbow",null),
 
     MEAT("meat", TypeOfResource.FOOD),
     APPLE("apple", TypeOfResource.FOOD),
     CHEESE("cheese", TypeOfResource.FOOD),
     BREAD("bread", TypeOfResource.FOOD);
-    private String printingName = null;
-    private TypeOfResource type = null;
+    private final String printingName;
+    private final TypeOfResource type;
 
     private Resources(String name, TypeOfResource type) {
         this.printingName = name;
         this.type = type;
     }
-
-    private Resources() {
-
-    }
-
-    public String printingName() {
+    public String getPrintingName() {
         return printingName;
     }
-
     public TypeOfResource type() {
         return type;
     }
+    
 }

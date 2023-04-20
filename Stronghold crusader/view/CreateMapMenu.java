@@ -1,4 +1,5 @@
 package view;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -7,133 +8,211 @@ import controller.CreateMapMenuController;
 import controller.MapMenuCommands;
 import controller.Messages;
 import java.util.regex.Matcher;
-public class CreateMapMenu extends MapMenu{
+
+public class CreateMapMenu extends MapMenu {
     private final CreateMapMenuController controller = new CreateMapMenuController(super.controller);
     private Scanner scanner;
-    public CreateMapMenu(){
-        super(0,0);
+
+    public CreateMapMenu() {
+        super(0, 0);
     }
-    public void run(Scanner scanner){
+
+    public void run(Scanner scanner) {
         this.scanner = scanner;
-        while(true){
-            if(setMap().equals(Messages.EXIT_CREATE_MAP_MENU)){
+        while (true) {
+            if (setMap().equals(Messages.EXIT_CREATE_MAP_MENU)) {
                 System.out.println("Back to main menu!");
                 return;
             }
             while (true) {
                 String input = scanner.nextLine();
-                if(input.matches("\\s*exit\\s*")){
-                   saveChanges();
-                   System.out.println("Back to main menu!");
-                   return;
-                }
-                else if(input.matches("\\s*save\\s*"))
-                    saveChanges();
-                else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_MAP) != null){
+                if (input.matches("\\s*exit\\s*")) {
+                    controller.saveMap();
+                    System.out.println("Changes saved!\nBack to main menu!");
+                    return;
+                } else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_MAP) != null) {
                     String showMapStr = super.showMap(input);
-                    if(showMapStr != null) System.out.println(showMapStr);
-                }
-                else if (MapMenuCommands.getMatcher(input, MapMenuCommands.MOVE_MAP) != null)
+                    if (showMapStr != null)
+                        System.out.println(showMapStr);
+                } else if (MapMenuCommands.getMatcher(input, MapMenuCommands.MOVE_MAP) != null)
                     super.moveMap(input);
                 else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_DETAILS) != null)
                     System.out.println(super.showDetails(input));
                 else if (MapMenuCommands.getMatcher(input, MapMenuCommands.MAP_GUIDE) != null)
                     super.mapGuide();
-                else if(CreateMapMenuCommands.getMatcher(input,CreateMapMenuCommands.SET_PIXEL_TEXTURE)!=null)
+                else if (CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.REMOVE_MAP) != null) {
+                    if (removeMap().equals(Messages.REMOVE_MAP_SUCCESSFUL)) {
+                        if (setMap().equals(Messages.EXIT_CREATE_MAP_MENU)) {
+                            System.out.println("Back to main menu!");
+                            return;
+                        }
+                    }
+                } else if (CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.SET_PIXEL_TEXTURE) != null)
                     System.out.println(setPixelTexture(input));
-                else if(CreateMapMenuCommands.getMatcher(input,CreateMapMenuCommands.SET_REGION_TEXTURE)!=null)
+                else if (CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.SET_REGION_TEXTURE) != null)
                     System.out.println(setRegionTexture(input));
+                else if (CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.CLEAR_PIXEL) != null)
+                    System.out.println(clearPixel(input));
+                else if (CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.DROP_TREE) != null)
+                    System.out.println(dropTree(input));
+                else if (CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.DROP_ROCK) != null)
+                    System.out.println(dropRock(input));
                 else
                     System.out.println("Invalid command!");
 
             }
-            
 
         }
     }
-    private Messages setMap(){
+
+    private Messages removeMap() {
+        System.out.println("Are you sure you want to removethis map?");
+        String input = scanner.nextLine();
+        if (input.toLowerCase().matches("\\s*yes\\s*")) {
+            controller.removeMap();
+            return Messages.REMOVE_MAP_SUCCESSFUL;
+        }
+        return Messages.REMOVE_MAP_CANCLED;
+    }
+
+    private Messages setMap() {
         ArrayList<String> maps = controller.getMaps();
         System.out.println("Available maps:");
-        for(int i = 0; i<maps.size() ; i++)
-            System.out.println((i+1) + ". " + maps.get(i));
+        for (int i = 0; i < maps.size(); i++)
+            System.out.println((i + 1) + ". " + maps.get(i));
         System.out.println("Enter the number of the map you want to edit or enter \"new map\" to create a new map:");
-        while(true){
+        while (true) {
             String input = scanner.nextLine();
-            if(input.matches("\\s*exit\\s*"))
+            if (input.matches("\\s*exit\\s*"))
                 return Messages.EXIT_CREATE_MAP_MENU;
-            else if(input.matches("\\s*new\\s+map\\s*"))
+            else if (input.matches("\\s*new\\s+map\\s*"))
                 return setNewMap();
-            else if(!input.matches("\\-?\\d+"))
+            else if (!input.matches("\\-?\\d+"))
                 System.out.println("Enter a whole number!");
-            else if(Integer.parseInt(input) < 1 || Integer.parseInt(input) > maps.size())
+            else if (Integer.parseInt(input) < 1 || Integer.parseInt(input) > maps.size())
                 System.out.println("Enter a number between 1 and " + maps.size());
-            else{
-                controller.setExistingMap(Integer.parseInt(input)-1);
+            else {
+                controller.setExistingMap(Integer.parseInt(input) - 1);
                 return Messages.SET_MAP_SUCCESSFUL;
             }
 
         }
     }
-    private Messages setNewMap(){
+
+    private Messages setNewMap() {
         int mapSize = getNewMapSize();
-        if(mapSize < 0)return Messages.EXIT_CREATE_MAP_MENU;
+        if (mapSize < 0)
+            return Messages.EXIT_CREATE_MAP_MENU;
+        int numberOfPlayers = getNumberOfPlayers();
+        if (numberOfPlayers < 0)
+            return Messages.EXIT_CREATE_MAP_MENU;
+        ArrayList<int[]> lordsPositions = getLordsPositions(numberOfPlayers, mapSize);
+        if (lordsPositions == null)
+            return Messages.EXIT_CREATE_MAP_MENU;
         String mapName = getNewMapName();
-        if(mapName == null)return Messages.EXIT_CREATE_MAP_MENU;
-        controller.setNewMap(mapSize, mapName);
+        if (mapName == null)
+            return Messages.EXIT_CREATE_MAP_MENU;
+        controller.setNewMap(mapSize, mapName, numberOfPlayers, lordsPositions);
         return Messages.SET_MAP_SUCCESSFUL;
     }
-    private int getNewMapSize(){
-        System.out.println("Choose the size of the new map:");
+
+    private int getNumberOfPlayers() {
+        System.out.println("Enter the number of players:");
         while (true) {
             String input = scanner.nextLine();
-            if(input.matches("\\s*exit\\s*"))
+            if (input.matches("\\s*exit\\s*"))
                 return -1;
-            else if(!input.matches("-?\\d+"))
+            else if (!input.matches("\\-?\\d+"))
                 System.out.println("Enter a whole number!");
-            else if(Integer.parseInt(input) < 200)
-                System.out.println("Enter a number greater than or equal 200!");
-            else if(Integer.parseInt(input) > 400)
-                System.out.println("Enter a number less than or equal 400!"); 
+            else if (Integer.parseInt(input) < 2 || Integer.parseInt(input) > 8)
+                System.out.println("Enter a number between 2 and 8!");
             else
                 return Integer.parseInt(input);
         }
     }
-    private String getNewMapName(){
-        System.out.println("Choose a name for the new map:");
+
+    private ArrayList<int[]> getLordsPositions(int numberOfPlayers, int mapSize) {
+        int counter = 1;
+        ArrayList<int[]> positions = new ArrayList<int[]>();
+        while (counter <= numberOfPlayers) {
+            System.out.println("Enter the cordinates of lord number " + counter + " castle:");
+            String input = scanner.nextLine();
+            Matcher rowMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_ROW);
+            Matcher columnMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_COLUMN);
+            if (input.toLowerCase().matches("\\s*exit\\s*"))
+                return null;
+            if (rowMatcher == null || rowMatcher.group("row") == null)
+                System.out.println("Enter the row number!");
+            else if (columnMatcher == null || columnMatcher.group("column") == null)
+                System.out.println("Enter the column number!");
+            else if (!rowMatcher.group("row").matches("\\-?\\d+")
+                    || !columnMatcher.group("column").matches("\\-?\\d+"))
+                System.out.println("Enter whole number for cordinates!");
+            else {
+                int row = Integer.parseInt(rowMatcher.group("row")) - 1;
+                int column = Integer.parseInt(columnMatcher.group("column")) - 1;
+                if (row < 0 || row >= mapSize || column < 0 || column >= mapSize)
+                    System.out.println("Invalid cordinates!");
+                if (controller.doesCordinatesExist(positions, row, column))
+                    System.out.println("There is already a lord castle in this position!");
+                else {
+                    int[] lordPosition = new int[] { row, column };
+                    positions.add(lordPosition);
+                    counter++;
+                }
+            }
+        }
+        return positions;
+    }
+
+    private int getNewMapSize() {
+        System.out.println("Enter the size of the new map:");
         while (true) {
             String input = scanner.nextLine();
-            if(input.matches("\\s*exit\\s*"))
+            if (input.matches("\\s*exit\\s*"))
+                return -1;
+            else if (!input.matches("-?\\d+"))
+                System.out.println("Enter a whole number!");
+            else if (Integer.parseInt(input) < 200 || Integer.parseInt(input) > 400)
+                System.out.println("Enter a number between 200 and 400!");
+            else
+                return Integer.parseInt(input);
+        }
+    }
+
+    private String getNewMapName() {
+        System.out.println("Enter a name for the new map:");
+        while (true) {
+            String input = scanner.nextLine();
+            if (input.matches("\\s*exit\\s*"))
                 return null;
-            else if(!input.matches("\\s*\\w+\\s*"))
+            else if (!input.matches("\\s*\\w+\\s*"))
                 System.out.println("Map name can only contain letters , digits and underscore!");
             else
                 return input;
         }
     }
-    private void saveChanges(){
-        System.out.println("Do you want to save your changes?");
-        if(scanner.nextLine().toLowerCase().matches("\\s*yes\\s*")){
-            controller.saveMap();
-            System.out.println("Changes saved");
-        }
-    }
-    private String setPixelTexture(String input){
-        Matcher rowMatcher = 
-            CreateMapMenuCommands.getMatcher(input , CreateMapMenuCommands.GET_ROW);
-        Matcher columnMatcher = 
-            CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_COLOUMN);
-        Matcher textureMatcher = 
-            CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.SET_TEXTURE_TYPE);
-        String checkFormat = checkSetPixelTextureFormat(rowMatcher, columnMatcher, textureMatcher);
-        if(checkFormat!=null) return checkFormat;
+
+    private String setPixelTexture(String input) {
+        Matcher rowMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_ROW);
+        Matcher columnMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_COLUMN);
+        Matcher textureMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_TEXTURE_TYPE);
+        String checkCordinates = checkCordinatesFormat(rowMatcher, columnMatcher);
+        String checkTexture = checkTypeFormat(textureMatcher);
+        if (checkCordinates != null)
+            return checkCordinates;
+        if (checkTexture != null)
+            return checkTexture;
         int row = Integer.parseInt(rowMatcher.group("row"));
         int column = Integer.parseInt(columnMatcher.group("column"));
         String textureName = textureMatcher.group("type");
-        switch(controller.setPixelTexture(row - 1 , column - 1 , textureName)){
+        switch (controller.setPixelTexture(row - 1, column - 1, textureName)) {
             case INVALID_CORDINATES:
                 return "Invalid cordinates!";
             case INVALID_TEXTURE:
                 return "Invalid type/texture!";
+            case BUILDING_EXIST:
+                return "There are some buildings in this pixel!";
             case SET_TEXTURE_SUCCESSFUL:
                 return "Set type/texture successfull!";
             default:
@@ -141,42 +220,33 @@ public class CreateMapMenu extends MapMenu{
         }
         return null;
     }
-    private String checkSetPixelTextureFormat(Matcher rowMatcher , Matcher columnMatcher , Matcher textureMatcher){
-        if(rowMatcher == null || rowMatcher.group("row") == null)
-            return "Enter the row number!";
-        if(columnMatcher == null || columnMatcher.group("column") == null)
-            return "Enter the column number!";
-        if(!rowMatcher.group("row").matches("\\-?\\d+") 
-            || !columnMatcher.group("column").matches("\\-?\\d+"))
-            return "Enter whole number for cordinates!";
-        if(textureMatcher == null || textureMatcher.group("type") == null)
-            return "Enter the type/texture you want to set!";
-        return null;
-    }
 
-    private String setRegionTexture(String input){
-        Matcher x1Matcher = 
-            CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_FIRST_ROW);
-        Matcher y1Matcher = 
-            CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_FIRST_COLUMN);
-        Matcher x2Matcher = 
-            CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_SECOND_ROW);
-        Matcher y2Matcher =
-            CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_SECOND_COLUMN);
-        Matcher textureMatcher =
-            CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.SET_TEXTURE_TYPE);
-        String checkFormat = checkSetRegionTextureFormat(x1Matcher, y1Matcher, x2Matcher, y2Matcher, textureMatcher);
-        if(checkFormat != null) return checkFormat;
+    private String setRegionTexture(String input) {
+        Matcher x1Matcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_FIRST_ROW);
+        Matcher y1Matcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_FIRST_COLUMN);
+        Matcher x2Matcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_SECOND_ROW);
+        Matcher y2Matcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_SECOND_COLUMN);
+        Matcher textureMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_TEXTURE_TYPE);
+        String checkRegionCordinates = checkRegionCordinatesFormat(x1Matcher, y1Matcher, x2Matcher, y2Matcher);
+        String checkTexture = checkTypeFormat(textureMatcher);
+        if (checkRegionCordinates != null)
+            return checkRegionCordinates;
+        if (checkTexture != null)
+            return checkTexture;
         int x1 = Integer.parseInt(x1Matcher.group("frow"));
         int y1 = Integer.parseInt(y1Matcher.group("fcolumn"));
         int x2 = Integer.parseInt(x2Matcher.group("srow"));
         int y2 = Integer.parseInt(y2Matcher.group("scolumn"));
         String textureName = textureMatcher.group("type");
-        switch(controller.setRegionTexture(x1 - 1, y1 - 1, x2 - 1, y2 - 1, textureName)){
+        switch (controller.setRegionTexture(x1 - 1, y1 - 1, x2 - 1, y2 - 1, textureName)) {
             case INVALID_CORDINATES:
                 return "Invalid cordinates!";
             case INVALID_TEXTURE:
                 return "Invalid type/texture!";
+            case INVALID_SET_POND:
+                return "Invalid command for this type/texture!";
+            case BUILDING_EXIST:
+                return "There are some buildings in this area!";
             case SET_TEXTURE_SUCCESSFUL:
                 return "Set type/texture successfull!";
             default:
@@ -184,24 +254,115 @@ public class CreateMapMenu extends MapMenu{
         }
         return null;
     }
-    private String checkSetRegionTextureFormat(Matcher x1Matcher , Matcher y1Matcher , Matcher x2Matcher , Matcher y2Matcher , Matcher textureMatcher){
-        if(x1Matcher == null || x1Matcher.group("frow") == null)
+
+    private String checkRegionCordinatesFormat(Matcher x1Matcher, Matcher y1Matcher, Matcher x2Matcher,
+            Matcher y2Matcher) {
+        if (x1Matcher == null || x1Matcher.group("frow") == null)
             return "Enter first row number!";
-        if(y1Matcher == null || y1Matcher.group("fcolumn") == null)
+        if (y1Matcher == null || y1Matcher.group("fcolumn") == null)
             return "Enter first column number!";
-        if(x2Matcher == null || x2Matcher.group("srow") == null)
+        if (x2Matcher == null || x2Matcher.group("srow") == null)
             return "Enter second row number!";
-        if(y2Matcher == null || y2Matcher.group("scolumn") == null)
+        if (y2Matcher == null || y2Matcher.group("scolumn") == null)
             return "Enter second column number!";
-        if(!x1Matcher.group("frow").matches("\\-?\\d+") 
-            || !y1Matcher.group("fcolumn").matches("\\-?\\d+")
-            || !x2Matcher.group("srow").matches("\\-?\\d+")
-            || !y2Matcher.group("scolumn").matches("\\-?\\d+"))
+        if (!x1Matcher.group("frow").matches("\\-?\\d+")
+                || !y1Matcher.group("fcolumn").matches("\\-?\\d+")
+                || !x2Matcher.group("srow").matches("\\-?\\d+")
+                || !y2Matcher.group("scolumn").matches("\\-?\\d+"))
             return "Enter whole number for cordinates!";
-        if(textureMatcher == null || textureMatcher.group("type") == null)
+        return null;
+    }
+
+    private String checkTypeFormat(Matcher typeMatcher) {
+        if (typeMatcher == null || typeMatcher.group("type") == null)
             return "Enter the type/texture you want to set!";
         return null;
     }
-    
-    
+
+    private String clearPixel(String input) {
+        Matcher rowMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_ROW);
+        Matcher columnMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_COLUMN);
+        String checkCordinatesFormat = checkCordinatesFormat(rowMatcher, columnMatcher);
+        if (checkCordinatesFormat != null)
+            return checkCordinatesFormat;
+        int row = Integer.parseInt(rowMatcher.group("row"));
+        int column = Integer.parseInt(columnMatcher.group("column"));
+        switch (controller.clearPixel(row - 1, column - 1)) {
+            case INVALID_CORDINATES:
+                return "Invalid cordinates!";
+            case CLEAR_PIXEL_SUCCESSFUL:
+                return "Clear pixel successfull!";
+            default:
+                break;
+        }
+        return null;
+    }
+
+    private String dropTree(String input) {
+        Matcher rowMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_ROW);
+        Matcher columnMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_COLUMN);
+        Matcher typeMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_TEXTURE_TYPE);
+        String checkCordinates = checkCordinatesFormat(rowMatcher, columnMatcher);
+        String checkType = checkTypeFormat(typeMatcher);
+        if (checkCordinates != null)
+            return checkCordinates;
+        if (checkType != null)
+            return checkType;
+        int row = Integer.parseInt(rowMatcher.group("row"));
+        int column = Integer.parseInt(columnMatcher.group("column"));
+        String type = typeMatcher.group("type").trim();
+        switch (controller.dropTree(row - 1, column - 1, type)) {
+            case INVALID_CORDINATES:
+                return "Invalid cordinates!";
+            case INVALID_TEXTURE:
+                return "Invalid tree type!";
+            case CANT_PLACE_THIS:
+                return "Can't drop a tree in this pixel!";
+            case DROP_TREE_SUCCESSFUL:
+                return "Drop tree successful!";
+            default:
+                break;
+        }
+
+        return null;
+    }
+
+    private String dropRock(String input) {
+        Matcher rowMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_ROW);
+        Matcher columnMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_COLUMN);
+        Matcher directionMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_DIRECTION);
+        String checkCordinates = checkCordinatesFormat(rowMatcher, columnMatcher);
+        if (checkCordinates != null)
+            return checkCordinates;
+        if (directionMatcher == null || directionMatcher.group("direction") == null)
+            return "Enter the direction!";
+        int row = Integer.parseInt(rowMatcher.group("row"));
+        int column = Integer.parseInt(columnMatcher.group("column"));
+        String direction = directionMatcher.group("direction").trim();
+        switch (controller.dropRock(row - 1, column - 1, direction)) {
+            case INVALID_CORDINATES:
+                return "Invalid cordinates!";
+            case INVALID_DIRECTION:
+                return "Invalid direction!";
+            case CANT_PLACE_THIS:
+                return "Can't drop a rock in this pixel!";
+            case DROP_ROCK_SUCCESSFUL:
+                return "Drop rock successful!";
+            default:
+                break;
+        }
+        return null;
+    }
+
+    private String checkCordinatesFormat(Matcher rowMatcher, Matcher columnMatcher) {
+        if (rowMatcher == null || rowMatcher.group("row") == null)
+            return "Enter the row number!";
+        if (columnMatcher == null || columnMatcher.group("column") == null)
+            return "Enter the column number!";
+        if (!rowMatcher.group("row").matches("\\-?\\d+")
+                || !columnMatcher.group("column").matches("\\-?\\d+"))
+            return "Enter whole number for cordinates!";
+        return null;
+    }
+
 }

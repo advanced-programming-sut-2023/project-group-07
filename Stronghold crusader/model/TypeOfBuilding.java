@@ -97,5 +97,7 @@ public enum TypeOfBuilding {
     public Resources getResourceNeeded() {
         return resourceNeeded;
     }
-
+    public int getWorkerInUse() {
+        return workerInUse;
+    }
 }

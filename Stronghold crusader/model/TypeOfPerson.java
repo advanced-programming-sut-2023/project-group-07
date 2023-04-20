@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 public enum TypeOfPerson {
     ARCHER("archer",MilitaryCampType.BARRACKS,12,new ArrayList<>(Arrays.asList(Resources.BOW))),
-    CROSSBOWMAN("crossbowman",MilitaryCampType.BARRACKS,20,new ArrayList<>(Arrays.asList(Resources.CROSS_BOW,Resources.LEATHER_ARMOR))),
+    CROSSBOWMAN("crossbowman",MilitaryCampType.BARRACKS,20,new ArrayList<>(Arrays.asList(Resources.CROSSBOW,Resources.LEATHER_ARMOR))),
     SPEARMAN("spearman",MilitaryCampType.BARRACKS,8,new ArrayList<>(Arrays.asList(Resources.SPEAR))),
     PIKEMAN("pikeman",MilitaryCampType.BARRACKS,20,new ArrayList<>(Arrays.asList(Resources.PIKE,Resources.METAL_ARMOR))),
     MACEMAN("maceman",MilitaryCampType.BARRACKS,20,new ArrayList<>(Arrays.asList(Resources.MACE,Resources.LEATHER_ARMOR))),
@@ -14,7 +14,7 @@ public enum TypeOfPerson {
     TUNNELER("tunneler",MilitaryCampType.ENGINEER_GUILD,30,new ArrayList<>(Arrays.asList())),
     LADDERMAN("ladderman",MilitaryCampType.ENGINEER_GUILD,4,new ArrayList<>(Arrays.asList())),
     ENGINEER("engineer",MilitaryCampType.ENGINEER_GUILD,30,new ArrayList<>(Arrays.asList())),
-    //BLACK_MONK("black_monk",MilitaryCampType.MERCENARY_POST,10), //cathedral :????????
+    BLACK_MONK("black_monk",MilitaryCampType.CATHEDRAL,10,new ArrayList<>(Arrays.asList())),
     ARABIAN_BOW("arabian bow",MilitaryCampType.MERCENARY_POST,75,new ArrayList<>(Arrays.asList())),
     SLAVE("slave",MilitaryCampType.MERCENARY_POST,5,new ArrayList<>(Arrays.asList())),
     SLINGER("slinger",MilitaryCampType.MERCENARY_POST,12,new ArrayList<>(Arrays.asList())),

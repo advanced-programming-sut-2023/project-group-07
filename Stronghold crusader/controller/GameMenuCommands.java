@@ -17,7 +17,11 @@ public enum GameMenuCommands {
     CREATE_UNIT("\\s*createunit\\s+((-t\\s+(?<type1>\\w+)\\s+-c\\s+(?<count1>\\w+)\\s*)|(-c\\s+(?<count2>\\w+)-t\\s+(?<type2>\\w+)\\s*))"),
     EXIT("\\s*exit\\s*"),
     SHOW_UNITS("\\s*show\\s+units\\s*"),
-    REPAIR("\\s*repair\\s*");
+    REPAIR("\\s*repair\\s*"),
+    CLOSE_GATE("\\s*close\\s+gate\\s*"),
+    OPEN_GATE("\\s*open\\s+gate\\s*"),
+    CHANGE_ARMS("\\s*change\\s+arms\\s*"),
+    CHANGE_WORKING_STATE("\\s*change\\s+working\\s+state\\s*");
 
     private String regex;
     private GameMenuCommands(String regex) {

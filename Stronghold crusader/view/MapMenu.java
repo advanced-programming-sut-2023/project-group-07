@@ -120,25 +120,11 @@ public class MapMenu {
         return controller.getDetails(row, column);
     }
     protected void mapGuide() {
-        printGuide(Texture.LAND);
-        printGuide(Texture.PEBBLE);
-        printGuide(Texture.ROCK);
-        printGuide(Texture.STONE);
-        printGuide(Texture.IRON);
-        printGuide(Texture.GRASS);
-        printGuide(Texture.FIELD);
-        printGuide(Texture.MEADOW);
-        printGuide(Texture.OIL);
-        printGuide(Texture.BEACH);
-        printGuide(Texture.MARSH);
-        printGuide(Texture.FORD);
-        printGuide(Texture.RIVER);
-        printGuide(Texture.LARGE_POND);
-        printGuide(Texture.SMALL_POND);
-        printGuide(Texture.SEA);
+        for(Texture texture : Texture.values())
+            printGuide(texture);
     }
     private void printGuide(Texture texture) {
-        System.out.print(Texture.getColor(texture));
+        System.out.print(texture.getColor());
         System.out.print(" ");
         System.out.print(Colors.RESET);
         System.out.println(" : " + texture);
