@@ -65,24 +65,38 @@ public class MapPixel {
     }
 
     public boolean canDropObject() {
-        return (buildings.size() == 0 && rock == null && tree == null && people.size() == 0);
+        return (buildings.size() == 0 && rock == null && tree == null);
     }
 
-    private boolean doesHaveSoldier(){
+    private boolean doesHaveSoldier() {
         for (Person person : people)
-            if(person instanceof Unit)
+            if (person instanceof Unit)
                 return true;
         return false;
     }
 
-    public String objectToShow(){
-        if(doesHaveSoldier())
+    private boolean doesHaveWall() {
+        for (Building building : buildings) {
+            if (building instanceof Tower || building instanceof GateHouse)
+                return true;
+            if (building.getTypeOfBuilding().equals(TypeOfBuilding.LOW_WALL))
+                return true;
+            if (building.getTypeOfBuilding().equals(TypeOfBuilding.STONE_WALL))
+                return true;
+            if (building.getTypeOfBuilding().equals(TypeOfBuilding.CRENELATED_WALL))
+                return true;
+        }
+        return false;
+    }
+
+    public String objectToShow() {
+        if (doesHaveSoldier())
             return "S";
-        if(this.buildings.size() != 0)
-            return "B";
-        if(this.tree != null)
+        if (this.buildings.size() != 0)
+            return doesHaveWall() ? "W" : "B";
+        if (this.tree != null)
             return "T";
-        if(this.rock != null)
+        if (this.rock != null)
             return "R";
         return "";
     }

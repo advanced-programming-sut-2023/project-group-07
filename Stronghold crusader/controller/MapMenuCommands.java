@@ -12,8 +12,7 @@ public enum MapMenuCommands {
     GET_ROW("\\-x\\s+(?<row>\\-?\\d+)"),
     GET_COLUMN("\\-y\\s+(?<column>\\-?\\d+)"),
     MAP_GUIDE("^\\s*map\\s+guide\\s*$"),
-    SHOW_MAP("^\\s*show\\s+map\\s+(\\-x|\\-y|\\-?\\d+|\\s)+$"),
-    EXIT("^\\s*exit\\s*$");
+    SHOW_MAP("^\\s*show\\s+map\\s+(\\-x|\\-y|\\-?\\d+|\\s)+$");
     private String regex;
     private MapMenuCommands(String regex){
         this.regex = regex;

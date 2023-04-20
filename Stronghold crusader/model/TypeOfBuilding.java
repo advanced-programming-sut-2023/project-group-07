@@ -2,6 +2,10 @@
 package model;
 
 public enum TypeOfBuilding {
+    WALL_STAIRS(250,1,1,0,"wall stairs",null,0,Resources.STONE,1),
+    LOW_WALL(250,1,1,0,"low wall",null,0,Resources.STONE,1),
+    STONE_WALL(800,1,1,0,"stone wall",null,0,Resources.STONE,2),
+    CRENELATED_WALL(1000,1,1,0,"wall stairs",null,0,Resources.STONE,2),
     LITTLE_STONE_GATE(1000,5,5,0,"little stone gate",null,0,Resources.STONE,20),
     LARGE_STONE_GATE(2000,7,7,0,"large stone gate",null,0,Resources.STONE,10),
     DRAW_BRIDGE(-1,5,5,0,"draw bridge",null,0,Resources.WOOD,10),
@@ -22,7 +26,7 @@ public enum TypeOfBuilding {
     QUARRY(350,6,6,3,"quarry",Texture.STONE,0,Resources.WOOD,20),
     MARKET(200,5,5,0,"market",null,0,Resources.WOOD,5),
     PITCH_RIG(200,4,4,2,"pitch rig",Texture.OIL,0,Resources.WOOD,20),
-    STOCK(-1,5,5,0,"stock",null,0,Resources.WOOD,0),
+    STOCK_PILE(-1,5,5,0,"stock pile",null,0,Resources.WOOD,0),
     WOODCUTTER(150,3,3,1,"woodcutter",null,0,Resources.WOOD,3),
     HOVEL(200,4,4,0,"hovel",null,0,Resources.WOOD,6),
     CHURCH(600,9,9,1,"church",null,500,Resources.WOOD,0),

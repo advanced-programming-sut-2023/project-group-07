@@ -1,5 +1,8 @@
 package model;
 
 public enum TypeOfResource {
-    FOOD;
+    FOOD,
+    WEAPON,
+    RAW_MATERIAL;
+    
 }

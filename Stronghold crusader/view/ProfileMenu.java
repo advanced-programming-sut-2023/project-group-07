@@ -14,7 +14,7 @@ public class ProfileMenu {
     public void run(Scanner scanner) throws IOException, NoSuchAlgorithmException {
         while (true) {
             String input = scanner.nextLine();
-            if(input.matches("exit")){
+            if(input.matches("\\s*exit\\s*")){
                 System.out.println("Back to main menu!");
                 return;
             }
@@ -52,7 +52,7 @@ public class ProfileMenu {
             case USERNAME_EXISTS:
                 return "This username already exists!";
             case CHANGE_USERNAME_SUCCESSFUL:
-                return "Your username changed successfully!";
+                return "Username changed successfully!";
             default:
                 break;
         }
@@ -89,14 +89,14 @@ public class ProfileMenu {
             default:
                 break;
         }
-        return "password changed successfully!";
+        return "Password changed successfully!";
     }
 
     private String changeSlogan(String input) throws IOException, NoSuchAlgorithmException {
         String slogan =
                 ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_SLOGAN).group("slogan");
         controller.changeSlogan(slogan);
-        return "Your slogan changed successfully!";
+        return "Slogan changed successfully!";
     }
 
     private String changeEmail(String input) throws IOException, NoSuchAlgorithmException {
@@ -108,7 +108,7 @@ public class ProfileMenu {
             case INVALID_EMAIL_FORMAT:
                 return "Invalid email format!";
             case CHANGE_EMAIL_SUCCESSFUL:
-                return "Your email changed successfully!";
+                return "Email changed successfully!";
             default:
                 break;
         }

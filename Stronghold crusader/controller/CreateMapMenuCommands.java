@@ -10,7 +10,7 @@ public enum CreateMapMenuCommands {
     GET_FIRST_COLUMN("\\-y1\\s+(?<fcolumn>\\-?\\d+)"),
     GET_SECOND_ROW("\\-x2\\s+(?<srow>\\-?\\d+)"),
     GET_SECOND_COLUMN("\\-y2\\s+(?<scolumn>\\-?\\d+)"),
-    GET_TEXTURE_TYPE("\\-t\\s+(?<type>[a-zA-Z\\s]+)"),
+    GET_TEXTURE_TYPE("\\-t\\s+(?<type>[a-z\\s]+)"),
     CLEAR_PIXEL("^\\s*clear\\s+(\\-x\\D|\\-y\\D|\\-?\\d+|\\s)+$"),
     CLEAR_REGION("^\\s*clear\\s+(\\-x1|\\-y1|\\-x2|\\-y2|\\-?\\d+|\\s)+$"),
     DROP_TREE("^\\s*droptree\\s+(\\-x|\\-y|\\-t|[^\\-][a-z]|\\-?\\d+|\\s)+$"),

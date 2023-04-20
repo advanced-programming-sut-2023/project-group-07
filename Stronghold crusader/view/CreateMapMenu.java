@@ -141,15 +141,12 @@ public class CreateMapMenu extends MapMenu {
             String input = scanner.nextLine();
             Matcher rowMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_ROW);
             Matcher columnMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_COLUMN);
-            if (input.toLowerCase().matches("\\s*exit\\s*"))
+            if (input.matches("\\s*exit\\s*"))
                 return null;
-            if (rowMatcher == null || rowMatcher.group("row") == null)
+            if (rowMatcher == null)
                 System.out.println("Enter the row number!");
-            else if (columnMatcher == null || columnMatcher.group("column") == null)
+            else if (columnMatcher == null)
                 System.out.println("Enter the column number!");
-            else if (!rowMatcher.group("row").matches("\\-?\\d+")
-                    || !columnMatcher.group("column").matches("\\-?\\d+"))
-                System.out.println("Enter whole number for cordinates!");
             else {
                 int row = Integer.parseInt(rowMatcher.group("row")) - 1;
                 int column = Integer.parseInt(columnMatcher.group("column")) - 1;
@@ -259,24 +256,19 @@ public class CreateMapMenu extends MapMenu {
 
     private String checkRegionCordinatesFormat(Matcher x1Matcher, Matcher y1Matcher, Matcher x2Matcher,
             Matcher y2Matcher) {
-        if (x1Matcher == null || x1Matcher.group("frow") == null)
+        if (x1Matcher == null)
             return "Enter first row number!";
-        if (y1Matcher == null || y1Matcher.group("fcolumn") == null)
+        if (y1Matcher == null)
             return "Enter first column number!";
-        if (x2Matcher == null || x2Matcher.group("srow") == null)
+        if (x2Matcher == null)
             return "Enter second row number!";
-        if (y2Matcher == null || y2Matcher.group("scolumn") == null)
+        if (y2Matcher == null)
             return "Enter second column number!";
-        if (!x1Matcher.group("frow").matches("\\-?\\d+")
-                || !y1Matcher.group("fcolumn").matches("\\-?\\d+")
-                || !x2Matcher.group("srow").matches("\\-?\\d+")
-                || !y2Matcher.group("scolumn").matches("\\-?\\d+"))
-            return "Enter whole number for cordinates!";
         return null;
     }
 
     private String checkTypeFormat(Matcher typeMatcher) {
-        if (typeMatcher == null || typeMatcher.group("type") == null)
+        if (typeMatcher == null)
             return "Enter the type/texture you want to set!";
         return null;
     }
@@ -359,7 +351,7 @@ public class CreateMapMenu extends MapMenu {
         String checkCordinates = checkCordinatesFormat(rowMatcher, columnMatcher);
         if (checkCordinates != null)
             return checkCordinates;
-        if (directionMatcher == null || directionMatcher.group("direction") == null)
+        if (directionMatcher == null)
             return "Enter the direction!";
         int row = Integer.parseInt(rowMatcher.group("row"));
         int column = Integer.parseInt(columnMatcher.group("column"));
@@ -380,13 +372,10 @@ public class CreateMapMenu extends MapMenu {
     }
 
     private String checkCordinatesFormat(Matcher rowMatcher, Matcher columnMatcher) {
-        if (rowMatcher == null || rowMatcher.group("row") == null)
+        if (rowMatcher == null)
             return "Enter the row number!";
-        if (columnMatcher == null || columnMatcher.group("column") == null)
+        if (columnMatcher == null)
             return "Enter the column number!";
-        if (!rowMatcher.group("row").matches("\\-?\\d+")
-                || !columnMatcher.group("column").matches("\\-?\\d+"))
-            return "Enter whole number for cordinates!";
         return null;
     }
 

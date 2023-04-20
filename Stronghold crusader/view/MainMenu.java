@@ -22,8 +22,10 @@ public class MainMenu {
                 System.out.println("Entered create map menu!");
                 createMapMenu.run(scanner);
             }
-            else if (input.toLowerCase().matches("\\s*start\\s+game\\s*"))
+            else if (input.toLowerCase().matches("\\s*start\\s+game\\s*")){
+                System.out.println("Entered start game menu!");
                 preGameMenu.run(scanner);
+            }
             else
                 System.out.println("Invalid command!");
         }

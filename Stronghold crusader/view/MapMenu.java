@@ -22,7 +22,7 @@ public class MapMenu {
         printMap(this.x, this.y);
         while (true) {
             String input = scanner.nextLine();
-            if (MapMenuCommands.getMatcher(input, MapMenuCommands.EXIT) != null)
+            if (input.matches("\\s*exit\\s*"))
                 return;
             else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_MAP) != null) {
                 String showMapStr = showMap(input);
@@ -113,13 +113,10 @@ public class MapMenu {
     protected String showDetails(String input) {
         Matcher rowMatcher = MapMenuCommands.getMatcher(input, MapMenuCommands.GET_ROW);
         Matcher columnMatcher = MapMenuCommands.getMatcher(input, MapMenuCommands.GET_COLUMN);
-        if (rowMatcher == null || rowMatcher.group("row") == null)
+        if (rowMatcher == null)
             return "Enter the row number!";
-        if (columnMatcher == null || columnMatcher.group("column") == null)
+        if (columnMatcher == null)
             return "Enter the column number!";
-        if (!rowMatcher.group("row").matches("\\-?\\d+")
-                || !columnMatcher.group("column").matches("\\-?\\d+"))
-            return "Enter whole number for cordinates!";
         int row = Integer.parseInt(rowMatcher.group("row"));
         int column = Integer.parseInt(columnMatcher.group("column"));
         if (!controller.checkCordinates(row, column))
@@ -146,9 +143,6 @@ public class MapMenu {
             return "Enter the row number!";
         if (columnMatcher == null || columnMatcher.group("column") == null)
             return "Enter the column number!";
-        if (!rowMatcher.group("row").matches("\\-?\\d+")
-                || !columnMatcher.group("column").matches("\\-?\\d+"))
-            return "Enter whole number for cordinates!";
         int row = Integer.parseInt(rowMatcher.group("row"));
         int column = Integer.parseInt(columnMatcher.group("column"));
         if (!controller.checkCordinates(row, column))

@@ -6,7 +6,6 @@ public class Map {
     private static ArrayList<Map> maps = new ArrayList<Map>();
     private static int maxPlayerOfMaps = 2;
 
-
     private int size;
     private ArrayList<ArrayList<MapPixel>> field = new ArrayList<ArrayList<MapPixel>>();
     private String name;
@@ -23,7 +22,8 @@ public class Map {
 
     public static Map getMapByName(String mapName) {
         for (Map map : maps) {
-            if (map.name.equals(mapName)) return map;
+            if (map.name.equals(mapName))
+                return map;
         }
         return null;
     }
@@ -40,7 +40,6 @@ public class Map {
         return maxPlayerOfMaps;
     }
 
-
     private void buildMap() {
         for (int i = 0; i < size; i++) {
             field.add(new ArrayList<MapPixel>());
@@ -53,7 +52,8 @@ public class Map {
         ArrayList<ArrayList<MapPixel>> output = new ArrayList<ArrayList<MapPixel>>();
         for (int i = x1; i <= x2; i++) {
             output.add(new ArrayList<MapPixel>());
-            for (int j = y1; j <= y2; j++) output.get(i - x1).add(this.field.get(i).get(j));
+            for (int j = y1; j <= y2; j++)
+                output.get(i - x1).add(this.field.get(i).get(j));
         }
         return output;
     }
@@ -66,7 +66,6 @@ public class Map {
         return numberOfPlayers;
     }
 
-
     public MapPixel getMapPixel(int row, int column) {
         return field.get(row).get(column);
     }
@@ -75,9 +74,9 @@ public class Map {
         return this.name;
     }
 
-    public void clearRegion(int x1 , int y1 , int x2 , int y2){
-        for(int i = x1 ; i<= x2 ; i++)
-            for(int j = y1 ; j<= y2 ; j++)
+    public void clearRegion(int x1, int y1, int x2, int y2) {
+        for (int i = x1; i <= x2; i++)
+            for (int j = y1; j <= y2; j++)
                 field.get(i).get(j).backToDefault();
     }
 
@@ -87,14 +86,26 @@ public class Map {
                 this.field.get(i).get(j).setTexture(texture);
     }
 
-    public static void changeMaps(Map map , int index){
-        if(index >= maps.size()) maps.add(map);
-        else maps.set(index, map);
+    public void clearPixel(int row, int column) {
+        field.get(row).get(column).backToDefault();
     }
+
+    public void setPixelTexture(int row, int column, Texture texture) {
+        field.get(row).get(column).setTexture(texture);;
+    }
+
+    public static void changeMaps(Map map, int index) {
+        if (index >= maps.size())
+            maps.add(map);
+        else
+            maps.set(index, map);
+    }
+
     public static int getMaxPlayerOfMaps() {
         return maxPlayerOfMaps;
     }
+
     public ArrayList<int[]> getLordsPositions() {
-        return (ArrayList<int[]>)lordsPositions.clone();
+        return (ArrayList<int[]>) lordsPositions.clone();
     }
 }

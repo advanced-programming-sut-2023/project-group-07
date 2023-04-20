@@ -48,9 +48,9 @@ public class CreateMapMenuController {
             return Messages.INVALID_TEXTURE;
         if (map.getMapPixel(row, column).getBuildings().size() > 0)
             return Messages.BUILDING_EXIST;
-        map.getMapPixel(row, column).setTexture(texture);
+        map.setPixelTexture(row, column, texture);
         if (texture.equals(Texture.LARGE_POND))
-            map.getMapPixel(row, (column > 0) ? column - 1 : column + 1).setTexture(texture);
+            map.setPixelTexture(row, (column > 0) ? column - 1 : column + 1, texture);
         return Messages.SET_TEXTURE_SUCCESSFUL;
     }
 
@@ -92,7 +92,7 @@ public class CreateMapMenuController {
         int size = map.getSize();
         if (row < 0 || row >= size || column < 0 || column >= size)
             return Messages.INVALID_CORDINATES;
-        map.getMapPixel(row, column).backToDefault();
+        map.clearPixel(row, column);;
         return Messages.CLEAR_SUCCESSFUL;
     }
 

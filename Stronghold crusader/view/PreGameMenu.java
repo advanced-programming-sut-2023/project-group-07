@@ -40,9 +40,9 @@ public class PreGameMenu { // todo: this class haven't been tested
     }
 
     private Integer getGold() {
-        System.out.print("How many gold do you want to begin with? ");
+        System.out.print("How many gold do you want to begin with?");
         while (true) {
-            System.out.println("Enter a positive number: ");
+            System.out.println("Enter a positive whole number:");
             String input = scanner.nextLine();
             if (input.matches("\\s*[eE]xit\\s*")) return null;
 
@@ -52,7 +52,7 @@ public class PreGameMenu { // todo: this class haven't been tested
 
     private Map getChosenMap(int numberOfPlayers) {
         ArrayList<Map> maps = Map.getMaps();
-        System.out.println("Choose a map number");
+        System.out.println("Choose a map number:");
         int number = 1;
         for (Map map : maps) {
             System.out.println(number + ". " + map.getName() +
@@ -62,19 +62,19 @@ public class PreGameMenu { // todo: this class haven't been tested
         int mapIndex;
         while (true) {
             String input = scanner.nextLine();
-            if (input.matches("\\s*[eE]xit\\s*")) return null;
+            if (input.toLowerCase().matches("\\s*exit\\s*")) return null;
 
             if (input.matches("\\d+")) {
                 mapIndex = Integer.parseInt(input);
                 if (mapIndex > 0 && mapIndex <= maps.size()) {
                     mapIndex--;
                     if (maps.get(mapIndex).getNumberOfPlayers() < numberOfPlayers) {
-                        System.out.println("You can't choose this map because its number of players is too few");
+                        System.out.println("Too few number of players!");
                         continue;
                     } else return maps.get(mapIndex);
                 }
             }
-            System.out.println("Enter a number between 1 and " + maps.size());
+            System.out.println("Enter a number between 1 and " + maps.size() + "!");
         }
     }
 
@@ -85,7 +85,7 @@ public class PreGameMenu { // todo: this class haven't been tested
         int maxPlayers = min(Controller.maxPlayers(),Map.maxPlayerOfMaps());
         while (true) {
             String input = scanner.nextLine();
-            if (input.matches("\\s*[eE]xit\\s*")) return null;
+            if (input.toLowerCase().matches("\\s*exit\\s*")) return null;
             if (input.matches("\\d+")) {
                 int inputNumber = Integer.parseInt(input);
                 if (inputNumber >= 2 && inputNumber <= maxPlayers) {
@@ -93,7 +93,7 @@ public class PreGameMenu { // todo: this class haven't been tested
                     return numberOfPlayers;
                 }
             }
-            System.out.println("Enter a number between 2 and " + maxPlayers);
+            System.out.println("Enter a number between 2 and " + maxPlayers + "!");
         }
     }
 
@@ -101,16 +101,16 @@ public class PreGameMenu { // todo: this class haven't been tested
         ArrayList<User> players = new ArrayList<>();
         players.add(Controller.currentUser);
         for (int i = 0; i < numberOfPlayers - 1; i++) {
-            if (i==0) System.out.println("Enter username of a player");
-            else System.out.println("Enter username of next player");
+            if (i==0) System.out.println("Enter username of first player:");
+            else System.out.println("Enter username of next player:");
 
             String input = scanner.nextLine();
-            if (input.matches("\\s*[eE]xit\\s*")) return null;
+            if (input.toLowerCase().matches("\\s*exit\\s*")) return null;
             User user = Controller.getUserByUsername(input);
             while (user == null) {
-                System.out.println("There is no user with this username. Enter another one");
+                System.out.println("There is no user with this username! Enter another one:");
                 input = scanner.nextLine();
-                if (input.matches("\\s*[eE]xit\\s*")) return null;
+                if (input.toLowerCase().matches("\\s*exit\\s*")) return null;
                 user = Controller.getUserByUsername(input);
             }
             players.add(user);

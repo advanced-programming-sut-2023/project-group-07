@@ -101,7 +101,7 @@ public class Game {
     }
 
     public Messages dropBuilding(int row, int column, TypeOfBuilding typeOfBuilding) {
-        if (row < 0 || row > map.getSize() || column < 0 || column > map.getSize()) {
+        if (row < 0 || row > map.getSize()-typeOfBuilding.getWidth()+1 || column < 0 || column > map.getSize()-typeOfBuilding.getLength()+1) {
             return Messages.INVALID_ROW_OR_COLUMN;
         }
         for (int i = 0; i < typeOfBuilding.getLength(); i++)
@@ -151,6 +151,10 @@ public class Game {
                 if(isAnEnemyCloseBy(row+j, column+i)) 
                     return Messages.THERES_AN_ENEMY_CLOSE_BY;
         
+        if(typeOfBuilding.equals(TypeOfBuilding.GRANARY) || typeOfBuilding.equals(TypeOfBuilding.STOCK_PILE))
+            if(!isAdjacentToSameType(row, column, typeOfBuilding.getLength(), typeOfBuilding))
+                return Messages.MUST_BE_ADJACENT_TO_BUILDINGS_OF_THE_SAME_TYPE;
+
         boolean isWorking = true;
         Building building = new Building(getCurrentGovernment(), typeOfBuilding, row, column);
         if(!getCurrentGovernment().getNoLaborBuildings().contains(typeOfBuilding)){
@@ -171,6 +175,26 @@ public class Game {
             for (int j = 0; j < typeOfBuilding.getWidth(); j++)
                 map.getMapPixel(row + j, column + i).addBuilding(building);
         return Messages.DEPLOYMENT_SUCCESSFUL;
+    }
+
+    public boolean isAdjacentToSameType(int row, int column,int size,TypeOfBuilding typeOfBuilding) {
+        if(row>0)
+            for(int i = 0; i < typeOfBuilding.getLength(); i++)
+                if(map.getMapPixel(row-1, column+i).getBuildings().get(0).getTypeOfBuilding().equals(typeOfBuilding)) return true;
+        
+        if(row<map.getSize()-typeOfBuilding.getWidth()+1)
+            for(int i = 0; i < typeOfBuilding.getLength(); i++)
+                if(map.getMapPixel(row+typeOfBuilding.getWidth(), column+i).getBuildings().get(0).getTypeOfBuilding().equals(typeOfBuilding)) return true;
+        
+        if(column>0)
+            for(int i = 0; i < typeOfBuilding.getWidth(); i++)
+                if(map.getMapPixel(row+i, column-1).getBuildings().get(0).getTypeOfBuilding().equals(typeOfBuilding)) return true;
+
+        if(column<map.getSize()-typeOfBuilding.getLength()+1)
+            for(int i = 0; i < typeOfBuilding.getWidth(); i++)
+                if(map.getMapPixel(row+i, column+typeOfBuilding.getLength()).getBuildings().get(0).getTypeOfBuilding().equals(typeOfBuilding)) return true;
+        
+        return false;
     }
 
     public Messages selectBuilding(int row, int column) {

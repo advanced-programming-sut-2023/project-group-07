@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import model.*;
 
 public class GameMenuController {
-    Game game = Controller.currentGame;
+    private Game game = Controller.currentGame;
     private User currentUser;
     private ArrayList<Government> governments = new ArrayList<>();
     private Map map;
@@ -46,8 +46,12 @@ public class GameMenuController {
         }
     }
 
-    public Messages dropBuilding(int row, int column, String name) {
-        return game.dropBuilding(row, column, TypeOfBuilding.getBuilding(name));
+    public Messages dropBuilding(String row, String column, String name) {
+        if (row == null || column == null || name == null)
+            return Messages.INVALID_COMMAND;
+        int rowNum = Integer.parseInt(row);
+        int columnNum = Integer.parseInt(column);
+        return game.dropBuilding(rowNum, columnNum, TypeOfBuilding.getBuilding(name));
     }
 
     public Messages selectBuilding(int row, int column) {
@@ -116,7 +120,7 @@ public class GameMenuController {
 
     public String getResources() {
         ConvertingResources convertingResources = (ConvertingResources) game.getSelectedBuilding();
-        return convertingResources.getResource().getPrintingName();
+        return convertingResources.getResource().getName();
     }
 
     public Messages changeWorkingState() {
@@ -149,6 +153,38 @@ public class GameMenuController {
         Government government = game.getCurrentGovernment();
         User currentUser = game.getCurrentUser();
         game.endOfTurn();
+    }
+
+    public int getResourceAmount(Resources resource) {
+        return game.getCurrentGovernment().getResourceAmount(resource);
+    }
+
+    public Messages buyCommodity(String item, int amount) {
+        Resources resource = Resources.getResource(item);
+        if (item == null)
+            return Messages.INVALID_ITEM;
+        int price = amount * resource.getBuyingPrice();
+        int gold = game.getCurrentGovernment().getGold();
+        if (gold < price)
+            return Messages.NOT_ENOUGH_GOLD;
+        int resourceAmount = game.getCurrentGovernment().getResourceAmount(resource);
+        game.getCurrentGovernment().setGold(gold - price);
+        game.getCurrentGovernment().setResourceAmount(resource, resourceAmount + amount);
+        return Messages.SHOP_SUCCESSFUL;
+    }
+
+    public Messages sellCommodity(String item, int amount) {
+        Resources resource = Resources.getResource(item);
+        if (item == null)
+            return Messages.INVALID_ITEM;
+        int resourceAmount = game.getCurrentGovernment().getResourceAmount(resource);
+        if (resourceAmount < amount)
+            return Messages.NOT_ENOUGH_RESOURCES;
+        int price = amount * resource.getBuyingPrice();
+        int gold = game.getCurrentGovernment().getGold();
+        game.getCurrentGovernment().setGold(gold + price);
+        game.getCurrentGovernment().setResourceAmount(resource, resourceAmount - amount);
+        return Messages.SHOP_SUCCESSFUL;
     }
 
 }

@@ -11,18 +11,18 @@ public class Government {
     private int peasant;
     private int popularity;
     private User user;
-    private double gold;
+    private int gold;
     private double taxAmount;
     private int taxPopularity;
     private int fearRate;
     private int foodRate;
     private int foodsNumber;
-    private HashMap<Resources, Double> resources = new HashMap<>();
+    private HashMap<Resources, Integer> resources = new HashMap<>();
     private ArrayList<Building> buildings = new ArrayList<>();
     private HashSet<Building> buildingsWaitingForWorkers = new HashSet<>();
     private HashSet<TypeOfBuilding> noLaborBuildings = new HashSet<>();
 
-    public Government(User user, double gold,int row,int column) {
+    public Government(User user, int gold, int row, int column) {
         population = 10;
         popularity = 100; // todo: we can make a variable that show starting population and popularity
         this.user = user;
@@ -30,8 +30,8 @@ public class Government {
         taxAmount = 0;
         taxPopularity = 1;
         peasant = 10;
-        this.row=row;
-        this.column=column;
+        this.row = row;
+        this.column = column;
     }
 
     public int getPopulation() {
@@ -50,11 +50,11 @@ public class Government {
         return user;
     }
 
-    public double getGold() {
+    public int getGold() {
         return gold;
     }
 
-    public void setGold(double gold) {
+    public void setGold(int gold) {
         this.gold = gold;
     }
 
@@ -81,44 +81,57 @@ public class Government {
     public int getFearRate() {
         return fearRate;
     }
+
     public int getPeasant() {
         return peasant;
     }
-    public void changePeasant(int count){
-        peasant+=count;
-        if(peasant<0) peasant=0;
+
+    public void changePeasant(int count) {
+        peasant += count;
+        if (peasant < 0)
+            peasant = 0;
     }
-    public HashMap<Resources, Double> getResources() {
+
+    public HashMap<Resources, Integer> getResources() {
         return resources;
     } // todo: make this clone.
 
     public void changeResources(Resources resource, int amount) {
         resources.put(resource, resources.get(resource) + amount);
     }
+
     public ArrayList<Building> getBuildings() {
         return buildings;
     }
+
     public void addBuilding(Building building) {
         buildings.add(building);
     }
-    public void removeBuilding(Building building){
+
+    public void removeBuilding(Building building) {
         this.buildings.remove(building);
     }
+
     public HashSet<Building> getBuildingsWaitingForWorkers() {
         return buildingsWaitingForWorkers;
     }
+
     public void addBuildingsWaitingForWorkers(Building building) {
         buildingsWaitingForWorkers.add(building);
     }
+
     public void removeBuildingsWaitingForWorkers(HashSet<Building> buildings) {
         buildingsWaitingForWorkers.removeAll(buildings);
     }
+
     public HashSet<TypeOfBuilding> getNoLaborBuildings() {
         return noLaborBuildings;
     }
+
     public void addNoLaborBuildings(TypeOfBuilding typeOfBuilding) {
         noLaborBuildings.add(typeOfBuilding);
     }
+
     public void removeNoLaborBuildings(TypeOfBuilding typeOfBuilding) {
         noLaborBuildings.remove(typeOfBuilding);
     }
@@ -131,10 +144,10 @@ public class Government {
         this.foodRate = foodRate;
     }
 
-    public HashMap<Resources, Double> getFoodList() {
-        HashMap<Resources, Double> foodList = new HashMap<>();
+    public HashMap<Resources, Integer> getFoodList() {
+        HashMap<Resources, Integer> foodList = new HashMap<>();
         for (Resources resource : resources.keySet()) {
-            if (resource.type() == TypeOfResource.FOOD)
+            if (resource.getType() == TypeOfResource.FOOD)
                 foodList.put(resource, resources.get(resource));// todo : can be cleaner
 
         }
@@ -144,7 +157,8 @@ public class Government {
     public void updateFoodsNumber() {
         foodsNumber = 0;
         for (Resources resource : resources.keySet()) {
-            if (resource.type() == TypeOfResource.FOOD) foodsNumber += resources.get(resource);
+            if (resource.getType() == TypeOfResource.FOOD)
+                foodsNumber += resources.get(resource);
         }
     }
 
@@ -155,17 +169,16 @@ public class Government {
 
     public void giveFood() {
         double foodPerPerson = foodPerPerson();
-        double foodsToGive = foodPerPerson * population;
+        int foodsToGive = (int) (foodPerPerson * population);
         for (Resources resource : resources.keySet()) {
-            if (resource.type() == TypeOfResource.FOOD) {
-                double amountOfResource = resources.get(resource);
+            if (resource.getType() == TypeOfResource.FOOD) {
+                int amountOfResource = resources.get(resource);
                 if (amountOfResource >= foodsToGive) {
                     foodsToGive = 0;
                     resources.replace(resource, amountOfResource - foodsToGive);
-                }
-                else{
+                } else {
                     foodsToGive -= amountOfResource;
-                    resources.replace(resource, (double)0);
+                    resources.replace(resource, 0);
                 }
             }
         }
@@ -174,4 +187,13 @@ public class Government {
     public double foodPerPerson() {
         return (foodRate + 2) * 0.5;
     }
+
+    public int getResourceAmount(Resources resource) {
+        return resources.get(resource);
+    }
+
+    public void setResourceAmount(Resources resource , int amount) {
+        resources.replace(resource, amount);
+    } 
+
 }
