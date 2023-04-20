@@ -7,7 +7,7 @@ public class MapPixel {
     private Texture texture;
     private ArrayList<Person> people = new ArrayList<Person>();
     private ArrayList<Building> buildings = new ArrayList<Building>();
-    private ArrayList<Tree> trees = new ArrayList<Tree>();
+    private Tree tree = null;
     private Rock rock = null;
     private boolean doesHaveOil;
     private boolean isPassable;
@@ -22,8 +22,8 @@ public class MapPixel {
         buildings.add(building);
     }
 
-    public void addTree(Tree tree) {
-        trees.add(tree);
+    public void setTree(Tree tree) {
+        this.tree = tree;
     }
 
     public Texture getTexture() {
@@ -39,9 +39,9 @@ public class MapPixel {
         this.doesHaveOil = false;
         this.isPassable = true;
         this.rock = null;
+        this.tree = null;
         this.buildings.clear();
         this.people.clear();
-        this.trees.clear();
     }
 
     public ArrayList<Person> getPeople() {
@@ -52,8 +52,8 @@ public class MapPixel {
         return (ArrayList<Building>) this.buildings.clone();
     }
 
-    public ArrayList<Tree> getTrees() {
-        return (ArrayList<Tree>) trees.clone();
+    public Tree getTree() {
+        return tree;
     }
 
     public void setRock(Rock rock) {
@@ -65,7 +65,26 @@ public class MapPixel {
     }
 
     public boolean canDropObject() {
-        return (this.buildings.size() == 0 && this.rock == null && this.trees.size() == 0);
+        return (buildings.size() == 0 && rock == null && tree == null && people.size() == 0);
+    }
+
+    private boolean doesHaveSoldier(){
+        for (Person person : people)
+            if(person instanceof Unit)
+                return true;
+        return false;
+    }
+
+    public String objectToShow(){
+        if(doesHaveSoldier())
+            return "S";
+        if(this.buildings.size() != 0)
+            return "B";
+        if(this.tree != null)
+            return "T";
+        if(this.rock != null)
+            return "R";
+        return "";
     }
 
 }

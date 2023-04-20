@@ -24,6 +24,19 @@ public class MapMenuController {
         return output;
     }
 
+    public ArrayList<ArrayList<String>> getMapObjects(int x, int y){
+        ArrayList<ArrayList<String>> output = new ArrayList<ArrayList<String>>();
+        int x1 = getCornersRow(x)[0], x2 = getCornersRow(x)[1];
+        int y1 = getCornersColumn(y)[0], y2 = getCornersColumn(y)[1];
+        ArrayList<ArrayList<MapPixel>> field = map.getField(x1, y1, x2, y2);
+        for (int i = 0; i < field.size(); i++) {
+            output.add(new ArrayList<String>());
+            for (int j = 0; j < field.get(i).size(); j++)
+                output.get(i).add(field.get(i).get(j).objectToShow());
+        }
+        return output;
+    }
+
     private int[] getCornersRow(int x) {
         int[] output = new int[2];
         if (x >= map.getSize() - 1) {

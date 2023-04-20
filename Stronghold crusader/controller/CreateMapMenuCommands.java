@@ -13,8 +13,8 @@ public enum CreateMapMenuCommands {
     GET_TEXTURE_TYPE("\\-t\\s+(?<type>[a-zA-Z\\s]+)"),
     CLEAR_PIXEL("^\\s*clear\\s+(\\-x|\\-y|\\-?\\d+|\\s)+$"),
     DROP_TREE("^\\s*droptree\\s+(\\-x|\\-y|\\-t|[^\\-][a-z]|\\-?\\d+|\\s)+$"),
-    DROP_ROCK("^\\s*droprock\\s+(\\-x|\\-y|\\-t|[^\\-][a-z]|\\-?\\d+|\\s)+$"),
-    GET_DIRECTION("\\-d(?<direction>\\S+)"),
+    DROP_ROCK("^\\s*droprock\\s+(\\-x|\\-y|\\-d|[^\\-][a-z]|\\-?\\d+|\\s)+$"),
+    GET_DIRECTION("\\-d\\s+(?<direction>\\S+)"),
     REMOVE_MAP("^\\s*remove\\s+map\\s*$");
     private String regex;
     private CreateMapMenuCommands(String regex){

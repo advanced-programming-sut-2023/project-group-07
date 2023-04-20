@@ -101,7 +101,7 @@ public class CreateMapMenuController {
         MapPixel pixel = map.getMapPixel(row, column);
         if (!pixel.canDropObject() || !pixel.getTexture().canHaveTree())
             return Messages.CANT_PLACE_THIS;
-        pixel.addTree(tree);
+        pixel.setTree(tree);
         return Messages.DROP_TREE_SUCCESSFUL;
     }
 

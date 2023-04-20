@@ -68,21 +68,27 @@ public class MapMenu {
 
     protected void printMap(int x, int y) {
         ArrayList<ArrayList<Colors>> mapColorList = controller.getMapColorList(x, y);
+        ArrayList<ArrayList<String>> mapObjects = controller.getMapObjects(x, y); 
         int numberOfRows = mapColorList.size();
         int numberOfColumns = mapColorList.get(0).size();
-        int numberOfRowSplitters = numberOfColumns * 7 + 1;
+        int numberOfRowSplitters = numberOfColumns * 6 + 1;
         for (int i = 0; i <= 4 * numberOfRows; i++) {
             if (i % 4 == 0) {
                 splitRow(numberOfRowSplitters, i != 0 && i != 4 * numberOfRows);
                 continue;
             }
-            for (int j = 0; j <= 7 * numberOfColumns; j++) {
-                if (j % 7 == 0) System.out.print("|");
-                else {
+            for (int j = 0; j <= 6 * numberOfColumns; j++) {
+                if (j % 6 == 0) System.out.print("|");
+                else{
                     int row = (int) Math.floor(i / 4);
-                    int column = (int) Math.floor(j / 7);
+                    int column = (int) Math.floor(j / 6);
                     System.out.print(mapColorList.get(row).get(column));
-                    System.out.print("#");
+                    if(i%4 == 2 && j%6 == 3 && !mapObjects.get(row).get(column).equals("")) {
+                        System.out.print(Colors.BLACK_BOLD);
+                        System.out.print(mapObjects.get(row).get(column));
+                    }
+                    else
+                        System.out.print("#");
                     System.out.print(Colors.RESET);
                 }
             }

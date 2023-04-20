@@ -15,6 +15,8 @@ public class Main {
         // Controller.currentGame = game;
         // MapMenu mn = new MapMenu(30 , 40);
         // mn.run(new Scanner(System.in));
+        CreateMapMenu cm = new CreateMapMenu();
+        cm.run(new Scanner(System.in));
         if(Controller.isLoggedIn()){
             
         }
