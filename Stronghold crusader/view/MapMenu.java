@@ -19,7 +19,7 @@ public class MapMenu {
     }
 
     public void run(Scanner scanner) {
-        printMap(this.x, this.y);
+        printMap();
         while (true) {
             String input = scanner.nextLine();
             if (input.matches("\\s*exit\\s*"))
@@ -62,13 +62,13 @@ public class MapMenu {
         else {
             this.x = controller.setMoveX(this.x, up, down);
             this.y = controller.setMoveY(this.y, left, right);
-            printMap(this.x, this.y);
+            printMap();
         }
     }
 
-    protected void printMap(int x, int y) {
-        ArrayList<ArrayList<Colors>> mapColorList = controller.getMapColorList(x, y);
-        ArrayList<ArrayList<String>> mapObjects = controller.getMapObjects(x, y);
+    protected void printMap() {
+        ArrayList<ArrayList<Colors>> mapColorList = controller.getMapColorList(this.x, this.y);
+        ArrayList<ArrayList<String>> mapObjects = controller.getMapObjects(this.x, this.y);
         int numberOfRows = mapColorList.size();
         int numberOfColumns = mapColorList.get(0).size();
         int numberOfRowSplitters = numberOfColumns * 6 + 1;
@@ -149,7 +149,7 @@ public class MapMenu {
             return "Invalid cordinates!";
         this.x = row - 1;
         this.y = column - 1;
-        printMap(this.x, this.y);
+        printMap();
         return null;
     }
 
