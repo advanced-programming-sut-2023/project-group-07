@@ -61,6 +61,7 @@ public class GameMenuController {
     public Messages repair() {
         return game.repair();
     }
+
     public Messages createUnit(String input) {
         String type = "";
         int count = 0;
@@ -74,12 +75,15 @@ public class GameMenuController {
         }
         return game.createTroop(type, count);
     }
-    public Messages closeGate(){
+
+    public Messages closeGate() {
         return game.closeGate();
     }
-    public Messages openGate(){
+
+    public Messages openGate() {
         return game.openGate();
     }
+
     public String getUnitsInfo(String militaryCamp) {
         String output = "";
         if (militaryCamp.equals("barracks")) {
@@ -97,7 +101,7 @@ public class GameMenuController {
                 if (typeOfPerson.getMilitaryCampType().equals(MilitaryCampType.ENGINEER_GUILD))
                     output += typeOfPerson.getType() + "    " + typeOfPerson.getGoldNeeded() + " gold\n";
             }
-        } else if(militaryCamp.equals("cathedral")) {
+        } else if (militaryCamp.equals("cathedral")) {
             for (TypeOfPerson typeOfPerson : TypeOfPerson.values()) {
                 if (typeOfPerson.getMilitaryCampType().equals(MilitaryCampType.CATHEDRAL))
                     output += typeOfPerson.getType() + "    " + typeOfPerson.getGoldNeeded() + " gold\n";
@@ -105,16 +109,20 @@ public class GameMenuController {
         }
         return null;
     }
-    public Messages changeArms(){
+
+    public Messages changeArms() {
         return game.changeArms();
     }
+
     public String getResources() {
-        ConvertingResources convertingResources = (ConvertingResources)game.getSelectedBuilding();
+        ConvertingResources convertingResources = (ConvertingResources) game.getSelectedBuilding();
         return convertingResources.getResource().getPrintingName();
     }
+
     public Messages changeWorkingState() {
         return game.changeWorkingState();
     }
+
     public int getPopularity() {
         return game.getCurrentGovernment().getPopularity();
     }
@@ -143,5 +151,4 @@ public class GameMenuController {
         game.endOfTurn();
     }
 
-    
 }

@@ -15,7 +15,7 @@ public enum Texture {
     BEACH("beach" , Colors.YELLOW_BACKGROUND_BRIGHT , false,true),
     RIVER("river" , Colors.BLUE_BACKGROUND , false,false),
     FORD ("ford" , Colors.BLUE_BACKGROUND_BRIGHT , false,false),
-    MARSH("marsh" , Colors.PURPLE_BACKGROUND_BRIGHT , false,false),
+    MARSH("marsh" , Colors.PURPLE_BACKGROUND_BRIGHT , true,false),
     SEA("sea" , Colors.BLUE_BACKGROUND , false,false);
     private final String type;
     private final Colors color;

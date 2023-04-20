@@ -76,12 +76,24 @@ public class CreateMapMenuController {
         return Messages.SET_TEXTURE_SUCCESSFUL;
     }
 
+    public Messages clearRegion(int x1, int y1, int x2, int y2) {
+        int size = map.getSize();
+        if (x1 < 0 || x1 >= size || y1 < 0 || y1 >= size)
+            return Messages.INVALID_CORDINATES;
+        if (x2 < 0 || x2 >= size || y2 < 0 || y2 >= size)
+            return Messages.INVALID_CORDINATES;
+        if (x1 > x2 || y1 > y2)
+            return Messages.INVALID_CORDINATES;
+        map.clearRegion(x1, y1, x2, y2);
+        return Messages.CLEAR_SUCCESSFUL;
+    }
+
     public Messages clearPixel(int row, int column) {
         int size = map.getSize();
         if (row < 0 || row >= size || column < 0 || column >= size)
             return Messages.INVALID_CORDINATES;
         map.getMapPixel(row, column).backToDefault();
-        return Messages.CLEAR_PIXEL_SUCCESSFUL;
+        return Messages.CLEAR_SUCCESSFUL;
     }
 
     public boolean doesCordinatesExist(ArrayList<int[]> positions, int row, int column) {
@@ -119,7 +131,7 @@ public class CreateMapMenuController {
         return Messages.DROP_ROCK_SUCCESSFUL;
     }
 
-    public void removeMap(){
+    public void removeMap() {
         Map.removeMap(map);
     }
 

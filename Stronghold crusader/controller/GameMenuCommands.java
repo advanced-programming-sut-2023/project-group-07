@@ -14,7 +14,8 @@ public enum GameMenuCommands {
     FEAR_RATE("\\s*fear\\s+rate\\s+-r\\s+(?<rate>\\d+)\\s*"),
     DROP_BUILDING("\\s*dropbuilding\\s+-x\\s+(?<x>\\d+)\\s+-y\\s+(?<y>\\d+)\\s+-type\\s+(?<type>\\w+)\\s*"),
     SELECT_BUILDING("\\s*select\\s+building\\s+-x\\s+(?<row>\\d+)\\s+-y\\s+(?<column>\\d+)\\s*"),
-    CREATE_UNIT("\\s*createunit\\s+((-t\\s+(?<type1>\\w+)\\s+-c\\s+(?<count1>\\w+)\\s*)|(-c\\s+(?<count2>\\w+)-t\\s+(?<type2>\\w+)\\s*))"),
+    CREATE_UNIT(
+            "\\s*createunit\\s+((-t\\s+(?<type1>\\w+)\\s+-c\\s+(?<count1>\\w+)\\s*)|(-c\\s+(?<count2>\\w+)-t\\s+(?<type2>\\w+)\\s*))"),
     EXIT("\\s*exit\\s*"),
     SHOW_UNITS("\\s*show\\s+units\\s*"),
     REPAIR("\\s*repair\\s*"),
@@ -24,10 +25,12 @@ public enum GameMenuCommands {
     CHANGE_WORKING_STATE("\\s*change\\s+working\\s+state\\s*");
 
     private String regex;
+
     private GameMenuCommands(String regex) {
-        this.regex=regex;
+        this.regex = regex;
     }
-    public static Matcher getMatcher(String input , GameMenuCommands command){
+
+    public static Matcher getMatcher(String input, GameMenuCommands command) {
         Matcher matcher = Pattern.compile(command.regex).matcher(input);
         return (matcher.find()) ? matcher : null;
     }

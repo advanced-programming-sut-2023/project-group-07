@@ -24,11 +24,11 @@ public class MapMenu {
             String input = scanner.nextLine();
             if (MapMenuCommands.getMatcher(input, MapMenuCommands.EXIT) != null)
                 return;
-            else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_MAP) != null){
+            else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_MAP) != null) {
                 String showMapStr = showMap(input);
-                if(showMapStr != null) System.out.println(showMapStr);
-            }
-            else if (MapMenuCommands.getMatcher(input, MapMenuCommands.MOVE_MAP) != null)
+                if (showMapStr != null)
+                    System.out.println(showMapStr);
+            } else if (MapMenuCommands.getMatcher(input, MapMenuCommands.MOVE_MAP) != null)
                 moveMap(input);
             else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_DETAILS) != null)
                 System.out.println(showDetails(input));
@@ -43,32 +43,32 @@ public class MapMenu {
         int up = 0, down = 0, left = 0, right = 0;
         if (MapMenuCommands.getMatcher(input, MapMenuCommands.MOVE_UP) != null) {
             String upString = MapMenuCommands.getMatcher(input, MapMenuCommands.MOVE_UP).group("up");
-            up = (upString == null) ? 1 : -Integer.parseInt(upString);
+            up = (upString == null) ? -1 : -Integer.parseInt(upString.trim());
         }
         if (MapMenuCommands.getMatcher(input, MapMenuCommands.MOVE_DOWN) != null) {
             String downString = MapMenuCommands.getMatcher(input, MapMenuCommands.MOVE_DOWN).group("down");
-            down = (downString == null) ? 1 : Integer.parseInt(downString);
+            down = (downString == null) ? 1 : Integer.parseInt(downString.trim());
         }
         if (MapMenuCommands.getMatcher(input, MapMenuCommands.MOVE_LEFT) != null) {
             String leftString = MapMenuCommands.getMatcher(input, MapMenuCommands.MOVE_LEFT).group("left");
-            left = (leftString == null) ? 1 : -Integer.parseInt(leftString);
+            left = (leftString == null) ? -1 : -Integer.parseInt(leftString.trim());
         }
         if (MapMenuCommands.getMatcher(input, MapMenuCommands.MOVE_RIGHT) != null) {
             String rightString = MapMenuCommands.getMatcher(input, MapMenuCommands.MOVE_RIGHT).group("right");
-            right = (rightString == null) ? 1 : Integer.parseInt(rightString);
+            right = (rightString == null) ? 1 : Integer.parseInt(rightString.trim());
         }
         if (!controller.checkMoveCordinates(this.x, this.y, up, down, left, right))
             System.out.println("Cordinates out of bounds or invalid!");
         else {
-            this.x += up + down;
-            this.y += left + right;
+            this.x = controller.setMoveX(this.x, up, down);
+            this.y = controller.setMoveY(this.y, left, right);
             printMap(this.x, this.y);
         }
     }
 
     protected void printMap(int x, int y) {
         ArrayList<ArrayList<Colors>> mapColorList = controller.getMapColorList(x, y);
-        ArrayList<ArrayList<String>> mapObjects = controller.getMapObjects(x, y); 
+        ArrayList<ArrayList<String>> mapObjects = controller.getMapObjects(x, y);
         int numberOfRows = mapColorList.size();
         int numberOfColumns = mapColorList.get(0).size();
         int numberOfRowSplitters = numberOfColumns * 6 + 1;
@@ -78,16 +78,16 @@ public class MapMenu {
                 continue;
             }
             for (int j = 0; j <= 6 * numberOfColumns; j++) {
-                if (j % 6 == 0) System.out.print("|");
-                else{
+                if (j % 6 == 0)
+                    System.out.print("|");
+                else {
                     int row = (int) Math.floor(i / 4);
                     int column = (int) Math.floor(j / 6);
                     System.out.print(mapColorList.get(row).get(column));
-                    if(i%4 == 2 && j%6 == 3 && !mapObjects.get(row).get(column).equals("")) {
+                    if (i % 4 == 2 && j % 6 == 3 && !mapObjects.get(row).get(column).equals("")) {
                         System.out.print(Colors.BLACK_BOLD);
                         System.out.print(mapObjects.get(row).get(column));
-                    }
-                    else
+                    } else
                         System.out.print("#");
                     System.out.print(Colors.RESET);
                 }
@@ -100,56 +100,58 @@ public class MapMenu {
         if (flag) {
             length -= 2;
             System.out.print("|");
-            while (length-- > 0) System.out.print("-");
+            while (length-- > 0)
+                System.out.print("-");
             System.out.println("|");
         } else {
-            while (length-- > 0) System.out.print("-");
+            while (length-- > 0)
+                System.out.print("-");
             System.out.println();
         }
     }
+
     protected String showDetails(String input) {
-        Matcher rowMatcher = 
-            MapMenuCommands.getMatcher(input, MapMenuCommands.GET_ROW);
-        Matcher columnMatcher = 
-            MapMenuCommands.getMatcher(input, MapMenuCommands.GET_COLUMN);
-        if(rowMatcher == null || rowMatcher.group("row") == null)
+        Matcher rowMatcher = MapMenuCommands.getMatcher(input, MapMenuCommands.GET_ROW);
+        Matcher columnMatcher = MapMenuCommands.getMatcher(input, MapMenuCommands.GET_COLUMN);
+        if (rowMatcher == null || rowMatcher.group("row") == null)
             return "Enter the row number!";
-        if(columnMatcher == null || columnMatcher.group("column") == null)
+        if (columnMatcher == null || columnMatcher.group("column") == null)
             return "Enter the column number!";
-        if(!rowMatcher.group("row").matches("\\-?\\d+")
-            || !columnMatcher.group("column").matches("\\-?\\d+"))
+        if (!rowMatcher.group("row").matches("\\-?\\d+")
+                || !columnMatcher.group("column").matches("\\-?\\d+"))
             return "Enter whole number for cordinates!";
         int row = Integer.parseInt(rowMatcher.group("row"));
         int column = Integer.parseInt(columnMatcher.group("column"));
-        if(!controller.checkCordinates(row, column))
+        if (!controller.checkCordinates(row, column))
             return "Invalid cordinates!";
         return controller.getDetails(row, column);
     }
+
     protected void mapGuide() {
-        for(Texture texture : Texture.values())
+        for (Texture texture : Texture.values())
             printGuide(texture);
     }
+
     private void printGuide(Texture texture) {
         System.out.print(texture.getColor());
         System.out.print(" ");
         System.out.print(Colors.RESET);
         System.out.println(" : " + texture);
     }
-    protected String showMap(String input){
-        Matcher rowMatcher =
-            MapMenuCommands.getMatcher(input, MapMenuCommands.GET_ROW);
-        Matcher columnMatcher =
-            MapMenuCommands.getMatcher(input, MapMenuCommands.GET_COLUMN);
-        if(rowMatcher == null || rowMatcher.group("row") == null)
+
+    protected String showMap(String input) {
+        Matcher rowMatcher = MapMenuCommands.getMatcher(input, MapMenuCommands.GET_ROW);
+        Matcher columnMatcher = MapMenuCommands.getMatcher(input, MapMenuCommands.GET_COLUMN);
+        if (rowMatcher == null || rowMatcher.group("row") == null)
             return "Enter the row number!";
-        if(columnMatcher == null || columnMatcher.group("column") == null)
+        if (columnMatcher == null || columnMatcher.group("column") == null)
             return "Enter the column number!";
-        if(!rowMatcher.group("row").matches("\\-?\\d+")
-            || !columnMatcher.group("column").matches("\\-?\\d+"))
+        if (!rowMatcher.group("row").matches("\\-?\\d+")
+                || !columnMatcher.group("column").matches("\\-?\\d+"))
             return "Enter whole number for cordinates!";
         int row = Integer.parseInt(rowMatcher.group("row"));
         int column = Integer.parseInt(columnMatcher.group("column"));
-        if(!controller.checkCordinates(row, column))
+        if (!controller.checkCordinates(row, column))
             return "Invalid cordinates!";
         this.x = row - 1;
         this.y = column - 1;

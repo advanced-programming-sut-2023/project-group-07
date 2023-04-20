@@ -53,6 +53,8 @@ public class CreateMapMenu extends MapMenu {
                     System.out.println(setRegionTexture(input));
                 else if (CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.CLEAR_PIXEL) != null)
                     System.out.println(clearPixel(input));
+                else if (CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.CLEAR_REGION) != null)
+                    System.out.println(clearRegion(input));
                 else if (CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.DROP_TREE) != null)
                     System.out.println(dropTree(input));
                 else if (CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.DROP_ROCK) != null)
@@ -80,7 +82,7 @@ public class CreateMapMenu extends MapMenu {
         System.out.println("Available maps:");
         for (int i = 0; i < maps.size(); i++)
             System.out.println((i + 1) + ". " + maps.get(i));
-        System.out.println("Enter the number of the map you want to edit or enter \"new map\" to create a new map:");
+        System.out.println("Enter the number of the map you want to edit or enter \"new map\" to create a new one:");
         while (true) {
             String input = scanner.nextLine();
             if (input.matches("\\s*exit\\s*"))
@@ -290,8 +292,31 @@ public class CreateMapMenu extends MapMenu {
         switch (controller.clearPixel(row - 1, column - 1)) {
             case INVALID_CORDINATES:
                 return "Invalid cordinates!";
-            case CLEAR_PIXEL_SUCCESSFUL:
+            case CLEAR_SUCCESSFUL:
                 return "Clear pixel successfull!";
+            default:
+                break;
+        }
+        return null;
+    }
+
+    private String clearRegion(String input) {
+        Matcher x1Matcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_FIRST_ROW);
+        Matcher y1Matcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_FIRST_COLUMN);
+        Matcher x2Matcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_SECOND_ROW);
+        Matcher y2Matcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_SECOND_COLUMN);
+        String checkRegionCordinates = checkRegionCordinatesFormat(x1Matcher, y1Matcher, x2Matcher, y2Matcher);
+        if (checkRegionCordinates != null)
+            return checkRegionCordinates;
+        int x1 = Integer.parseInt(x1Matcher.group("frow"));
+        int y1 = Integer.parseInt(y1Matcher.group("fcolumn"));
+        int x2 = Integer.parseInt(x2Matcher.group("srow"));
+        int y2 = Integer.parseInt(y2Matcher.group("scolumn"));
+        switch (controller.clearRegion(x1 - 1, y1 - 1, x2 - 1, y2 - 1)) {
+            case INVALID_CORDINATES:
+                return "Invalid cordinates!";
+            case CLEAR_SUCCESSFUL:
+                return "Clear region successfull!";
             default:
                 break;
         }

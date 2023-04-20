@@ -4,10 +4,10 @@ import java.util.regex.*;
 public enum MapMenuCommands {
 
     MOVE_MAP("^\\s*map\\s+(up|down|right|left|\\-?\\d+|\\s)+$"),
-    MOVE_UP("up\\s*(?<up>\\-?\\d+)?"),
-    MOVE_DOWN("down\\s*(?<down>\\-?\\d+)?"),
-    MOVE_LEFT("left\\s*(?<left>\\-?\\d+)?"),
-    MOVE_RIGHT("right\\s*(?<right>\\-?\\d+)?"),
+    MOVE_UP("up(?<up>\\s+\\-?\\d+)?"),
+    MOVE_DOWN("down(?<down>\\s+\\-?\\d+)?"),
+    MOVE_LEFT("left(?<left>\\s+\\-?\\d+)?"),
+    MOVE_RIGHT("right(?<right>\\s+\\-?\\d+)?"),
     SHOW_DETAILS("^\\s*show\\s+details\\s+(\\-x|\\-y|\\-?\\d+|\\s)+$"),
     GET_ROW("\\-x\\s+(?<row>\\-?\\d+)"),
     GET_COLUMN("\\-y\\s+(?<column>\\-?\\d+)"),
