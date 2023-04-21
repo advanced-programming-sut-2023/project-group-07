@@ -78,7 +78,7 @@ public class GameMenu {
     private String showTaxRate() {
         Government government = Controller.currentGame.getCurrentGovernment();
         return ("Your tax rate: " + government.getTaxAmount() + "coins\n" +
-                "Popularity effect: " + government.getTaxPopularity());
+                "Popularity effect: " + government.getTaxEffectOnPopularity());
     }
 
     private void endOfTurn() {

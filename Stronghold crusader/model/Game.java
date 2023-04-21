@@ -25,21 +25,9 @@ public class Game {
     public Messages taxRate(int rate, Government government) {
         if (rate < -3 || rate > 8)
             return Messages.INVALID_RATE;
-        if (rate < 0) {
-            government.setTaxAmount(1 - (rate + 3) * 0.2);
-            government.setTaxPopularity(7 - (rate + 3) * 2);
-        } else if (rate == 0) {
-            government.setTaxAmount(0);
-            government.setTaxPopularity(1);
-        } else {
-            government.setTaxAmount(0.6 + (rate - 1) * 0.2);
-            if (rate < 5)
-                government.setTaxPopularity(rate * 2);
-            else
-                government.setTaxPopularity((rate - 2) * 4);
-        }
+        government.setTaxRate(rate);
         return Messages.RATE_CHANGE_SUCCESSFUL;
-    }
+    } //  todo : remove this?
 
     public User getCurrentUser() {
         return currentGovernment.getUser();
@@ -328,7 +316,7 @@ public class Game {
 
     public void endOfTurn() {
         for (Government government : governments) {
-            government.setPopularity(government.getPopularity() + government.getTaxPopularity()); // todo: update
+            government.setPopularity(government.getPopularity() + government.getTaxEffectOnPopularity()); // todo: update
             government.setGold((int) (government.getGold() + government.getTaxAmount() * government.getPopulation()));
             government.giveFood();
             government.changePeasant(0); // todo: number of added peasants each turn

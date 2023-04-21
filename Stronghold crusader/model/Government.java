@@ -1,5 +1,7 @@
 package model;
 
+import controller.Messages;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,8 +15,7 @@ public class Government {
     private int popularity;
     private User user;
     private int gold;
-    private double taxAmount;
-    private int taxPopularity;
+    private int taxRate;
     private int fearRate;
     private int foodRate;
     private int foodsNumber;
@@ -22,14 +23,13 @@ public class Government {
     private ArrayList<Building> buildings = new ArrayList<>();
     private HashSet<Building> buildingsWaitingForWorkers = new HashSet<>();
     private HashSet<TypeOfBuilding> noLaborBuildings = new HashSet<>();
+    private int numberOfBlessed = 0;
 
     public Government(LordColor color, User user, int gold, int row, int column) {
         population = 10;
         popularity = 100; // todo: we can make a variable that show starting population and popularity
         this.user = user;
         this.gold = gold;
-        taxAmount = 0;
-        taxPopularity = 1;
         peasant = 10;
         this.row = row;
         this.column = column;
@@ -41,7 +41,7 @@ public class Government {
     }
 
     public int getPopularity() {
-        return popularity; // todo: must be calculated
+        return popularity;
     }
 
     public void setPopularity(int popularity) {
@@ -61,19 +61,27 @@ public class Government {
     }
 
     public double getTaxAmount() {
-        return taxAmount;
+        int rate = getTaxRate();
+        if (rate < 0) {
+            return -(1 - (rate + 3) * 0.2);
+        } else if (rate == 0) {
+            return (0);
+        } else {
+            return 0.6 + (rate - 1) * 0.2;
+
+        }
     }
 
-    public int getTaxPopularity() {
-        return taxPopularity;
+    public int taxRate() {
+        return taxRate;
     }
 
-    public void setTaxAmount(double taxAmount) {
-        this.taxAmount = taxAmount;
+    public void setTaxRate(int taxRate) {
+        this.taxRate = taxRate;
     }
 
-    public void setTaxPopularity(int taxPopularity) {
-        this.taxPopularity = taxPopularity;
+    private int getTaxRate() {
+        return taxRate;
     }
 
     public void setFearRate(int fearRate) {
@@ -194,8 +202,72 @@ public class Government {
         return resources.get(resource);
     }
 
-    public void setResourceAmount(Resources resource , int amount) {
+    public void setResourceAmount(Resources resource, int amount) {
         resources.replace(resource, amount);
-    } 
+    }
 
+    public int numberOfCathedrals() {
+        int number = 0;
+        for (Building building : buildings) {
+            if (building.getTypeOfBuilding() == TypeOfBuilding.CATHEDRAL) number++;
+        }
+        return number;
+    }
+
+    public int numberOfChurches() {
+        int number = 0;
+        for (Building building : buildings) {
+            if (building.getTypeOfBuilding() == TypeOfBuilding.CHURCH) number++;
+        }
+        return number;
+    }
+
+    public int getPercentOfBlessed() {
+        return numberOfBlessed * 100 / population;
+    }
+
+    public int getChangesOnPopularity() {
+        int change = getFoodEffectOnPopularity() +
+                getTaxEffectOnPopularity() +
+                getReligionEffectOnPopularity() +
+                getFearEffectOnPopularity() +
+                getBuildingsEffectOnPopularity();
+        return change;
+    }
+
+    public int getBuildingsEffectOnPopularity() {
+        int change = 0;
+        for (Building building : buildings){
+            if (building.getTypeOfBuilding() == TypeOfBuilding.INN)
+                //change += building.getPopularityEffect();
+                ; // todo : make inn class and set popularity effect
+        }
+        return change; //todo
+    }
+
+    public int getFearEffectOnPopularity() {
+        int fearRate = getFearRate();
+        return fearRate;
+    }
+
+    public int getReligionEffectOnPopularity() {
+        int percentOfBlessed = getPercentOfBlessed();
+        return (percentOfBlessed / 25) * 2 + numberOfChurches() * 2 + numberOfCathedrals() * 4;
+    }
+
+    public int getTaxEffectOnPopularity() {
+        int taxRate = getTaxRate();
+        if (taxRate <= 0) {
+            return 7 - (taxRate + 3) * 2;
+        } else {
+            if (taxRate < 5)
+                return -taxRate * 2;
+            else
+                return -(taxRate - 2) * 4;
+        }
+    }
+
+    public int getFoodEffectOnPopularity() {
+        return (int) (foodPerPerson() - 1) * 8;
+    }
 }
