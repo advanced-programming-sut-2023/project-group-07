@@ -1,13 +1,1 @@
-{
-  "username": "Richard",
-  "password": "Poop@2",
-  "email": "Richard85@gmail.com",
-  "nickname": "Lio",
-  "passwordRecoveryQuestion": "FATHERNAME",
-  "slogan": "",
-  "passwordRecoveryAnswer": "\"Richard",
-  "lastAttempt": 0,
-  "numberOfAttempts": 0,
-  "highScore": 0,
-  "rank": 0
-}
+[{"username":"Richa2rd","password":"Poop@2","email":"Richard85@gmcail.com","nickname":"Lio","passwordRecoveryQuestion":"FATHERNAME","slogan":"","passwordRecoveryAnswer":"\"Richard","lastAttempt":0,"numberOfAttempts":0,"highScore":0,"rank":0},{"username":"Richard","password":"Poop@2","email":"Richard85@gmail.com","nickname":"Lio","passwordRecoveryQuestion":"FATHERNAME","slogan":"","passwordRecoveryAnswer":"\"Richard","lastAttempt":0,"numberOfAttempts":0,"highScore":0,"rank":0}]

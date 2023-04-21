@@ -8,7 +8,7 @@ public enum LoginMenuCommands {
     USER_LOGOUT("\\s*user\\s+logout\\s*"),
     USERNAME("-u\\s+(?<username>\\S*|(\".*\"))"),
     PASSWORD_LOGIN("-p\\s+(?<password>\\S*|(\".*\"))"),
-    PASSWORD("-p\\s+((?<random>random)|((?<password>\\S*|(\".*\"))\\s+(?<passwordConfirm>\\S+|(\".+\"))))"),
+    PASSWORD("-p\\s+((?<random>random)|((?<password>\\S*|(\".*\"))\\s+(?<passwordConfirm>\\S+|(\".*\"))))"),
     NICKNAME("-n\\s+(?<nickname>\\S*|(\".*\"))"),
     EMAIL("-e\\s+(?<email>\\S*)"),
     SLOGAN("-s\\s+((?<random>random)|(?<slogan>\\S*|(\".*\")))"),

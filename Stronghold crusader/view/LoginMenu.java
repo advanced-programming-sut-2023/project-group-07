@@ -2,6 +2,7 @@ package view;
 
 import controller.LoginMenuCommands;
 import controller.Messages;
+import model.User;
 import controller.LoginMenuController;
 import controller.Controller;
 
@@ -134,7 +135,7 @@ public class LoginMenu {
                 return "Username and password didn't match!";
             case WAIT_FOR_LOGIN:
                 return "you have to wait for " +
-                        Controller.getUserByUsername(username).getAttempt() * 5 + " more seconds to login!";
+                        User.getUserByUsername(username).getAttempt() * 5 + " more seconds to login!";
             case INCORRECT_PASSWORD:
                 return "Incorrect password!";
             case EXIT_CAPTCHA:

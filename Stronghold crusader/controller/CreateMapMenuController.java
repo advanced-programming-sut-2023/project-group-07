@@ -94,7 +94,6 @@ public class CreateMapMenuController {
         if (row < 0 || row >= size || column < 0 || column >= size)
             return Messages.INVALID_CORDINATES;
         map.getMapPixel(row, column).backToDefault();
-        ;
         return Messages.CLEAR_SUCCESSFUL;
     }
 

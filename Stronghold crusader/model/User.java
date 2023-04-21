@@ -3,6 +3,7 @@ import controller.Controller;
 import controller.Messages;
 import java.util.ArrayList;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -140,16 +141,41 @@ public class User {
     public static ArrayList<User> getUsers(){
         return users;
     }
-    public static void addUser(User user){
+    public static void addUser(User user) throws IOException{
         users.add(user);
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        
+        Gson gson = new Gson();
+        usersArray.add(gson.toJsonTree(user).getAsJsonObject());
+        FileWriter file = new FileWriter("Users");
+        file.write(usersArray.toString());
+        file.close();
     }
-    public static void addUserToFile(User user){
 
+    public static void loadUsers() throws IOException{
+        FileReader file = new FileReader("Users");
+        Scanner scanner = new Scanner(file);
+        String allUsers = scanner.nextLine();
+        scanner.close();
+        file.close();
+        Gson gson = new Gson();
+        JsonArray jsonArray = gson.fromJson(allUsers, JsonArray.class);
+        for(JsonElement jsonElement : jsonArray){
+            users.add(gson.fromJson(jsonElement,User.class));
+        }
+        usersArray = jsonArray;
     }
-    public static void loadUsers(){
 
+    public static User getUserByUsername(String username){
+        for(User user : users){
+            if(user.getUsername().equals(username))return user;
+        }
+        return null;
+    }
+    public static User getUserByEmail(String email){
+        email = email.toLowerCase();
+        for(User user : users){
+            if(user.getEmail().toLowerCase().equals(email))return user;
+        }
+        return null;
     }
 
 }

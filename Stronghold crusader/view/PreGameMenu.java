@@ -116,13 +116,13 @@ public class PreGameMenu { // todo: this class haven't been tested
             String input = scanner.nextLine();
             if (input.matches("\\s*exit\\s*"))
                 return null;
-            User user = Controller.getUserByUsername(input);
+            User user = User.getUserByUsername(input);
             while (user == null) {
                 System.out.println("There is no user with this username! Enter another one:");
                 input = scanner.nextLine();
                 if (input.matches("\\s*exit\\s*"))
                     return null;
-                user = Controller.getUserByUsername(input);
+                user = User.getUserByUsername(input);
             }
             governments.add(new Government(LordColor.getLordColor(i), user, 0, map.getKeepPosition(i)[0],
                     map.getKeepPosition(0)[1]));

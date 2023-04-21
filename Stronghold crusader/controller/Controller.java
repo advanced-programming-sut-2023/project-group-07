@@ -26,19 +26,7 @@ public class Controller {
     public static boolean isLoggedIn(){
         return false;
     }
-    public static User getUserByUsername(String username){
-        for(User user : User.getUsers()){
-            if(user.getUsername().equals(username))return user;
-        }
-        return null;
-    }
-    public static User getUserByEmail(String email){
-        email = email.toLowerCase();
-        for(User user : User.getUsers()){
-            if(user.getEmail().toLowerCase().equals(email))return user;
-        }
-        return null;
-    }
+    
     public static String trimmer(String string){
         if(string.charAt(0)=='\"')
             return string.substring(1,string.length()-1);

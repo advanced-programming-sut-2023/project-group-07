@@ -19,10 +19,10 @@ public class LoginMenuController {
     RecoveryQuestion recoveryQuestion;
 
     private String usernameExistenceCheck(String username) {
-        if (Controller.getUserByUsername(username) == null)
+        if (User.getUserByUsername(username) == null)
             return null;
         int counter = 1;
-        while (Controller.getUserByUsername(username + counter) != null)
+        while (User.getUserByUsername(username + counter) != null)
             counter++;
         return username + counter;
     }
@@ -34,14 +34,6 @@ public class LoginMenuController {
         for (int i = 0; i < 4; i++)
             randomPositions[i] = Controller.randomNumber(length);
         for (int i = 0; i < length; i++) {
-            if (i == randomPositions[0])
-                password += Controller.getRandomChar('a', 26);
-            if (i == randomPositions[1])
-                password += Controller.getRandomChar('A', 26);
-            if (i == randomPositions[2])
-                password += Controller.getRandomChar('0', 10);
-            if (i == randomPositions[3])
-                password += characters.charAt(Controller.randomNumber(characters.length()));
             switch ((Controller.randomNumber(100) * i + Controller.randomNumber(2)) % 4) {
                 case 0:
                     password += Controller.getRandomChar('a', 26);
@@ -56,12 +48,20 @@ public class LoginMenuController {
                     password += characters.charAt(Controller.randomNumber(characters.length()));
                     break;
             }
+            if (i == randomPositions[0])
+                password += Controller.getRandomChar('a', 26);
+            if (i == randomPositions[1])
+                password += Controller.getRandomChar('A', 26);
+            if (i == randomPositions[2])
+                password += Controller.getRandomChar('0', 10);
+            if (i == randomPositions[3])
+                password += characters.charAt(Controller.randomNumber(characters.length()));
         }
         return password;
     }
 
     private boolean emailExistenceCheck(String email) {
-        if (Controller.getUserByEmail(email) == null)
+        if (User.getUserByEmail(email) == null)
             return false;
         return true;
     }
@@ -113,10 +113,6 @@ public class LoginMenuController {
             return Messages.EXIT_CAPTCHA;
         User user = new User(username, password, email, nickname, slogan, recoveryQuestion, answer);
         User.addUser(user);
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        FileWriter file = new FileWriter("Users");
-        gson.toJson(user, file);
-        file.close();
         return Messages.SIGNUP_SUCCESSFUL;
     }
 
@@ -153,7 +149,7 @@ public class LoginMenuController {
 
     public Messages login(String username, String password, boolean stayLoggedIn)
             throws IOException, NoSuchAlgorithmException {
-        User user = Controller.getUserByUsername(username);
+        User user = User.getUserByUsername(username);
         if (user == null)
             return Messages.USERNAME_NOT_FOUND;
         else if (user != null && user.getLastAttempt() + 1000 * user.getAttempt() * 5 > System.currentTimeMillis()) {
@@ -172,7 +168,7 @@ public class LoginMenuController {
     }
 
     public Messages forgotPassword(String username, String password) throws IOException, NoSuchAlgorithmException {
-        User user = Controller.getUserByUsername(username);
+        User user = User.getUserByUsername(username);
         if (user == null)
             return Messages.USERNAME_NOT_FOUND;
         String recoveryQuestion = RecoveryQuestion.getQuestion(user.getPasswordRecoveryQuestion());

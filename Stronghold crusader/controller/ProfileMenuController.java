@@ -11,7 +11,7 @@ public class ProfileMenuController {
     }
     public Messages changeUsername(String username) throws IOException,NoSuchAlgorithmException{
         if(!User.isUsernameValid(username))return Messages.INVALID_USERNAME;
-        else if(Controller.getUserByUsername(username)!=null)return Messages.USERNAME_EXISTS;
+        else if(User.getUserByUsername(username)!=null)return Messages.USERNAME_EXISTS;
         String oldUsername = currentUser.getUsername();
         this.currentUser.setNewUsername(username);
         this.currentUser.createFile(this.currentUser);
@@ -32,7 +32,7 @@ public class ProfileMenuController {
         this.currentUser.createFile(this.currentUser);
     }
     public Messages changeEmail(String email) throws IOException,NoSuchAlgorithmException{
-        if(Controller.getUserByEmail(email)!=null)return Messages.EMAIL_EXISTS;
+        if(User.getUserByEmail(email)!=null)return Messages.EMAIL_EXISTS;
         else if(!User.isEmailValid(email))return Messages.INVALID_EMAIL_FORMAT;
         this.currentUser.setNewEmail(email);
         this.currentUser.createFile(this.currentUser);
