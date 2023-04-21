@@ -10,10 +10,12 @@ import model.User;
 import model.Game;
 import model.Map;
 import view.CaptchaPrinter;
+import view.MenuPrinter;
 public class Controller {
     public static User currentUser;
     public static Game currentGame;
     private static int maxPlayers = 4;
+    public static final MenuPrinter menuPrinter = new MenuPrinter();
     public static int randomNumber(int max) {
         Random random = new Random();
         return random.nextInt(max);
@@ -65,4 +67,6 @@ public class Controller {
     public static int maxPlayers() {
         return maxPlayers;
     }
+
+
 }
