@@ -9,15 +9,15 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
 public class ProfileMenu {
-    private final ProfileMenuController controller = new ProfileMenuController(Controller.currentUser);
+    private ProfileMenuController controller;
 
     public void run(Scanner scanner) throws IOException, NoSuchAlgorithmException {
+        Controller.menuPrinter.print("PROFILE MENU", Colors.RED_BACKGROUND, 25, 1);
+        controller =  new ProfileMenuController(Controller.currentUser);
         while (true) {
             String input = scanner.nextLine();
-            if(input.matches("\\s*exit\\s*")){
-                System.out.println("Back to main menu!");
+            if(input.matches("\\s*exit\\s*"))
                 return;
-            }
             else if (ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_USERNAME) != null)
                 System.out.println(changeUsername(input));
             else if (ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_NICKNAME) != null)

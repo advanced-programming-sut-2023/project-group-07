@@ -8,11 +8,15 @@ import java.util.regex.Matcher;
 import model.*;
 
 public class GameMenuController {
-    private Game game = Controller.currentGame;
+    private Game game;
     private User currentUser;
     private ArrayList<Government> governments = new ArrayList<>();
     private Map map;
 
+    public GameMenuController(Game game, User currentUser){
+        this.game=game;
+        this.currentUser=currentUser;
+    }
     public Messages taxRate(int rate, Government government) {
         if (rate < -3 || rate > 8)
             return Messages.INVALID_RATE;

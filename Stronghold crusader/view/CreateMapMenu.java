@@ -9,6 +9,8 @@ import controller.MapMenuCommands;
 import controller.Messages;
 import model.LordColor;
 import java.util.regex.Matcher;
+import controller.Controller;
+import java.util.HashMap;
 
 public class CreateMapMenu extends MapMenu {
     private final CreateMapMenuController controller = new CreateMapMenuController(super.controller);
@@ -19,17 +21,16 @@ public class CreateMapMenu extends MapMenu {
     }
 
     public void run(Scanner scanner) {
+        Controller.menuPrinter.print("CREATE/CHANGE MAPS", Colors.RED_BACKGROUND, 25, 1);
         this.scanner = scanner;
         while (true) {
-            if (setMap().equals(Messages.EXIT_CREATE_MAP_MENU)) {
-                System.out.println("Back to main menu!");
+            if (setMap().equals(Messages.EXIT_CREATE_MAP_MENU))
                 return;
-            }
             while (true) {
                 String input = scanner.nextLine();
                 if (input.matches("\\s*exit\\s*")) {
                     controller.saveMap();
-                    System.out.println("Changes saved!\nBack to main menu!");
+                    System.out.println("Changes saved!");
                     return;
                 } else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_MAP) != null) {
                     String showMapStr = super.showMap(input);
@@ -43,10 +44,8 @@ public class CreateMapMenu extends MapMenu {
                     super.mapGuide();
                 else if (CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.REMOVE_MAP) != null) {
                     if (removeMap().equals(Messages.REMOVE_MAP_SUCCESSFUL)) {
-                        if (setMap().equals(Messages.EXIT_CREATE_MAP_MENU)) {
-                            System.out.println("Back to main menu!");
+                        if (setMap().equals(Messages.EXIT_CREATE_MAP_MENU))
                             return;
-                        }
                     }
                 } else if (CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.SET_PIXEL_TEXTURE) != null)
                     System.out.println(setPixelTexture(input));
@@ -109,7 +108,7 @@ public class CreateMapMenu extends MapMenu {
         int numberOfPlayers = getNumberOfPlayers();
         if (numberOfPlayers < 0)
             return Messages.EXIT_CREATE_MAP_MENU;
-        ArrayList<int[]> lordsPositions = getKeepsPositions(numberOfPlayers, mapSize);
+        HashMap<LordColor,int[]> lordsPositions = getKeepsPositions(numberOfPlayers, mapSize);
         if (lordsPositions == null)
             return Messages.EXIT_CREATE_MAP_MENU;
         String mapName = getNewMapName();
@@ -134,9 +133,9 @@ public class CreateMapMenu extends MapMenu {
         }
     }
 
-    private ArrayList<int[]> getKeepsPositions(int numberOfPlayers, int mapSize) {
+    private HashMap<LordColor,int[]> getKeepsPositions(int numberOfPlayers, int mapSize) {
         int counter = 1;
-        ArrayList<int[]> positions = new ArrayList<int[]>();
+        HashMap<LordColor, int[]> positions = new HashMap<LordColor, int[]>();
         while (counter <= numberOfPlayers) {
             System.out.println("Enter the cordinates of lord number " + counter + " (color "
                     + LordColor.getLordColor(counter - 1) + ") keep:");
@@ -154,12 +153,11 @@ public class CreateMapMenu extends MapMenu {
                 int column = Integer.parseInt(columnMatcher.group("column")) - 1;
                 if (row < 0 || row >= mapSize || column < 0 || column >= mapSize)
                     System.out.println("Invalid cordinates!");
-                if (controller.doesCordinatesExist(positions, row, column))
-                    System.out.println("There is already a lord castle in this position!");
+                /*if (controller.doesCordinatesExist(positions, row, column))
+                    System.out.println("There is already a lord castle in this position!");*/
                 else {
                     int[] lordPosition = new int[] { row, column };
-                    positions.add(lordPosition);
-                    //controller.addGovernment(row, column, new Government)
+                    positions.put(LordColor.getLordColor(counter - 1), lordPosition);
                     counter++;
                 }
             }

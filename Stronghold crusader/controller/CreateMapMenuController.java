@@ -1,5 +1,6 @@
 package controller;
 
+import java.util.HashMap;
 import java.util.ArrayList;
 import model.Map;
 import model.Texture;
@@ -7,6 +8,7 @@ import model.Tree;
 import model.MapPixel;
 import model.Rock;
 import model.Government;
+import model.LordColor;
 
 public class CreateMapMenuController {
     private Map map;
@@ -30,8 +32,8 @@ public class CreateMapMenuController {
         this.mapMenuController.refreshMap(this.map);
     }
 
-    public void setNewMap(int size, String name, int numberOfPlayers, ArrayList<int[]> lordsPositions) {
-        this.map = new Map(size, name, numberOfPlayers, lordsPositions);
+    public void setNewMap(int size, String name, int numberOfPlayers, HashMap<LordColor, int[]> lordsKeeps) {
+        this.map = new Map(size, name, numberOfPlayers, lordsKeeps);
         this.indexOfMap = Map.getMaps().size();
         this.mapMenuController.refreshMap(this.map);
     }
@@ -135,9 +137,9 @@ public class CreateMapMenuController {
     public void removeMap() {
         Map.removeMap(map);
     }
-    //todo : fix this
+    // todo : fix this
     // public void addGovernment(int row, int column, int index) {
-    //     map.getMapPixel(row, column).setPlayerKeep(government);
+    // map.getMapPixel(row, column).setPlayerKeep(government);
     // }
 
 }

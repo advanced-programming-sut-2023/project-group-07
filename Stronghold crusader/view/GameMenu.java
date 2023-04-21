@@ -10,15 +10,18 @@ import controller.GameMenuCommands;
 
 import controller.GameMenuController;
 import controller.Messages;
+import model.Game;
 import model.Government;
 import model.Resources;
 
 public class GameMenu {
-    private final GameMenuController controller = new GameMenuController();
-    private final Shop shop = new Shop(controller);
+    private GameMenuController controller;
+    private Shop shop;
     private Scanner scanner;
 
     public void run(Scanner scanner) {
+        controller = new GameMenuController(Controller.currentGame,Controller.currentUser);
+        shop = new Shop(controller);
         this.scanner = scanner;
         Matcher matcher;
         while (true) {
@@ -104,8 +107,8 @@ public class GameMenu {
     }
 
     private String dropBuilding(String input) {
-        String row = GameMenuCommands.getMatcher(input, GameMenuCommands.ROW).group("x");
-        String column = GameMenuCommands.getMatcher(input, GameMenuCommands.COLUMN).group("y");
+        String row = GameMenuCommands.getMatcher(input, GameMenuCommands.ROW).group("row");
+        String column = GameMenuCommands.getMatcher(input, GameMenuCommands.COLUMN).group("column");
         String type = GameMenuCommands.getMatcher(input, GameMenuCommands.TYPE).group("type");
         Messages returnMessage = controller.dropBuilding(row, column, type);
         switch (returnMessage) {
@@ -115,6 +118,8 @@ public class GameMenu {
                 return "There is already a building here!";
             case THERES_ALREADY_UNIT:
                 return "You can't drop buildings on units!";
+            case CANT_PLACE_THIS:
+                return "You can't place this here!";
             case THERES_AN_ENEMY_CLOSE_BY:
                 return "Too close to an enemy!";
             case NOT_ENOUGH_GOLD:

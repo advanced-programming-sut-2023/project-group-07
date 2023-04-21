@@ -16,8 +16,12 @@ public class LoginMenu {
     private final LoginMenuController controller = new LoginMenuController();
     private final MainMenu mainMenu = new MainMenu();
     public void run(Scanner scanner) throws IOException, NoSuchAlgorithmException {
+        if(User.stayLoggedIn()!=null) {
+            Controller.currentUser=User.stayLoggedIn();
+            mainMenu.run(scanner);
+        }
         LoginMenu.scanner = scanner;
-        Controller.menuPrinter.print("LOGIN/REGISTER MENU", Colors.BLUE_BACKGROUND, 25);
+        Controller.menuPrinter.print("LOGIN/REGISTER MENU", Colors.BLUE_BACKGROUND, 25, 1);
         while (true) {
             String input = scanner.nextLine();
             if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.CREATE_USER) != null && createUserFormat(input))
@@ -27,6 +31,7 @@ public class LoginMenu {
                 System.out.println(login);
                 if (login.equals("Login successful!"))
                     mainMenu.run(scanner);
+                Controller.menuPrinter.print("LOGIN/REGISTER MENU", Colors.BLUE_BACKGROUND, 25, 1);
             } 
             else if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.FORGOT_MY_PASSWORD) != null)
                 System.out.println(forgotMyPassword(scanner));
@@ -87,8 +92,7 @@ public class LoginMenu {
 
     private String extractUsername(String input) {
         Matcher usernameMatcher = LoginMenuCommands.getMatcher(input, LoginMenuCommands.USERNAME);
-        String username =
-                Controller.trimmer(usernameMatcher.group("username"));
+        String username = Controller.trimmer(usernameMatcher.group("username"));
         return username;
     }
 
@@ -130,7 +134,9 @@ public class LoginMenu {
     private String userLogin(String input) throws IOException, NoSuchAlgorithmException {
         String username = Controller.trimmer(LoginMenuCommands.getMatcher(input, LoginMenuCommands.USERNAME).group("username"));
         String password = Controller.trimmer(LoginMenuCommands.getMatcher(input, LoginMenuCommands.PASSWORD_LOGIN).group("password"));
-        switch (controller.login(username, password, false)) {
+        boolean stayLoggedIn=false;
+        if(LoginMenuCommands.getMatcher(input, LoginMenuCommands.STAY_LOGGED_IN)!=null) stayLoggedIn=true;
+        switch (controller.login(username, password, stayLoggedIn)) {
             case USERNAME_NOT_FOUND:
                 return "Username and password didn't match!";
             case WAIT_FOR_LOGIN:

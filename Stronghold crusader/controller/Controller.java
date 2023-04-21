@@ -23,9 +23,6 @@ public class Controller {
     public static char getRandomChar(char c , int max){
         return (char)(c + randomNumber(max));
     }
-    public static boolean isLoggedIn(){
-        return false;
-    }
     
     public static String trimmer(String string){
         if(string.charAt(0)=='\"')

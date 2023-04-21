@@ -10,13 +10,15 @@ public class Map {
     private ArrayList<ArrayList<MapPixel>> field = new ArrayList<ArrayList<MapPixel>>();
     private String name;
     private int numberOfPlayers;
-    private ArrayList<int[]> keepsPositions;
+    private HashMap<LordColor, int[]> keepsPositions;
 
-    public Map(int size, String name, int numberOfPlayers, ArrayList<int[]> keepsPositions) {
+    public Map(int size, String name, int numberOfPlayers, HashMap<LordColor, int[]> keepsPositions) {
         this.size = size;
         this.name = name;
         this.numberOfPlayers = numberOfPlayers;
         this.keepsPositions = keepsPositions;
+        for(LordColor lordColor : keepsPositions.keySet())
+            field.get(keepsPositions.get(lordColor)[0]).get(keepsPositions.get(lordColor)[1]).setPlayerKeep(lordColor);
         buildMap();
     }
 

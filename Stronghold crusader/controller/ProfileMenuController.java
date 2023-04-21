@@ -12,39 +12,36 @@ public class ProfileMenuController {
     public Messages changeUsername(String username) throws IOException,NoSuchAlgorithmException{
         if(!User.isUsernameValid(username))return Messages.INVALID_USERNAME;
         else if(User.getUserByUsername(username)!=null)return Messages.USERNAME_EXISTS;
-        String oldUsername = currentUser.getUsername();
         this.currentUser.setNewUsername(username);
-        this.currentUser.createFile(this.currentUser);
-        File file = new File(oldUsername+".txt");
-        file.delete();
+        User.updateUsers();
         return Messages.CHANGE_USERNAME_SUCCESSFUL;
     }
     public Messages changePassword(String oldPassword,String newPassword) throws IOException,NoSuchAlgorithmException{
-        if(!User.getPasswordFromFile(this.currentUser.getUsername()).equals(Controller.toSHA256(oldPassword)))
+        if(!currentUser.checkPassword(oldPassword))
             return Messages.INCORRECT_PASSWORD;
         else if(!User.isPasswordStrong(newPassword).equals(Messages.STRONG_PASSWORD)) return User.isPasswordStrong(newPassword);
         this.currentUser.setNewPassword(newPassword);
-        this.currentUser.createFile(this.currentUser);
+        User.updateUsers();
         return Messages.CHANGE_PASSWORD_SUCCESSFUL;
     }
     public void changeNickname(String nickName) throws IOException,NoSuchAlgorithmException{
         this.currentUser.setNewNickname(nickName);
-        this.currentUser.createFile(this.currentUser);
+        User.updateUsers();
     }
     public Messages changeEmail(String email) throws IOException,NoSuchAlgorithmException{
         if(User.getUserByEmail(email)!=null)return Messages.EMAIL_EXISTS;
         else if(!User.isEmailValid(email))return Messages.INVALID_EMAIL_FORMAT;
         this.currentUser.setNewEmail(email);
-        this.currentUser.createFile(this.currentUser);
+        User.updateUsers();
         return Messages.CHANGE_EMAIL_SUCCESSFUL;
     }
     public void changeSlogan(String slogan) throws IOException,NoSuchAlgorithmException{
         this.currentUser.setNewSlogan(slogan);
-        this.currentUser.createFile(this.currentUser);
+        User.updateUsers();
     }
     public String removeSlogan() throws IOException,NoSuchAlgorithmException{
         this.currentUser.removeSlogan();
-        this.currentUser.createFile(this.currentUser);
+        User.updateUsers();
         return "Slogan removed successfully!";
     }
     public String showHighScore(){
@@ -59,7 +56,6 @@ public class ProfileMenuController {
     }
     public String showInfo(){
         return ("Username : " + this.currentUser.getUsername() +
-                "\nPassword : " + this.currentUser.getPassword() + 
                 "\nNickname : " + this.currentUser.getNickname() +
                 "\nEmail : " + this.currentUser.getEmail() +
                 "\nSlogan : " + this.currentUser.getSlogan() +

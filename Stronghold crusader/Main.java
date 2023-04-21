@@ -18,15 +18,12 @@ public class Main {
         // CreateMapMenu cm = new CreateMapMenu();
         // cm.run(new Scanner(System.in));
         User.loadUsers();
-        if(Controller.isLoggedIn()){
-            
-        }
-        else{
-            // GameMenu gameMenu = new GameMenu();
-            // gameMenu.run(new Scanner(System.in));
-            LoginMenu loginMenu = new LoginMenu();
-            loginMenu.run(new Scanner(System.in));
-        }
+        
+        // GameMenu gameMenu = new GameMenu();
+        // gameMenu.run(new Scanner(System.in));
+        LoginMenu loginMenu = new LoginMenu();
+        loginMenu.run(new Scanner(System.in));
+    
     }
     
 }

@@ -13,6 +13,9 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.Collections;
+import java.util.Arrays;
+import java.util.ArrayList;
 
 public class LoginMenuController {
     String answer;
@@ -28,35 +31,39 @@ public class LoginMenuController {
     }
 
     private String randomPasswordGenerator() {
+        ArrayList<Character> passwordHolder = new ArrayList<Character>();
         String password = "", characters = "+=-_()\\*&^%$#@!`{}\"\'.,/:|~?><;";
         int length = Controller.randomNumber(7) + 3;
         int[] randomPositions = new int[4];
         for (int i = 0; i < 4; i++)
             randomPositions[i] = Controller.randomNumber(length);
         for (int i = 0; i < length; i++) {
-            switch ((Controller.randomNumber(100) * i + Controller.randomNumber(2)) % 4) {
+            if (i == randomPositions[0])
+                passwordHolder.add(Controller.getRandomChar('a', 26));
+            if (i == randomPositions[1])
+                passwordHolder.add(Controller.getRandomChar('A', 26));
+            if (i == randomPositions[2])
+                passwordHolder.add(Controller.getRandomChar('0', 10));
+            if (i == randomPositions[3])
+                passwordHolder.add(characters.charAt(Controller.randomNumber(characters.length())));
+            switch (Controller.randomNumber(4)) {
                 case 0:
-                    password += Controller.getRandomChar('a', 26);
+                    passwordHolder.add(Controller.getRandomChar('a', 26));
                     break;
                 case 1:
-                    password += Controller.getRandomChar('A', 26);
+                    passwordHolder.add(Controller.getRandomChar('A', 26));
                     break;
                 case 2:
-                    password += Controller.getRandomChar('0', 10);
+                    passwordHolder.add(Controller.getRandomChar('0', 10));
                     break;
                 case 3:
-                    password += characters.charAt(Controller.randomNumber(characters.length()));
+                    passwordHolder.add(characters.charAt(Controller.randomNumber(characters.length())));
                     break;
             }
-            if (i == randomPositions[0])
-                password += Controller.getRandomChar('a', 26);
-            if (i == randomPositions[1])
-                password += Controller.getRandomChar('A', 26);
-            if (i == randomPositions[2])
-                password += Controller.getRandomChar('0', 10);
-            if (i == randomPositions[3])
-                password += characters.charAt(Controller.randomNumber(characters.length()));
         }
+        Collections.shuffle(passwordHolder);
+        for (char c : passwordHolder)
+            password += c;
         return password;
     }
 
@@ -111,21 +118,28 @@ public class LoginMenuController {
         }
         if (!LoginMenu.checkCaptcha())
             return Messages.EXIT_CAPTCHA;
+        password = Controller.toSHA256(password);
         User user = new User(username, password, email, nickname, slogan, recoveryQuestion, answer);
         User.addUser(user);
+        User.sortUsers();
         return Messages.SIGNUP_SUCCESSFUL;
     }
 
     private Messages recoveryQuestion() {
         String questionInput = LoginMenu.pickRecoveryQuestion();
-        if (LoginMenuCommands.getMatcher(questionInput, LoginMenuCommands.QUESTION_NUMBER).group("questionNumber") == null ||
+        if (LoginMenuCommands.getMatcher(questionInput, LoginMenuCommands.QUESTION_NUMBER)
+                .group("questionNumber") == null ||
                 LoginMenuCommands.getMatcher(questionInput, LoginMenuCommands.ANSWER).group("answer") == null ||
-                LoginMenuCommands.getMatcher(questionInput, LoginMenuCommands.ANSWER).group("answer") == null)
+                LoginMenuCommands.getMatcher(questionInput, LoginMenuCommands.ANSWER_CONFIRM)
+                        .group("answerConfirm") == null)
             return Messages.INVALID_COMMAND;
         int questionNumber = Integer.parseInt(
                 LoginMenuCommands.getMatcher(questionInput, LoginMenuCommands.QUESTION_NUMBER).group("questionNumber"));
         String answer = LoginMenuCommands.getMatcher(questionInput, LoginMenuCommands.ANSWER).group("answer");
-        String answerConfirm = LoginMenuCommands.getMatcher(questionInput, LoginMenuCommands.ANSWER).group("answer");
+        String answerConfirm = LoginMenuCommands.getMatcher(questionInput, LoginMenuCommands.ANSWER_CONFIRM)
+                .group("answerConfirm");
+        answer = Controller.trimmer(answer);
+        answerConfirm = Controller.trimmer(answerConfirm);
         if (questionNumber > 3)
             return Messages.INVALID_QUESTION_NUMBER;
         else if (!answer.equals(answerConfirm))
@@ -154,7 +168,7 @@ public class LoginMenuController {
             return Messages.USERNAME_NOT_FOUND;
         else if (user != null && user.getLastAttempt() + 1000 * user.getAttempt() * 5 > System.currentTimeMillis()) {
             return Messages.WAIT_FOR_LOGIN;
-        } else if (user != null && !User.getPasswordFromFile(username).equals(Controller.toSHA256(password))) {
+        } else if (user != null && !user.checkPassword(password)) {
             user.setLastAttempt();
             user.addAttempt();
             return Messages.INCORRECT_PASSWORD;
@@ -164,6 +178,13 @@ public class LoginMenuController {
         user.setLastAttempt();
         user.resetAttempt();
         Controller.currentUser = user;
+        if (stayLoggedIn) {
+            FileWriter file = new FileWriter("stayLoggedIn");
+            Gson gson = new Gson();
+            String userString = gson.toJson(user);
+            file.write(userString);
+            file.close();
+        }
         return Messages.LOGIN_SUCCESSFUL;
     }
 
@@ -178,7 +199,7 @@ public class LoginMenuController {
         if (!User.isPasswordStrong(password).equals(Messages.STRONG_PASSWORD))
             return User.isPasswordStrong(password);
         user.setNewPassword(password);
-        user.createFile(user);
+        User.updateUsers();
         return Messages.PASSWORD_CHANGED;
     }
 }

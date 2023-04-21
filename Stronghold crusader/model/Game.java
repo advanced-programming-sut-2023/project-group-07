@@ -3,6 +3,7 @@ package model;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import controller.Controller;
 import controller.Messages;
 
 public class Game {
@@ -27,7 +28,7 @@ public class Game {
             return Messages.INVALID_RATE;
         government.setTaxRate(rate);
         return Messages.RATE_CHANGE_SUCCESSFUL;
-    } //  todo : remove this?
+    } // todo : remove this?
 
     public User getCurrentUser() {
         return currentGovernment.getUser();
@@ -43,7 +44,7 @@ public class Game {
         government.setFearRate(rate);
         return Messages.RATE_CHANGE_SUCCESSFUL;
     }
-
+    
     public Map getMap() {
         return this.map;
     }
@@ -51,33 +52,34 @@ public class Game {
     public boolean isAnEnemyCloseBy(int row, int column) {
         for (int i = -5; i < 6; i++) {
             for (int j = Math.abs(i) - 5; j < 6 - Math.abs(i); j++) {
-                for (Person person : map.getMapPixel(row + i, column + j).getPeople())
-                    if (person instanceof Unit && !((Unit) person).getGovernment().equals(currentGovernment))
-                        return true;
-            }
+                if(row + i>=0 && column + j>=0 && row + i<map.getSize() && column + j<map.getSize())
+                    for (Person person : map.getMapPixel(row + i, column + j).getPeople())
+                        if (person instanceof Unit && !((Unit) person).getGovernment().equals(currentGovernment))
+                            return true;
+                        }
         }
         return false;
     }
 
     public Messages dropBuilding(int row, int column, TypeOfBuilding typeOfBuilding) {
         if (row < 0 || row > map.getSize() - typeOfBuilding.getWidth() + 1 || column < 0
-                || column > map.getSize() - typeOfBuilding.getLength() + 1) {
+        || column > map.getSize() - typeOfBuilding.getLength() + 1) {
             return Messages.INVALID_ROW_OR_COLUMN;
         }
         for (int i = 0; i < typeOfBuilding.getLength(); i++)
-            for (int j = 0; j < typeOfBuilding.getWidth(); j++)
-                if (map.getMapPixel(row + j, column + i).getBuildings().size() != 0)
-                    return Messages.THERES_ALREADY_BUILDING;
-
+        for (int j = 0; j < typeOfBuilding.getWidth(); j++)
+        if (map.getMapPixel(row + j, column + i).getBuildings().size() != 0)
+        return Messages.THERES_ALREADY_BUILDING;
+        
         for (int i = 0; i < typeOfBuilding.getLength(); i++)
-            for (int j = 0; j < typeOfBuilding.getWidth(); j++)
-                if (map.getMapPixel(row + j, column + i).getPeople().size() != 0)
-                    return Messages.THERES_ALREADY_UNIT;
+        for (int j = 0; j < typeOfBuilding.getWidth(); j++)
+        if (map.getMapPixel(row + j, column + i).getPeople().size() != 0)
+        return Messages.THERES_ALREADY_UNIT;
 
         for (int i = 0; i < typeOfBuilding.getLength(); i++)
             for (int j = 0; j < typeOfBuilding.getWidth(); j++) {
                 if (!map.getMapPixel(row + j, column + i).canDropObject()
-                        || map.getMapPixel(row + j, column + i).getTexture().canDropBuilding())
+                        || !map.getMapPixel(row + j, column + i).getTexture().canDropBuilding())
                     return Messages.CANT_PLACE_THIS;
             }
         if (typeOfBuilding.equals(TypeOfBuilding.APPLE_ORCHARD) ||
@@ -90,7 +92,6 @@ public class Game {
                         return Messages.CANT_PLACE_THIS;
                 }
         }
-
         int acceptedPixels = 0;
         if (typeOfBuilding.equals(TypeOfBuilding.QUARRY) || typeOfBuilding.equals(TypeOfBuilding.IRON_MINE)
                 || typeOfBuilding.equals(TypeOfBuilding.PITCH_RIG)) {
@@ -98,14 +99,15 @@ public class Game {
                 for (int j = 0; j < typeOfBuilding.getWidth(); j++)
                     if (!map.getMapPixel(row + j, column + i).getTexture().equals(typeOfBuilding.getTexture()))
                         acceptedPixels++;
-            if (acceptedPixels * 4 < typeOfBuilding.getLength() * typeOfBuilding.getWidth())
+            if (acceptedPixels * 4 > typeOfBuilding.getLength() * typeOfBuilding.getWidth())
                 return Messages.CANT_PLACE_THIS;
         }
 
         if (typeOfBuilding.getCost() > currentGovernment.getGold())
             return Messages.NOT_ENOUGH_GOLD;
 
-        if (typeOfBuilding.getResourceAmount() > currentGovernment.getResources()
+        if (currentGovernment.getResources().containsKey(typeOfBuilding.getResourceNeeded()) && 
+                typeOfBuilding.getResourceAmount() > currentGovernment.getResources()
                 .get(typeOfBuilding.getResourceNeeded()))
             return Messages.NOT_ENOUGH_RESOURCES;
 
@@ -316,7 +318,8 @@ public class Game {
 
     public void endOfTurn() {
         for (Government government : governments) {
-            government.setPopularity(government.getPopularity() + government.getTaxEffectOnPopularity()); // todo: update
+            government.setPopularity(government.getPopularity() + government.getTaxEffectOnPopularity()); // todo:
+                                                                                                          // update
             government.setGold((int) (government.getGold() + government.getTaxAmount() * government.getPopulation()));
             government.giveFood();
             government.changePeasant(0); // todo: number of added peasants each turn

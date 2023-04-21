@@ -30,7 +30,7 @@ public enum TypeOfBuilding {
     WOODCUTTER(150,3,3,1,"woodcutter",null,0,Resources.WOOD,3),
     HOVEL(200,4,4,0,"hovel",null,0,Resources.WOOD,6),
     CHURCH(600,9,9,1,"church",null,500,Resources.WOOD,0),
-    CATHEDRAL(1200,13,13,1,"cathedral",null,500,Resources.WOOD,0),
+    CATHEDRAL(1200,13,13,1,"cathedral",null,1000,Resources.WOOD,0),
     ARMOURER(500,4,4,1,"armourer",null,100,Resources.WOOD,20),
     BLACKSMITH(500,4,4,1,"blacksmith",null,200,Resources.WOOD,20),
     POLETURNER(500,4,4,1,"poleturner",null,100,Resources.WOOD,10),
