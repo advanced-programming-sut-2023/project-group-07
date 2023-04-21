@@ -6,6 +6,7 @@ import model.Texture;
 import model.Tree;
 import model.MapPixel;
 import model.Rock;
+import model.Government;
 
 public class CreateMapMenuController {
     private Map map;
@@ -48,9 +49,9 @@ public class CreateMapMenuController {
             return Messages.INVALID_TEXTURE;
         if (map.getMapPixel(row, column).getBuildings().size() > 0)
             return Messages.BUILDING_EXIST;
-        map.setPixelTexture(row, column, texture);
+        map.getMapPixel(row, column).setTexture(texture);
         if (texture.equals(Texture.LARGE_POND))
-            map.setPixelTexture(row, (column > 0) ? column - 1 : column + 1, texture);
+            map.getMapPixel(row, (column > 0) ? column - 1 : column + 1).setTexture(texture);
         return Messages.SET_TEXTURE_SUCCESSFUL;
     }
 
@@ -92,7 +93,8 @@ public class CreateMapMenuController {
         int size = map.getSize();
         if (row < 0 || row >= size || column < 0 || column >= size)
             return Messages.INVALID_CORDINATES;
-        map.clearPixel(row, column);;
+        map.getMapPixel(row, column).backToDefault();
+        ;
         return Messages.CLEAR_SUCCESSFUL;
     }
 
@@ -134,5 +136,9 @@ public class CreateMapMenuController {
     public void removeMap() {
         Map.removeMap(map);
     }
+    //todo : fix this
+    // public void addGovernment(int row, int column, int index) {
+    //     map.getMapPixel(row, column).setPlayerKeep(government);
+    // }
 
 }

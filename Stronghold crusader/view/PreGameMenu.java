@@ -5,6 +5,8 @@ import controller.PreGameMenuController;
 import model.Game;
 import model.Map;
 import model.User;
+import model.Government;
+import model.LordColor;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -23,18 +25,22 @@ public class PreGameMenu { // todo: this class haven't been tested
     public void run(Scanner scanner) {
         this.scanner = scanner;
         Integer numberOfPlayers = getNumberOfPlayers();
-        if (numberOfPlayers == null) return;
-
-        ArrayList<User> players = getPlayers(numberOfPlayers);
-        if (players == null) return;
-
+        if (numberOfPlayers == null)
+            return;
+        //todo : make a clone of map
         Map map = getChosenMap(numberOfPlayers);
-        if (map == null) return;
+        if (map == null)
+            return;
+
+        ArrayList<Government> governments = getGovernments(numberOfPlayers, map);
+        if (governments == null)
+            return;
 
         Integer earlyGameGolds = getGold();
-        if (earlyGameGolds == null) return;
+        if (earlyGameGolds == null)
+            return;
 
-        Game game = new Game(map, players, earlyGameGolds);
+        Game game = new Game(map, governments, earlyGameGolds);
         Controller.currentGame = game;
         gameMenu.run(scanner);
     }
@@ -44,9 +50,11 @@ public class PreGameMenu { // todo: this class haven't been tested
         while (true) {
             System.out.println("Enter a positive whole number:");
             String input = scanner.nextLine();
-            if (input.matches("\\s*[eE]xit\\s*")) return null;
+            if (input.matches("\\s*exit\\s*"))
+                return null;
 
-            if (input.matches("\\+?\\d+")) return Integer.parseInt(input);
+            if (input.matches("\\+?\\d+"))
+                return Integer.parseInt(input);
         }
     }
 
@@ -62,7 +70,8 @@ public class PreGameMenu { // todo: this class haven't been tested
         int mapIndex;
         while (true) {
             String input = scanner.nextLine();
-            if (input.toLowerCase().matches("\\s*exit\\s*")) return null;
+            if (input.matches("\\s*exit\\s*"))
+                return null;
 
             if (input.matches("\\d+")) {
                 mapIndex = Integer.parseInt(input);
@@ -71,21 +80,22 @@ public class PreGameMenu { // todo: this class haven't been tested
                     if (maps.get(mapIndex).getNumberOfPlayers() < numberOfPlayers) {
                         System.out.println("Too few number of players!");
                         continue;
-                    } else return maps.get(mapIndex);
+                    } else
+                        return maps.get(mapIndex);
                 }
             }
             System.out.println("Enter a number between 1 and " + maps.size() + "!");
         }
     }
 
-
     private Integer getNumberOfPlayers() {
         int numberOfPlayers;
         System.out.println("How many players are in the game?");
-        int maxPlayers = min(Controller.maxPlayers(),Map.maxPlayerOfMaps());
+        int maxPlayers = min(Controller.maxPlayers(), Map.maxPlayerOfMaps());
         while (true) {
             String input = scanner.nextLine();
-            if (input.toLowerCase().matches("\\s*exit\\s*")) return null;
+            if (input.matches("\\s*exit\\s*"))
+                return null;
             if (input.matches("\\d+")) {
                 int inputNumber = Integer.parseInt(input);
                 if (inputNumber >= 2 && inputNumber <= maxPlayers) {
@@ -97,24 +107,26 @@ public class PreGameMenu { // todo: this class haven't been tested
         }
     }
 
-    private ArrayList<User> getPlayers(int numberOfPlayers) {
-        ArrayList<User> players = new ArrayList<>();
-        players.add(Controller.currentUser);
-        for (int i = 0; i < numberOfPlayers - 1; i++) {
-            if (i==0) System.out.println("Enter username of first player:");
-            else System.out.println("Enter username of next player:");
-
+    private ArrayList<Government> getGovernments(int numberOfPlayers, Map map) {
+        ArrayList<Government> governments = new ArrayList<>();
+        governments.add(new Government(LordColor.getLordColor(0), Controller.currentUser, 0, map.getKeepPosition(0)[0],
+                map.getKeepPosition(0)[1]));
+        for (int i = 1; i < numberOfPlayers; i++) {
+            System.out.println("Enter username of next player:");
             String input = scanner.nextLine();
-            if (input.toLowerCase().matches("\\s*exit\\s*")) return null;
+            if (input.matches("\\s*exit\\s*"))
+                return null;
             User user = Controller.getUserByUsername(input);
             while (user == null) {
                 System.out.println("There is no user with this username! Enter another one:");
                 input = scanner.nextLine();
-                if (input.toLowerCase().matches("\\s*exit\\s*")) return null;
+                if (input.matches("\\s*exit\\s*"))
+                    return null;
                 user = Controller.getUserByUsername(input);
             }
-            players.add(user);
+            governments.add(new Government(LordColor.getLordColor(i), user, 0, map.getKeepPosition(i)[0],
+                    map.getKeepPosition(0)[1]));
         }
-        return players;
+        return governments;
     }
 }

@@ -55,7 +55,7 @@ public class GameMenu {
 
     private String getFoodList() { // todo: haven't been checked
         String result = "";
-        HashMap<Resources, Double> foodList = controller.getFoodList();
+        HashMap<Resources, Integer> foodList = controller.getFoodList();
         for (Resources food : foodList.keySet()) {
             result += "you have " + foodList.get(food) + " of " + food.getName() + "\n";
         }

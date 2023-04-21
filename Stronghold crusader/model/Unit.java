@@ -1,8 +1,9 @@
 package model;
 
 public class Unit extends Person {
-    Government government;
-
+    private Government government;
+    private int damage;
+    private int bonusDamageRate;
     public Government getGovernment() {
         return government;
     }

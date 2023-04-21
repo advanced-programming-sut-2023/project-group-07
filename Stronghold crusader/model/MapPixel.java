@@ -7,6 +7,8 @@ public class MapPixel {
     private Texture texture;
     private ArrayList<Person> people = new ArrayList<Person>();
     private ArrayList<Building> buildings = new ArrayList<Building>();
+    //todo : check this
+    private Government playerKeep = null;
     private Tree tree = null;
     private Rock rock = null;
     private boolean doesHaveOil;
@@ -60,12 +62,16 @@ public class MapPixel {
         this.rock = rock;
     }
 
+    public void setPlayerKeep(Government playerKeep) {
+        this.playerKeep = playerKeep;
+    }
+
     public Rock getRock() {
         return rock;
     }
 
     public boolean canDropObject() {
-        return (buildings.size() == 0 && rock == null && tree == null);
+        return (buildings.size() == 0 && rock == null && tree == null && playerKeep == null);
     }
 
     private boolean doesHaveSoldier() {
@@ -90,6 +96,8 @@ public class MapPixel {
     }
 
     public String objectToShow() {
+        if(this.playerKeep != null)
+            return "K";
         if (doesHaveSoldier())
             return "S";
         if (this.buildings.size() != 0)

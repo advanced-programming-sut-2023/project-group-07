@@ -7,6 +7,7 @@ import controller.CreateMapMenuCommands;
 import controller.CreateMapMenuController;
 import controller.MapMenuCommands;
 import controller.Messages;
+import model.LordColor;
 import java.util.regex.Matcher;
 
 public class CreateMapMenu extends MapMenu {
@@ -108,7 +109,7 @@ public class CreateMapMenu extends MapMenu {
         int numberOfPlayers = getNumberOfPlayers();
         if (numberOfPlayers < 0)
             return Messages.EXIT_CREATE_MAP_MENU;
-        ArrayList<int[]> lordsPositions = getLordsPositions(numberOfPlayers, mapSize);
+        ArrayList<int[]> lordsPositions = getKeepsPositions(numberOfPlayers, mapSize);
         if (lordsPositions == null)
             return Messages.EXIT_CREATE_MAP_MENU;
         String mapName = getNewMapName();
@@ -133,11 +134,12 @@ public class CreateMapMenu extends MapMenu {
         }
     }
 
-    private ArrayList<int[]> getLordsPositions(int numberOfPlayers, int mapSize) {
+    private ArrayList<int[]> getKeepsPositions(int numberOfPlayers, int mapSize) {
         int counter = 1;
         ArrayList<int[]> positions = new ArrayList<int[]>();
         while (counter <= numberOfPlayers) {
-            System.out.println("Enter the cordinates of lord number " + counter + " castle:");
+            System.out.println("Enter the cordinates of lord number " + counter + " (color "
+                    + LordColor.getLordColor(counter - 1) + ") keep:");
             String input = scanner.nextLine();
             Matcher rowMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_ROW);
             Matcher columnMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_COLUMN);
@@ -157,6 +159,7 @@ public class CreateMapMenu extends MapMenu {
                 else {
                     int[] lordPosition = new int[] { row, column };
                     positions.add(lordPosition);
+                    //controller.addGovernment(row, column, new Government)
                     counter++;
                 }
             }

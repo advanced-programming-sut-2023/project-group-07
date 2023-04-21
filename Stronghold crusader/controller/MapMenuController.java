@@ -93,7 +93,10 @@ public class MapMenuController {
     }
 
     public String getDetails(int row, int column) {
-        return null;
+        MapPixel pixel = map.getMapPixel(row, column);
+        String result = "Pixel cordinates: " + (row + 1) + " , " + (column + 1)
+                + "Pixel type/texture: " + pixel.getTexture();
+        return result;
     }
 
     public void refreshMap(Map map) {

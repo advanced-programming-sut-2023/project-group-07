@@ -42,7 +42,7 @@ public class GameMenuController {
     public void endOfTurn() {
         for (Government government : getGovernments()) {
             government.setPopularity(government.getPopularity() + government.getTaxPopularity());
-            government.setGold(government.getGold() + government.getTaxAmount() * government.getPopulation());
+            government.setGold((int) (government.getGold() + government.getTaxAmount() * government.getPopulation()));
         }
     }
 
@@ -135,7 +135,7 @@ public class GameMenuController {
         return game.getCurrentGovernment().getFoodRate();
     }
 
-    public HashMap<Resources, Double> getFoodList() {
+    public HashMap<Resources, Integer> getFoodList() {
         return game.getCurrentGovernment().getFoodList();
     }
 
@@ -149,14 +149,28 @@ public class GameMenuController {
         return Messages.SET_FOOD_RATE_SUCCESSFUL;
     }
 
-    public void nextTurn() {
-        Government government = game.getCurrentGovernment();
-        User currentUser = game.getCurrentUser();
-        game.endOfTurn();
+    public String showPriceList() {
+        String result = " ";
+        result += "<< FOOD >>\n";
+        for (Resources resource : Resources.values())
+            if (resource.getType().equals(TypeOfResource.FOOD))
+                result += showResource(resource);
+        result += "<< RAW MATERIALS >>\n";
+        for (Resources resource : Resources.values())
+            if (resource.getType().equals(TypeOfResource.RAW_MATERIAL))
+                result += showResource(resource);
+        result += "<< WEAPONS >>\n";
+        for (Resources resource : Resources.values())
+            if (resource.getType().equals(TypeOfResource.WEAPON))
+                result += showResource(resource);
+        return result;
     }
 
-    public int getResourceAmount(Resources resource) {
-        return game.getCurrentGovernment().getResourceAmount(resource);
+    private String showResource(Resources resource) {
+        return ("* " + resource + ":" +
+                "\nBuying price: " + resource.getBuyingPrice() +
+                "\nSelling price: " + resource.getSellingPrice() +
+                "\nAmount: " + game.getCurrentGovernment().getResourceAmount(resource) + "\n");
     }
 
     public Messages buyCommodity(String item, int amount) {

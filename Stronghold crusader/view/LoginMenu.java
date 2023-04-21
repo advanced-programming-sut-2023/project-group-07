@@ -16,7 +16,7 @@ public class LoginMenu {
     private final MainMenu mainMenu = new MainMenu();
     public void run(Scanner scanner) throws IOException, NoSuchAlgorithmException {
         LoginMenu.scanner = scanner;
-        Controller.menuPrinter.print("LOGIN/REGISTER MENU", Colors.BLUE_BACKGROUND, 30);
+        Controller.menuPrinter.print("LOGIN/REGISTER MENU", Colors.BLUE_BACKGROUND, 25);
         while (true) {
             String input = scanner.nextLine();
             if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.CREATE_USER) != null && createUserFormat(input))

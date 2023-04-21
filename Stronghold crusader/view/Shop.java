@@ -3,8 +3,6 @@ package view;
 import java.util.Scanner;
 import controller.GameMenuController;
 import controller.GameMenuCommands;
-import model.Resources;
-import model.TypeOfResource;
 import java.util.regex.Matcher;
 
 public class Shop {
@@ -20,7 +18,7 @@ public class Shop {
             if (input.matches("\\s*back\\s*"))
                 return;
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_PRICE_LIST) != null)
-                showPriceList();
+                System.out.println(controller.showPriceList());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.BUY_COMMODITY) != null)
                 System.out.println(buyCommodity(input));
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SELL_COMMODITY) != null)
@@ -29,28 +27,6 @@ public class Shop {
                 System.out.println("Invalid command!");
 
         }
-    }
-
-    private void showPriceList() {
-        System.out.println("<< FOOD >>");
-        for (Resources resource : Resources.values())
-            if (resource.getType().equals(TypeOfResource.FOOD))
-                showResource(resource);
-        System.out.println("<< RAW MATERIALS >>");
-        for (Resources resource : Resources.values())
-            if (resource.getType().equals(TypeOfResource.RAW_MATERIAL))
-                showResource(resource);
-        System.out.println("<< WEAPONS >>");
-        for (Resources resource : Resources.values())
-            if (resource.getType().equals(TypeOfResource.WEAPON))
-                showResource(resource);
-    }
-
-    private void showResource(Resources resource) {
-        System.out.println("* " + resource + ":" +
-                "\nBuying price: " + resource.getBuyingPrice() +
-                "\nSelling price: " + resource.getSellingPrice() +
-                "\nAmount: " + controller.getResourceAmount(resource));
     }
 
     private String buyCommodity(String input) {

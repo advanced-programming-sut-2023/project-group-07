@@ -1,11 +1,13 @@
 package controller;
 
 import java.util.regex.Pattern;
-
+import com.google.gson.*;
 import model.User;
 import view.LoginMenu;
 import controller.Controller;
 import model.RecoveryQuestion;
+
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -111,7 +113,10 @@ public class LoginMenuController {
             return Messages.EXIT_CAPTCHA;
         User user = new User(username, password, email, nickname, slogan, recoveryQuestion, answer);
         User.addUser(user);
-        user.createFile(user);
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        FileWriter file = new FileWriter("Users");
+        gson.toJson(user, file);
+        file.close();
         return Messages.SIGNUP_SUCCESSFUL;
     }
 

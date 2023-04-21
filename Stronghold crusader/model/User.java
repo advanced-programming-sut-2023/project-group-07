@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 import java.util.regex.*;
+import com.google.gson.*;
+
 public class User {
     private String username;
     private String password;
@@ -22,6 +24,7 @@ public class User {
     private int rank;
 
     private static ArrayList<User> users = new ArrayList<User>();
+    private static JsonArray usersArray = new JsonArray();
 
     public User(String username, String password, String email, String nickname, String slogan,
                 RecoveryQuestion passwordRecoveryQuestion, String passwordRecoveryAnswer) {
@@ -139,6 +142,14 @@ public class User {
     }
     public static void addUser(User user){
         users.add(user);
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        
+    }
+    public static void addUserToFile(User user){
+
+    }
+    public static void loadUsers(){
+
     }
 
 }

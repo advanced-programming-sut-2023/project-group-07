@@ -10,13 +10,13 @@ public class Map {
     private ArrayList<ArrayList<MapPixel>> field = new ArrayList<ArrayList<MapPixel>>();
     private String name;
     private int numberOfPlayers;
-    private ArrayList<int[]> lordsPositions;
+    private ArrayList<int[]> keepsPositions;
 
-    public Map(int size, String name, int numberOfPlayers, ArrayList<int[]> lordsPositions) {
+    public Map(int size, String name, int numberOfPlayers, ArrayList<int[]> keepsPositions) {
         this.size = size;
         this.name = name;
         this.numberOfPlayers = numberOfPlayers;
-        this.lordsPositions = lordsPositions;
+        this.keepsPositions = keepsPositions;
         buildMap();
     }
 
@@ -86,14 +86,6 @@ public class Map {
                 this.field.get(i).get(j).setTexture(texture);
     }
 
-    public void clearPixel(int row, int column) {
-        field.get(row).get(column).backToDefault();
-    }
-
-    public void setPixelTexture(int row, int column, Texture texture) {
-        field.get(row).get(column).setTexture(texture);;
-    }
-
     public static void changeMaps(Map map, int index) {
         if (index >= maps.size())
             maps.add(map);
@@ -105,7 +97,8 @@ public class Map {
         return maxPlayerOfMaps;
     }
 
-    public ArrayList<int[]> getLordsPositions() {
-        return (ArrayList<int[]>) lordsPositions.clone();
+    public int[] getKeepPosition(int index){
+        return keepsPositions.get(index);
     }
+
 }

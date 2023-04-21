@@ -5,9 +5,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class Government {
-    private int population;
+    private final LordColor color;
     private final int row;
     private final int column;
+    private int population;
     private int peasant;
     private int popularity;
     private User user;
@@ -22,7 +23,7 @@ public class Government {
     private HashSet<Building> buildingsWaitingForWorkers = new HashSet<>();
     private HashSet<TypeOfBuilding> noLaborBuildings = new HashSet<>();
 
-    public Government(User user, int gold, int row, int column) {
+    public Government(LordColor color, User user, int gold, int row, int column) {
         population = 10;
         popularity = 100; // todo: we can make a variable that show starting population and popularity
         this.user = user;
@@ -32,6 +33,7 @@ public class Government {
         peasant = 10;
         this.row = row;
         this.column = column;
+        this.color = color;
     }
 
     public int getPopulation() {
