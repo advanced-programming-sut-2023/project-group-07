@@ -73,6 +73,8 @@ public class LoginMenu {
                 return "Signup successful!";
             case EXIT_CAPTCHA:
                 return "Signup cancelled!";
+            case INVALID_COMMAND:
+                return "Invalid command!";
             default:
                 break;
         }
