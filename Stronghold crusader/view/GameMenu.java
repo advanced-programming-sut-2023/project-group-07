@@ -1,5 +1,6 @@
 package view;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -28,6 +29,8 @@ public class GameMenu {
                 System.out.println(selectBuilding(input));
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULARITY) != null)
                 System.out.println("Your popularity is : " + controller.getPopularity());
+            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULARITY_FACTORS) != null)
+                System.out.println(getPopularityFactors());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.FOOD_RATE_SHOW) != null)
                 System.out.println("Your food rate is : " + controller.getFoodRate());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_FOOD_LIST) != null)
@@ -38,6 +41,17 @@ public class GameMenu {
                 System.out.println("Invalid command!");
         }
 
+    }
+
+    private String getPopularityFactors() { // todo : check this 
+        ArrayList<Integer> factorsInOrder = controller.getPopularityFactors();
+        return "Popularity factors:\n" +
+                "Food : " + factorsInOrder.get(0) + "\n" +
+                "Tax : " + factorsInOrder.get(1) + "\n" +
+                "Religion : " + factorsInOrder.get(2) + "\n" +
+                "Fear factor : " + factorsInOrder.get(3) + "\n" +
+                "Effect of buildings : " + factorsInOrder.get(4)
+                ;
     }
 
     private String setFoodList(Matcher matcher) {

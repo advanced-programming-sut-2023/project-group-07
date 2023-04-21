@@ -2,6 +2,7 @@ package controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.regex.Matcher;
 
 import model.*;
@@ -189,4 +190,14 @@ public class GameMenuController {
         return Messages.SHOP_SUCCESSFUL;
     }
 
+    public ArrayList<Integer> getPopularityFactors() {
+        Government government = game.getCurrentGovernment();
+        ArrayList<Integer> factorsInOrder = new ArrayList<>();
+        factorsInOrder.add(government.getFoodEffectOnPopularity());
+        factorsInOrder.add(government.getTaxEffectOnPopularity());
+        factorsInOrder.add(government.getReligionEffectOnPopularity());
+        factorsInOrder.add(government.getFearEffectOnPopularity());
+        factorsInOrder.add(government.getBuildingsEffectOnPopularity());
+        return factorsInOrder;
+    }
 }
