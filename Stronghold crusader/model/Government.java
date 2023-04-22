@@ -96,6 +96,10 @@ public class Government {
         return peasant;
     }
 
+    public LordColor color() {
+        return color;
+    }
+
     public void changePeasant(int count) {
         peasant += count;
         if (peasant < 0)
