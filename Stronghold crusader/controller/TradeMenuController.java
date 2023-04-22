@@ -13,4 +13,10 @@ public class TradeMenuController {
         Government government =  Controller.currentGame.getCurrentGovernment();
         return TradeRequest.getNotSeenRequests(government);
     }
+
+    public void setRequestsShown(ArrayList<TradeRequest> requests) {
+        for(TradeRequest tradeRequest : requests){
+            tradeRequest.setHaveBeenShownTrue();
+        }
+    }
 }

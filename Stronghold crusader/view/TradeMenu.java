@@ -15,7 +15,7 @@ public class TradeMenu {
     }
 
     public void run(Scanner scanner) {
-        ArrayList<TradeRequest> notSeenRequests = controller.getNotSeenRequests();
+        ArrayList<TradeRequest> notSeenRequests = controller.getNotSeenRequests(); // todo : this may change when adding 1-all
         if (notSeenRequests.size() == 0) System.out.println("You don't have any new trade request");
         else {
             if (notSeenRequests.size() == 1) System.out.println("You have 1 new trade request :");
@@ -25,8 +25,10 @@ public class TradeMenu {
                         tradeRequest.amount() + " "+tradeRequest.resource() + " for "+tradeRequest.price()+" golds");
             }
         }
+        controller.setRequestsShown(notSeenRequests); // todo : this may change when adding 1-all
         while (true) {
             String input = scanner.nextLine();
+
             // todo: add commands
         }
     }
