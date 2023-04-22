@@ -1,5 +1,6 @@
 package view;
 
+import controller.Controller;
 import controller.TradeMenuController;
 import controller.TradeRequestMenuCommands;
 import model.TradeRequest;
@@ -7,6 +8,7 @@ import model.TradeRequest;
 import java.security.spec.RSAOtherPrimeInfo;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.regex.Matcher;
 
 public class TradeMenu {
     TradeMenuController controller;
@@ -17,14 +19,40 @@ public class TradeMenu {
 
     public void run(Scanner scanner) {
         showNewRequests();
+        Matcher matcher;
         while (true) {
             String input = scanner.nextLine();
-            if (TradeRequestMenuCommands.getMatcher(input, TradeRequestMenuCommands.TRADE_LIST) != null)
+            if(input.matches("\\s*exit\\s*"))
+                return;
+            else if (TradeRequestMenuCommands.getMatcher(input, TradeRequestMenuCommands.TRADE_LIST) != null)
                 showAvailableTrades();
             else if (TradeRequestMenuCommands.getMatcher(input, TradeRequestMenuCommands.TRADE_HISTORY) != null)
                 showTradeHistory();
+            else if (TradeRequestMenuCommands.getMatcher(input, TradeRequestMenuCommands.ACCEPT_TRADE) != null)
+                System.out.println(acceptTrade(input));
+            else
+                System.out.println("Invalid command!");
+
             // todo: add commands
         }
+    }
+
+    private String acceptTrade(String input) {
+        String idString = TradeRequestMenuCommands.getMatcher(input, TradeRequestMenuCommands.ID).group("id");
+        int id= Integer.parseInt(idString);
+        String message = TradeRequestMenuCommands.getMatcher(input, TradeRequestMenuCommands.MESSAGE).group("message");
+        message = Controller.trimmer(message);
+        switch (controller.acceptTrade(id,message)) {
+            case ACCEPT_TRADE_SUCCESSFUL :
+                return "You have successfully accept a trade.";
+            case POOR_RECEIVER:
+                return "You don't have enough recourse for this trade.";
+            case POOR_REQUESTER:
+                return "Requester don't have enough gold to pay you right now.";
+            case INVALID_ID:
+                return "ID is invalid.";
+        }
+        return null;
     }
 
     private void showTradeHistory() { // todo : this may change when adding 1-all
@@ -52,7 +80,7 @@ public class TradeMenu {
     }
 
     private void showAvailableTrades() {  // todo : this may change when adding 1-all
-         ArrayList<TradeRequest> availableTrades = controller.getAvailableTrades();
+        ArrayList<TradeRequest> availableTrades = controller.getAvailableTrades();
         if (availableTrades.size() == 0) System.out.println("No available trade request");
         else {
             for (TradeRequest tradeRequest : availableTrades) {

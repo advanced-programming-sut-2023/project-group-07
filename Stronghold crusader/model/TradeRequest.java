@@ -9,8 +9,10 @@ public class TradeRequest {
     private final Resources resource;
     private final int amount;
     private final Government requester;
-    private final Government receiver;
+    private Government receiver;
     private boolean hasBeenShown;
+    private String requesterMessage;
+    private String receiverMessage;
     private boolean isAvailable;
     private boolean accepted;
     private boolean rejected;
@@ -116,5 +118,13 @@ public class TradeRequest {
             else if (this.rejected) str += " :was rejected";
         }
         return str;
+    }
+
+    public void accept(Government receiver, String receiverMessage) {
+        this.receiverMessage = receiverMessage;
+        this.receiver = receiver;
+        this.isAvailable = false;
+        this.accepted = true;
+
     }
 }

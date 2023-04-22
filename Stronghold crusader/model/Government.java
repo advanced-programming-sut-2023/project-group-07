@@ -14,7 +14,7 @@ public class Government {
     private int peasant;
     private int popularity;
     private User user;
-    private int gold;
+    private double gold;
     private int taxRate;
     private int fearRate;
     private int foodRate;
@@ -52,12 +52,15 @@ public class Government {
         return user;
     }
 
-    public int getGold() {
+    public double getGold() {
         return gold;
     }
 
     public void setGold(int gold) {
         this.gold = gold;
+    }
+    public void changeGold(double amount){
+        this.gold += amount;
     }
 
     public double getTaxAmount() {
