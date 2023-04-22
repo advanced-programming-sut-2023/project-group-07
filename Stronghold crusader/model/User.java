@@ -1,18 +1,16 @@
 package model;
 
+import com.google.gson.*;
 import controller.Controller;
 import controller.Messages;
-import view.ProfileMenu;
 
-import java.util.ArrayList;
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.regex.*;
-import com.google.gson.*;
+import java.util.regex.Pattern;
 
 public class User {
     private String username;

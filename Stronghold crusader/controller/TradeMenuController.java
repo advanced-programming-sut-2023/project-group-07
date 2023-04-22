@@ -19,4 +19,14 @@ public class TradeMenuController {
             tradeRequest.setHaveBeenShownTrue();
         }
     }
+
+    public ArrayList<TradeRequest> getAvailableTrades() {
+        Government government =  Controller.currentGame.getCurrentGovernment();
+        return TradeRequest.getAvailableRequests(government);
+    }
+
+    public ArrayList<TradeRequest> getTradeHistory() {
+        Government government =  Controller.currentGame.getCurrentGovernment();
+        return TradeRequest.getRelatedTradeHistory(government);
+    }
 }

@@ -1,7 +1,5 @@
 package model;
 
-import view.TradeMenu;
-
 import java.util.ArrayList;
 
 public class TradeRequest {
@@ -12,7 +10,10 @@ public class TradeRequest {
     private final int amount;
     private final Government requester;
     private final Government receiver;
-    private boolean haveBeenShown;
+    private boolean hasBeenShown;
+    private boolean isAvailable;
+    private boolean accepted;
+    private boolean rejected;
     private int id = 0;
 
     static {
@@ -26,7 +27,10 @@ public class TradeRequest {
         this.amount = amount;
         this.requester = requester;
         this.receiver = receiver;
-        haveBeenShown = false;
+        hasBeenShown = false;
+        isAvailable = true;
+        accepted = false;
+        rejected = false;
         this.setId();
     }
 
@@ -39,10 +43,29 @@ public class TradeRequest {
     public static ArrayList<TradeRequest> getNotSeenRequests(Government receiver) {
         ArrayList<TradeRequest> notSeenRequests = new ArrayList<>();
         for (TradeRequest tradeRequest : allTrades) {
-            if (!tradeRequest.haveBeenShown && tradeRequest.receiver.equals(receiver))
+            if (tradeRequest.isAvailable && tradeRequest.receiver.equals(receiver))
                 notSeenRequests.add(tradeRequest);
         }
         return notSeenRequests;
+    }
+
+    public static ArrayList<TradeRequest> getAvailableRequests(Government receiver) {
+        ArrayList<TradeRequest> availableTrades = new ArrayList<>();
+        for (TradeRequest tradeRequest : allTrades) {
+            if (!tradeRequest.hasBeenShown && tradeRequest.receiver.equals(receiver))
+                availableTrades.add(tradeRequest);
+        }
+        return availableTrades;
+    }
+
+    public static ArrayList<TradeRequest> getRelatedTradeHistory(Government government) {
+        ArrayList<TradeRequest> tradeHistory = new ArrayList<>();
+        for (TradeRequest tradeRequest : allTrades) {
+            if (!tradeRequest.isAvailable &&
+                    (tradeRequest.receiver.equals(government) || tradeRequest.requester.equals(government)))
+                tradeHistory.add(tradeRequest);
+        }
+        return tradeHistory;
     }
 
     public double price() {
@@ -66,11 +89,11 @@ public class TradeRequest {
     }
 
     public boolean haveBeenShown() {
-        return haveBeenShown;
+        return hasBeenShown;
     }
 
     public void setHaveBeenShownTrue() {
-        this.haveBeenShown = true;
+        this.hasBeenShown = true;
     }
 
     private void setId() {
@@ -84,5 +107,14 @@ public class TradeRequest {
         return this.id;
     }
 
-
+    @Override
+    public String toString() { // todo : this may change when adding 1-all
+        String str = "ID." + this.getId() + " : " + this.requester().color() + " wants " +
+                this.amount() + " " + this.resource() + " for " + this.price() + " golds";
+        if (!this.isAvailable) {
+            if (this.accepted) str += " :was accepted";
+            else if (this.rejected) str += " :was rejected";
+        }
+        return str;
+    }
 }
