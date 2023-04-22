@@ -17,11 +17,13 @@ import model.Resources;
 public class GameMenu {
     private GameMenuController controller;
     private Shop shop;
+    private TradeMenu tradeMenu;
     private Scanner scanner;
 
     public void run(Scanner scanner) {
-        controller = new GameMenuController(Controller.currentGame,Controller.currentUser);
+        controller = new GameMenuController(Controller.currentGame, Controller.currentUser);
         shop = new Shop(controller);
+        tradeMenu = new TradeMenu();
         this.scanner = scanner;
         Matcher matcher;
         while (true) {
@@ -40,8 +42,11 @@ public class GameMenu {
                 System.out.print(getFoodList());
             else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.FOOD_RATE)) != null)
                 System.out.println(setFoodList(matcher));
+            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.ENTER_TRADE_MENU) != null){
+                System.out.println("You have entered");
+            }
             else
-                System.out.println("Invalid command!");
+            System.out.println("Invalid command!");
         }
 
     }
