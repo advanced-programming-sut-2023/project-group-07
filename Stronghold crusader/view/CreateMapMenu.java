@@ -153,11 +153,11 @@ public class CreateMapMenu extends MapMenu {
                 int column = Integer.parseInt(columnMatcher.group("column")) - 1;
                 if (row < 0 || row >= mapSize || column < 0 || column >= mapSize)
                     System.out.println("Invalid cordinates!");
-                /*if (controller.doesCordinatesExist(positions, row, column))
-                    System.out.println("There is already a lord castle in this position!");*/
+               if (!controller.canDropKeep(positions, row, column))
+                    System.out.println("There is already a lord castle in this position!");
                 else {
-                    int[] lordPosition = new int[] { row, column };
-                    positions.put(LordColor.getLordColor(counter - 1), lordPosition);
+                    int[] keepPosition = new int[] { row, column };
+                    positions.put(LordColor.getLordColor(counter - 1), keepPosition);
                     counter++;
                 }
             }

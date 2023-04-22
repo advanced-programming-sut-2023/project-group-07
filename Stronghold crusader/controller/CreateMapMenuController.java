@@ -99,11 +99,11 @@ public class CreateMapMenuController {
         return Messages.CLEAR_SUCCESSFUL;
     }
 
-    public boolean doesCordinatesExist(ArrayList<int[]> positions, int row, int column) {
-        for (int[] cordinates : positions)
-            if (cordinates[0] == row && cordinates[1] == column)
-                return true;
-        return false;
+    public boolean canDropKeep(HashMap<LordColor, int[]> keepsPositions, int row, int column) {
+        for(int[] position : keepsPositions.values())
+            if(position[0] == row && position[1] == column)
+                return false;
+        return true;
     }
 
     public Messages dropTree(int row, int column, String treeName) {

@@ -17,9 +17,9 @@ public class Map {
         this.name = name;
         this.numberOfPlayers = numberOfPlayers;
         this.keepsPositions = keepsPositions;
+        buildMap();
         for(LordColor lordColor : keepsPositions.keySet())
             field.get(keepsPositions.get(lordColor)[0]).get(keepsPositions.get(lordColor)[1]).setPlayerKeep(lordColor);
-        buildMap();
     }
 
     public static Map getMapByName(String mapName) {
