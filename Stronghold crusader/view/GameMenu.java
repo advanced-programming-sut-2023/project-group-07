@@ -15,14 +15,13 @@ import model.Government;
 import model.Resources;
 
 public class GameMenu {
-    private GameMenuController controller;
-    private Shop shop;
+    private final GameMenuController controller = new GameMenuController();
+    private final Shop shop = new Shop(controller);
     private TradeMenu tradeMenu;
     private Scanner scanner;
 
     public void run(Scanner scanner) {
-        controller = new GameMenuController(Controller.currentGame, Controller.currentUser);
-        shop = new Shop(controller);
+        controller.refreshGame();
         tradeMenu = new TradeMenu();
         this.scanner = scanner;
         Matcher matcher;

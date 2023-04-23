@@ -8,15 +8,16 @@ import java.util.regex.Matcher;
 import model.*;
 
 public class GameMenuController {
-    private Game game;
-    private User currentUser;
+    private Game game = Controller.currentGame;
+    private User currentUser = Controller.currentUser;
     private ArrayList<Government> governments = new ArrayList<>();
     private Map map;
 
-    public GameMenuController(Game game, User currentUser){
-        this.game=game;
-        this.currentUser=currentUser;
+    public void refreshGame(){
+        this.game = Controller.currentGame;
+        this.currentUser = Controller.currentUser;
     }
+
     public Messages taxRate(int rate, Government government) {
         if (rate < -3 || rate > 8)
             return Messages.INVALID_RATE;
@@ -171,12 +172,11 @@ public class GameMenuController {
         if (item == null)
             return Messages.INVALID_ITEM;
         int price = amount * resource.getBuyingPrice();
-        int gold = game.getCurrentGovernment().getGold();
+        double gold = game.getCurrentGovernment().getGold();
         if (gold < price)
             return Messages.NOT_ENOUGH_GOLD;
-        int resourceAmount = game.getCurrentGovernment().getResourceAmount(resource);
-        game.getCurrentGovernment().setGold(gold - price);
-        game.getCurrentGovernment().setResourceAmount(resource, resourceAmount + amount);
+        game.getCurrentGovernment().changeGold(-price);
+        game.getCurrentGovernment().changeResources(resource, amount);;
         return Messages.SHOP_SUCCESSFUL;
     }
 
@@ -188,9 +188,8 @@ public class GameMenuController {
         if (resourceAmount < amount)
             return Messages.NOT_ENOUGH_RESOURCES;
         int price = amount * resource.getBuyingPrice();
-        int gold = game.getCurrentGovernment().getGold();
-        game.getCurrentGovernment().setGold(gold + price);
-        game.getCurrentGovernment().setResourceAmount(resource, resourceAmount - amount);
+        game.getCurrentGovernment().changeGold(price);
+        game.getCurrentGovernment().changeResources(resource, -amount);
         return Messages.SHOP_SUCCESSFUL;
     }
 

@@ -31,7 +31,7 @@ public class PreGameMenu { // todo: this class haven't been tested
         Map map = getChosenMap(numberOfPlayers);
         if (map == null)
             return;
-
+        //todo : let the player choose a color, not forcing them! 
         ArrayList<Government> governments = getGovernments(numberOfPlayers, map);
         if (governments == null)
             return;

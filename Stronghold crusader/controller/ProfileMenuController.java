@@ -5,10 +5,12 @@ import java.security.NoSuchAlgorithmException;
 
 import model.*;
 public class ProfileMenuController {
-    private User currentUser;
-    public ProfileMenuController(User currentUser) {
-        this.currentUser = currentUser;
+    private User currentUser = Controller.currentUser;
+
+    public void refreshProfile(){
+        this.currentUser = Controller.currentUser;
     }
+
     public Messages changeUsername(String username) throws IOException,NoSuchAlgorithmException{
         if(!User.isUsernameValid(username))return Messages.INVALID_USERNAME;
         else if(User.getUserByUsername(username)!=null)return Messages.USERNAME_EXISTS;

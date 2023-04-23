@@ -19,7 +19,7 @@ public enum Rock {
             return getRock(directions[Controller.randomNumber(4)]);
         }
         for(Rock rock : Rock.values())
-            if(rock.direction == direction)
+            if(rock.direction.equals(direction))
                 return rock;
         return null;
     }

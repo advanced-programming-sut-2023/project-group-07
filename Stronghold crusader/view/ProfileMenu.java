@@ -9,11 +9,11 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
 public class ProfileMenu {
-    private ProfileMenuController controller;
+    private final ProfileMenuController controller = new ProfileMenuController();
 
     public void run(Scanner scanner) throws IOException, NoSuchAlgorithmException {
         Controller.menuPrinter.print("PROFILE MENU", Colors.RED_BACKGROUND, 25, 1);
-        controller =  new ProfileMenuController(Controller.currentUser);
+        controller.refreshProfile();
         while (true) {
             String input = scanner.nextLine();
             if(input.matches("\\s*exit\\s*"))

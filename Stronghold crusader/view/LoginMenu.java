@@ -29,9 +29,10 @@ public class LoginMenu {
             else if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.USER_LOGIN) != null) {
                 String login = userLogin(input);
                 System.out.println(login);
-                if (login.equals("Login successful!"))
+                if (login.equals("Login successful!")){
                     mainMenu.run(scanner);
-                Controller.menuPrinter.print("LOGIN/REGISTER MENU", Colors.BLUE_BACKGROUND, 25, 1);
+                    Controller.menuPrinter.print("LOGIN/REGISTER MENU", Colors.BLUE_BACKGROUND, 25, 1);
+                }
             } 
             else if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.FORGOT_MY_PASSWORD) != null)
                 System.out.println(forgotMyPassword(scanner));

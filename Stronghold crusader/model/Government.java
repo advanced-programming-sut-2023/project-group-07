@@ -25,7 +25,7 @@ public class Government {
     private HashSet<TypeOfBuilding> noLaborBuildings = new HashSet<>();
     private int numberOfBlessed = 0;
 
-    public Government(LordColor color, User user, int gold, int row, int column) {
+    public Government(LordColor color, User user, double gold, int row, int column) {
         population = 10;
         popularity = 100; // todo: we can make a variable that show starting population and popularity
         this.user = user;
@@ -56,9 +56,10 @@ public class Government {
         return gold;
     }
 
-    public void setGold(int gold) {
+    public void setGold(double gold) {
         this.gold = gold;
     }
+    
     public void changeGold(double amount){
         this.gold += amount;
     }
@@ -207,10 +208,6 @@ public class Government {
 
     public int getResourceAmount(Resources resource) {
         return resources.get(resource);
-    }
-
-    public void setResourceAmount(Resources resource, int amount) {
-        resources.replace(resource, amount);
     }
 
     public int numberOfCathedrals() {
