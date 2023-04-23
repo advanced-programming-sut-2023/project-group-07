@@ -23,4 +23,11 @@ public enum LordColor {
     public String toString() {
         return this.name;
     }
+
+    public static LordColor getColorByName(String name) {
+        for(LordColor color : LordColor.values())
+            if(color.name.equals(name))
+                return color;
+        return null;
+    }
 }

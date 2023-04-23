@@ -21,7 +21,7 @@ public class TradeMenu {
         Matcher matcher;
         while (true) {
             String input = scanner.nextLine();
-            if(input.matches("\\s*exit\\s*"))
+            if (input.matches("\\s*exit\\s*"))
                 return;
             else if (TradeCommands.getMatcher(input, TradeCommands.TRADE_LIST) != null)
                 showAvailableTrades();
@@ -31,6 +31,8 @@ public class TradeMenu {
                 System.out.println(acceptTrade(input));
             else if ((matcher = TradeCommands.getMatcher(input, TradeCommands.REJECT_TRADE)) != null)
                 System.out.println(rejectTrade(matcher));
+            else if (TradeCommands.getMatcher(input, TradeCommands.REQUEST_TRADE) != null && tradeRequestFormat(input))
+                System.out.println(requestTrade(input));
             else
                 System.out.println("Invalid command!");
 
@@ -38,10 +40,38 @@ public class TradeMenu {
         }
     }
 
+    private String requestTrade(String input) { // todo : test this
+        String typeName = TradeCommands.getMatcher(input, TradeCommands.RECURSE_TYPE).group("type"),
+                colorString = TradeCommands.getMatcher(input, TradeCommands.COLOR).group("color"),
+                message = TradeCommands.getMatcher(input, TradeCommands.MESSAGE).group("message");
+        int amount = Integer.parseInt(TradeCommands.getMatcher(input, TradeCommands.AMOUNT).group("amount"));
+        double price = Double.parseDouble(TradeCommands.getMatcher(input, TradeCommands.PRICE).group("price"));
+        switch (controller.requestTrade(typeName, colorString, message, amount, price)){
+            case INVALID_COLOR :
+                return "Color is invalid.";
+            case INVALID_RESOURCE:
+                return "Resource type is invalid";
+            case NO_LORD_WITH_THIS_COLOR:
+                return "No one have this color.";
+            case REQUEST_TRADE_SUCCESSFUL:
+                return "You have successfully made a trade request.";
+        }
+    }
+
+    private boolean tradeRequestFormat(String input) {
+
+        return (TradeCommands.getMatcher(input, TradeCommands.RECURSE_TYPE) != null) &&
+                (TradeCommands.getMatcher(input, TradeCommands.AMOUNT) != null) &&
+                (TradeCommands.getMatcher(input, TradeCommands.MESSAGE) != null) &&
+                (TradeCommands.getMatcher(input, TradeCommands.PRICE) != null) &&
+                (TradeCommands.getMatcher(input, TradeCommands.COLOR) != null);
+
+    }
+
     private String rejectTrade(Matcher matcher) {
         int id = Integer.parseInt(matcher.group("id"));
-        switch (controller.rejectTrade(id)){
-            case INVALID_ID :
+        switch (controller.rejectTrade(id)) {
+            case INVALID_ID:
                 return "ID is invalid.";
             case REJECT_TRADE_SUCCESSFUL:
                 return "You have successfully reject a trade.";
@@ -52,11 +82,11 @@ public class TradeMenu {
 
     private String acceptTrade(String input) {
         String idString = TradeCommands.getMatcher(input, TradeCommands.ID).group("id");
-        int id= Integer.parseInt(idString);
+        int id = Integer.parseInt(idString);
         String message = TradeCommands.getMatcher(input, TradeCommands.MESSAGE).group("message");
         message = Controller.trimmer(message);
-        switch (controller.acceptTrade(id,message)) {
-            case ACCEPT_TRADE_SUCCESSFUL :
+        switch (controller.acceptTrade(id, message)) {
+            case ACCEPT_TRADE_SUCCESSFUL:
                 return "You have successfully accept a trade.";
             case POOR_RECEIVER:
                 return "You don't have enough recourse for this trade.";

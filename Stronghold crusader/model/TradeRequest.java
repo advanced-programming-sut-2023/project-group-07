@@ -23,12 +23,14 @@ public class TradeRequest {
         lastId = 0;
     }
 
-    private TradeRequest(double price, Resources resource, int amount, Government requester, Government receiver) {
+    private TradeRequest(double price, Resources resource, int amount,
+                         Government requester, Government receiver, String requesterMessage) {
         this.price = price;
         this.resource = resource;
         this.amount = amount;
         this.requester = requester;
         this.receiver = receiver;
+        this.requesterMessage = requesterMessage;
         hasBeenShown = false;
         isAvailable = true;
         accepted = false;
@@ -36,10 +38,10 @@ public class TradeRequest {
         this.setId();
     }
 
-    public static TradeRequest makeATradeRequest(double price, Resources resource, int amount, Government requester, Government receiver) {
-        TradeRequest tradeRequest = new TradeRequest(price, resource, amount, requester, receiver);
+    public static void makeATradeRequest(double price, Resources resource, int amount,
+                                         Government requester, Government receiver, String requesterMessage) {
+        TradeRequest tradeRequest = new TradeRequest(price, resource, amount, requester, receiver, requesterMessage);
         allTrades.add(tradeRequest);
-        return tradeRequest;
     }
 
     public static ArrayList<TradeRequest> getNotSeenRequests(Government receiver) {

@@ -345,4 +345,10 @@ public class Game {
                 government.changePeasant((int) (government.getPopularity() / 10) - 5);
         }
     }
+    public Government getGovernmentByColor(LordColor color){
+        for (Government government : governments){
+            if (government.color().equals(color)) return government;
+        }
+        return null;
+    }
 }

@@ -1,10 +1,12 @@
 package controller;
 
 import model.Government;
+import model.LordColor;
 import model.Resources;
 import model.TradeRequest;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class TradeMenuController {
 
@@ -67,5 +69,18 @@ public class TradeMenuController {
         if (targetRequest==null) return Messages.INVALID_ID;
         targetRequest.reject();
         return Messages.REJECT_TRADE_SUCCESSFUL;
+    }
+
+    public Messages requestTrade(String typeName, String colorString, String message, int amount, double price) {
+        Resources resource = Resources.getResource(typeName);
+        if (resource == null) return Messages.INVALID_RESOURCE;
+        LordColor color = LordColor.getColorByName(colorString);
+        if (color == null) return Messages.INVALID_COLOR;
+        Government receiver = Controller.currentGame.getGovernmentByColor(color);
+        if (receiver == null) return Messages.NO_LORD_WITH_THIS_COLOR;
+        Government requester = Controller.currentGame.getCurrentGovernment();
+        TradeRequest.makeATradeRequest(price,resource,amount,requester,receiver,message);
+        return Messages.REQUEST_TRADE_SUCCESSFUL;
+
     }
 }
