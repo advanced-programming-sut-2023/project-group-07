@@ -14,7 +14,7 @@ public class ProfileMenuController {
     public Messages changeUsername(String username) throws IOException,NoSuchAlgorithmException{
         if(!User.isUsernameValid(username))return Messages.INVALID_USERNAME;
         else if(User.getUserByUsername(username)!=null)return Messages.USERNAME_EXISTS;
-        this.currentUser.setNewUsername(username);
+        this.currentUser.setNewUsername(Controller.trimmer(username));
         User.updateUsers();
         return Messages.CHANGE_USERNAME_SUCCESSFUL;
     }
@@ -27,7 +27,7 @@ public class ProfileMenuController {
         return Messages.CHANGE_PASSWORD_SUCCESSFUL;
     }
     public void changeNickname(String nickName) throws IOException,NoSuchAlgorithmException{
-        this.currentUser.setNewNickname(nickName);
+        this.currentUser.setNewNickname(Controller.trimmer(nickName));
         User.updateUsers();
     }
     public Messages changeEmail(String email) throws IOException,NoSuchAlgorithmException{
@@ -38,7 +38,7 @@ public class ProfileMenuController {
         return Messages.CHANGE_EMAIL_SUCCESSFUL;
     }
     public void changeSlogan(String slogan) throws IOException,NoSuchAlgorithmException{
-        this.currentUser.setNewSlogan(slogan);
+        this.currentUser.setNewSlogan(Controller.trimmer(slogan));
         User.updateUsers();
     }
     public String removeSlogan() throws IOException,NoSuchAlgorithmException{
