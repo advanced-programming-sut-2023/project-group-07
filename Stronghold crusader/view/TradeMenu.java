@@ -2,10 +2,9 @@ package view;
 
 import controller.Controller;
 import controller.TradeMenuController;
-import controller.TradeRequestMenuCommands;
+import controller.TradeCommands;
 import model.TradeRequest;
 
-import java.security.spec.RSAOtherPrimeInfo;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -24,12 +23,14 @@ public class TradeMenu {
             String input = scanner.nextLine();
             if(input.matches("\\s*exit\\s*"))
                 return;
-            else if (TradeRequestMenuCommands.getMatcher(input, TradeRequestMenuCommands.TRADE_LIST) != null)
+            else if (TradeCommands.getMatcher(input, TradeCommands.TRADE_LIST) != null)
                 showAvailableTrades();
-            else if (TradeRequestMenuCommands.getMatcher(input, TradeRequestMenuCommands.TRADE_HISTORY) != null)
+            else if (TradeCommands.getMatcher(input, TradeCommands.TRADE_HISTORY) != null)
                 showTradeHistory();
-            else if (TradeRequestMenuCommands.getMatcher(input, TradeRequestMenuCommands.ACCEPT_TRADE) != null)
+            else if (TradeCommands.getMatcher(input, TradeCommands.ACCEPT_TRADE) != null)
                 System.out.println(acceptTrade(input));
+            else if ((matcher = TradeCommands.getMatcher(input, TradeCommands.REJECT_TRADE)) != null)
+                System.out.println(rejectTrade(matcher));
             else
                 System.out.println("Invalid command!");
 
@@ -37,10 +38,22 @@ public class TradeMenu {
         }
     }
 
+    private String rejectTrade(Matcher matcher) {
+        int id = Integer.parseInt(matcher.group("id"));
+        switch (controller.rejectTrade(id)){
+            case INVALID_ID :
+                return "ID is invalid.";
+            case REJECT_TRADE_SUCCESSFUL:
+                return "You have successfully reject a trade.";
+        }
+        return null;
+
+    }
+
     private String acceptTrade(String input) {
-        String idString = TradeRequestMenuCommands.getMatcher(input, TradeRequestMenuCommands.ID).group("id");
+        String idString = TradeCommands.getMatcher(input, TradeCommands.ID).group("id");
         int id= Integer.parseInt(idString);
-        String message = TradeRequestMenuCommands.getMatcher(input, TradeRequestMenuCommands.MESSAGE).group("message");
+        String message = TradeCommands.getMatcher(input, TradeCommands.MESSAGE).group("message");
         message = Controller.trimmer(message);
         switch (controller.acceptTrade(id,message)) {
             case ACCEPT_TRADE_SUCCESSFUL :

@@ -53,4 +53,19 @@ public class TradeMenuController {
         targetRequest.accept(receiver, message);
         return Messages.ACCEPT_TRADE_SUCCESSFUL;
     }
+
+    public Messages rejectTrade(int id) {
+        Government receiver =  Controller.currentGame.getCurrentGovernment();
+        ArrayList<TradeRequest> availableTrades = TradeRequest.getAvailableRequests(receiver);
+        TradeRequest targetRequest = null;
+        for(TradeRequest request : availableTrades){
+            if (request.getId() == id){
+                targetRequest = request;
+                break;
+            }
+        }
+        if (targetRequest==null) return Messages.INVALID_ID;
+        targetRequest.reject();
+        return Messages.REJECT_TRADE_SUCCESSFUL;
+    }
 }
