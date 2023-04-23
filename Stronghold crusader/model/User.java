@@ -155,13 +155,13 @@ public class User {
         users.add(user);
         Gson gson = new Gson();
         usersArray.add(gson.toJsonTree(user).getAsJsonObject());
-        FileWriter file = new FileWriter("Users");
+        FileWriter file = new FileWriter("Stronghold crusader/DB/Users");
         file.write(usersArray.toString());
         file.close();
     }
 
     public static void loadUsers() throws IOException {
-        FileReader file = new FileReader("Users");
+        FileReader file = new FileReader("Stronghold crusader/DB/Users");
         Scanner scanner = new Scanner(file);
         if (!scanner.hasNextLine()) {
             scanner.close();
@@ -190,7 +190,7 @@ public class User {
 
     public static User stayLoggedIn() throws IOException {
         Gson gson = new Gson();
-        FileReader file = new FileReader("stayLoggedIn");
+        FileReader file = new FileReader("Stronghold crusader/DB/stayLoggedIn");
         Scanner scanner = new Scanner(file);
         if(!scanner.hasNextLine()){
             scanner.close();

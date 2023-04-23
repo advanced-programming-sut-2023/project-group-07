@@ -56,6 +56,7 @@ public class TradeMenu {
             case REQUEST_TRADE_SUCCESSFUL:
                 return "You have successfully made a trade request.";
         }
+        return null;
     }
 
     private boolean tradeRequestFormat(String input) {

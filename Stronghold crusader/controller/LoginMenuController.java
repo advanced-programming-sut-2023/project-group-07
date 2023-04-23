@@ -179,7 +179,7 @@ public class LoginMenuController {
         user.resetAttempt();
         Controller.currentUser = user;
         if (stayLoggedIn) {
-            FileWriter file = new FileWriter("stayLoggedIn");
+            FileWriter file = new FileWriter("Stronghold crusader/DB/stayLoggedIn");
             Gson gson = new Gson();
             String userString = gson.toJson(user);
             file.write(userString);
