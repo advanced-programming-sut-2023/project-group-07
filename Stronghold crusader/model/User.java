@@ -183,7 +183,7 @@ public class User {
         for(User user : users) {
             usersArray.add(gson.toJsonTree(user).getAsJsonObject());
         }
-        FileWriter file = new FileWriter("Users");
+        FileWriter file = new FileWriter("Stronghold crusader/DB/Users");
         file.write(usersArray.toString());
         file.close();
     }
