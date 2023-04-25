@@ -1,5 +1,6 @@
 package controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -33,8 +34,9 @@ public class GameMenuController {
         return currentUser;
     }
 
-    public void endOfTurn() {
-        for (Government government : getGovernments()) {
+    public void endOfTurn() throws IOException {
+        game.endOfTurn();
+        for (Government government : getGovernments()) { // todo : must be in game object
             government.setPopularity(government.getPopularity() + government.getTaxEffectOnPopularity()); // todo :
             government.setGold((int) (government.getGold() + government.getTaxAmount() * government.getPopulation())); // todo :
         }

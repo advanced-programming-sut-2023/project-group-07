@@ -344,7 +344,14 @@ public class Game {
             } else
                 government.changePeasant((int) (government.getPopularity() / 10) - 5);
         }
-        Map.loadMaps();
+        Map.loadMaps(); //todo : why should this be here. we should load everything in the beginning and dont open any file again.
+
+        Government government = getCurrentGovernment();
+        int currentGovernmentIndex = governments.indexOf(government);
+        int nextGovernmentIndex = (currentGovernmentIndex +1) % governments.size();
+        currentGovernment = governments.get(nextGovernmentIndex);
+        //todo: set new current military camp?
+
     }
     public Government getGovernmentByColor(LordColor color){
         for (Government government : governments){
