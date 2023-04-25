@@ -56,11 +56,12 @@ public class TradeRequest {
     public static ArrayList<TradeRequest> getAvailableRequests(Government receiver) {
         ArrayList<TradeRequest> availableTrades = new ArrayList<>();
         for (TradeRequest tradeRequest : allTrades) {
-            if (!tradeRequest.hasBeenShown && tradeRequest.receiver.equals(receiver))
+            if (tradeRequest.isAvailable && tradeRequest.receiver.equals(receiver))
                 availableTrades.add(tradeRequest);
         }
         return availableTrades;
     }
+
 
     public static ArrayList<TradeRequest> getRelatedTradeHistory(Government government) {
         ArrayList<TradeRequest> tradeHistory = new ArrayList<>();
@@ -116,9 +117,13 @@ public class TradeRequest {
         String str = "ID." + this.getId() + " : " + this.requester().color() + " wants " +
                 this.amount() + " " + this.resource() + " for " + this.price() + " golds";
         if (!this.isAvailable) {
-            if (this.accepted) str += " :was accepted";
-            else if (this.rejected) str += " :was rejected";
+            if (this.accepted) str += " : was accepted by "+this.receiver.color();
+            else if (this.rejected) str += " : was rejected by "+this.receiver.color();
         }
+        if (requesterMessage != null)
+            str += "\n\trequester message : "+requesterMessage;
+        if (receiverMessage != null)
+            str += "\n\treceiver message : "+receiverMessage;
         return str;
     }
 

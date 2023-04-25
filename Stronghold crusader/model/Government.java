@@ -34,7 +34,7 @@ public class Government {
         this.row = row;
         this.column = column;
         this.color = color;
-        for(Resources resource : Resources.values()) resources.put(resource,0);
+        for(Resources resource : Resources.values()) resources.put(resource,100); // todo covert 100 to 0 again. It's for test
     }
 
     public int getPopulation() {

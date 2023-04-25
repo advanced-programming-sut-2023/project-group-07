@@ -1,0 +1,25 @@
+Invalid command!
+You have entered
+You don't have any new trade request.
+You have successfully made a trade request.
+You have successfully made a trade request.
+You have successfully made a trade request.
+ID.1 : red wants 71 wood for 87.0 golds
+	requester message : ab
+ID.2 : red wants 7 wood for 8.0 golds
+	requester message : zza
+ID.3 : red wants 700 wood for 8.0 golds
+	requester message : aa
+ID is invalid.
+You have successfully accepted a trade.
+You have successfully rejected a trade.
+You have successfully accepted a trade.
+No available trade request
+ID.1 : red wants 71 wood for 87.0 golds : was accepted by red
+	requester message : ab
+	receiver message : bale
+ID.2 : red wants 7 wood for 8.0 golds : was accepted by red
+	requester message : zza
+	receiver message : alf
+ID.3 : red wants 700 wood for 8.0 golds : was rejected by red
+	requester message : aa

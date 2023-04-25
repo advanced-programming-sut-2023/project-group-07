@@ -35,24 +35,27 @@ public class TradeMenu {
                 System.out.println(requestTrade(input));
             else
                 System.out.println("Invalid command!");
-
-            // todo: add commands
         }
     }
 
-    private String requestTrade(String input) { // todo : test this
+    private String requestTrade(String input) {
         String typeName = TradeCommands.getMatcher(input, TradeCommands.RECURSE_TYPE).group("type"),
                 colorString = TradeCommands.getMatcher(input, TradeCommands.COLOR).group("color"),
-                message = TradeCommands.getMatcher(input, TradeCommands.MESSAGE).group("message");
+                message = Controller.trimmer(
+                        TradeCommands.getMatcher(input, TradeCommands.MESSAGE).group("message"));
         int amount = Integer.parseInt(TradeCommands.getMatcher(input, TradeCommands.AMOUNT).group("amount"));
         double price = Double.parseDouble(TradeCommands.getMatcher(input, TradeCommands.PRICE).group("price"));
-        switch (controller.requestTrade(typeName, colorString, message, amount, price)){
-            case INVALID_COLOR :
+        switch (controller.requestTrade(typeName, colorString, message, amount, price)) {
+            case NEGATIVE_PRICE:
+                return "Price can't be negative.";
+            case INVALID_COLOR:
                 return "Color is invalid.";
             case INVALID_RESOURCE:
                 return "Resource type is invalid";
             case NO_LORD_WITH_THIS_COLOR:
-                return "No one have this color.";
+                return "No one has this color.";
+            case REQUEST_YOURSELF:
+                return "You can't request yourself.";
             case REQUEST_TRADE_SUCCESSFUL:
                 return "You have successfully made a trade request.";
         }
@@ -75,7 +78,7 @@ public class TradeMenu {
             case INVALID_ID:
                 return "ID is invalid.";
             case REJECT_TRADE_SUCCESSFUL:
-                return "You have successfully reject a trade.";
+                return "You have successfully rejected a trade.";
         }
         return null;
 
@@ -84,11 +87,12 @@ public class TradeMenu {
     private String acceptTrade(String input) {
         String idString = TradeCommands.getMatcher(input, TradeCommands.ID).group("id");
         int id = Integer.parseInt(idString);
-        String message = TradeCommands.getMatcher(input, TradeCommands.MESSAGE).group("message");
+        String message = Controller.trimmer(
+                TradeCommands.getMatcher(input, TradeCommands.MESSAGE).group("message"));
         message = Controller.trimmer(message);
         switch (controller.acceptTrade(id, message)) {
             case ACCEPT_TRADE_SUCCESSFUL:
-                return "You have successfully accept a trade.";
+                return "You have successfully accepted a trade.";
             case POOR_RECEIVER:
                 return "You don't have enough recourse for this trade.";
             case POOR_REQUESTER:
@@ -100,7 +104,6 @@ public class TradeMenu {
     }
 
     private void showTradeHistory() { // todo : this may change when adding 1-all
-        // todo : check this method
         ArrayList<TradeRequest> tradeHistory = controller.getTradeHistory();
         if (tradeHistory.size() == 0) System.out.println("You don't have any trade history.");
         else {

@@ -1,0 +1,13 @@
+// in game menu
+enter trade menu
+trade -t  wood -a 71 -p -852.87 -m "ab" -c red
+trade -t  wood -a 71 -p 852.87 -m "abou" -c red
+trade -t  wood -a 7 -p 8 -m "zza" -c blue
+trade -t  wood -a 700 -p 8 -m "aa" -c blue
+trade list
+trade accept -i 4 -m a
+trade accept -i 2 -m "alf"
+trade reject -i 3
+trade accept -i 1 -m bale
+trade list
+trade history

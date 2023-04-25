@@ -72,6 +72,7 @@ public class TradeMenuController {
     }
 
     public Messages requestTrade(String typeName, String colorString, String message, int amount, double price) {
+        if (price < 0) return Messages.NEGATIVE_PRICE;
         Resources resource = Resources.getResource(typeName);
         if (resource == null) return Messages.INVALID_RESOURCE;
         LordColor color = LordColor.getColorByName(colorString);
@@ -79,6 +80,7 @@ public class TradeMenuController {
         Government receiver = Controller.currentGame.getGovernmentByColor(color);
         if (receiver == null) return Messages.NO_LORD_WITH_THIS_COLOR;
         Government requester = Controller.currentGame.getCurrentGovernment();
+        if (receiver.equals(requester)) return Messages.REQUEST_YOURSELF;
         TradeRequest.makeATradeRequest(price,resource,amount,requester,receiver,message);
         return Messages.REQUEST_TRADE_SUCCESSFUL;
 

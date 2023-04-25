@@ -14,13 +14,13 @@ public enum TradeCommands {
     REQUEST_TRADE("^\\s*trade\\s+(" +
             "\\s*-t\\s+([^\"\\s]+|\"[^\"]+\")|" +
             "\\s*-a\\s+\\d+|" +
-            "\\s*-p\\s+\\d+|" +
+            "\\s*-p\\s+(?:(?i)(?:[+-]?)(?:(?=[.]?[0-9])(?:[0-9]*)(?:(?:[.])(?:[0-9]{0,}))?)(?:(?:[E])(?:(?:[+-]?)(?:[0-9]+))|))|" +
             "\\s*-m\\s+([^\"\\s]+|\"[^\"]+\")|" +
             "\\s*-c\\s+([^\"\\s]+|\"[^\"]+\")" +
-            "){5}\\s*$"),  // todo : get irrational numbers too
+            "){5}\\s*$"),
     RECURSE_TYPE("-t\\s+(?<type>([^\"\\s]+|\"[^\"]+\"))"),
     AMOUNT("-a\\s+(?<amount>\\d+)"),
-    PRICE("-p\\s+(?<price>\\d+)"), // todo : get irrational numbers too
+    PRICE("-p\\s+(?<price>(?:(?i)(?:[+-]?)(?:(?=[.]?[0-9])(?:[0-9]*)(?:(?:[.])(?:[0-9]{0,}))?)(?:(?:[E])(?:(?:[+-]?)(?:[0-9]+))|)))"),
     COLOR("-c\\s+(?<color>([^\"\\s]+|\"[^\"]+\"))");
     private String regex;
     private TradeCommands(String regex){
