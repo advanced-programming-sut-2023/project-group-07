@@ -121,7 +121,7 @@ public class Game {
                 return Messages.MUST_BE_ADJACENT_TO_BUILDINGS_OF_THE_SAME_TYPE;
 
         boolean isWorking = true;
-        Building building = new Building(currentGovernment, typeOfBuilding, row, column);
+        Building building = new Building(currentGovernment, typeOfBuilding, row, column); // todo : new subClass not Building
         if (!currentGovernment.getNoLaborBuildings().contains(typeOfBuilding)) {
             if (currentGovernment.getPeasant() >= typeOfBuilding.getWorkerInUse()) {
                 currentGovernment.changePeasant(-typeOfBuilding.getWorkerInUse());

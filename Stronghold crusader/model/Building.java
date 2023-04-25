@@ -1,6 +1,6 @@
 package model;
 
-public class Building {
+public abstract class Building {
 
     protected Government government;
     protected int hp;
@@ -35,4 +35,5 @@ public class Building {
     public void workingState(boolean isWorking) {
         this.isWorking = isWorking;
     }
+    abstract public void endOfTurn();
 }
