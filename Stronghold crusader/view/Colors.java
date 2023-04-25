@@ -16,6 +16,7 @@ public enum Colors {
     BLUE_BACKGROUND_BRIGHT("\033[0;104m"),
     RED_BACKGROUND_BRIGHT("\033[0;101m"),
     BLACK_BOLD("\033[1;30m"),
+    YELLOW_BOLD("\033[1;33m"), 
     MAGENTA_BACKGROUND_BRIGHT("\033[0;105m");
 
     private final String code;

@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 
 import controller.Controller;
 import controller.GameMenuCommands;
+import controller.MapMenuCommands;
 
 import controller.GameMenuController;
 import controller.Messages;
@@ -17,6 +18,7 @@ import model.Resources;
 public class GameMenu {
     private final GameMenuController controller = new GameMenuController();
     private final Shop shop = new Shop(controller);
+    private final MapMenu mapMenu = new MapMenu();
     private TradeMenu tradeMenu;
     private Scanner scanner;
 
@@ -29,6 +31,8 @@ public class GameMenu {
             String input = scanner.nextLine();
             if (GameMenuCommands.getMatcher(input, GameMenuCommands.DROP_BUILDING) != null)
                 System.out.println(dropBuilding(input));
+            else if(MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_MAP) != null)
+                mapMenu.run(scanner, input);
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_BUILDING) != null)
                 System.out.println(selectBuilding(input));
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULARITY) != null)
@@ -111,6 +115,10 @@ public class GameMenu {
     }
 
     private String dropBuilding(String input) {
+        if(GameMenuCommands.getMatcher(input, GameMenuCommands.ROW)==null ||
+           GameMenuCommands.getMatcher(input, GameMenuCommands.COLUMN)==null ||
+           GameMenuCommands.getMatcher(input, GameMenuCommands.TYPE)==null)
+           return "Invalid command!"; 
         String row = GameMenuCommands.getMatcher(input, GameMenuCommands.ROW).group("row");
         String column = GameMenuCommands.getMatcher(input, GameMenuCommands.COLUMN).group("column");
         String type = GameMenuCommands.getMatcher(input, GameMenuCommands.TYPE).group("type");

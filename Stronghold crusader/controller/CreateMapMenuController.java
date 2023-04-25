@@ -9,6 +9,7 @@ import model.MapPixel;
 import model.Rock;
 import model.Government;
 import model.LordColor;
+import java.io.IOException;
 
 public class CreateMapMenuController {
     private Map map;
@@ -38,7 +39,7 @@ public class CreateMapMenuController {
         this.mapMenuController.refreshMap(this.map);
     }
 
-    public void saveMap() {
+    public void saveMap() throws IOException{
         Map.changeMaps(map, indexOfMap);
     }
 

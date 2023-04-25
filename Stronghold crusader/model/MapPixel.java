@@ -108,4 +108,13 @@ public class MapPixel {
         return "";
     }
 
+    public String details(){
+        String buildingsStr = "";
+        String soldiersStr = "";
+        for(Building building : this.buildings)
+            buildingsStr += building.getTypeOfBuilding();
+        return ("<< type/texture >> : " + texture +
+                "\n << Buildings >> : " + buildingsStr);
+    }
+
 }

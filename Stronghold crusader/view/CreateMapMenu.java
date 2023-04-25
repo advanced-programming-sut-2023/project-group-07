@@ -1,5 +1,6 @@
 package view;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -16,11 +17,7 @@ public class CreateMapMenu extends MapMenu {
     private final CreateMapMenuController controller = new CreateMapMenuController(super.controller);
     private Scanner scanner;
 
-    public CreateMapMenu() {
-        super(0, 0);
-    }
-
-    public void run(Scanner scanner) {
+    public void run(Scanner scanner) throws IOException{
         Controller.menuPrinter.print("CREATE/CHANGE MAPS", Colors.RED_BACKGROUND, 25, 1);
         this.scanner = scanner;
         while (true) {
@@ -151,7 +148,7 @@ public class CreateMapMenu extends MapMenu {
             else {
                 int row = Integer.parseInt(rowMatcher.group("row")) - 1;
                 int column = Integer.parseInt(columnMatcher.group("column")) - 1;
-                if (row < 0 || row >= mapSize || column < 0 || column >= mapSize)
+                if (row < 0 || row >= mapSize-7 || column < 0 || column >= mapSize-12)
                     System.out.println("Invalid cordinates!");
                if (!controller.canDropKeep(positions, row, column))
                     System.out.println("There is already a lord castle in this position!");

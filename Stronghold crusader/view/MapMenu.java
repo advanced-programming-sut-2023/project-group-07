@@ -2,6 +2,7 @@ package view;
 
 import controller.MapMenuController;
 import controller.MapMenuCommands;
+import controller.Controller;
 
 import java.util.Scanner;
 import java.util.ArrayList;
@@ -12,14 +13,9 @@ public class MapMenu {
     protected final MapMenuController controller = new MapMenuController();
     private int x;
     private int y;
-
-    public MapMenu(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    public void run(Scanner scanner) {
-        printMap();
+    public void run(Scanner scanner, String initialInput) {
+        controller.refreshMap(Controller.currentGame.getMap());
+        showMap(initialInput);
         while (true) {
             String input = scanner.nextLine();
             if (input.matches("\\s*exit\\s*"))
@@ -117,8 +113,8 @@ public class MapMenu {
             return "Enter the row number!";
         if (columnMatcher == null)
             return "Enter the column number!";
-        int row = Integer.parseInt(rowMatcher.group("row"));
-        int column = Integer.parseInt(columnMatcher.group("column"));
+        int row = Integer.parseInt(rowMatcher.group("row")) - 1;
+        int column = Integer.parseInt(columnMatcher.group("column")) - 1;
         if (!controller.checkCordinates(row, column))
             return "Invalid cordinates!";
         return controller.getDetails(row, column);
@@ -143,12 +139,12 @@ public class MapMenu {
             return "Enter the row number!";
         if (columnMatcher == null || columnMatcher.group("column") == null)
             return "Enter the column number!";
-        int row = Integer.parseInt(rowMatcher.group("row"));
-        int column = Integer.parseInt(columnMatcher.group("column"));
+        int row = Integer.parseInt(rowMatcher.group("row")) - 1;
+        int column = Integer.parseInt(columnMatcher.group("column")) - 1;
         if (!controller.checkCordinates(row, column))
             return "Invalid cordinates!";
-        this.x = row - 1;
-        this.y = column - 1;
+        this.x = row;
+        this.y = column;
         printMap();
         return null;
     }

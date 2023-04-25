@@ -1,9 +1,17 @@
 package model;
 
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 
 public class Map {
     private static ArrayList<Map> maps = new ArrayList<Map>();
+    private static JsonArray allMaps = new JsonArray();
     private static int maxPlayerOfMaps = 2;
 
     private int size;
@@ -88,19 +96,47 @@ public class Map {
                 this.field.get(i).get(j).setTexture(texture);
     }
 
-    public static void changeMaps(Map map, int index) {
-        if (index >= maps.size())
+    public static void changeMaps(Map map, int index) throws IOException{
+        Gson gson = new Gson();
+        JsonElement jsonElement = gson.toJsonTree(map).getAsJsonObject();
+        if (index >= maps.size()){
             maps.add(map);
-        else
+            allMaps.add(jsonElement);
+        }
+        else{
             maps.set(index, map);
+            allMaps.set(index, jsonElement);
+        }
+        FileWriter file = new FileWriter("Stronghold crusader/DB/Maps");
+        file.write(allMaps.toString());
+        file.close();
     }
 
+    public static void loadMaps() throws IOException {
+        FileReader file = new FileReader("Stronghold crusader/DB/Maps");
+        Scanner scanner = new Scanner(file);
+        if(!scanner.hasNextLine()){
+            scanner.close();
+            file.close();
+            return;
+        }
+        String input = scanner.nextLine();
+        scanner.close();
+        file.close();
+        Gson gson = new Gson();
+        JsonArray jsonArray = gson.fromJson(input,JsonArray.class);
+        for(JsonElement jsonElement : jsonArray){
+            maps.add(gson.fromJson(jsonElement, Map.class));
+        }
+        allMaps = jsonArray;
+    }
     public static int getMaxPlayerOfMaps() {
         return maxPlayerOfMaps;
     }
 
     public int[] getKeepPosition(int index){
-        return keepsPositions.get(index);
+        return keepsPositions.get(LordColor.getLordColor(index));
     }
+
 
 }

@@ -16,7 +16,7 @@ public class MainMenu {
         while (true) {
             String input = scanner.nextLine();
             if (input.matches("\\s*4\\s*")) {
-                FileWriter file = new FileWriter("stayLoggedIn");
+                FileWriter file = new FileWriter("Stronghold Crusader/DB/stayLoggedIn");
                 file.close();
                 System.out.println("Logged out");
                 return;

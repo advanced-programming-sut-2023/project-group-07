@@ -149,11 +149,11 @@ public class GameMenuController {
         for (Resources resource : Resources.values())
             if (resource.getType().equals(TypeOfResource.FOOD))
                 result += showResource(resource);
-        result += "<< RAW MATERIALS >>\n";
+        result += "\n<< RAW MATERIALS >>\n";
         for (Resources resource : Resources.values())
             if (resource.getType().equals(TypeOfResource.RAW_MATERIAL))
                 result += showResource(resource);
-        result += "<< WEAPONS >>\n";
+        result += "\n<< WEAPONS >>\n";
         for (Resources resource : Resources.values())
             if (resource.getType().equals(TypeOfResource.WEAPON))
                 result += showResource(resource);
@@ -161,7 +161,7 @@ public class GameMenuController {
     }
 
     private String showResource(Resources resource) {
-        return ("* " + resource + ":" +
+        return ("*Name:" + resource + ":" +
                 "\nBuying price: " + resource.getBuyingPrice() +
                 "\nSelling price: " + resource.getSellingPrice() +
                 "\nAmount: " + game.getCurrentGovernment().getResourceAmount(resource) + "\n");
