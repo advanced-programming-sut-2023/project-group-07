@@ -34,7 +34,7 @@ public class Government {
         this.row = row;
         this.column = column;
         this.color = color;
-        for(Resources resource : Resources.values()) resources.put(resource,100); // todo covert 100 to 0 again. It's for test
+        for (Resources resource : Resources.values()) resources.put(resource, 0);
     }
 
     public int getPopulation() {
@@ -60,8 +60,8 @@ public class Government {
     public void setGold(double gold) {
         this.gold = gold;
     }
-    
-    public void changeGold(double amount){
+
+    public void changeGold(double amount) {
         this.gold += amount;
     }
 
@@ -242,7 +242,7 @@ public class Government {
 
     public int getBuildingsEffectOnPopularity() {
         int change = 0;
-        for (Building building : buildings){
+        for (Building building : buildings) {
             if (building.getTypeOfBuilding() == TypeOfBuilding.INN)
                 //change += building.getPopularityEffect();
                 ; // todo : make inn class and set popularity effect
