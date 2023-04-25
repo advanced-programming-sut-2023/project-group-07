@@ -19,12 +19,11 @@ public class GameMenu {
     private final GameMenuController controller = new GameMenuController();
     private final Shop shop = new Shop(controller);
     private final MapMenu mapMenu = new MapMenu();
-    private TradeMenu tradeMenu;
+    private final TradeMenu tradeMenu = new TradeMenu();
     private Scanner scanner;
 
     public void run(Scanner scanner) {
         controller.refreshGame();
-        tradeMenu = new TradeMenu();
         this.scanner = scanner;
         Matcher matcher;
         while (true) {
@@ -47,6 +46,7 @@ public class GameMenu {
                 System.out.println(setFoodList(matcher));
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.ENTER_TRADE_MENU) != null){
                 System.out.println("You have entered");
+                tradeMenu.run(scanner);
             }
             else
             System.out.println("Invalid command!");

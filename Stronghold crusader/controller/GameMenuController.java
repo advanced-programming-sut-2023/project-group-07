@@ -43,8 +43,8 @@ public class GameMenuController {
     public Messages dropBuilding(String row, String column, String name) {
         if (row == null || column == null || name == null)
             return Messages.INVALID_COMMAND;
-        int rowNum = Integer.parseInt(row);
-        int columnNum = Integer.parseInt(column);
+        int rowNum = Integer.parseInt(row)-1;
+        int columnNum = Integer.parseInt(column)-1;
         return game.dropBuilding(rowNum, columnNum, TypeOfBuilding.getBuilding(name));
     }
 
@@ -169,7 +169,7 @@ public class GameMenuController {
 
     public Messages buyCommodity(String item, int amount) {
         Resources resource = Resources.getResource(item);
-        if (item == null)
+        if (resource == null)
             return Messages.INVALID_ITEM;
         int price = amount * resource.getBuyingPrice();
         double gold = game.getCurrentGovernment().getGold();
@@ -182,7 +182,7 @@ public class GameMenuController {
 
     public Messages sellCommodity(String item, int amount) {
         Resources resource = Resources.getResource(item);
-        if (item == null)
+        if (resource == null)
             return Messages.INVALID_ITEM;
         int resourceAmount = game.getCurrentGovernment().getResourceAmount(resource);
         if (resourceAmount < amount)

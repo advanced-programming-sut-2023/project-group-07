@@ -113,6 +113,7 @@ public class Map {
     }
 
     public static void loadMaps() throws IOException {
+        maps.clear();
         FileReader file = new FileReader("Stronghold crusader/DB/Maps");
         Scanner scanner = new Scanner(file);
         if(!scanner.hasNextLine()){

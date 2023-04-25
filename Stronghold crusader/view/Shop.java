@@ -36,7 +36,7 @@ public class Shop {
             return "Enter the item you want to buy!";
         if (amountMatcher == null)
             return "Enter the amount you want to buy!";
-        String item = itemMatcher.group("item");
+        String item = itemMatcher.group("item").trim();
         int amount = Integer.parseInt(amountMatcher.group("amount"));
         switch (controller.buyCommodity(item, amount)) {
             case INVALID_ITEM:

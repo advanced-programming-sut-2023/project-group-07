@@ -2,7 +2,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-
+import java.io.IOException;
 import controller.Controller;
 import controller.Messages;
 
@@ -309,14 +309,14 @@ public class Game {
         return Messages.BUILDING_WORKING_STATE_CHANGED;
     }
 
-    public void nextTurn() {
+    public void nextTurn() throws IOException{
         indexOfCurrentGovernment = (indexOfCurrentGovernment + 1) % governments.size();
         currentGovernment = governments.get(indexOfCurrentGovernment);
         if (indexOfCurrentGovernment == 0)
             endOfTurn();
     }
 
-    public void endOfTurn() {
+    public void endOfTurn() throws IOException{
         for (Government government : governments) {
             government.setPopularity(government.getPopularity() + government.getTaxEffectOnPopularity()); // todo:
                                                                                                           // update
@@ -344,6 +344,7 @@ public class Game {
             } else
                 government.changePeasant((int) (government.getPopularity() / 10) - 5);
         }
+        Map.loadMaps();
     }
     public Government getGovernmentByColor(LordColor color){
         for (Government government : governments){
