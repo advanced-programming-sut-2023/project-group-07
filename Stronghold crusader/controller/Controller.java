@@ -6,6 +6,8 @@ import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.*;
+import java.util.regex.Matcher;
+
 import model.User;
 import model.Game;
 import model.Map;
@@ -51,6 +53,27 @@ public class Controller {
 
     public static int maxPlayers() {
         return maxPlayers;
+    }
+
+    public static String checkCoordinatesFormat(Matcher rowMatcher, Matcher columnMatcher) {
+        if (rowMatcher == null)
+            return "Enter the row number!";
+        if (columnMatcher == null)
+            return "Enter the column number!";
+        return null;
+    }
+
+    public static String checkRegionCoordinatesFormat(Matcher x1Matcher, Matcher y1Matcher, Matcher x2Matcher,
+            Matcher y2Matcher) {
+        if (x1Matcher == null)
+            return "Enter first row number!";
+        if (y1Matcher == null)
+            return "Enter first column number!";
+        if (x2Matcher == null)
+            return "Enter second row number!";
+        if (y2Matcher == null)
+            return "Enter second column number!";
+        return null;
     }
 
 

@@ -12,6 +12,7 @@ public class Game {
     private Government currentGovernment;
     private MilitaryCampType currentMilitaryCamp;
     private Building selectedBuilding;
+    private ArrayList<Person> selectedUnit;
     private int indexOfCurrentGovernment = 0;
 
     public Game(Map map, ArrayList<Government> governments, int goldToBeginWith) {
@@ -44,7 +45,7 @@ public class Game {
         government.setFearRate(rate);
         return Messages.RATE_CHANGE_SUCCESSFUL;
     }
-    
+
     public Map getMap() {
         return this.map;
     }
@@ -52,29 +53,29 @@ public class Game {
     public boolean isAnEnemyCloseBy(int row, int column) {
         for (int i = -5; i < 6; i++) {
             for (int j = Math.abs(i) - 5; j < 6 - Math.abs(i); j++) {
-                if(row + i>=0 && column + j>=0 && row + i<map.getSize() && column + j<map.getSize())
+                if (row + i >= 0 && column + j >= 0 && row + i < map.getSize() && column + j < map.getSize())
                     for (Person person : map.getMapPixel(row + i, column + j).getPeople())
                         if (person instanceof Unit && !((Unit) person).getGovernment().equals(currentGovernment))
                             return true;
-                        }
+            }
         }
         return false;
     }
 
     public Messages dropBuilding(int row, int column, TypeOfBuilding typeOfBuilding) {
         if (row < 0 || row > map.getSize() - typeOfBuilding.getWidth() + 1 || column < 0
-        || column > map.getSize() - typeOfBuilding.getLength() + 1) {
+                || column > map.getSize() - typeOfBuilding.getLength() + 1) {
             return Messages.INVALID_ROW_OR_COLUMN;
         }
         for (int i = 0; i < typeOfBuilding.getLength(); i++)
-        for (int j = 0; j < typeOfBuilding.getWidth(); j++)
-        if (map.getMapPixel(row + j, column + i).getBuildings().size() != 0)
-        return Messages.THERES_ALREADY_BUILDING;
-        
+            for (int j = 0; j < typeOfBuilding.getWidth(); j++)
+                if (map.getMapPixel(row + j, column + i).getBuildings().size() != 0)
+                    return Messages.THERES_ALREADY_BUILDING;
+
         for (int i = 0; i < typeOfBuilding.getLength(); i++)
-        for (int j = 0; j < typeOfBuilding.getWidth(); j++)
-        if (map.getMapPixel(row + j, column + i).getPeople().size() != 0)
-        return Messages.THERES_ALREADY_UNIT;
+            for (int j = 0; j < typeOfBuilding.getWidth(); j++)
+                if (map.getMapPixel(row + j, column + i).getPeople().size() != 0)
+                    return Messages.THERES_ALREADY_UNIT;
 
         for (int i = 0; i < typeOfBuilding.getLength(); i++)
             for (int j = 0; j < typeOfBuilding.getWidth(); j++) {
@@ -106,9 +107,9 @@ public class Game {
         if (typeOfBuilding.getCost() > currentGovernment.getGold())
             return Messages.NOT_ENOUGH_GOLD;
 
-        if (currentGovernment.getResources().containsKey(typeOfBuilding.getResourceNeeded()) && 
+        if (currentGovernment.getResources().containsKey(typeOfBuilding.getResourceNeeded()) &&
                 typeOfBuilding.getResourceAmount() > currentGovernment.getResources()
-                .get(typeOfBuilding.getResourceNeeded()))
+                        .get(typeOfBuilding.getResourceNeeded()))
             return Messages.NOT_ENOUGH_RESOURCES;
 
         for (int i = 0; i < typeOfBuilding.getLength(); i++)
@@ -121,7 +122,8 @@ public class Game {
                 return Messages.MUST_BE_ADJACENT_TO_BUILDINGS_OF_THE_SAME_TYPE;
 
         boolean isWorking = true;
-        Building building = new Building(currentGovernment, typeOfBuilding, row, column); // todo : new subClass not Building
+        Building building = new Building(currentGovernment, typeOfBuilding, row, column); // todo : new subClass not
+                                                                                          // Building
         if (!currentGovernment.getNoLaborBuildings().contains(typeOfBuilding)) {
             if (currentGovernment.getPeasant() >= typeOfBuilding.getWorkerInUse()) {
                 currentGovernment.changePeasant(-typeOfBuilding.getWorkerInUse());
@@ -309,14 +311,31 @@ public class Game {
         return Messages.BUILDING_WORKING_STATE_CHANGED;
     }
 
-    public void nextTurn() throws IOException{
+    public void nextTurn() throws IOException {
         indexOfCurrentGovernment = (indexOfCurrentGovernment + 1) % governments.size();
         currentGovernment = governments.get(indexOfCurrentGovernment);
         if (indexOfCurrentGovernment == 0)
             endOfTurn();
     }
 
-    public void endOfTurn() throws IOException{
+    public Messages selectUnit(int frow, int fcolumn, int srow, int scolumn) {
+        if (frow < 0 || frow >= map.getSize() || fcolumn < 0 || fcolumn >= map.getSize())
+            return Messages.INVALID_COORDINATES;
+        if (srow < 0 || srow >= map.getSize() || scolumn < 0 || scolumn >= map.getSize())
+            return Messages.INVALID_COORDINATES;
+        if (frow > srow || fcolumn > scolumn)
+            return Messages.INVALID_COORDINATES;
+        ArrayList<Person> units = new ArrayList<Person>();
+        for (int i = frow; i <= srow; i++)
+            for (int j = fcolumn; j <= scolumn; j++)
+                for (Person person : map.getMapPixel(i, j).getPeople())
+                    if (person instanceof Unit)
+                        units.add(person);
+        this.selectedUnit = units;
+        return Messages.UNIT_SELECTED_SUCCESSFULLY;
+    }
+
+    public void endOfTurn() throws IOException {
         for (Government government : governments) {
             government.setPopularity(government.getPopularity() + government.getTaxEffectOnPopularity()); // todo:
                                                                                                           // update
@@ -344,18 +363,21 @@ public class Game {
             } else
                 government.changePeasant((int) (government.getPopularity() / 10) - 5);
         }
-        Map.loadMaps(); //todo : why should this be here. we should load everything in the beginning and dont open any file again.
+        Map.loadMaps(); // todo : why should this be here. we should load everything in the beginning
+                        // and dont open any file again.
 
         Government government = getCurrentGovernment();
         int currentGovernmentIndex = governments.indexOf(government);
-        int nextGovernmentIndex = (currentGovernmentIndex +1) % governments.size();
+        int nextGovernmentIndex = (currentGovernmentIndex + 1) % governments.size();
         currentGovernment = governments.get(nextGovernmentIndex);
-        //todo: set new current military camp?
+        // todo: set new current military camp?
 
     }
-    public Government getGovernmentByColor(LordColor color){
-        for (Government government : governments){
-            if (government.color().equals(color)) return government;
+
+    public Government getGovernmentByColor(LordColor color) {
+        for (Government government : governments) {
+            if (government.color().equals(color))
+                return government;
         }
         return null;
     }

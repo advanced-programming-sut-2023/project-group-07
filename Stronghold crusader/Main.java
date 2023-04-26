@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Scanner;
 import controller.Controller;
 import controller.LoginMenuController;
@@ -12,19 +13,25 @@ import view.CreateMapMenu;
 public class Main {
     
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException{
-        
         // Game game = new Game(100);
         // Controller.currentGame = game;
         // MapMenu mn = new MapMenu(30 , 40);
         // mn.run(new Scanner(System.in));
         // CreateMapMenu cm = new CreateMapMenu();
         // cm.run(new Scanner(System.in));
+        
         System.out.print(Colors.YELLOW_BOLD);
         System.out.print("Loading maps and users...");
         User.loadUsers();
         System.out.print(Colors.RESET);
         Map.loadMaps();
         System.out.print("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+        
+        Map map = Map.getMaps().get(0);
+        ArrayList<int[]> path = new ArrayList<>();
+        ArrayList<Integer>[][] parent = new ArrayList[map.getSize()][map.getSize()];
+        
+        
         // GameMenu gameMenu = new GameMenu();
         // gameMenu.run(new Scanner(System.in));
         LoginMenu loginMenu = new LoginMenu();

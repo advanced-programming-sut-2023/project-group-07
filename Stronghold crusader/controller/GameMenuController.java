@@ -123,6 +123,10 @@ public class GameMenuController {
         return game.changeWorkingState();
     }
 
+    public Messages selectUnit(int frow,int fcolumn,int srow,int scolumn) {
+        return game.selectUnit(frow-1, fcolumn-1, srow-1, scolumn-1);
+    }
+
     public int getPopularity() {
         return game.getCurrentGovernment().getPopularity();
     }

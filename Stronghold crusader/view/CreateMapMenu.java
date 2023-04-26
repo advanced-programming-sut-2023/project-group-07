@@ -134,7 +134,7 @@ public class CreateMapMenu extends MapMenu {
         int counter = 1;
         HashMap<LordColor, int[]> positions = new HashMap<LordColor, int[]>();
         while (counter <= numberOfPlayers) {
-            System.out.println("Enter the cordinates of lord number " + counter + " (color "
+            System.out.println("Enter the Coordinates of lord number " + counter + " (color "
                     + LordColor.getLordColor(counter - 1) + ") keep:");
             String input = scanner.nextLine();
             Matcher rowMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_ROW);
@@ -149,7 +149,7 @@ public class CreateMapMenu extends MapMenu {
                 int row = Integer.parseInt(rowMatcher.group("row")) - 1;
                 int column = Integer.parseInt(columnMatcher.group("column")) - 1;
                 if (row < 0 || row >= mapSize-7 || column < 0 || column >= mapSize-12)
-                    System.out.println("Invalid cordinates!");
+                    System.out.println("Invalid Coordinates!");
                if (!controller.canDropKeep(positions, row, column))
                     System.out.println("There is already a lord castle in this position!");
                 else {
@@ -194,18 +194,18 @@ public class CreateMapMenu extends MapMenu {
         Matcher rowMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_ROW);
         Matcher columnMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_COLUMN);
         Matcher textureMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_TEXTURE_TYPE);
-        String checkCordinates = checkCordinatesFormat(rowMatcher, columnMatcher);
+        String checkCoordinates = Controller.checkCoordinatesFormat(rowMatcher, columnMatcher);
         String checkTexture = checkTypeFormat(textureMatcher);
-        if (checkCordinates != null)
-            return checkCordinates;
+        if (checkCoordinates != null)
+            return checkCoordinates;
         if (checkTexture != null)
             return checkTexture;
         int row = Integer.parseInt(rowMatcher.group("row"));
         int column = Integer.parseInt(columnMatcher.group("column"));
         String textureName = textureMatcher.group("type");
         switch (controller.setPixelTexture(row - 1, column - 1, textureName)) {
-            case INVALID_CORDINATES:
-                return "Invalid cordinates!";
+            case INVALID_COORDINATES:
+                return "Invalid Coordinates!";
             case INVALID_TEXTURE:
                 return "Invalid type/texture!";
             case BUILDING_EXIST:
@@ -224,10 +224,10 @@ public class CreateMapMenu extends MapMenu {
         Matcher x2Matcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_SECOND_ROW);
         Matcher y2Matcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_SECOND_COLUMN);
         Matcher textureMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_TEXTURE_TYPE);
-        String checkRegionCordinates = checkRegionCordinatesFormat(x1Matcher, y1Matcher, x2Matcher, y2Matcher);
+        String checkRegionCoordinates = Controller.checkRegionCoordinatesFormat(x1Matcher, y1Matcher, x2Matcher, y2Matcher);
         String checkTexture = checkTypeFormat(textureMatcher);
-        if (checkRegionCordinates != null)
-            return checkRegionCordinates;
+        if (checkRegionCoordinates != null)
+            return checkRegionCoordinates;
         if (checkTexture != null)
             return checkTexture;
         int x1 = Integer.parseInt(x1Matcher.group("frow"));
@@ -236,8 +236,8 @@ public class CreateMapMenu extends MapMenu {
         int y2 = Integer.parseInt(y2Matcher.group("scolumn"));
         String textureName = textureMatcher.group("type");
         switch (controller.setRegionTexture(x1 - 1, y1 - 1, x2 - 1, y2 - 1, textureName)) {
-            case INVALID_CORDINATES:
-                return "Invalid cordinates!";
+            case INVALID_COORDINATES:
+                return "Invalid Coordinates!";
             case INVALID_TEXTURE:
                 return "Invalid type/texture!";
             case INVALID_SET_POND:
@@ -252,19 +252,7 @@ public class CreateMapMenu extends MapMenu {
         return null;
     }
 
-    private String checkRegionCordinatesFormat(Matcher x1Matcher, Matcher y1Matcher, Matcher x2Matcher,
-            Matcher y2Matcher) {
-        if (x1Matcher == null)
-            return "Enter first row number!";
-        if (y1Matcher == null)
-            return "Enter first column number!";
-        if (x2Matcher == null)
-            return "Enter second row number!";
-        if (y2Matcher == null)
-            return "Enter second column number!";
-        return null;
-    }
-
+    
     private String checkTypeFormat(Matcher typeMatcher) {
         if (typeMatcher == null)
             return "Enter the type/texture you want to set!";
@@ -274,14 +262,14 @@ public class CreateMapMenu extends MapMenu {
     private String clearPixel(String input) {
         Matcher rowMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_ROW);
         Matcher columnMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_COLUMN);
-        String checkCordinatesFormat = checkCordinatesFormat(rowMatcher, columnMatcher);
-        if (checkCordinatesFormat != null)
-            return checkCordinatesFormat;
+        String checkCoordinatesFormat = Controller.checkCoordinatesFormat(rowMatcher, columnMatcher);
+        if (checkCoordinatesFormat != null)
+            return checkCoordinatesFormat;
         int row = Integer.parseInt(rowMatcher.group("row"));
         int column = Integer.parseInt(columnMatcher.group("column"));
         switch (controller.clearPixel(row - 1, column - 1)) {
-            case INVALID_CORDINATES:
-                return "Invalid cordinates!";
+            case INVALID_COORDINATES:
+                return "Invalid Coordinates!";
             case CLEAR_SUCCESSFUL:
                 return "Clear pixel successfull!";
             default:
@@ -295,16 +283,16 @@ public class CreateMapMenu extends MapMenu {
         Matcher y1Matcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_FIRST_COLUMN);
         Matcher x2Matcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_SECOND_ROW);
         Matcher y2Matcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_SECOND_COLUMN);
-        String checkRegionCordinates = checkRegionCordinatesFormat(x1Matcher, y1Matcher, x2Matcher, y2Matcher);
-        if (checkRegionCordinates != null)
-            return checkRegionCordinates;
+        String checkRegionCoordinates = Controller.checkRegionCoordinatesFormat(x1Matcher, y1Matcher, x2Matcher, y2Matcher);
+        if (checkRegionCoordinates != null)
+            return checkRegionCoordinates;
         int x1 = Integer.parseInt(x1Matcher.group("frow"));
         int y1 = Integer.parseInt(y1Matcher.group("fcolumn"));
         int x2 = Integer.parseInt(x2Matcher.group("srow"));
         int y2 = Integer.parseInt(y2Matcher.group("scolumn"));
         switch (controller.clearRegion(x1 - 1, y1 - 1, x2 - 1, y2 - 1)) {
-            case INVALID_CORDINATES:
-                return "Invalid cordinates!";
+            case INVALID_COORDINATES:
+                return "Invalid Coordinates!";
             case CLEAR_SUCCESSFUL:
                 return "Clear region successfull!";
             default:
@@ -317,18 +305,18 @@ public class CreateMapMenu extends MapMenu {
         Matcher rowMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_ROW);
         Matcher columnMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_COLUMN);
         Matcher typeMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_TEXTURE_TYPE);
-        String checkCordinates = checkCordinatesFormat(rowMatcher, columnMatcher);
+        String checkCoordinates = Controller.checkCoordinatesFormat(rowMatcher, columnMatcher);
         String checkType = checkTypeFormat(typeMatcher);
-        if (checkCordinates != null)
-            return checkCordinates;
+        if (checkCoordinates != null)
+            return checkCoordinates;
         if (checkType != null)
             return checkType;
         int row = Integer.parseInt(rowMatcher.group("row"));
         int column = Integer.parseInt(columnMatcher.group("column"));
         String type = typeMatcher.group("type").trim();
         switch (controller.dropTree(row - 1, column - 1, type)) {
-            case INVALID_CORDINATES:
-                return "Invalid cordinates!";
+            case INVALID_COORDINATES:
+                return "Invalid Coordinates!";
             case INVALID_TEXTURE:
                 return "Invalid tree type!";
             case CANT_PLACE_THIS:
@@ -346,17 +334,17 @@ public class CreateMapMenu extends MapMenu {
         Matcher rowMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_ROW);
         Matcher columnMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_COLUMN);
         Matcher directionMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_DIRECTION);
-        String checkCordinates = checkCordinatesFormat(rowMatcher, columnMatcher);
-        if (checkCordinates != null)
-            return checkCordinates;
+        String checkCoordinates = Controller.checkCoordinatesFormat(rowMatcher, columnMatcher);
+        if (checkCoordinates != null)
+            return checkCoordinates;
         if (directionMatcher == null)
             return "Enter the direction!";
         int row = Integer.parseInt(rowMatcher.group("row"));
         int column = Integer.parseInt(columnMatcher.group("column"));
         String direction = directionMatcher.group("direction").trim();
         switch (controller.dropRock(row - 1, column - 1, direction)) {
-            case INVALID_CORDINATES:
-                return "Invalid cordinates!";
+            case INVALID_COORDINATES:
+                return "Invalid Coordinates!";
             case INVALID_DIRECTION:
                 return "Invalid direction!";
             case CANT_PLACE_THIS:
@@ -369,12 +357,6 @@ public class CreateMapMenu extends MapMenu {
         return null;
     }
 
-    private String checkCordinatesFormat(Matcher rowMatcher, Matcher columnMatcher) {
-        if (rowMatcher == null)
-            return "Enter the row number!";
-        if (columnMatcher == null)
-            return "Enter the column number!";
-        return null;
-    }
+    
 
 }

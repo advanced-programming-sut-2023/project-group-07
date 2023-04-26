@@ -30,10 +30,14 @@ public class GameMenu {
             String input = scanner.nextLine();
             if (GameMenuCommands.getMatcher(input, GameMenuCommands.DROP_BUILDING) != null)
                 System.out.println(dropBuilding(input));
-            else if(MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_MAP) != null)
+            else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_MAP) != null)
                 mapMenu.run(scanner, input);
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_BUILDING) != null)
                 System.out.println(selectBuilding(input));
+            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_PIXEL_UNIT)!=null)
+                System.out.println(selectPixelUnit(input));
+            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_REGION_UNIT)!=null)
+                System.out.println(selectRegionUnit(input));
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULARITY) != null)
                 System.out.println("Your popularity is : " + controller.getPopularity());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULARITY_FACTORS) != null)
@@ -44,25 +48,23 @@ public class GameMenu {
                 System.out.print(getFoodList());
             else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.FOOD_RATE)) != null)
                 System.out.println(setFoodList(matcher));
-            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.ENTER_TRADE_MENU) != null){
+            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.ENTER_TRADE_MENU) != null) {
                 System.out.println("You have entered");
                 tradeMenu.run(scanner);
-            }
-            else
-            System.out.println("Invalid command!");
+            } else
+                System.out.println("Invalid command!");
         }
 
     }
 
-    private String getPopularityFactors() { // todo : check this 
+    private String getPopularityFactors() { // todo : check this
         ArrayList<Integer> factorsInOrder = controller.getPopularityFactors();
         return "Popularity factors:\n" +
                 "Food : " + factorsInOrder.get(0) + "\n" +
                 "Tax : " + factorsInOrder.get(1) + "\n" +
                 "Religion : " + factorsInOrder.get(2) + "\n" +
                 "Fear factor : " + factorsInOrder.get(3) + "\n" +
-                "Effect of buildings : " + factorsInOrder.get(4)
-                ;
+                "Effect of buildings : " + factorsInOrder.get(4);
     }
 
     private String setFoodList(Matcher matcher) {
@@ -115,10 +117,10 @@ public class GameMenu {
     }
 
     private String dropBuilding(String input) {
-        if(GameMenuCommands.getMatcher(input, GameMenuCommands.ROW)==null ||
-           GameMenuCommands.getMatcher(input, GameMenuCommands.COLUMN)==null ||
-           GameMenuCommands.getMatcher(input, GameMenuCommands.TYPE)==null)
-           return "Invalid command!"; 
+        if (GameMenuCommands.getMatcher(input, GameMenuCommands.ROW) == null ||
+                GameMenuCommands.getMatcher(input, GameMenuCommands.COLUMN) == null ||
+                GameMenuCommands.getMatcher(input, GameMenuCommands.TYPE) == null)
+            return "Invalid command!";
         String row = GameMenuCommands.getMatcher(input, GameMenuCommands.ROW).group("row");
         String column = GameMenuCommands.getMatcher(input, GameMenuCommands.COLUMN).group("column");
         String type = GameMenuCommands.getMatcher(input, GameMenuCommands.TYPE).group("type");
@@ -299,8 +301,46 @@ public class GameMenu {
         }
     }
 
-    public void market() {
+    public String selectPixelUnit(String input) {
+        Matcher rowMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.ROW);
+        Matcher columnMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.COLUMN);
+        String checkCoordinates = Controller.checkCoordinatesFormat(rowMatcher, columnMatcher);
+        if (checkCoordinates != null)
+            return checkCoordinates;
+        int row = Integer.parseInt(rowMatcher.group("row"));
+        int column = Integer.parseInt(columnMatcher.group("column"));
+        switch (controller.selectUnit(row, column, row, column)) {
+            case INVALID_COORDINATES:
+                return "Invalid Coordinates!";
+            case UNIT_SELECTED_SUCCESSFULLY:
+                return "Unit selected successfully!";
+            default:
+                break;
+        }
+        return null;
+    }
 
+    public String selectRegionUnit(String input) {
+        Matcher x1Matcher =GameMenuCommands.getMatcher(input,GameMenuCommands.FIRST_ROW);
+        Matcher y1Matcher =GameMenuCommands.getMatcher(input,GameMenuCommands.FIRST_COLUMN);
+        Matcher x2Matcher =GameMenuCommands.getMatcher(input,GameMenuCommands.SECOND_ROW);
+        Matcher y2Matcher =GameMenuCommands.getMatcher(input,GameMenuCommands.SECOND_COLUMN);
+        String checkRegionCoordinates = Controller.checkRegionCoordinatesFormat(x1Matcher, y1Matcher, x2Matcher, y2Matcher);
+        if (checkRegionCoordinates != null)
+            return checkRegionCoordinates;
+        int frow = Integer.parseInt(x1Matcher.group("frow"));
+        int fcolumn = Integer.parseInt(y1Matcher.group("fcolumn"));
+        int srow = Integer.parseInt(x2Matcher.group("srow"));
+        int scolumn = Integer.parseInt(y2Matcher.group("scolumn"));
+        switch(controller.selectUnit(frow, fcolumn, srow, scolumn)){
+            case INVALID_COORDINATES:
+                return "Invalid Coordinates!";
+            case UNIT_SELECTED_SUCCESSFULLY:
+                return "Unit selected successfully!";
+            default:
+                break;
+        }
+        return null;
     }
 
 }
