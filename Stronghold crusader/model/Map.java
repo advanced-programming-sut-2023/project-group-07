@@ -141,25 +141,25 @@ public class Map {
 
     public ArrayList<int[]> getAdj(int row,int col){
         ArrayList<int[]> adj = new ArrayList<>();
-        if(row>0 && getMapPixel(row-1, col).getBuildings().isEmpty()){
+        if(row>0 && getMapPixel(row-1, col).canDropObject()){
             int[] arr = new int[2];
             arr[0]=row-1;
             arr[1]=col;
             adj.add(arr);
         }
-        if(col>0 && getMapPixel(row, col-1).getBuildings().isEmpty()){
+        if(col>0 && getMapPixel(row, col-1).canDropObject()){
             int[] arr = new int[2];
             arr[0]=row;
             arr[1]=col-1;
             adj.add(arr);
         }
-        if(row<size-1 && getMapPixel(row+1, col).getBuildings().isEmpty()){
+        if(row<size-1 && getMapPixel(row+1, col).canDropObject()){
             int[] arr = new int[2];
             arr[0]=row+1;
             arr[1]=col;
             adj.add(arr);
         }
-        if(col<size-1 && getMapPixel(row, col+1).getBuildings().isEmpty()){
+        if(col<size-1 && getMapPixel(row, col+1).canDropObject()){
             int[] arr = new int[2];
             arr[0]=row;
             arr[1]=col+1;
@@ -167,17 +167,19 @@ public class Map {
         }
         return adj;
     }
-    public void bfs(int srcRow, int srcCol,ArrayList<int[]>[][] parent) {
+    public void bfs(int srcRow, int srcCol,ArrayList<ArrayList<ArrayList<int[]>>> parent) {
         
         int[][] distance = new int[size][size];
-        Arrays.fill(distance, MAX_DISTANCE);
+        for(int i=0; i<size; i++)
+            for(int j=0; j<size;j++) 
+                distance[i][j] = MAX_DISTANCE;
 
         Queue<Integer> queueX = new LinkedList<>();
         Queue<Integer> queueY = new LinkedList<>();
         queueX.offer(srcRow);
         queueY.offer(srcCol);
 
-        parent[srcRow][srcCol].add(new int[]{-1,-1});
+        parent.get(srcRow).get(srcCol).add(new int[]{-1,-1});
         distance[srcRow][srcCol]=0;
 
         while(!queueX.isEmpty()){
@@ -189,22 +191,22 @@ public class Map {
                     distance[x][y]=distance[X][Y]+1;
                     queueX.offer(x);
                     queueY.offer(y);
-                    parent[x][y].clear();
-                    parent[x][y].add(new int[]{X,Y});
+                    parent.get(x).get(y).clear();
+                    parent.get(x).get(y).add(new int[]{X,Y});
                 }
-                else if(distance[x][y]==distance[X][Y]+1) parent[x][y].add(new int[]{X,Y});
+                else if(distance[x][y]==distance[X][Y]+1) parent.get(x).get(y).add(new int[]{X,Y});
             }
         }
     }
 
-    public boolean findPath(ArrayList<int[]> path,ArrayList<int[]>[][] parent,int[] coordinates){
+    public boolean findPath(ArrayList<int[]> path,ArrayList<ArrayList<ArrayList<int[]>>> parent,int[] coordinates){
         if(coordinates[0]==-1) return true;
         int X = coordinates[0], Y = coordinates[1];
-        if(parent[X][Y].size()==0){
+        if(parent.get(X).get(Y).size()==0){
             return false;
         }
         
-        path.add(new int[]{parent[X][Y].get(0)[0],parent[X][Y].get(0)[1]});
-        return findPath(path, parent, parent[X][Y].get(0));
+        path.add(new int[]{parent.get(X).get(Y).get(0)[0],parent.get(X).get(Y).get(0)[1]});
+        return findPath(path, parent, parent.get(X).get(Y).get(0));
     }
 }

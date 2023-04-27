@@ -47,7 +47,7 @@ public class CreateMapMenuController {
         int size = map.getSize();
         Texture texture = Texture.getTexture(textureName.trim());
         if (row < 0 || row >= size || column < 0 || column >= size)
-            return Messages.INVALID_CORDINATES;
+            return Messages.INVALID_COORDINATES;
         if (texture == null)
             return Messages.INVALID_TEXTURE;
         if (map.getMapPixel(row, column).getBuildings().size() > 0)
@@ -62,11 +62,11 @@ public class CreateMapMenuController {
         int size = map.getSize();
         Texture texture = Texture.getTexture(textureName.trim());
         if (x1 < 0 || x1 >= size || y1 < 0 || y1 >= size)
-            return Messages.INVALID_CORDINATES;
+            return Messages.INVALID_COORDINATES;
         if (x2 < 0 || x2 >= size || y2 < 0 || y2 >= size)
-            return Messages.INVALID_CORDINATES;
+            return Messages.INVALID_COORDINATES;
         if (x1 > x2 || y1 > y2)
-            return Messages.INVALID_CORDINATES;
+            return Messages.INVALID_COORDINATES;
         if (texture == null)
             return Messages.INVALID_TEXTURE;
         if (texture == Texture.SMALL_POND || texture == Texture.LARGE_POND)
@@ -83,11 +83,11 @@ public class CreateMapMenuController {
     public Messages clearRegion(int x1, int y1, int x2, int y2) {
         int size = map.getSize();
         if (x1 < 0 || x1 >= size || y1 < 0 || y1 >= size)
-            return Messages.INVALID_CORDINATES;
+            return Messages.INVALID_COORDINATES;
         if (x2 < 0 || x2 >= size || y2 < 0 || y2 >= size)
-            return Messages.INVALID_CORDINATES;
+            return Messages.INVALID_COORDINATES;
         if (x1 > x2 || y1 > y2)
-            return Messages.INVALID_CORDINATES;
+            return Messages.INVALID_COORDINATES;
         map.clearRegion(x1, y1, x2, y2);
         return Messages.CLEAR_SUCCESSFUL;
     }
@@ -95,7 +95,7 @@ public class CreateMapMenuController {
     public Messages clearPixel(int row, int column) {
         int size = map.getSize();
         if (row < 0 || row >= size || column < 0 || column >= size)
-            return Messages.INVALID_CORDINATES;
+            return Messages.INVALID_COORDINATES;
         map.getMapPixel(row, column).backToDefault();
         return Messages.CLEAR_SUCCESSFUL;
     }
@@ -111,7 +111,7 @@ public class CreateMapMenuController {
         int size = map.getSize();
         Tree tree = Tree.getTree(treeName);
         if (row < 0 || row >= size || column < 0 || column >= size)
-            return Messages.INVALID_CORDINATES;
+            return Messages.INVALID_COORDINATES;
         if (tree == null)
             return Messages.INVALID_TEXTURE;
         MapPixel pixel = map.getMapPixel(row, column);
@@ -125,7 +125,7 @@ public class CreateMapMenuController {
         int size = map.getSize();
         Rock rock = Rock.getRock(direction);
         if (row < 0 || row >= size || column < 0 || column >= size)
-            return Messages.INVALID_CORDINATES;
+            return Messages.INVALID_COORDINATES;
         if (rock == null)
             return Messages.INVALID_DIRECTION;
         MapPixel pixel = map.getMapPixel(row, column);

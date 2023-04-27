@@ -27,10 +27,21 @@ public class Main {
         Map.loadMaps();
         System.out.print("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
         
-        Map map = Map.getMaps().get(0);
-        ArrayList<int[]> path = new ArrayList<>();
-        ArrayList<Integer>[][] parent = new ArrayList[map.getSize()][map.getSize()];
-        
+        // Map map = Map.getMaps().get(0);
+        // ArrayList<int[]> path = new ArrayList<>();
+        // ArrayList<ArrayList<ArrayList<int[]>>> parent = new ArrayList<ArrayList<ArrayList<int[]>>>();
+        // for(int i=0;i<map.getSize();i++){
+        //     parent.add(new ArrayList<>());
+        //     for(int j=0;j<map.getSize();j++){
+        //         parent.get(i).add(new ArrayList<>());
+        //     }
+        // }
+        // map.bfs(0, 0, parent);
+        // map.findPath(path, parent, new int[]{4,2});
+        // for(int[] s : path){
+        //     System.out.println();
+        //     System.out.println(s[0]+","+s[1]);
+        // }
         
         // GameMenu gameMenu = new GameMenu();
         // gameMenu.run(new Scanner(System.in));
