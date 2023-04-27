@@ -14,7 +14,7 @@ public class GameMenuController {
     private ArrayList<Government> governments = new ArrayList<>();
     private Map map;
 
-    public void refreshGame(){
+    public void refreshGame() {
         this.game = Controller.currentGame;
         this.currentUser = Controller.currentUser;
     }
@@ -38,15 +38,16 @@ public class GameMenuController {
         game.endOfTurn();
         for (Government government : getGovernments()) { // todo : must be in game object
             government.setPopularity(government.getPopularity() + government.getTaxEffectOnPopularity()); // todo :
-            government.setGold((int) (government.getGold() + government.getTaxAmount() * government.getPopulation())); // todo :
+            government.setGold((int) (government.getGold() + government.getTaxAmount() * government.getPopulation())); // todo
+                                                                                                                       // :
         }
     }
 
     public Messages dropBuilding(String row, String column, String name) {
         if (row == null || column == null || name == null)
             return Messages.INVALID_COMMAND;
-        int rowNum = Integer.parseInt(row)-1;
-        int columnNum = Integer.parseInt(column)-1;
+        int rowNum = Integer.parseInt(row) - 1;
+        int columnNum = Integer.parseInt(column) - 1;
         return game.dropBuilding(rowNum, columnNum, TypeOfBuilding.getBuilding(name));
     }
 
@@ -123,8 +124,24 @@ public class GameMenuController {
         return game.changeWorkingState();
     }
 
-    public Messages selectUnit(int frow,int fcolumn,int srow,int scolumn) {
-        return game.selectUnit(frow-1, fcolumn-1, srow-1, scolumn-1);
+    public Messages selectUnit(int frow, int fcolumn, int srow, int scolumn) {
+        return game.selectUnit(frow - 1, fcolumn - 1, srow - 1, scolumn - 1);
+    }
+
+    public Messages moveUnit(int row, int column) {
+        return game.moveUnit(row - 1, column - 1);
+    }
+
+    public Messages patrolunit(int frow, int fcolumn, int srow, int scolumn) {
+        return game.patrolUnits(frow - 1, fcolumn - 1, srow - 1, scolumn - 1);
+    }
+
+    public Messages stopUnit() {
+        return game.stopUnit();
+    }
+
+    public Messages setStance(int frow, int fcolumn, String stance) {
+        return game.setStance(frow, fcolumn, UnitStance.getStanceByName(stance));
     }
 
     public int getPopularity() {
@@ -182,7 +199,8 @@ public class GameMenuController {
         if (gold < price)
             return Messages.NOT_ENOUGH_GOLD;
         game.getCurrentGovernment().changeGold(-price);
-        game.getCurrentGovernment().changeResources(resource, amount);;
+        game.getCurrentGovernment().changeResources(resource, amount);
+        ;
         return Messages.SHOP_SUCCESSFUL;
     }
 

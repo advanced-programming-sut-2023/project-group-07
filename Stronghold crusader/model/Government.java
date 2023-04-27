@@ -21,6 +21,7 @@ public class Government {
     private int foodsNumber;
     private HashMap<Resources, Integer> resources = new HashMap<>();
     private ArrayList<Building> buildings = new ArrayList<>();
+    private ArrayList<Person> people = new ArrayList<>();
     private HashSet<Building> buildingsWaitingForWorkers = new HashSet<>();
     private HashSet<TypeOfBuilding> noLaborBuildings = new HashSet<>();
     private int numberOfBlessed = 0;
@@ -34,7 +35,22 @@ public class Government {
         this.row = row;
         this.column = column;
         this.color = color;
-        for (Resources resource : Resources.values()) resources.put(resource, 0);
+        for (Resources resource : Resources.values())
+            resources.put(resource, 0);
+    }
+
+    public ArrayList<Person> getPeople() {
+        return people;
+    }
+
+    public void addPeople(Person person) {
+        people.add(person);
+    }
+
+    public void resetMovesLeft() {
+        for(Person person: people){
+            person.movesLeft = person.typeOfPerson.getSpeed();
+        }
     }
 
     public int getPopulation() {
@@ -214,7 +230,8 @@ public class Government {
     public int numberOfCathedrals() {
         int number = 0;
         for (Building building : buildings) {
-            if (building.getTypeOfBuilding() == TypeOfBuilding.CATHEDRAL) number++;
+            if (building.getTypeOfBuilding() == TypeOfBuilding.CATHEDRAL)
+                number++;
         }
         return number;
     }
@@ -222,7 +239,8 @@ public class Government {
     public int numberOfChurches() {
         int number = 0;
         for (Building building : buildings) {
-            if (building.getTypeOfBuilding() == TypeOfBuilding.CHURCH) number++;
+            if (building.getTypeOfBuilding() == TypeOfBuilding.CHURCH)
+                number++;
         }
         return number;
     }
@@ -244,10 +262,10 @@ public class Government {
         int change = 0;
         for (Building building : buildings) {
             if (building.getTypeOfBuilding() == TypeOfBuilding.INN)
-                //change += building.getPopularityEffect();
+                // change += building.getPopularityEffect();
                 ; // todo : make inn class and set popularity effect
         }
-        return change; //todo
+        return change; // todo
     }
 
     public int getFearEffectOnPopularity() {

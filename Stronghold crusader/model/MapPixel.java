@@ -23,6 +23,10 @@ public class MapPixel {
         buildings.add(building);
     }
 
+    public void addPerson(Person person) {
+        people.add(person);
+    }
+
     public void setTree(Tree tree) {
         this.tree = tree;
     }

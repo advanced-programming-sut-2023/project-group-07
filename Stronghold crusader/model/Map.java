@@ -141,25 +141,25 @@ public class Map {
 
     public ArrayList<int[]> getAdj(int row,int col){
         ArrayList<int[]> adj = new ArrayList<>();
-        if(row>0 && getMapPixel(row-1, col).canDropObject()){
+        if(row>0 && getMapPixel(row-1, col).canDropObject() && getMapPixel(row-1,col).getTexture().canDropBuilding()){
             int[] arr = new int[2];
             arr[0]=row-1;
             arr[1]=col;
             adj.add(arr);
         }
-        if(col>0 && getMapPixel(row, col-1).canDropObject()){
+        if(col>0 && getMapPixel(row, col-1).canDropObject() && getMapPixel(row,col-1).getTexture().canDropBuilding()){
             int[] arr = new int[2];
             arr[0]=row;
             arr[1]=col-1;
             adj.add(arr);
         }
-        if(row<size-1 && getMapPixel(row+1, col).canDropObject()){
+        if(row<size-1 && getMapPixel(row+1, col).canDropObject() && getMapPixel(row+1,col).getTexture().canDropBuilding()){
             int[] arr = new int[2];
             arr[0]=row+1;
             arr[1]=col;
             adj.add(arr);
         }
-        if(col<size-1 && getMapPixel(row, col+1).canDropObject()){
+        if(col<size-1 && getMapPixel(row, col+1).canDropObject() && getMapPixel(row,col+1).getTexture().canDropBuilding()){
             int[] arr = new int[2];
             arr[0]=row;
             arr[1]=col+1;
@@ -199,14 +199,31 @@ public class Map {
         }
     }
 
-    public boolean findPath(ArrayList<int[]> path,ArrayList<ArrayList<ArrayList<int[]>>> parent,int[] coordinates){
-        if(coordinates[0]==-1) return true;
+    public void findPath(ArrayList<int[]> path,ArrayList<ArrayList<ArrayList<int[]>>> parent,int[] coordinates){
+        if(coordinates[0]==-1) return;
         int X = coordinates[0], Y = coordinates[1];
         if(parent.get(X).get(Y).size()==0){
-            return false;
+            return;
         }
         
         path.add(new int[]{parent.get(X).get(Y).get(0)[0],parent.get(X).get(Y).get(0)[1]});
-        return findPath(path, parent, parent.get(X).get(Y).get(0));
+        findPath(path, parent, parent.get(X).get(Y).get(0));
+    }
+
+    public ArrayList<int[]> getPathList(int frow,int fcolumn,int srow,int scolumn){
+        ArrayList<int[]> path = new ArrayList<>();
+        ArrayList<ArrayList<ArrayList<int[]>>> parent = new ArrayList<ArrayList<ArrayList<int[]>>>();
+        for (int k = 0; k < size; k++) {
+            parent.add(new ArrayList<>());
+            for (int t = 0; t < size; t++) {
+                parent.get(k).add(new ArrayList<>());
+            }
+        }
+        bfs(frow, fcolumn, parent);
+        findPath(path, parent, new int[] { srow, scolumn });
+        Collections.reverse(path);
+        path.add(new int[] { srow, scolumn });
+        path.remove(0);
+        return path;
     }
 }

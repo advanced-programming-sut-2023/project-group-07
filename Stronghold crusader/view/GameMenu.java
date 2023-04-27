@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 
+import javax.management.StandardEmitterMBean;
+
 import controller.Controller;
 import controller.GameMenuCommands;
 import controller.MapMenuCommands;
@@ -38,6 +40,18 @@ public class GameMenu {
                 System.out.println(selectPixelUnit(input));
             else if(GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_REGION_UNIT)!=null)
                 System.out.println(selectRegionUnit(input));
+            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.MOVE_UNIT)!=null)
+                System.out.println(moveUnit(input));
+            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.PATROL_UNIT)!=null)
+                System.out.println(patrolUnit(input));
+            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.STOP_UNIT)!=null)
+                System.out.println(stopUnit());
+            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.SET_STANCE)!=null)
+                System.out.println(setStance());
+            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY)!=null)
+                System.out.println(attackEnemy(input));
+            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.AIR_ATTACK)!=null)
+                System.out.println(airAttack(input));
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULARITY) != null)
                 System.out.println("Your popularity is : " + controller.getPopularity());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULARITY_FACTORS) != null)
@@ -321,18 +335,19 @@ public class GameMenu {
     }
 
     public String selectRegionUnit(String input) {
-        Matcher x1Matcher =GameMenuCommands.getMatcher(input,GameMenuCommands.FIRST_ROW);
-        Matcher y1Matcher =GameMenuCommands.getMatcher(input,GameMenuCommands.FIRST_COLUMN);
-        Matcher x2Matcher =GameMenuCommands.getMatcher(input,GameMenuCommands.SECOND_ROW);
-        Matcher y2Matcher =GameMenuCommands.getMatcher(input,GameMenuCommands.SECOND_COLUMN);
-        String checkRegionCoordinates = Controller.checkRegionCoordinatesFormat(x1Matcher, y1Matcher, x2Matcher, y2Matcher);
+        Matcher x1Matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.FIRST_ROW);
+        Matcher y1Matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.FIRST_COLUMN);
+        Matcher x2Matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.SECOND_ROW);
+        Matcher y2Matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.SECOND_COLUMN);
+        String checkRegionCoordinates = Controller.checkRegionCoordinatesFormat(x1Matcher, y1Matcher, x2Matcher,
+                y2Matcher);
         if (checkRegionCoordinates != null)
             return checkRegionCoordinates;
         int frow = Integer.parseInt(x1Matcher.group("frow"));
         int fcolumn = Integer.parseInt(y1Matcher.group("fcolumn"));
         int srow = Integer.parseInt(x2Matcher.group("srow"));
         int scolumn = Integer.parseInt(y2Matcher.group("scolumn"));
-        switch(controller.selectUnit(frow, fcolumn, srow, scolumn)){
+        switch (controller.selectUnit(frow, fcolumn, srow, scolumn)) {
             case INVALID_COORDINATES:
                 return "Invalid Coordinates!";
             case UNIT_SELECTED_SUCCESSFULLY:
@@ -340,6 +355,96 @@ public class GameMenu {
             default:
                 break;
         }
+        return null;
+    }
+
+    public String moveUnit(String input) {
+        Matcher rowMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.ROW);
+        Matcher columnMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.COLUMN);
+        String checkCoordinates = Controller.checkCoordinatesFormat(rowMatcher, columnMatcher);
+        if (checkCoordinates != null)
+            return checkCoordinates;
+        int row = Integer.parseInt(rowMatcher.group("row"));
+        int column = Integer.parseInt(columnMatcher.group("column"));
+        switch(controller.moveUnit(row, column)){
+            case INVALID_COORDINATES:
+                return "Invalid coordinates!";
+            case CANT_MOVE_UNITS_TO_THIS_LOCATION:
+                return "Can't move units to this location!";
+            case UNIT_MOVED_SUCCESSFULLY:
+                return "Units moved successfully!";
+            default:
+                break;
+        }
+        return null;
+    }
+
+    public String patrolUnit(String input) {
+        Matcher x1Matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.FIRST_ROW);
+        Matcher y1Matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.FIRST_COLUMN);
+        Matcher x2Matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.SECOND_ROW);
+        Matcher y2Matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.SECOND_COLUMN);
+        String checkRegionCoordinates = Controller.checkRegionCoordinatesFormat(x1Matcher, y1Matcher, x2Matcher,
+                y2Matcher);
+        if (checkRegionCoordinates != null)
+            return checkRegionCoordinates;
+        int frow = Integer.parseInt(x1Matcher.group("frow"));
+        int fcolumn = Integer.parseInt(y1Matcher.group("fcolumn"));
+        int srow = Integer.parseInt(x2Matcher.group("srow"));
+        int scolumn = Integer.parseInt(y2Matcher.group("scolumn"));
+        switch (controller.selectUnit(frow, fcolumn, srow, scolumn)) {
+            case INVALID_COORDINATES:
+                return "Invalid coordinates!";
+            case CANT_MOVE_UNITS_TO_THIS_LOCATION:
+                return "Can't move units to this location!";
+            case UNIT_MOVED_SUCCESSFULLY:
+                return "Patrol successful!";
+            default:
+                break;
+        }
+        return null;
+    }
+
+    public String stopUnit() {
+        switch(controller.stopUnit()){
+            case UNIT_STOPPED_SUCCESSFULLY:
+                return "Units stopped successfully!";
+            default:
+                break;
+        }
+        return null;
+    }
+
+    public String setStance(String input) {
+        Matcher rowMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.ROW);
+        Matcher columnMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.COLUMN);
+        Matcher stanceMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.STANCE);
+        String checkCoordinates = Controller.checkCoordinatesFormat(rowMatcher, columnMatcher);
+        if (checkCoordinates != null)
+            return checkCoordinates;
+        if(stanceMatcher==null)
+            return "Please enter units stance!";
+        int row = Integer.parseInt(rowMatcher.group("row"));
+        int column = Integer.parseInt(columnMatcher.group("column"));
+        String stance = stanceMatcher.group("stance");
+        switch(controller.setStance(row, column, stance)){
+            case INVALID_STANCE:
+                return "Invalid stance!";
+            case INVALID_COORDINATES:
+                return "Invalid coordinates!";
+            case STANCE_CHANGED_SUCCESSFULLY:
+                return "Stance changed successfully!";
+            default:
+                break;
+        }
+        return null;
+    }
+
+    public String attackEnemy(String input) {
+        return null;
+    }
+
+    public String airAttack(String input) {
         return null;
     }
 

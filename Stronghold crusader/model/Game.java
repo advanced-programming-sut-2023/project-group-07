@@ -1,6 +1,8 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.io.IOException;
 import controller.Controller;
@@ -13,6 +15,7 @@ public class Game {
     private MilitaryCampType currentMilitaryCamp;
     private Building selectedBuilding;
     private ArrayList<Person> selectedUnit;
+    private int[] selectedUnitArea;
     private int indexOfCurrentGovernment = 0;
 
     public Game(Map map, ArrayList<Government> governments, int goldToBeginWith) {
@@ -238,6 +241,11 @@ public class Game {
         for (Resources resource : typeOfPerson.getResourcesNeeded())
             currentGovernment.changeResources(resource, -count);
         currentGovernment.changePeasant(-count);
+        for(int i=0;i<count;i++){
+            Person person = new Person(typeOfPerson,map.getKeepPosition(indexOfCurrentGovernment),currentGovernment);
+            map.getMapPixel(map.getKeepPosition(indexOfCurrentGovernment)[0],map.getKeepPosition(indexOfCurrentGovernment)[1] ).addPerson(person);
+            currentGovernment.addPeople(person);
+        }
         return Messages.UNIT_CREATED_SUCCESSFULLY;
     }
 
@@ -332,7 +340,134 @@ public class Game {
                     if (person instanceof Unit)
                         units.add(person);
         this.selectedUnit = units;
+        this.selectedUnitArea = new int[] { frow, fcolumn, srow, scolumn };
         return Messages.UNIT_SELECTED_SUCCESSFULLY;
+    }
+
+    public Messages moveUnit(int row, int column) {
+        if (row < 0 || row >= map.getSize() || column < 0 || column >= map.getSize()) {
+            return Messages.INVALID_COORDINATES;
+        }
+        if (!map.getMapPixel(row, column).canDropObject()
+                || !map.getMapPixel(row, column).getTexture().canDropBuilding()) {
+            return Messages.CANT_MOVE_UNITS_TO_THIS_LOCATION;
+        }
+        for (Person person : selectedUnit)
+            if (person.getGovernment().equals(currentGovernment)) {
+                person.setMovePattern(map.getPathList(person.currentLocation[0], person.currentLocation[1], row, column));
+                person.setPatrolling(false);
+                person.move();
+            }
+        selectedUnit.clear();
+        return Messages.UNIT_MOVED_SUCCESSFULLY;
+    }
+
+    public void updateMovePatterns(Government government) {
+        for (Person person : government.getPeople()) {
+            if (person.getMovePattern().size() == 0)
+                return;
+            int[] destination = person.getMovePattern().get(person.getMovePattern().size() - 1);
+            person.setMovePattern(map.getPathList(person.currentLocation[0], person.currentLocation[1], destination[0],
+                    destination[1]));
+        }
+    }
+
+    public void moveUnitsInQueue(Government government) {
+        for (Person person : government.getPeople()) {
+            person.move();
+        }
+    }
+
+    public Messages patrolUnits(int frow, int fcolumn, int srow, int scolumn) {
+        if (frow < 0 || frow >= map.getSize() || fcolumn < 0 || fcolumn >= map.getSize() ||
+                srow < 0 || srow >= map.getSize() || scolumn < 0 || scolumn >= map.getSize()) {
+            return Messages.INVALID_COORDINATES;
+        }
+        if (!map.getMapPixel(frow, fcolumn).canDropObject()
+                || !map.getMapPixel(frow, fcolumn).getTexture().canDropBuilding()
+                || !map.getMapPixel(srow, scolumn).canDropObject()
+                || !map.getMapPixel(srow, scolumn).getTexture().canDropBuilding()) {
+            return Messages.CANT_MOVE_UNITS_TO_THIS_LOCATION;
+        }
+        for (Person person : selectedUnit)
+            if (person.getGovernment().equals(currentGovernment)) {
+                person.setPatrolLocation(new int[] { frow, fcolumn, srow, scolumn });
+                person.setPatrolling(true);
+                if (person.currentLocation[0] == frow && person.currentLocation[1] == fcolumn)
+                    person.setMovePattern(map.getPathList(frow, fcolumn, srow, scolumn));
+                else
+                    person.setMovePattern(map.getPathList(person.currentLocation[0], person.currentLocation[1], frow, fcolumn));
+                person.move();
+            }
+        selectedUnit.clear();
+        return Messages.UNIT_MOVED_SUCCESSFULLY;
+    }
+
+    public void setPatrolPattern(Government government){
+        for(Person person : government.getPeople()){
+            if(person.getMovePattern().size()!=0) continue;
+            if(!person.isPatrolling()) continue;
+            if(person.currentLocation[0]==person.patrolLocation[2] && person.currentLocation[1]==person.patrolLocation[3])
+                person.setPatrolLocation(new int[]{person.patrolLocation[2],person.patrolLocation[3],person.patrolLocation[0],person.patrolLocation[1]});
+            int frow = person.patrolLocation[0], fcolumn = person.patrolLocation[1] , srow = person.patrolLocation[2] , scolumn = person.patrolLocation[3];
+            person.setMovePattern(map.getPathList(frow, fcolumn, srow, scolumn));
+        }
+    }
+
+    public Messages stopUnit(){
+        for (Person person : selectedUnit)
+            if (person.getGovernment().equals(currentGovernment)) {
+                person.setMovePattern(new ArrayList<int[]>());
+                person.setPatrolling(false);
+            }
+        selectedUnit.clear();
+        return Messages.UNIT_STOPPED_SUCCESSFULLY;
+    }
+
+    public Messages setStance(int row,int column,UnitStance unitStance){
+        if(row < 0 || row >= map.getSize() || column < 0 || column >= map.getSize())
+            return Messages.INVALID_COORDINATES;
+        if(unitStance==null){
+            return Messages.INVALID_STANCE;
+        }
+        for(Person person : map.getMapPixel(row, column).getPeople()){
+            if(person.getGovernment().equals(currentGovernment)){
+                person.setUnitStance(unitStance);
+            }
+        }
+        selectedUnit.clear();
+        return Messages.STANCE_CHANGED_SUCCESSFULLY;
+    }
+
+    public Messages buildSiegeWeapon(SiegeWeaponType siegeWeapontType){
+        int[] location = new int[2];
+        int counter=0;
+        for(Person person : selectedUnit) {
+            if(person.getTypeOfPerson().equals(TypeOfPerson.ENGINEER)){
+                location = person.getCurrentLocation();
+                counter++;
+            }
+        }
+        if(counter<siegeWeapontType.getEngineersNeeded())
+            return Messages.NEEDS_MORE_ENGINEERS;
+        ArrayList<Person> engineers = new ArrayList<>();
+        for(Person person : map.getMapPixel(location[0], location[1]).getPeople()){
+            if(counter==0) break;
+            if(person.getTypeOfPerson().equals(TypeOfPerson.ENGINEER)){
+                counter--;
+                engineers.add(person);
+            }
+        }
+        map.getMapPixel(location[0], location[1]).getPeople().removeAll(engineers);
+        currentGovernment.getPeople().removeAll(engineers);
+        SiegeWeapon siegeWeapon = new SiegeWeapon(siegeWeapontType,location);
+        return Messages.SIEGE_WEAPON_BUILT_SUCCESSFULLY;
+    }
+
+    public Messages disbandUnit(){
+        map.getMapPixel(selectedUnitArea[0], selectedUnitArea[1]).getPeople().removeAll(selectedUnit);
+        currentGovernment.getPeople().removeAll(selectedUnit);
+        return Messages.UNITS_DISBANDED_SUCCESSFULLY;
     }
 
     public void endOfTurn() throws IOException {
@@ -362,9 +497,15 @@ public class Game {
                 }
             } else
                 government.changePeasant((int) (government.getPopularity() / 10) - 5);
+
+            setPatrolPattern(government);
+            updateMovePatterns(government);
+            moveUnitsInQueue(government);
+            government.resetMovesLeft();
+
         }
         Map.loadMaps(); // todo : why should this be here. we should load everything in the beginning
-                        // and dont open any file again.
+                        // and dont open any file again. answer: Too goshad to clone the maps
 
         Government government = getCurrentGovernment();
         int currentGovernmentIndex = governments.indexOf(government);

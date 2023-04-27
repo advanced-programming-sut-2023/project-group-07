@@ -27,7 +27,7 @@ public class Main {
         Map.loadMaps();
         System.out.print("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
         
-        // Map map = Map.getMaps().get(0);
+        // Map map = Map.getMaps().get(1);
         // ArrayList<int[]> path = new ArrayList<>();
         // ArrayList<ArrayList<ArrayList<int[]>>> parent = new ArrayList<ArrayList<ArrayList<int[]>>>();
         // for(int i=0;i<map.getSize();i++){
@@ -37,7 +37,7 @@ public class Main {
         //     }
         // }
         // map.bfs(0, 0, parent);
-        // map.findPath(path, parent, new int[]{4,2});
+        // map.findPath(path, parent, new int[]{199,199});
         // for(int[] s : path){
         //     System.out.println();
         //     System.out.println(s[0]+","+s[1]);

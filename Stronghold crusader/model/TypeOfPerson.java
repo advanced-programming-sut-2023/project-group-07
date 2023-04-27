@@ -42,6 +42,23 @@ public enum TypeOfPerson {
         this.hp=hp;
         this.damage=damage;
     }
+    
+    public int getSpeed() {
+        return speed;
+    }
+
+    public int getDamage() {
+        return damage;
+    }
+    
+    public int getRange() {
+        return range;
+    }
+
+    public int getHp() {
+        return hp;
+    }
+
     public static String getTypeOfPerson(TypeOfPerson typeOfPerson){
         return typeOfPerson.type;
     }
