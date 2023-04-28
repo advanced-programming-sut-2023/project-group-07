@@ -273,7 +273,7 @@ public class GameMenu {
                     continue;
                 }
                 String type = typeMatcher.group("type").trim();
-                int count = Integer.parseInt(typeMatcher.group("count"));
+                int count = Integer.parseInt(countMatcher.group("count"));
                 switch (controller.createUnit(type, count)) {
                     case INVALID_UNIT_NAME:
                         System.out.println("Invalid unit name!");

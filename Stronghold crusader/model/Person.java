@@ -13,27 +13,21 @@ public class Person {
     protected int[] patrolLocation;
     protected boolean patrolling;
 
-    public Person(TypeOfPerson typeOfPerson, int[] currentLocation, Government government) {
+    public Person(int[] currentLocation, Government government) {
         this.currentLocation = currentLocation;
-        this.hp = typeOfPerson.getHp();
         this.government = government;
-        this.movesLeft = typeOfPerson.getSpeed();
-        patrolling=false;
+        patrolling = false;
     }
 
-    public Person (TypeOfPerson typeOfPerson, int[] currentLocation, LordColor lordColor){
+    public Person(int[] currentLocation, LordColor lordColor) {
         this.currentLocation = currentLocation;
-        this.hp = typeOfPerson.getHp();
         this.lordColor = lordColor;
-        this.movesLeft = typeOfPerson.getSpeed();
-        patrolling=false;
+        patrolling = false;
     }
 
     public int[] getCurrentLocation() {
         return currentLocation;
     }
-
-    
 
     public void setPatrolling(boolean patrolling) {
         this.patrolling = patrolling;
@@ -51,7 +45,6 @@ public class Person {
         return patrolLocation;
     }
 
-    
     public ArrayList<int[]> getMovePattern() {
         return movePattern;
     }

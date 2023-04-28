@@ -37,6 +37,9 @@ public class Government {
         this.color = color;
         for (Resources resource : Resources.values())
             resources.put(resource, 0);
+        resources.put(Resources.STONE,50);
+        resources.put(Resources.WOOD,100);
+        resources.put(Resources.BREAD,100);
     }
 
     public LordColor getColor() {

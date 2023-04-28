@@ -40,7 +40,7 @@ public enum TypeOfBuilding {
     PITCH_DITCH(-1, 1, 1, 0, "pitch ditch", null, 0, Resources.PITCH, 1, false, false, false,null),
     CAGED_WAR_DOGS(-1, 2, 2, 0, "caged war dogs", null, 100, Resources.WOOD, 10, false, false, false,null),
     SIEGE_TENT(100, 3, 3, 0, "siege tent", null, 0, Resources.WOOD, 0, false, false, false,null),
-    STABLE(300, 6, 6, 1, "stable", null, 400, Resources.WOOD, 20, false, false, false,null),
+    STABLE(300, 6, 6, 0, "stable", null, 400, Resources.WOOD, 20, false, false, false,null),
     APPLE_ORCHARD(200, 9, 9, 1, "apple orchard", Texture.MEADOW, 0, Resources.WOOD, 5, false, false, false,NonMilitaryTypes.FARMER),
     DIARY_FARMER(200, 9, 9, 1, "diary farmer", Texture.MEADOW, 0, Resources.WOOD, 10, false, false, false,NonMilitaryTypes.FARMER),
     WHEAT_FARMER(200, 9, 9, 1, "wheat farmer", Texture.MEADOW, 0, Resources.WOOD, 15, false, false, false,NonMilitaryTypes.FARMER),
@@ -81,6 +81,10 @@ public enum TypeOfBuilding {
         this.workerType = workerType;
     }
 
+    public NonMilitaryTypes getWorkerType() {
+        return workerType;
+    }
+    
     public boolean isMilitaryCamp() {
         return isMilitaryCamp;
     }

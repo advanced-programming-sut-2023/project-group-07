@@ -27,6 +27,10 @@ public class MapPixel {
         people.add(person);
     }
 
+    public void removePerson(Person person) {
+        people.remove(person);
+    }
+
     public void setTree(Tree tree) {
         this.tree = tree;
     }
