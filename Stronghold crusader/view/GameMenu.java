@@ -7,12 +7,8 @@ import java.util.regex.Matcher;
 
 import javax.management.StandardEmitterMBean;
 
-import controller.Controller;
-import controller.GameMenuCommands;
-import controller.MapMenuCommands;
+import controller.*;
 
-import controller.GameMenuController;
-import controller.Messages;
 import model.Game;
 import model.Government;
 import model.Resources;
@@ -52,6 +48,8 @@ public class GameMenu {
                 System.out.println(attackEnemy(input));
             else if(GameMenuCommands.getMatcher(input, GameMenuCommands.AIR_ATTACK)!=null)
                 System.out.println(airAttack(input));
+            else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.POUR_OIL)) != null)
+                System.out.println(pourOil(matcher));
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULARITY) != null)
                 System.out.println("Your popularity is : " + controller.getPopularity());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULARITY_FACTORS) != null)
@@ -69,6 +67,18 @@ public class GameMenu {
                 System.out.println("Invalid command!");
         }
 
+    }
+
+    private String pourOil(Matcher matcher) {
+        String directionString = matcher.group("direction");
+        Directions direction = Directions.getByName(directionString);
+        if (direction == null) return "Invalid direction.";
+        switch (controller.pourOil(direction)){
+            case NO_ONE_HAS_OIL :
+                return "There is no engineer with oil in selected units.";
+            case BAD_DIRECTION:
+                return "You can't pour in this direction";
+        }
     }
 
     private String getPopularityFactors() { // todo : check this

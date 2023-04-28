@@ -44,7 +44,8 @@ public enum GameMenuCommands {
     SELL_COMMODITY("^\\s*sell\\s+(\\-i|\\-a|\\-?\\d+|[^\\-][a-z]|\\s)+$"),
     GET_ITEM("\\-i\\s+(?<item>[a-z\\s]+)"),
     GET_AMOUNT("\\-a\\s+(?<amount>\\d+)"),
-    ENTER_TRADE_MENU("^\\s*enter\\s*trade\\s*menu$");
+    ENTER_TRADE_MENU("^\\s*enter\\s*trade\\s*menu$"),
+    POUR_OIL("^\\s*pour\\s+oil\\s+-d\\s+(?<direction>\\S+)\\s*$");
     
     private String regex;
     private GameMenuCommands(String regex) {

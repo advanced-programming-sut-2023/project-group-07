@@ -273,4 +273,8 @@ public class Map {
 
         return false;
     }
+
+    public void pourOil(int x, int y) {
+        field.get(x).get(y).pourOil();
+    }
 }

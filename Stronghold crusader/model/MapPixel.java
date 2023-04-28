@@ -125,4 +125,7 @@ public class MapPixel {
                 "\n << Buildings >> : " + buildingsStr);
     }
 
+    public void pourOil() {
+        doesHaveOil = true;
+    }
 }

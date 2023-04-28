@@ -217,4 +217,34 @@ public class GameMenuController {
         factorsInOrder.add(government.getBuildingsEffectOnPopularity());
         return factorsInOrder;
     }
+
+    public Messages pourOil(Directions direction) {
+        Engineer engineer = null;
+        boolean noOneHasOil = true;
+        boolean badDirection = false;
+        ArrayList<Unit> selectedUnits = game.getSelectedUnit();
+        for (Unit unit : selectedUnits){
+            if (unit instanceof Engineer){
+                Engineer engineerTemp = (Engineer) unit;
+                if (engineerTemp.hasOil()) {
+                    noOneHasOil = false;
+                    badDirection = false;
+                    int[] engineerTempCurrentLocation = engineerTemp.getCurrentLocation();
+                    if (engineerTempCurrentLocation[0] + direction.x() < 0 ||
+                            engineerTempCurrentLocation[0] + direction.x() >= map.getSize() ||
+                            engineerTempCurrentLocation[1] + direction.y() < 0 ||
+                            engineerTempCurrentLocation[1] + direction.y() >= map.getSize()){
+                        badDirection = true;
+                        continue;
+                    }
+
+                    engineer = engineerTemp;
+                    break;
+                }
+            }
+        }
+        if (noOneHasOil) return Messages.NO_ONE_HAS_OIL;
+        if (badDirection) return Messages.BAD_DIRECTION;
+        engineer.pourOil(direction);
+    }
 }

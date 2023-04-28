@@ -15,7 +15,7 @@ public class Game {
     private Government currentGovernment;
     private MilitaryCampType currentMilitaryCamp;
     private Building selectedBuilding;
-    private ArrayList<Person> selectedUnit;
+    private ArrayList<Unit> selectedUnit;
     private int[] selectedUnitArea;
     private int indexOfCurrentGovernment = 0;
 
@@ -342,12 +342,12 @@ public class Game {
             return Messages.INVALID_COORDINATES;
         if (frow > srow || fcolumn > scolumn)
             return Messages.INVALID_COORDINATES;
-        ArrayList<Person> units = new ArrayList<Person>();
+        ArrayList<Unit> units = new ArrayList<>();
         for (int i = frow; i <= srow; i++)
             for (int j = fcolumn; j <= scolumn; j++)
                 for (Person person : map.getMapPixel(i, j).getPeople())
                     if (person instanceof Unit)
-                        units.add(person);
+                        units.add((Unit) person);
         this.selectedUnit = units;
         this.selectedUnitArea = new int[] { frow, fcolumn, srow, scolumn };
         return Messages.UNIT_SELECTED_SUCCESSFULLY;
@@ -361,7 +361,7 @@ public class Game {
                 || !map.getMapPixel(row, column).getTexture().canDropBuilding()) {
             return Messages.CANT_MOVE_UNITS_TO_THIS_LOCATION;
         }
-        for (Person person : selectedUnit)
+        for (Unit person : selectedUnit)
             if (person.getGovernment().equals(currentGovernment)) {
                 person.setMovePattern(
                         map.getPathList(person.currentLocation[0], person.currentLocation[1], row, column));
@@ -405,7 +405,7 @@ public class Game {
                 || !map.getMapPixel(srow, scolumn).getTexture().canDropBuilding()) {
             return Messages.CANT_MOVE_UNITS_TO_THIS_LOCATION;
         }
-        for (Person person : selectedUnit)
+        for (Unit person : selectedUnit)
             if (person.getGovernment().equals(currentGovernment)) {
                 person.setPatrolLocation(new int[] { frow, fcolumn, srow, scolumn });
                 person.setPatrolling(true);
@@ -440,7 +440,7 @@ public class Game {
     }
 
     public Messages stopUnit() {
-        for (Person person : selectedUnit)
+        for (Unit person : selectedUnit)
             if (person.getGovernment().equals(currentGovernment)) {
                 person.setMovePattern(new ArrayList<int[]>());
                 person.setPatrolling(false);
@@ -467,8 +467,8 @@ public class Game {
     public Messages buildSiegeWeapon(SiegeWeaponType siegeWeapontType) {
         int[] location = new int[2];
         int counter = 0;
-        for (Person person : selectedUnit) {
-            if (((Unit) person).getTypeOfPerson().equals(TypeOfPerson.ENGINEER)) {
+        for (Unit person : selectedUnit) {
+            if (person.getTypeOfPerson().equals(TypeOfPerson.ENGINEER)) {
                 location = person.getCurrentLocation();
                 counter++;
             }
@@ -547,5 +547,13 @@ public class Game {
                 return government;
         }
         return null;
+    }
+
+    public ArrayList<Unit> getSelectedUnit() {
+        return selectedUnit;
+    }
+
+    public void pourOil(int x, int y) {
+        map.pourOil(x,y));
     }
 }
