@@ -162,10 +162,11 @@ public class Game {
                             new int[] { row, column, map.getKeepPosition(indexOfCurrentGovernment)[0],
                                     map.getKeepPosition(indexOfCurrentGovernment)[1] });
                     nonMilitary.setPatrolling(true);
-                    int  frow=nonMilitary.currentLocation[0], fcolumn=nonMilitary.currentLocation[1];
+                    int frow = nonMilitary.currentLocation[0], fcolumn = nonMilitary.currentLocation[1];
                     nonMilitary.move();
-                    map.getMapPixel(frow,fcolumn).removePerson(nonMilitary);
-                    map.getMapPixel(nonMilitary.currentLocation[0],nonMilitary.currentLocation[1]).addPerson(nonMilitary);
+                    map.getMapPixel(frow, fcolumn).removePerson(nonMilitary);
+                    map.getMapPixel(nonMilitary.currentLocation[0], nonMilitary.currentLocation[1])
+                            .addPerson(nonMilitary);
                 }
             } else {
                 isWorking = false;
@@ -336,12 +337,6 @@ public class Game {
     }
 
     public Messages selectUnit(int frow, int fcolumn, int srow, int scolumn) {
-        if (frow < 0 || frow >= map.getSize() || fcolumn < 0 || fcolumn >= map.getSize())
-            return Messages.INVALID_COORDINATES;
-        if (srow < 0 || srow >= map.getSize() || scolumn < 0 || scolumn >= map.getSize())
-            return Messages.INVALID_COORDINATES;
-        if (frow > srow || fcolumn > scolumn)
-            return Messages.INVALID_COORDINATES;
         ArrayList<Unit> units = new ArrayList<>();
         for (int i = frow; i <= srow; i++)
             for (int j = fcolumn; j <= scolumn; j++)
@@ -353,26 +348,17 @@ public class Game {
         return Messages.UNIT_SELECTED_SUCCESSFULLY;
     }
 
-    public Messages moveUnit(int row, int column) {
-        if (row < 0 || row >= map.getSize() || column < 0 || column >= map.getSize()) {
-            return Messages.INVALID_COORDINATES;
-        }
-        if (!map.getMapPixel(row, column).canDropObject()
-                || !map.getMapPixel(row, column).getTexture().canDropBuilding()) {
-            return Messages.CANT_MOVE_UNITS_TO_THIS_LOCATION;
-        }
+    public void moveUnit(int row, int column) {
         for (Unit person : selectedUnit)
             if (person.getGovernment().equals(currentGovernment)) {
                 person.setMovePattern(
                         map.getPathList(person.currentLocation[0], person.currentLocation[1], row, column));
                 person.setPatrolling(false);
-                int frow = person.currentLocation[0],fcolumn=person.currentLocation[1];
-                person.move();
-                map.getMapPixel(frow, fcolumn).removePerson(person);
-                map.getMapPixel(person.currentLocation[0], person.currentLocation[1]).addPerson(person);
+                applyPersonMove(person);
+                person.setAttacking(false);
+                person.setPatrolling(false);
             }
         selectedUnit.clear();
-        return Messages.UNIT_MOVED_SUCCESSFULLY;
     }
 
     public void updateMovePatterns(Government government) {
@@ -387,24 +373,11 @@ public class Game {
 
     public void moveUnitsInQueue(Government government) {
         for (Person person : government.getPeople()) {
-            int frow = person.currentLocation[0],fcolumn=person.currentLocation[1];
-            person.move();
-            map.getMapPixel(frow, fcolumn).removePerson(person);
-            map.getMapPixel(person.currentLocation[0], person.currentLocation[1]).addPerson(person);
+            applyPersonMove(person);
         }
     }
 
-    public Messages patrolUnits(int frow, int fcolumn, int srow, int scolumn) {
-        if (frow < 0 || frow >= map.getSize() || fcolumn < 0 || fcolumn >= map.getSize() ||
-                srow < 0 || srow >= map.getSize() || scolumn < 0 || scolumn >= map.getSize()) {
-            return Messages.INVALID_COORDINATES;
-        }
-        if (!map.getMapPixel(frow, fcolumn).canDropObject()
-                || !map.getMapPixel(frow, fcolumn).getTexture().canDropBuilding()
-                || !map.getMapPixel(srow, scolumn).canDropObject()
-                || !map.getMapPixel(srow, scolumn).getTexture().canDropBuilding()) {
-            return Messages.CANT_MOVE_UNITS_TO_THIS_LOCATION;
-        }
+    public void patrolUnits(int frow, int fcolumn, int srow, int scolumn) {
         for (Unit person : selectedUnit)
             if (person.getGovernment().equals(currentGovernment)) {
                 person.setPatrolLocation(new int[] { frow, fcolumn, srow, scolumn });
@@ -414,13 +387,17 @@ public class Game {
                 else
                     person.setMovePattern(
                             map.getPathList(person.currentLocation[0], person.currentLocation[1], frow, fcolumn));
-                int firstRow = person.currentLocation[0],firstColumn=person.currentLocation[1];
-                person.move();
-                map.getMapPixel(firstRow, firstColumn).removePerson(person);
-                map.getMapPixel(person.currentLocation[0], person.currentLocation[1]).addPerson(person);
+                applyPersonMove(person);
+                person.setPatrolling(false);
             }
         selectedUnit.clear();
-        return Messages.UNIT_MOVED_SUCCESSFULLY;
+    }
+
+    public void applyPersonMove(Person person) {
+        int firstRow = person.currentLocation[0], firstColumn = person.currentLocation[1];
+        person.move();
+        map.getMapPixel(firstRow, firstColumn).removePerson(person);
+        map.getMapPixel(person.currentLocation[0], person.currentLocation[1]).addPerson(person);
     }
 
     public void setPatrolPattern(Government government) {
@@ -439,29 +416,60 @@ public class Game {
         }
     }
 
-    public Messages stopUnit() {
+    public void setAttackPattern(Government government) {
+        for (Person person : government.getPeople()) {
+            if (person instanceof Unit && ((Unit) person).isAttacking()) {
+                Unit unit = (Unit) person;
+                if (unit.getPersonBeingAttacked().hp == -1) {
+                    unit.setAttacking(false);
+                    continue;
+                }
+                unit.setMovePattern(map.getPathList(unit.currentLocation[0], unit.currentLocation[1],
+                        unit.getPersonBeingAttacked().currentLocation[0],
+                        unit.getPersonBeingAttacked().currentLocation[0]));
+            }
+        }
+    }
+
+    public void stopUnit() {
         for (Unit person : selectedUnit)
             if (person.getGovernment().equals(currentGovernment)) {
                 person.setMovePattern(new ArrayList<int[]>());
                 person.setPatrolling(false);
             }
         selectedUnit.clear();
-        return Messages.UNIT_STOPPED_SUCCESSFULLY;
     }
 
-    public Messages setStance(int row, int column, UnitStance unitStance) {
-        if (row < 0 || row >= map.getSize() || column < 0 || column >= map.getSize())
-            return Messages.INVALID_COORDINATES;
-        if (unitStance == null) {
-            return Messages.INVALID_STANCE;
-        }
+    public void setStance(int row, int column, UnitStance unitStance) {
         for (Person person : map.getMapPixel(row, column).getPeople()) {
             if (person.getGovernment().equals(currentGovernment)) {
                 ((Unit) person).setUnitStance(unitStance);
             }
         }
         selectedUnit.clear();
-        return Messages.STANCE_CHANGED_SUCCESSFULLY;
+    }
+
+    public void attackEnemy(int row, int column) {
+        Person person = map.getMapPixel(row, column).getPeople().get(0);
+        for (Unit unit : selectedUnit) {
+            unit.setAttacking(true);
+            unit.setMovePattern(map.getPathList(unit.currentLocation[0], unit.currentLocation[1], row, column));
+            unit.setPersonBeingAttacked(person);
+            applyPersonMove(unit);
+            unit.setPatrolling(false);
+        }
+        selectedUnit.clear();
+    }
+
+    public void areaAttack(int row,int column) {
+        for(Unit unit : selectedUnit) {
+            unit.getMovePattern().clear();
+            unit.setPatrolling(false);
+            unit.setAttacking(false);
+            unit.setAreaAttacking(true);
+            unit.setAreaAttackLocation(new int[]{row, column});
+        }
+        selectedUnit.clear();
     }
 
     public Messages buildSiegeWeapon(SiegeWeaponType siegeWeapontType) {
@@ -554,6 +562,6 @@ public class Game {
     }
 
     public void pourOil(int x, int y) {
-        map.pourOil(x,y));
+        map.pourOil(x, y);
     }
 }

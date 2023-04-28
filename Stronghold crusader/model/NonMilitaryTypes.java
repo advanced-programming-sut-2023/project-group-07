@@ -29,5 +29,9 @@ public enum NonMilitaryTypes {
         this.hp = hp;
         this.speed = speed;
     }
+
+    public int getSpeed() {
+        return speed;
+    }
     
 }

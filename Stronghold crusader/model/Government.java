@@ -56,7 +56,10 @@ public class Government {
 
     public void resetMovesLeft() {
         for(Person person: people){
-            person.movesLeft = person.getTypeOfPerson().getSpeed();
+            if(person instanceof Unit)
+                person.movesLeft=((Unit)person).typeOfPerson.getSpeed();
+            if(person instanceof NonMilitary)
+                person.movesLeft=((NonMilitary)person).type.getSpeed();
         }
     }
 

@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.regex.Matcher;
 
+import javax.swing.RowFilter;
+
 import model.*;
 
 public class GameMenuController {
@@ -114,24 +116,80 @@ public class GameMenuController {
         return game.changeWorkingState();
     }
 
+    public boolean areCoordinatesValid(int row, int column) {
+        if (row < 0 || row >= map.getSize() || column < 0 || column >= map.getSize())
+            return false;
+        return true;
+    }
+
     public Messages selectUnit(int frow, int fcolumn, int srow, int scolumn) {
+        if (!areCoordinatesValid(frow, fcolumn) || !areCoordinatesValid(srow, scolumn))
+            return Messages.INVALID_COORDINATES;
+        if (frow > srow || fcolumn > scolumn)
+            return Messages.INVALID_COORDINATES;
         return game.selectUnit(frow - 1, fcolumn - 1, srow - 1, scolumn - 1);
     }
 
     public Messages moveUnit(int row, int column) {
-        return game.moveUnit(row - 1, column - 1);
+        if(!areCoordinatesValid(row, column))
+            return Messages.INVALID_COORDINATES;
+        if(game.getSelectedUnit().isEmpty())
+            return Messages.NO_UNITS_SELECTED;
+        if (!map.getMapPixel(row, column).canDropObject()
+                || !map.getMapPixel(row, column).getTexture().canDropBuilding()) {
+            return Messages.CANT_MOVE_UNITS_TO_THIS_LOCATION;
+        }
+        game.moveUnit(row - 1, column - 1);
+        return Messages.UNIT_MOVED_SUCCESSFULLY;
     }
 
-    public Messages patrolunit(int frow, int fcolumn, int srow, int scolumn) {
-        return game.patrolUnits(frow - 1, fcolumn - 1, srow - 1, scolumn - 1);
+    public Messages patrolUnit(int frow, int fcolumn, int srow, int scolumn) {
+        if (!areCoordinatesValid(frow, fcolumn) || !areCoordinatesValid(srow, scolumn))
+            return Messages.INVALID_COORDINATES;
+        if(game.getSelectedUnit().isEmpty())
+            return Messages.NO_UNITS_SELECTED;
+        if (!map.getMapPixel(frow, fcolumn).canDropObject()
+                || !map.getMapPixel(frow, fcolumn).getTexture().canDropBuilding()
+                || !map.getMapPixel(srow, scolumn).canDropObject()
+                || !map.getMapPixel(srow, scolumn).getTexture().canDropBuilding()) {
+            return Messages.CANT_MOVE_UNITS_TO_THIS_LOCATION;
+        }
+        game.patrolUnits(frow - 1, fcolumn - 1, srow - 1, scolumn - 1);
+        return Messages.UNIT_MOVED_SUCCESSFULLY;
     }
 
     public Messages stopUnit() {
-        return game.stopUnit();
+        if(game.getSelectedUnit().isEmpty())
+            return Messages.NO_UNITS_SELECTED;
+        game.stopUnit();
+        return Messages.UNIT_STOPPED_SUCCESSFULLY;
     }
 
     public Messages setStance(int frow, int fcolumn, String stance) {
-        return game.setStance(frow, fcolumn, UnitStance.getStanceByName(stance));
+        if(!areCoordinatesValid(frow, fcolumn))
+            return Messages.INVALID_COORDINATES;
+        UnitStance unitStance = UnitStance.getStanceByName(stance);
+        if (unitStance == null)
+            return Messages.INVALID_STANCE;
+        if(game.getSelectedUnit().isEmpty())
+            return Messages.NO_UNITS_SELECTED;
+        game.setStance(frow, fcolumn, unitStance);
+        return Messages.STANCE_CHANGED_SUCCESSFULLY;
+    }
+
+    public Messages areaAttack(int row, int column) {
+        if(game.getSelectedUnit().isEmpty())
+            return Messages.NO_UNITS_SELECTED;
+        for(Unit unit : game.getSelectedUnit()) {
+            if(unit.getTypeOfPerson().getRange()==1)
+                return Messages.MUST_SELECT_RANGED_UNITS;
+        }
+        for(Unit unit : game.getSelectedUnit()) {
+            if(unit.getTypeOfPerson().getRange()<Math.abs(row-unit.getCurrentLocation()[0])+Math.abs(column-unit.getCurrentLocation()[1]))
+                return Messages.OUT_OF_RANGE;
+        }
+        game.areaAttack(row, column);
+        return Messages.AREA_ATTACKING_SET_SUCCESSFULLY;
     }
 
     public int getPopularity() {
