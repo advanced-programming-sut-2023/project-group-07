@@ -68,7 +68,7 @@ public class CreateMapMenu extends MapMenu {
         }
     }
 
-    private Messages removeMap() {
+    private Messages removeMap() throws IOException {
         System.out.println("Are you sure you want to remove this map?");
         String input = scanner.nextLine();
         if (input.toLowerCase().matches("\\s*yes\\s*")) {

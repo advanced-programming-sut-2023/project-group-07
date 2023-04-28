@@ -63,17 +63,7 @@ public class GameMenuController {
         return game.repair();
     }
 
-    public Messages createUnit(String input) {
-        String type = "";
-        int count = 0;
-        Matcher matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.CREATE_UNIT);
-        if (matcher.group("type1") == null) {
-            type = matcher.group("type2");
-            count = Integer.parseInt(matcher.group("count2"));
-        } else {
-            type = matcher.group("type1");
-            count = Integer.parseInt(matcher.group("count1"));
-        }
+    public Messages createUnit(String type, int count) {
         return game.createTroop(type, count);
     }
 

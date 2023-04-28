@@ -139,7 +139,7 @@ public class CreateMapMenuController {
         return Messages.DROP_ROCK_SUCCESSFUL;
     }
 
-    public void removeMap() {
+    public void removeMap() throws IOException{
         Map.removeMap(map);
     }
 
@@ -212,9 +212,9 @@ public class CreateMapMenuController {
                 return Messages.CANT_PLACE_THIS;
         }
 
-        /*if (typeOfBuilding.equals(TypeOfBuilding.GRANARY) || typeOfBuilding.equals(TypeOfBuilding.STOCK_PILE))
-            if (!isAdjacentToSameType(row, column, typeOfBuilding.getLength(), typeOfBuilding))
-                return Messages.MUST_BE_ADJACENT_TO_BUILDINGS_OF_THE_SAME_TYPE;*/
+        if (typeOfBuilding.equals(TypeOfBuilding.GRANARY) || typeOfBuilding.equals(TypeOfBuilding.STOCK_PILE))
+            if (!map.isAdjacentToSameType(row, column, typeOfBuilding.getLength(), typeOfBuilding))
+                return Messages.MUST_BE_ADJACENT_TO_BUILDINGS_OF_THE_SAME_TYPE;
 
         Building building = new Building(lordColor, typeOfBuilding, row, column);
         for (int i = 0; i < typeOfBuilding.getLength(); i++)
@@ -223,33 +223,6 @@ public class CreateMapMenuController {
         return Messages.DEPLOYMENT_SUCCESSFUL;
     }
 
-    public boolean isAdjacentToSameType(int row, int column, int size, TypeOfBuilding typeOfBuilding) {
-        if (row > 0)
-            for (int i = 0; i < typeOfBuilding.getLength(); i++)
-                if (map.getMapPixel(row-1 , column + i).getBuildings().get(0).getTypeOfBuilding()
-                        .equals(typeOfBuilding))
-                    return true;
-
-        if (row < size - typeOfBuilding.getWidth() + 1)
-            for (int i = 0; i < typeOfBuilding.getLength(); i++)
-                if (map.getMapPixel(row + typeOfBuilding.getWidth(), column + i).getBuildings().get(0)
-                        .getTypeOfBuilding().equals(typeOfBuilding))
-                    return true;
-
-        if (column > 0)
-            for (int i = 0; i < typeOfBuilding.getWidth(); i++)
-                if (map.getMapPixel(row + i, column - 1).getBuildings().get(0).getTypeOfBuilding()
-                        .equals(typeOfBuilding))
-                    return true;
-
-        if (column < size - typeOfBuilding.getLength() + 1)
-            for (int i = 0; i < typeOfBuilding.getWidth(); i++)
-                if (map.getMapPixel(row + i, column + typeOfBuilding.getLength()).getBuildings().get(0)
-                        .getTypeOfBuilding().equals(typeOfBuilding))
-                    return true;
-
-        return false;
-    }
     
     // todo : fix this
     // public void addGovernment(int row, int column, int index) {

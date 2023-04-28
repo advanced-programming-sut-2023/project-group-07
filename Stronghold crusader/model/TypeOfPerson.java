@@ -14,7 +14,7 @@ public enum TypeOfPerson {
     TUNNELER("tunneler",MilitaryCampType.ENGINEER_GUILD,30,new ArrayList<>(Arrays.asList()),4,1,150,50),
     LADDERMAN("ladderman",MilitaryCampType.ENGINEER_GUILD,4,new ArrayList<>(Arrays.asList()),4,1,150,20),
     ENGINEER("engineer",MilitaryCampType.ENGINEER_GUILD,30,new ArrayList<>(Arrays.asList()),3,1,150,20),
-    BLACK_MONK("black_monk",MilitaryCampType.CATHEDRAL,10,new ArrayList<>(Arrays.asList()),2,1,500,30),
+    BLACK_MONK("black monk",MilitaryCampType.CATHEDRAL,10,new ArrayList<>(Arrays.asList()),2,1,500,30),
     ARABIAN_BOW("arabian bow",MilitaryCampType.MERCENARY_POST,75,new ArrayList<>(Arrays.asList()),3,20,400,50),
     SLAVE("slave",MilitaryCampType.MERCENARY_POST,5,new ArrayList<>(Arrays.asList()),4,1,150,30),
     SLINGER("slinger",MilitaryCampType.MERCENARY_POST,12,new ArrayList<>(Arrays.asList()),4,12,250,35),

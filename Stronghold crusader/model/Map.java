@@ -8,6 +8,7 @@ import java.util.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 public class Map {
     private static ArrayList<Map> maps = new ArrayList<Map>();
@@ -34,8 +35,16 @@ public class Map {
         return (ArrayList<Map>) maps.clone();
     }
 
-    public static void removeMap(Map map) {
-        maps.remove(map);
+    public static void removeMap(Map map) throws IOException {
+        if(maps.contains(map)){ 
+            Gson gson = new Gson();
+            JsonElement jsonElement = gson.toJsonTree(map).getAsJsonObject();
+            maps.remove(map);
+            allMaps.remove(jsonElement);
+            FileWriter file = new FileWriter("Stronghold crusader/DB/Maps");
+            file.write(allMaps.toString());
+            file.close();
+        }
     }
 
     public static int maxPlayerOfMaps() {
@@ -232,5 +241,37 @@ public class Map {
                     person.setGovernment(governments.get(person.getLordColor()));
             }
         }
+    }
+
+    public boolean isAdjacentToSameType(int row, int column, int size, TypeOfBuilding typeOfBuilding) {
+        if (row > 0)
+            for (int i = 0; i < typeOfBuilding.getLength(); i++)
+                if (!getMapPixel(row - 1, column + i).getBuildings().isEmpty()
+                        && getMapPixel(row - 1, column + i).getBuildings().get(0).getTypeOfBuilding()
+                                .equals(typeOfBuilding))
+                    return true;
+
+        if (row < getSize() - typeOfBuilding.getWidth() + 1)
+            for (int i = 0; i < typeOfBuilding.getLength(); i++)
+                if (!getMapPixel(row + typeOfBuilding.getWidth(), column + i).getBuildings().isEmpty()
+                        && getMapPixel(row + typeOfBuilding.getWidth(), column + i).getBuildings().get(0)
+                                .getTypeOfBuilding().equals(typeOfBuilding))
+                    return true;
+
+        if (column > 0)
+            for (int i = 0; i < typeOfBuilding.getWidth(); i++)
+                if (!getMapPixel(row + i, column - 1).getBuildings().isEmpty()
+                        && getMapPixel(row + i, column - 1).getBuildings().get(0).getTypeOfBuilding()
+                                .equals(typeOfBuilding))
+                    return true;
+
+        if (column <getSize() - typeOfBuilding.getLength() + 1)
+            for (int i = 0; i < typeOfBuilding.getWidth(); i++)
+                if (!getMapPixel(row + i, column + typeOfBuilding.getLength()).getBuildings().isEmpty()
+                        && getMapPixel(row + i, column + typeOfBuilding.getLength()).getBuildings().get(0)
+                                .getTypeOfBuilding().equals(typeOfBuilding))
+                    return true;
+
+        return false;
     }
 }

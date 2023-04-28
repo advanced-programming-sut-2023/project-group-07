@@ -53,7 +53,7 @@ public class Government {
 
     public void resetMovesLeft() {
         for(Person person: people){
-            person.movesLeft = person.typeOfPerson.getSpeed();
+            person.movesLeft = person.getTypeOfPerson().getSpeed();
         }
     }
 

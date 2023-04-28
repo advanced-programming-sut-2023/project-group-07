@@ -6,48 +6,34 @@ import java.util.Collections;
 public class Person {
     protected Government government;
     protected LordColor lordColor;
-    protected TypeOfPerson typeOfPerson;
     protected int hp;
     protected int[] currentLocation;
-    protected UnitStance unitStance;
     protected ArrayList<int[]> movePattern = new ArrayList<>();
     protected int movesLeft;
     protected int[] patrolLocation;
     protected boolean patrolling;
-    protected int damage;
-    protected int bonusDamageRate;
 
     public Person(TypeOfPerson typeOfPerson, int[] currentLocation, Government government) {
-        this.typeOfPerson = typeOfPerson;
         this.currentLocation = currentLocation;
         this.hp = typeOfPerson.getHp();
         this.government = government;
         this.movesLeft = typeOfPerson.getSpeed();
-        unitStance= UnitStance.STAND_GROUND;
         patrolling=false;
-        this.damage=typeOfPerson.getDamage();
-        this.bonusDamageRate=1;
     }
 
     public Person (TypeOfPerson typeOfPerson, int[] currentLocation, LordColor lordColor){
-        this.typeOfPerson = typeOfPerson;
         this.currentLocation = currentLocation;
         this.hp = typeOfPerson.getHp();
         this.lordColor = lordColor;
         this.movesLeft = typeOfPerson.getSpeed();
-        unitStance= UnitStance.STAND_GROUND;
         patrolling=false;
-        this.damage=typeOfPerson.getDamage();
-        this.bonusDamageRate=1;
     }
 
     public int[] getCurrentLocation() {
         return currentLocation;
     }
 
-    public TypeOfPerson getTypeOfPerson() {
-        return typeOfPerson;
-    }
+    
 
     public void setPatrolling(boolean patrolling) {
         this.patrolling = patrolling;
@@ -65,14 +51,7 @@ public class Person {
         return patrolLocation;
     }
 
-    public UnitStance getUnitStance() {
-        return unitStance;
-    }
-
-    public void setUnitStance(UnitStance unitStance) {
-        this.unitStance = unitStance;
-    }
-
+    
     public ArrayList<int[]> getMovePattern() {
         return movePattern;
     }

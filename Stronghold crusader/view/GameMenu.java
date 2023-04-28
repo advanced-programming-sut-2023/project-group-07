@@ -137,9 +137,10 @@ public class GameMenu {
             return "Invalid command!";
         String row = GameMenuCommands.getMatcher(input, GameMenuCommands.ROW).group("row");
         String column = GameMenuCommands.getMatcher(input, GameMenuCommands.COLUMN).group("column");
-        String type = GameMenuCommands.getMatcher(input, GameMenuCommands.TYPE).group("type");
-        Messages returnMessage = controller.dropBuilding(row, column, type);
-        switch (returnMessage) {
+        String type = GameMenuCommands.getMatcher(input, GameMenuCommands.TYPE).group("type").trim();
+        switch (controller.dropBuilding(row, column, type)) {
+            case INVALID_BUILDING_NAME:
+             return "Invalid building name!";
             case INVALID_ROW_OR_COLUMN:
                 return "Invalid row or column!";
             case THERES_ALREADY_BUILDING:
@@ -261,8 +262,19 @@ public class GameMenu {
         while (true) {
             String command = scanner.nextLine();
             if (GameMenuCommands.getMatcher(command, GameMenuCommands.CREATE_UNIT) != null) {
-                Messages returnMessage = controller.createUnit(command);
-                switch (returnMessage) {
+                Matcher typeMatcher = GameMenuCommands.getMatcher(command, GameMenuCommands.TYPE);
+                Matcher countMatcher = GameMenuCommands.getMatcher(command, GameMenuCommands.COUNT);
+                if(typeMatcher == null){
+                    System.out.println("Enter the unit type!");
+                    continue;
+                }
+                if(countMatcher == null){
+                    System.out.println("Enter the unit count!");
+                    continue;
+                }
+                String type = typeMatcher.group("type").trim();
+                int count = Integer.parseInt(typeMatcher.group("count"));
+                switch (controller.createUnit(type, count)) {
                     case INVALID_UNIT_NAME:
                         System.out.println("Invalid unit name!");
                         break;

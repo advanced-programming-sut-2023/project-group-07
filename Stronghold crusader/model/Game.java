@@ -26,9 +26,9 @@ public class Game {
         for (Government government : this.governments) {
             government.setGold(goldToBeginWith);
         }
-        HashMap <LordColor, Government> governmentsMap = new HashMap<LordColor, Government>();
-        for(Government government : this.governments)
-            governmentsMap.put(government.getColor(), government);    
+        HashMap<LordColor, Government> governmentsMap = new HashMap<LordColor, Government>();
+        for (Government government : this.governments)
+            governmentsMap.put(government.getColor(), government);
         map.startGame(governmentsMap);
     }
 
@@ -71,6 +71,9 @@ public class Game {
     }
 
     public Messages dropBuilding(int row, int column, TypeOfBuilding typeOfBuilding) {
+        if (typeOfBuilding == null) {
+            return Messages.INVALID_BUILDING_NAME;
+        }
         if (row < 0 || row > map.getSize() - typeOfBuilding.getWidth() + 1 || column < 0
                 || column > map.getSize() - typeOfBuilding.getLength() + 1) {
             return Messages.INVALID_ROW_OR_COLUMN;
@@ -126,16 +129,27 @@ public class Game {
                     return Messages.THERES_AN_ENEMY_CLOSE_BY;
 
         if (typeOfBuilding.equals(TypeOfBuilding.GRANARY) || typeOfBuilding.equals(TypeOfBuilding.STOCK_PILE))
-            if (!isAdjacentToSameType(row, column, typeOfBuilding.getLength(), typeOfBuilding))
+            if (!map.isAdjacentToSameType(row, column, typeOfBuilding.getLength(), typeOfBuilding))
                 return Messages.MUST_BE_ADJACENT_TO_BUILDINGS_OF_THE_SAME_TYPE;
 
         boolean isWorking = true;
-        Building building = new Building(currentGovernment, typeOfBuilding, row, column); // todo : new subClass not
-                                                                                          // Building
+        Building building;
+        if (typeOfBuilding.isGate()) {
+            GateHouse gateHouse = new GateHouse(currentGovernment, typeOfBuilding, row, column);
+            building = gateHouse;
+        } else if (typeOfBuilding.isTower()) {
+            Tower tower = new Tower(currentGovernment, typeOfBuilding, row, column);
+            building = tower;
+        } else if (typeOfBuilding.isMilitaryCamp()) {
+            MilitaryCamp militaryCamp = new MilitaryCamp(currentGovernment, typeOfBuilding, row, column);
+            building = militaryCamp;
+        } else
+            building = new Building(currentGovernment, typeOfBuilding, row, column);
         if (!currentGovernment.getNoLaborBuildings().contains(typeOfBuilding)) {
             if (currentGovernment.getPeasant() >= typeOfBuilding.getWorkerInUse()) {
                 currentGovernment.changePeasant(-typeOfBuilding.getWorkerInUse());
                 building.setWorkers(typeOfBuilding.getWorkerInUse());
+                
             } else {
                 isWorking = false;
                 currentGovernment.addBuildingsWaitingForWorkers(building);
@@ -148,34 +162,6 @@ public class Game {
             for (int j = 0; j < typeOfBuilding.getWidth(); j++)
                 map.getMapPixel(row + j, column + i).addBuilding(building);
         return Messages.DEPLOYMENT_SUCCESSFUL;
-    }
-
-    public boolean isAdjacentToSameType(int row, int column, int size, TypeOfBuilding typeOfBuilding) {
-        if (row > 0)
-            for (int i = 0; i < typeOfBuilding.getLength(); i++)
-                if (map.getMapPixel(row - 1, column + i).getBuildings().get(0).getTypeOfBuilding()
-                        .equals(typeOfBuilding))
-                    return true;
-
-        if (row < map.getSize() - typeOfBuilding.getWidth() + 1)
-            for (int i = 0; i < typeOfBuilding.getLength(); i++)
-                if (map.getMapPixel(row + typeOfBuilding.getWidth(), column + i).getBuildings().get(0)
-                        .getTypeOfBuilding().equals(typeOfBuilding))
-                    return true;
-
-        if (column > 0)
-            for (int i = 0; i < typeOfBuilding.getWidth(); i++)
-                if (map.getMapPixel(row + i, column - 1).getBuildings().get(0).getTypeOfBuilding()
-                        .equals(typeOfBuilding))
-                    return true;
-
-        if (column < map.getSize() - typeOfBuilding.getLength() + 1)
-            for (int i = 0; i < typeOfBuilding.getWidth(); i++)
-                if (map.getMapPixel(row + i, column + typeOfBuilding.getLength()).getBuildings().get(0)
-                        .getTypeOfBuilding().equals(typeOfBuilding))
-                    return true;
-
-        return false;
     }
 
     public Messages selectBuilding(int row, int column) {
@@ -235,7 +221,7 @@ public class Game {
             return Messages.INVALID_UNIT_NAME;
         if (count < 0 || count > currentGovernment.getPeasant())
             return Messages.INVALID_NUMBER;
-        if (typeOfPerson.getGoldNeeded() * count < currentGovernment.getGold())
+        if (typeOfPerson.getGoldNeeded() * count > currentGovernment.getGold())
             return Messages.NOT_ENOUGH_GOLD;
         for (Resources resource : typeOfPerson.getResourcesNeeded())
             if (currentGovernment.getResources().get(resource) < count)
@@ -246,10 +232,11 @@ public class Game {
         for (Resources resource : typeOfPerson.getResourcesNeeded())
             currentGovernment.changeResources(resource, -count);
         currentGovernment.changePeasant(-count);
-        for(int i=0;i<count;i++){
-            Person person = new Person(typeOfPerson,map.getKeepPosition(indexOfCurrentGovernment),currentGovernment);
-            map.getMapPixel(map.getKeepPosition(indexOfCurrentGovernment)[0],map.getKeepPosition(indexOfCurrentGovernment)[1] ).addPerson(person);
-            currentGovernment.addPeople(person);
+        for (int i = 0; i < count; i++) {
+            Unit unit = new Unit(typeOfPerson, map.getKeepPosition(indexOfCurrentGovernment), currentGovernment);
+            map.getMapPixel(map.getKeepPosition(indexOfCurrentGovernment)[0],
+                    map.getKeepPosition(indexOfCurrentGovernment)[1]).addPerson(unit);
+            currentGovernment.addPeople(unit);
         }
         return Messages.UNIT_CREATED_SUCCESSFULLY;
     }
@@ -359,7 +346,8 @@ public class Game {
         }
         for (Person person : selectedUnit)
             if (person.getGovernment().equals(currentGovernment)) {
-                person.setMovePattern(map.getPathList(person.currentLocation[0], person.currentLocation[1], row, column));
+                person.setMovePattern(
+                        map.getPathList(person.currentLocation[0], person.currentLocation[1], row, column));
                 person.setPatrolling(false);
                 person.move();
             }
@@ -401,25 +389,31 @@ public class Game {
                 if (person.currentLocation[0] == frow && person.currentLocation[1] == fcolumn)
                     person.setMovePattern(map.getPathList(frow, fcolumn, srow, scolumn));
                 else
-                    person.setMovePattern(map.getPathList(person.currentLocation[0], person.currentLocation[1], frow, fcolumn));
+                    person.setMovePattern(
+                            map.getPathList(person.currentLocation[0], person.currentLocation[1], frow, fcolumn));
                 person.move();
             }
         selectedUnit.clear();
         return Messages.UNIT_MOVED_SUCCESSFULLY;
     }
 
-    public void setPatrolPattern(Government government){
-        for(Person person : government.getPeople()){
-            if(person.getMovePattern().size()!=0) continue;
-            if(!person.isPatrolling()) continue;
-            if(person.currentLocation[0]==person.patrolLocation[2] && person.currentLocation[1]==person.patrolLocation[3])
-                person.setPatrolLocation(new int[]{person.patrolLocation[2],person.patrolLocation[3],person.patrolLocation[0],person.patrolLocation[1]});
-            int frow = person.patrolLocation[0], fcolumn = person.patrolLocation[1] , srow = person.patrolLocation[2] , scolumn = person.patrolLocation[3];
+    public void setPatrolPattern(Government government) {
+        for (Person person : government.getPeople()) {
+            if (person.getMovePattern().size() != 0)
+                continue;
+            if (!person.isPatrolling())
+                continue;
+            if (person.currentLocation[0] == person.patrolLocation[2]
+                    && person.currentLocation[1] == person.patrolLocation[3])
+                person.setPatrolLocation(new int[] { person.patrolLocation[2], person.patrolLocation[3],
+                        person.patrolLocation[0], person.patrolLocation[1] });
+            int frow = person.patrolLocation[0], fcolumn = person.patrolLocation[1], srow = person.patrolLocation[2],
+                    scolumn = person.patrolLocation[3];
             person.setMovePattern(map.getPathList(frow, fcolumn, srow, scolumn));
         }
     }
 
-    public Messages stopUnit(){
+    public Messages stopUnit() {
         for (Person person : selectedUnit)
             if (person.getGovernment().equals(currentGovernment)) {
                 person.setMovePattern(new ArrayList<int[]>());
@@ -429,47 +423,48 @@ public class Game {
         return Messages.UNIT_STOPPED_SUCCESSFULLY;
     }
 
-    public Messages setStance(int row,int column,UnitStance unitStance){
-        if(row < 0 || row >= map.getSize() || column < 0 || column >= map.getSize())
+    public Messages setStance(int row, int column, UnitStance unitStance) {
+        if (row < 0 || row >= map.getSize() || column < 0 || column >= map.getSize())
             return Messages.INVALID_COORDINATES;
-        if(unitStance==null){
+        if (unitStance == null) {
             return Messages.INVALID_STANCE;
         }
-        for(Person person : map.getMapPixel(row, column).getPeople()){
-            if(person.getGovernment().equals(currentGovernment)){
-                person.setUnitStance(unitStance);
+        for (Person person : map.getMapPixel(row, column).getPeople()) {
+            if (person.getGovernment().equals(currentGovernment)) {
+                ((Unit) person).setUnitStance(unitStance);
             }
         }
         selectedUnit.clear();
         return Messages.STANCE_CHANGED_SUCCESSFULLY;
     }
 
-    public Messages buildSiegeWeapon(SiegeWeaponType siegeWeapontType){
+    public Messages buildSiegeWeapon(SiegeWeaponType siegeWeapontType) {
         int[] location = new int[2];
-        int counter=0;
-        for(Person person : selectedUnit) {
-            if(person.getTypeOfPerson().equals(TypeOfPerson.ENGINEER)){
+        int counter = 0;
+        for (Person person : selectedUnit) {
+            if (((Unit) person).getTypeOfPerson().equals(TypeOfPerson.ENGINEER)) {
                 location = person.getCurrentLocation();
                 counter++;
             }
         }
-        if(counter<siegeWeapontType.getEngineersNeeded())
+        if (counter < siegeWeapontType.getEngineersNeeded())
             return Messages.NEEDS_MORE_ENGINEERS;
         ArrayList<Person> engineers = new ArrayList<>();
-        for(Person person : map.getMapPixel(location[0], location[1]).getPeople()){
-            if(counter==0) break;
-            if(person.getTypeOfPerson().equals(TypeOfPerson.ENGINEER)){
+        for (Person person : map.getMapPixel(location[0], location[1]).getPeople()) {
+            if (counter == 0)
+                break;
+            if (((Unit) person).getTypeOfPerson().equals(TypeOfPerson.ENGINEER)) {
                 counter--;
                 engineers.add(person);
             }
         }
         map.getMapPixel(location[0], location[1]).getPeople().removeAll(engineers);
         currentGovernment.getPeople().removeAll(engineers);
-        SiegeWeapon siegeWeapon = new SiegeWeapon(siegeWeapontType,location);
+        SiegeWeapon siegeWeapon = new SiegeWeapon(siegeWeapontType, location);
         return Messages.SIEGE_WEAPON_BUILT_SUCCESSFULLY;
     }
 
-    public Messages disbandUnit(){
+    public Messages disbandUnit() {
         map.getMapPixel(selectedUnitArea[0], selectedUnitArea[1]).getPeople().removeAll(selectedUnit);
         currentGovernment.getPeople().removeAll(selectedUnit);
         return Messages.UNITS_DISBANDED_SUCCESSFULLY;
