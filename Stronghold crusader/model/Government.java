@@ -39,6 +39,10 @@ public class Government {
             resources.put(resource, 0);
     }
 
+    public LordColor getColor() {
+        return color;
+    }
+
     public ArrayList<Person> getPeople() {
         return people;
     }

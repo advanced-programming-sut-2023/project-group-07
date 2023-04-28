@@ -3,6 +3,7 @@ package model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.io.IOException;
 import controller.Controller;
@@ -25,6 +26,10 @@ public class Game {
         for (Government government : this.governments) {
             government.setGold(goldToBeginWith);
         }
+        HashMap <LordColor, Government> governmentsMap = new HashMap<LordColor, Government>();
+        for(Government government : this.governments)
+            governmentsMap.put(government.getColor(), government);    
+        map.startGame(governmentsMap);
     }
 
     public Messages taxRate(int rate, Government government) {

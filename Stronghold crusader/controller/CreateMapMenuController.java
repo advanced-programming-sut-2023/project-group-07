@@ -5,10 +5,14 @@ import java.util.ArrayList;
 import model.Map;
 import model.Texture;
 import model.Tree;
+import model.TypeOfBuilding;
+import model.TypeOfPerson;
 import model.MapPixel;
 import model.Rock;
 import model.Government;
 import model.LordColor;
+import model.Unit;
+import model.Building;
 import java.io.IOException;
 
 public class CreateMapMenuController {
@@ -138,6 +142,115 @@ public class CreateMapMenuController {
     public void removeMap() {
         Map.removeMap(map);
     }
+
+    public Messages dropUnit(int row, int column, int count, String type, String color) {
+        int size = map.getSize();
+        LordColor lordColor = LordColor.getColorByName(color);
+        TypeOfPerson unitName = TypeOfPerson.getTypeOfPersonFromString(type);
+        if(row < 0 || row >= size || column < 0 || column >= size)
+            return Messages.INVALID_COORDINATES;
+        if(unitName == null)
+            return Messages.INVALID_UNIT_NAME;
+        if(lordColor == null || !map.doesHaveColor(lordColor))
+            return Messages.INVALID_COLOR;
+        MapPixel pixel = map.getMapPixel(row, column);
+        if(!pixel.getTexture().canDropUnit() || pixel.getRock()!= null)
+            return Messages.CANT_PLACE_THIS;
+        int[] currentLocation = {row, column};
+        while(count-- > 0)
+            pixel.addPerson(new Unit(unitName, currentLocation, lordColor));
+        return Messages.DROP_UNIT_SUCCESSFUL;
+
+    }
+
+    public Messages dropBuilding (int row, int column, String type, String color){
+        int size = map.getSize();
+        LordColor lordColor = LordColor.getColorByName(color);
+        TypeOfBuilding typeOfBuilding = TypeOfBuilding.getBuilding(type);
+        if(typeOfBuilding == null)
+            return Messages.INVALID_BUILDING_NAME;
+        if(lordColor == null || !map.doesHaveColor(lordColor))
+            return Messages.INVALID_COLOR;
+        if (row < 0 || row > size - typeOfBuilding.getWidth() + 1 || column < 0
+            || column > size - typeOfBuilding.getLength() + 1) {
+            return Messages.INVALID_ROW_OR_COLUMN;
+        }
+        for (int i = 0; i < typeOfBuilding.getLength(); i++)
+            for (int j = 0; j < typeOfBuilding.getWidth(); j++)
+                if (map.getMapPixel(row + j, column + i).getBuildings().size() != 0)
+                    return Messages.THERES_ALREADY_BUILDING;
+
+        for (int i = 0; i < typeOfBuilding.getLength(); i++)
+            for (int j = 0; j < typeOfBuilding.getWidth(); j++)
+                if (map.getMapPixel(row + j, column + i).getPeople().size() != 0)
+                    return Messages.THERES_ALREADY_UNIT;
+
+        for (int i = 0; i < typeOfBuilding.getLength(); i++)
+            for (int j = 0; j < typeOfBuilding.getWidth(); j++) {
+                if (!map.getMapPixel(row + j, column + i).canDropObject()
+                        || !map.getMapPixel(row + j, column + i).getTexture().canDropBuilding())
+                    return Messages.CANT_PLACE_THIS;
+            }
+        if (typeOfBuilding.equals(TypeOfBuilding.APPLE_ORCHARD) ||
+                typeOfBuilding.equals(TypeOfBuilding.DIARY_FARMER) ||
+                typeOfBuilding.equals(TypeOfBuilding.HOPS_FARMER) ||
+                typeOfBuilding.equals(TypeOfBuilding.WHEAT_FARMER)) {
+            for (int i = 0; i < typeOfBuilding.getLength(); i++)
+                for (int j = 0; j < typeOfBuilding.getWidth(); j++) {
+                    if (!map.getMapPixel(row + j, column + i).getTexture().equals(Texture.MEADOW))
+                        return Messages.CANT_PLACE_THIS;
+                }
+        }
+        int acceptedPixels = 0;
+        if (typeOfBuilding.equals(TypeOfBuilding.QUARRY) || typeOfBuilding.equals(TypeOfBuilding.IRON_MINE)
+                || typeOfBuilding.equals(TypeOfBuilding.PITCH_RIG)) {
+            for (int i = 0; i < typeOfBuilding.getLength(); i++)
+                for (int j = 0; j < typeOfBuilding.getWidth(); j++)
+                    if (!map.getMapPixel(row + j, column + i).getTexture().equals(typeOfBuilding.getTexture()))
+                        acceptedPixels++;
+            if (acceptedPixels * 4 > typeOfBuilding.getLength() * typeOfBuilding.getWidth())
+                return Messages.CANT_PLACE_THIS;
+        }
+
+        /*if (typeOfBuilding.equals(TypeOfBuilding.GRANARY) || typeOfBuilding.equals(TypeOfBuilding.STOCK_PILE))
+            if (!isAdjacentToSameType(row, column, typeOfBuilding.getLength(), typeOfBuilding))
+                return Messages.MUST_BE_ADJACENT_TO_BUILDINGS_OF_THE_SAME_TYPE;*/
+
+        Building building = new Building(lordColor, typeOfBuilding, row, column);
+        for (int i = 0; i < typeOfBuilding.getLength(); i++)
+            for (int j = 0; j < typeOfBuilding.getWidth(); j++)
+                map.getMapPixel(row + j, column + i).addBuilding(building);
+        return Messages.DEPLOYMENT_SUCCESSFUL;
+    }
+
+    public boolean isAdjacentToSameType(int row, int column, int size, TypeOfBuilding typeOfBuilding) {
+        if (row > 0)
+            for (int i = 0; i < typeOfBuilding.getLength(); i++)
+                if (map.getMapPixel(row-1 , column + i).getBuildings().get(0).getTypeOfBuilding()
+                        .equals(typeOfBuilding))
+                    return true;
+
+        if (row < size - typeOfBuilding.getWidth() + 1)
+            for (int i = 0; i < typeOfBuilding.getLength(); i++)
+                if (map.getMapPixel(row + typeOfBuilding.getWidth(), column + i).getBuildings().get(0)
+                        .getTypeOfBuilding().equals(typeOfBuilding))
+                    return true;
+
+        if (column > 0)
+            for (int i = 0; i < typeOfBuilding.getWidth(); i++)
+                if (map.getMapPixel(row + i, column - 1).getBuildings().get(0).getTypeOfBuilding()
+                        .equals(typeOfBuilding))
+                    return true;
+
+        if (column < size - typeOfBuilding.getLength() + 1)
+            for (int i = 0; i < typeOfBuilding.getWidth(); i++)
+                if (map.getMapPixel(row + i, column + typeOfBuilding.getLength()).getBuildings().get(0)
+                        .getTypeOfBuilding().equals(typeOfBuilding))
+                    return true;
+
+        return false;
+    }
+    
     // todo : fix this
     // public void addGovernment(int row, int column, int index) {
     // map.getMapPixel(row, column).setPlayerKeep(government);

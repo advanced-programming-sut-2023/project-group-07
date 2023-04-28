@@ -47,7 +47,7 @@ public class GameMenu {
             else if(GameMenuCommands.getMatcher(input, GameMenuCommands.STOP_UNIT)!=null)
                 System.out.println(stopUnit());
             else if(GameMenuCommands.getMatcher(input, GameMenuCommands.SET_STANCE)!=null)
-                System.out.println(setStance());
+                System.out.println(setStance(input));
             else if(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY)!=null)
                 System.out.println(attackEnemy(input));
             else if(GameMenuCommands.getMatcher(input, GameMenuCommands.AIR_ATTACK)!=null)

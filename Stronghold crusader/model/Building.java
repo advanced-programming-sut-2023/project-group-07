@@ -1,6 +1,6 @@
 package model;
 
-public abstract class Building {
+public class Building {
 
     protected Government government;
     protected int hp;
@@ -9,6 +9,7 @@ public abstract class Building {
     protected int row;
     protected int column;
     protected boolean isWorking;
+    protected LordColor lordColor;
     
     public Building(Government government,TypeOfBuilding typeOfBuilding,int row,int column) {
         this.government=government;
@@ -17,6 +18,15 @@ public abstract class Building {
         this.column=column;
         this.hp=typeOfBuilding.getHp();
     }
+
+    public Building (LordColor lordColor, TypeOfBuilding typeOfBuilding, int row,int column){
+        this.lordColor = lordColor;
+        this.typeOfBuilding = typeOfBuilding;
+        this.row=row;
+        this.column = column;
+        this.hp = typeOfBuilding.getHp();
+    } 
+
     public TypeOfBuilding getTypeOfBuilding() {
         return typeOfBuilding;
     }
@@ -35,5 +45,13 @@ public abstract class Building {
     public void workingState(boolean isWorking) {
         this.isWorking = isWorking;
     }
-    abstract public void endOfTurn();
+    public void endOfTurn(){
+
+    }
+    public void setGovernment(Government government) {
+        this.government = government;
+    }
+    public LordColor getLordColor() {
+        return lordColor;
+    }
 }

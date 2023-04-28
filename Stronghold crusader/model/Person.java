@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class Person {
-    private Government government;
+    protected Government government;
+    protected LordColor lordColor;
     protected TypeOfPerson typeOfPerson;
     protected int hp;
     protected int[] currentLocation;
@@ -21,6 +22,18 @@ public class Person {
         this.currentLocation = currentLocation;
         this.hp = typeOfPerson.getHp();
         this.government = government;
+        this.movesLeft = typeOfPerson.getSpeed();
+        unitStance= UnitStance.STAND_GROUND;
+        patrolling=false;
+        this.damage=typeOfPerson.getDamage();
+        this.bonusDamageRate=1;
+    }
+
+    public Person (TypeOfPerson typeOfPerson, int[] currentLocation, LordColor lordColor){
+        this.typeOfPerson = typeOfPerson;
+        this.currentLocation = currentLocation;
+        this.hp = typeOfPerson.getHp();
+        this.lordColor = lordColor;
         this.movesLeft = typeOfPerson.getSpeed();
         unitStance= UnitStance.STAND_GROUND;
         patrolling=false;
@@ -64,6 +77,10 @@ public class Person {
         return movePattern;
     }
 
+    public void setGovernment(Government government) {
+        this.government = government;
+    }
+
     public void setMovePattern(ArrayList<int[]> movePattern) {
         this.movePattern = movePattern;
     }
@@ -81,4 +98,9 @@ public class Person {
     public Government getGovernment() {
         return government;
     }
+
+    public LordColor getLordColor() {
+        return lordColor;
+    }
+
 }

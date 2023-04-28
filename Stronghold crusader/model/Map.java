@@ -226,4 +226,19 @@ public class Map {
         path.remove(0);
         return path;
     }
+
+    public boolean doesHaveColor(LordColor color){
+        return keepsPositions.keySet().contains(color);
+    }
+
+    public void startGame(HashMap<LordColor, Government> governments){
+        for(ArrayList<MapPixel> row : field){
+            for(MapPixel pixel : row){
+                for(Building building : pixel.getBuildings())
+                    building.setGovernment(governments.get(building.getLordColor()));
+                for(Person person : pixel.getPeople())
+                    person.setGovernment(governments.get(person.getLordColor()));
+            }
+        }
+    }
 }

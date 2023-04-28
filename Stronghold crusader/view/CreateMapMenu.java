@@ -56,6 +56,10 @@ public class CreateMapMenu extends MapMenu {
                     System.out.println(dropTree(input));
                 else if (CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.DROP_ROCK) != null)
                     System.out.println(dropRock(input));
+                else if(CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.DROP_UNIT) != null)
+                    System.out.println(dropUnit(input));
+                else if(CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.DROP_BUILDING) != null)
+                    System.out.println(dropBuilding(input));
                 else
                     System.out.println("Invalid command!");
 
@@ -193,7 +197,7 @@ public class CreateMapMenu extends MapMenu {
     private String setPixelTexture(String input) {
         Matcher rowMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_ROW);
         Matcher columnMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_COLUMN);
-        Matcher textureMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_TEXTURE_TYPE);
+        Matcher textureMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_TYPE);
         String checkCoordinates = Controller.checkCoordinatesFormat(rowMatcher, columnMatcher);
         String checkTexture = checkTypeFormat(textureMatcher);
         if (checkCoordinates != null)
@@ -205,7 +209,7 @@ public class CreateMapMenu extends MapMenu {
         String textureName = textureMatcher.group("type");
         switch (controller.setPixelTexture(row - 1, column - 1, textureName)) {
             case INVALID_COORDINATES:
-                return "Invalid Coordinates!";
+                return "Invalid coordinates!";
             case INVALID_TEXTURE:
                 return "Invalid type/texture!";
             case BUILDING_EXIST:
@@ -223,7 +227,7 @@ public class CreateMapMenu extends MapMenu {
         Matcher y1Matcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_FIRST_COLUMN);
         Matcher x2Matcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_SECOND_ROW);
         Matcher y2Matcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_SECOND_COLUMN);
-        Matcher textureMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_TEXTURE_TYPE);
+        Matcher textureMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_TYPE);
         String checkRegionCoordinates = Controller.checkRegionCoordinatesFormat(x1Matcher, y1Matcher, x2Matcher, y2Matcher);
         String checkTexture = checkTypeFormat(textureMatcher);
         if (checkRegionCoordinates != null)
@@ -237,7 +241,7 @@ public class CreateMapMenu extends MapMenu {
         String textureName = textureMatcher.group("type");
         switch (controller.setRegionTexture(x1 - 1, y1 - 1, x2 - 1, y2 - 1, textureName)) {
             case INVALID_COORDINATES:
-                return "Invalid Coordinates!";
+                return "Invalid coordinates!";
             case INVALID_TEXTURE:
                 return "Invalid type/texture!";
             case INVALID_SET_POND:
@@ -269,7 +273,7 @@ public class CreateMapMenu extends MapMenu {
         int column = Integer.parseInt(columnMatcher.group("column"));
         switch (controller.clearPixel(row - 1, column - 1)) {
             case INVALID_COORDINATES:
-                return "Invalid Coordinates!";
+                return "Invalid coordinates!";
             case CLEAR_SUCCESSFUL:
                 return "Clear pixel successfull!";
             default:
@@ -292,7 +296,7 @@ public class CreateMapMenu extends MapMenu {
         int y2 = Integer.parseInt(y2Matcher.group("scolumn"));
         switch (controller.clearRegion(x1 - 1, y1 - 1, x2 - 1, y2 - 1)) {
             case INVALID_COORDINATES:
-                return "Invalid Coordinates!";
+                return "Invalid coordinates!";
             case CLEAR_SUCCESSFUL:
                 return "Clear region successfull!";
             default:
@@ -304,7 +308,7 @@ public class CreateMapMenu extends MapMenu {
     private String dropTree(String input) {
         Matcher rowMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_ROW);
         Matcher columnMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_COLUMN);
-        Matcher typeMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_TEXTURE_TYPE);
+        Matcher typeMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_TYPE);
         String checkCoordinates = Controller.checkCoordinatesFormat(rowMatcher, columnMatcher);
         String checkType = checkTypeFormat(typeMatcher);
         if (checkCoordinates != null)
@@ -316,7 +320,7 @@ public class CreateMapMenu extends MapMenu {
         String type = typeMatcher.group("type").trim();
         switch (controller.dropTree(row - 1, column - 1, type)) {
             case INVALID_COORDINATES:
-                return "Invalid Coordinates!";
+                return "Invalid coordinates!";
             case INVALID_TEXTURE:
                 return "Invalid tree type!";
             case CANT_PLACE_THIS:
@@ -344,13 +348,92 @@ public class CreateMapMenu extends MapMenu {
         String direction = directionMatcher.group("direction").trim();
         switch (controller.dropRock(row - 1, column - 1, direction)) {
             case INVALID_COORDINATES:
-                return "Invalid Coordinates!";
+                return "Invalid coordinates!";
             case INVALID_DIRECTION:
                 return "Invalid direction!";
             case CANT_PLACE_THIS:
                 return "Can't drop a rock in this pixel!";
             case DROP_ROCK_SUCCESSFUL:
                 return "Drop rock successful!";
+            default:
+                break;
+        }
+        return null;
+    }
+
+    private String dropUnit(String input){
+        Matcher rowMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_ROW);
+        Matcher columnMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_COLUMN);
+        Matcher typeMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_TYPE);
+        Matcher colorMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_COLOR);
+        Matcher countMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_COUNT);
+        String checkCoordinates = Controller.checkCoordinatesFormat(rowMatcher, columnMatcher);
+        String checkType = checkTypeFormat(typeMatcher);
+        if(checkCoordinates != null)
+            return checkCoordinates;
+        if(checkType != null)
+            return checkType;
+        if(colorMatcher == null)
+            return "Enter the lord color!";
+        if(countMatcher == null)
+            return "Enter the count of units!";
+        int row = Integer.parseInt(rowMatcher.group("row")) - 1;
+        int column = Integer.parseInt(columnMatcher.group("column")) - 1;
+        int count = Integer.parseInt(countMatcher.group("count"));
+        String type = typeMatcher.group("type").trim();
+        String lordColor = colorMatcher.group("color");
+        switch(controller.dropUnit(row, column, count, type, lordColor)){
+            case INVALID_COORDINATES:
+                return "Invalid coordinates!";
+            case INVALID_UNIT_NAME:
+                return "Invalid unit name!";
+            case INVALID_COLOR:
+                return "Invalid lord color!";
+            case CANT_PLACE_THIS:
+                return "Can't drop a unit in this pixel";
+            case DROP_UNIT_SUCCESSFUL:
+                return "Drop unit successful!";
+            default:
+                break;
+        }
+
+        return null;
+    }
+
+    private String dropBuilding(String input){
+        Matcher rowMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_ROW);
+        Matcher columnMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_COLUMN);
+        Matcher typeMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_TYPE);
+        Matcher colorMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_COLOR);
+        String checkCoordinates = Controller.checkCoordinatesFormat(rowMatcher, columnMatcher);
+        String checkType = checkTypeFormat(typeMatcher);
+        if(checkCoordinates != null)
+            return checkCoordinates;
+        if(checkType != null)
+            return checkType;
+        if(colorMatcher == null)
+            return "Enter the lord color!";
+        int row = Integer.parseInt(rowMatcher.group("row"))-1;
+        int column = Integer.parseInt(columnMatcher.group("column"))-1;
+        String type = typeMatcher.group("type").trim();
+        String lordColor = colorMatcher.group("color");
+        switch (controller.dropBuilding(row, column, type, lordColor)) {
+            case INVALID_ROW_OR_COLUMN:
+                return "Invalid row or column!";
+            case INVALID_BUILDING_NAME:
+                return "Invalid building name!";
+            case INVALID_COLOR:
+                return "Invalid lord color!";
+            case THERES_ALREADY_BUILDING:
+                return "There is already a building here!";
+            case THERES_ALREADY_UNIT:
+                return "You can't drop buildings on units!";
+            case CANT_PLACE_THIS:
+                return "You can't place this here!";
+            case MUST_BE_ADJACENT_TO_BUILDINGS_OF_THE_SAME_TYPE:
+                return "Must be adjacent to buildings of the same type!";
+            case DEPLOYMENT_SUCCESSFUL:
+                return type + " deployed successfully!";
             default:
                 break;
         }
