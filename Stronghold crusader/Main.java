@@ -23,9 +23,9 @@ public class Main {
         System.out.print(Colors.YELLOW_BOLD);
         System.out.print("Loading maps and users...");
         User.loadUsers();
-        System.out.print(Colors.RESET);
         Map.loadMaps();
         System.out.print("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+        System.out.print(Colors.RESET);
         
         // Map map = Map.getMaps().get(1);
         // ArrayList<int[]> path = new ArrayList<>();

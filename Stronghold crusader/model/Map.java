@@ -30,14 +30,6 @@ public class Map {
             field.get(keepsPositions.get(lordColor)[0]).get(keepsPositions.get(lordColor)[1]).setPlayerKeep(lordColor);
     }
 
-    public static Map getMapByName(String mapName) {
-        for (Map map : maps) {
-            if (map.name.equals(mapName))
-                return map;
-        }
-        return null;
-    }
-
     public static ArrayList<Map> getMaps() {
         return (ArrayList<Map>) maps.clone();
     }
