@@ -78,7 +78,10 @@ public class GameMenu {
                 return "There is no engineer with oil in selected units.";
             case BAD_DIRECTION:
                 return "You can't pour in this direction";
+            case POUR_OIL_SUCCESSFUL:
+                return "You have successfully poured oil.";
         }
+        return null;
     }
 
     private String getPopularityFactors() { // todo : check this

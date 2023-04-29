@@ -304,5 +304,9 @@ public class GameMenuController {
         if (noOneHasOil) return Messages.NO_ONE_HAS_OIL;
         if (badDirection) return Messages.BAD_DIRECTION;
         engineer.pourOil(direction);
+        ArrayList<int[]> path =
+                game.getNearestOilSmelterPath(engineer.getCurrentLocation(), game.getCurrentGovernment());
+        engineer.goToOilSmelter(path);
+        return Messages.POUR_OIL_SUCCESSFUL;
     }
 }

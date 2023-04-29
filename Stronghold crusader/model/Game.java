@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.io.IOException;
+
 import controller.Controller;
 import controller.Messages;
 
@@ -151,16 +152,16 @@ public class Game {
                 building.setWorkers(typeOfBuilding.getWorkerInUse());
                 for (int i = 0; i < typeOfBuilding.getWorkerInUse(); i++) {
                     NonMilitary nonMilitary = new NonMilitary(
-                            new int[] { map.getKeepPosition(indexOfCurrentGovernment)[0],
-                                    map.getKeepPosition(indexOfCurrentGovernment)[1] },
+                            new int[]{map.getKeepPosition(indexOfCurrentGovernment)[0],
+                                    map.getKeepPosition(indexOfCurrentGovernment)[1]},
                             currentGovernment, typeOfBuilding.getWorkerType());
                     map.getMapPixel(map.getKeepPosition(indexOfCurrentGovernment)[0],
                             map.getKeepPosition(indexOfCurrentGovernment)[1]).addPerson(nonMilitary);
                     nonMilitary.setMovePattern(map.getPathList(nonMilitary.currentLocation[0],
                             nonMilitary.currentLocation[1], row, column));
                     nonMilitary.setPatrolLocation(
-                            new int[] { row, column, map.getKeepPosition(indexOfCurrentGovernment)[0],
-                                    map.getKeepPosition(indexOfCurrentGovernment)[1] });
+                            new int[]{row, column, map.getKeepPosition(indexOfCurrentGovernment)[0],
+                                    map.getKeepPosition(indexOfCurrentGovernment)[1]});
                     nonMilitary.setPatrolling(true);
                     int frow = nonMilitary.currentLocation[0], fcolumn = nonMilitary.currentLocation[1];
                     nonMilitary.move();
@@ -344,7 +345,7 @@ public class Game {
                     if (person instanceof Unit)
                         units.add((Unit) person);
         this.selectedUnit = units;
-        this.selectedUnitArea = new int[] { frow, fcolumn, srow, scolumn };
+        this.selectedUnitArea = new int[]{frow, fcolumn, srow, scolumn};
         return Messages.UNIT_SELECTED_SUCCESSFULLY;
     }
 
@@ -380,7 +381,7 @@ public class Game {
     public void patrolUnits(int frow, int fcolumn, int srow, int scolumn) {
         for (Unit person : selectedUnit)
             if (person.getGovernment().equals(currentGovernment)) {
-                person.setPatrolLocation(new int[] { frow, fcolumn, srow, scolumn });
+                person.setPatrolLocation(new int[]{frow, fcolumn, srow, scolumn});
                 person.setPatrolling(true);
                 if (person.currentLocation[0] == frow && person.currentLocation[1] == fcolumn)
                     person.setMovePattern(map.getPathList(frow, fcolumn, srow, scolumn));
@@ -408,8 +409,8 @@ public class Game {
                 continue;
             if (person.currentLocation[0] == person.patrolLocation[2]
                     && person.currentLocation[1] == person.patrolLocation[3])
-                person.setPatrolLocation(new int[] { person.patrolLocation[2], person.patrolLocation[3],
-                        person.patrolLocation[0], person.patrolLocation[1] });
+                person.setPatrolLocation(new int[]{person.patrolLocation[2], person.patrolLocation[3],
+                        person.patrolLocation[0], person.patrolLocation[1]});
             int frow = person.patrolLocation[0], fcolumn = person.patrolLocation[1], srow = person.patrolLocation[2],
                     scolumn = person.patrolLocation[3];
             person.setMovePattern(map.getPathList(frow, fcolumn, srow, scolumn));
@@ -461,8 +462,8 @@ public class Game {
         selectedUnit.clear();
     }
 
-    public void areaAttack(int row,int column) {
-        for(Unit unit : selectedUnit) {
+    public void areaAttack(int row, int column) {
+        for (Unit unit : selectedUnit) {
             unit.getMovePattern().clear();
             unit.setPatrolling(false);
             unit.setAttacking(false);
@@ -507,7 +508,7 @@ public class Game {
     public void endOfTurn() throws IOException {
         for (Government government : governments) {
             government.setPopularity(government.getPopularity() + government.getTaxEffectOnPopularity()); // todo:
-                                                                                                          // update
+            // update
             government.setGold((int) (government.getGold() + government.getTaxAmount() * government.getPopulation()));
             government.giveFood();
             government.changePeasant(0); // todo: number of added peasants each turn
@@ -539,7 +540,7 @@ public class Game {
 
         }
         Map.loadMaps(); // todo : why should this be here. we should load everything in the beginning
-                        // and dont open any file again. answer: Too goshad to clone the maps
+        // and dont open any file again. answer: Too goshad to clone the maps
 
         Government government = getCurrentGovernment();
         int currentGovernmentIndex = governments.indexOf(government);
@@ -563,5 +564,22 @@ public class Game {
 
     public void pourOil(int x, int y) {
         map.pourOil(x, y);
+    }
+
+    public ArrayList<int[]> getNearestOilSmelterPath(int[] currentLocation, Government owner) {
+        int x = currentLocation[0], y = currentLocation[1];
+        ArrayList<int[]> path = null;
+        ArrayList<Building> buildings = map.getAllBuildingsOfSomeone(owner);
+        for (Building building : buildings){
+            if (building.getTypeOfBuilding().equals(TypeOfBuilding.OIL_SMELTER)){
+                ArrayList<int[]> pathTemp = map.getPathList(x,y,building.row(),building.column());
+                if (path == null) {
+                    path = pathTemp;
+                    continue;
+                }
+                if (pathTemp.size() < path.size()) path = pathTemp;
+            }
+        }
+        return path;
     }
 }

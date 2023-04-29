@@ -199,7 +199,7 @@ public class Map {
         }
     }
 
-    public void findPath(ArrayList<int[]> path,ArrayList<ArrayList<ArrayList<int[]>>> parent,int[] coordinates){
+    public void findPath(ArrayList<int[]> path,ArrayList<ArrayList<ArrayList<int[]>>> parent,int[] coordinates){ // todo : isn't this a private method?
         if(coordinates[0]==-1) return;
         int X = coordinates[0], Y = coordinates[1];
         if(parent.get(X).get(Y).size()==0){
@@ -210,7 +210,7 @@ public class Map {
         findPath(path, parent, parent.get(X).get(Y).get(0));
     }
 
-    public ArrayList<int[]> getPathList(int frow,int fcolumn,int srow,int scolumn){
+    public ArrayList<int[]> getPathList(int firstRow,int firstColumn,int secondRow,int secondColumn){
         ArrayList<int[]> path = new ArrayList<>();
         ArrayList<ArrayList<ArrayList<int[]>>> parent = new ArrayList<ArrayList<ArrayList<int[]>>>();
         for (int k = 0; k < size; k++) {
@@ -219,10 +219,10 @@ public class Map {
                 parent.get(k).add(new ArrayList<>());
             }
         }
-        bfs(frow, fcolumn, parent);
-        findPath(path, parent, new int[] { srow, scolumn });
+        bfs(firstRow, firstColumn, parent);
+        findPath(path, parent, new int[] { secondRow, secondColumn });
         Collections.reverse(path);
-        path.add(new int[] { srow, scolumn });
+        path.add(new int[] { secondRow, secondColumn });
         path.remove(0);
         return path;
     }
@@ -276,5 +276,17 @@ public class Map {
 
     public void pourOil(int x, int y) {
         field.get(x).get(y).pourOil();
+    }
+
+    public ArrayList<Building> getAllBuildingsOfSomeone(Government owner) {
+        ArrayList<Building> buildings = new ArrayList<>();
+        for (ArrayList<MapPixel> rowPixels : this.field){
+            for (MapPixel pixel : rowPixels){
+                for (Building building : pixel.getBuildings()){
+                    if (building.getGovernment().equals(owner)) buildings.add(building);
+                }
+            }
+        }
+        return buildings;
     }
 }

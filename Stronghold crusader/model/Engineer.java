@@ -3,9 +3,12 @@ package model;
 import controller.Controller;
 import controller.Directions;
 
-public class Engineer extends Unit{ // todo : make an engineer when making one. not a Unit
+import java.util.ArrayList;
+
+public class Engineer extends Unit { // todo : make an engineer when making one. not a Unit
     private boolean hasOil;
     private boolean gonnaBringOil;
+    private int[] returningLocation;
 
     public Engineer(TypeOfPerson typeOfPerson, int[] currentLocation, Government government) {
         super(typeOfPerson, currentLocation, government);
@@ -21,7 +24,14 @@ public class Engineer extends Unit{ // todo : make an engineer when making one. 
 
     @Override
     public void endTurn() {
-        // todo : if it has oil ...
+        if (movePattern.size() == 0 && gonnaBringOil) {
+            if (government.getResourceAmount(Resources.PITCH) > 0) {
+                government.changeResources(Resources.PITCH, -1);
+                hasOil = true;
+                gonnaBringOil = false;
+                setPath(returningLocation[0], returningLocation[1]);
+            }
+        }
     }
 
     public boolean hasOil() {
@@ -34,6 +44,18 @@ public class Engineer extends Unit{ // todo : make an engineer when making one. 
         oilLocation[1] = currentLocation[1] + direction.y();
         Controller.currentGame.pourOil(oilLocation[0], oilLocation[1]);
         hasOil = false;
+
+    }
+
+    public void goToOilSmelter(ArrayList<int[]> path) {
         gonnaBringOil = true;
+        returningLocation = currentLocation;
+        setMovePattern(path);
+    }
+
+    private void setPath(int finalX, int finalY) {
+        Map map = Controller.currentGame.getMap();
+        ArrayList<int[]> path = map.getPathList(currentLocation[0], currentLocation[1], finalX, finalY);
+        setMovePattern(path);
     }
 }

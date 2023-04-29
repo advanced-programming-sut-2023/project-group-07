@@ -51,7 +51,18 @@ public class Building {
     public void setGovernment(Government government) {
         this.government = government;
     }
+    public Government getGovernment(){
+        return government;
+    }
     public LordColor getLordColor() {
         return lordColor;
+    }
+
+    public int row() {
+        return row;
+    }
+
+    public int column() {
+        return column;
     }
 }
