@@ -46,7 +46,7 @@ public enum GameMenuCommands {
     GET_AMOUNT("\\-a\\s+(?<amount>\\d+)"),
     ENTER_TRADE_MENU("^\\s*enter\\s*trade\\s*menu$"),
     POUR_OIL("^\\s*pour\\s+oil\\s+-d\\s+(?<direction>\\S+)\\s*$"),
-    GIVE_OIL("^\\s*give\\s+oil");
+    GIVE_OIL("^\\s*give\\s+oil\\s+$");
     
     private String regex;
     private GameMenuCommands(String regex) {
