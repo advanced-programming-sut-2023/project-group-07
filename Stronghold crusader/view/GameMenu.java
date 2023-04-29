@@ -50,6 +50,8 @@ public class GameMenu {
                 System.out.println(airAttack(input));
             else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.POUR_OIL)) != null)
                 System.out.println(pourOil(matcher));
+            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.GIVE_OIL) != null)
+                System.out.println(giveOil());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULARITY) != null)
                 System.out.println("Your popularity is : " + controller.getPopularity());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULARITY_FACTORS) != null)
@@ -67,6 +69,18 @@ public class GameMenu {
                 System.out.println("Invalid command!");
         }
 
+    }
+
+    private String giveOil() {
+        switch (controller.giveOil()){
+            case DONT_HAVE_OIL_SMELTER:
+                return "You don't have oil smelter.";
+            case NO_ONE_TO_GIVE_OIL_TO:
+                return "None of selected units can get oil.";
+            case GIVING_OIL_SUCESSFUL:
+                return "Engineers will get oil";
+        }
+        return null;
     }
 
     private String pourOil(Matcher matcher) {

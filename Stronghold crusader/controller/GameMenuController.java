@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import javax.swing.RowFilter;
 
 import model.*;
+import view.GameMenu;
 
 public class GameMenuController {
     private Game game = Controller.currentGame;
@@ -304,9 +305,33 @@ public class GameMenuController {
         if (noOneHasOil) return Messages.NO_ONE_HAS_OIL;
         if (badDirection) return Messages.BAD_DIRECTION;
         engineer.pourOil(direction);
+        goTOOilSmelter(engineer);
+        return Messages.POUR_OIL_SUCCESSFUL;
+    }
+
+    private void goTOOilSmelter(Engineer engineer) {
         ArrayList<int[]> path =
                 game.getNearestOilSmelterPath(engineer.getCurrentLocation(), game.getCurrentGovernment());
         engineer.goToOilSmelter(path);
-        return Messages.POUR_OIL_SUCCESSFUL;
+    }
+
+    public Messages giveOil() {
+        if (!map.hasABuilding(game.getCurrentGovernment(), TypeOfBuilding.OIL_SMELTER))
+            return Messages.DONT_HAVE_OIL_SMELTER;
+        ArrayList<Unit> selectedUnits = game.getSelectedUnit();
+        ArrayList<Engineer> getterEngineers = new ArrayList<>();
+        for (Unit unit : selectedUnits){
+            if (unit instanceof Engineer){
+                Engineer engineerTemp = (Engineer) unit;
+                if (!engineerTemp.hasOil()){
+                    getterEngineers.add(engineerTemp);
+                }
+            }
+        }
+        if (getterEngineers.size() == 0) return Messages.NO_ONE_TO_GIVE_OIL_TO;
+        for (Engineer engineer : getterEngineers){
+            goTOOilSmelter(engineer);
+        }
+        return Messages.GIVING_OIL_SUCESSFUL;
     }
 }

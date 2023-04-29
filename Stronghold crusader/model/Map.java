@@ -7,7 +7,6 @@ import java.util.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 public class Map {
     private static ArrayList<Map> maps = new ArrayList<Map>();
@@ -288,5 +287,12 @@ public class Map {
             }
         }
         return buildings;
+    }
+
+    public boolean hasABuilding(Government owner, TypeOfBuilding type) {
+        for (Building building : getAllBuildingsOfSomeone(owner)){
+            if (building.getTypeOfBuilding().equals(type)) return true;
+        }
+        return false;
     }
 }
