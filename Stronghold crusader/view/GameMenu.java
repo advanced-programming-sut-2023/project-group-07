@@ -47,7 +47,7 @@ public class GameMenu {
             else if(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY)!=null)
                 System.out.println(attackEnemy(input));
             else if(GameMenuCommands.getMatcher(input, GameMenuCommands.AIR_ATTACK)!=null)
-                System.out.println(airAttack(input));
+                System.out.println(areaAttack(input));
             else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.POUR_OIL)) != null)
                 System.out.println(pourOil(matcher));
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.GIVE_OIL) != null)
@@ -158,13 +158,18 @@ public class GameMenu {
     }
 
     private String dropBuilding(String input) {
-        if (GameMenuCommands.getMatcher(input, GameMenuCommands.ROW) == null ||
-                GameMenuCommands.getMatcher(input, GameMenuCommands.COLUMN) == null ||
-                GameMenuCommands.getMatcher(input, GameMenuCommands.TYPE) == null)
-            return "Invalid command!";
-        String row = GameMenuCommands.getMatcher(input, GameMenuCommands.ROW).group("row");
-        String column = GameMenuCommands.getMatcher(input, GameMenuCommands.COLUMN).group("column");
-        String type = GameMenuCommands.getMatcher(input, GameMenuCommands.TYPE).group("type").trim();
+        Matcher rowMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.ROW);
+        Matcher columnMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.COLUMN);
+        Matcher typeMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.TYPE);
+        if(rowMatcher == null)
+            return "Enter the row number!";
+        if(columnMatcher == null)
+            return "Enter the column number!";
+        if(typeMatcher == null)
+            return "Enter the type!";
+        int row = Integer.parseInt(rowMatcher.group("row")) - 1;
+        int column = Integer.parseInt(columnMatcher.group("column")) - 1;
+        String type = typeMatcher.group("type").trim();
         switch (controller.dropBuilding(row, column, type)) {
             case INVALID_BUILDING_NAME:
              return "Invalid building name!";
@@ -225,6 +230,8 @@ public class GameMenu {
             case ENTERED_MARKET:
                 shop.run(scanner);
                 break;
+            case ENTERED_BUILDING_SUCCESSFULLY:
+                enteredBuilding();
             default:
                 break;
         }
@@ -327,7 +334,8 @@ public class GameMenu {
                 System.out.print(controller.getUnitsInfo(controller.getSelectedBuilding()));
             } else if (GameMenuCommands.getMatcher(command, GameMenuCommands.CHANGE_WORKING_STATE) != null
                     && controller.getSelectedBuilding().equals("cathedral")) {
-                System.out.println(controller.changeWorkingState());
+                System.out.println("Working state changed successfully!");
+                controller.changeWorkingState();
             } else if (GameMenuCommands.getMatcher(command, GameMenuCommands.EXIT) != null) {
                 System.out.println("Exit was successful!");
                 break;
@@ -344,8 +352,25 @@ public class GameMenu {
                 controller.changeArms();
                 System.out.println("This workshop is now creating " + controller.getResources() + "!");
             } else if (GameMenuCommands.getMatcher(command, GameMenuCommands.CHANGE_WORKING_STATE) != null) {
-                System.out.println(controller.changeWorkingState());
+                controller.changeWorkingState();
+                System.out.println("Working state changed successfully!");
             } else if (GameMenuCommands.getMatcher(command, GameMenuCommands.EXIT) != null) {
+                System.out.println("Exit was successful!");
+                break;
+            } else {
+                System.out.println("Invalid command!");
+            }
+        }
+    }
+
+    public void enteredBuilding() {
+        while(true) {
+            String command = scanner.nextLine();
+            if(GameMenuCommands.getMatcher(command, GameMenuCommands.CHANGE_WORKING_STATE) != null){
+                System.out.println("Working state changed successfully!");
+                controller.changeWorkingState();
+            }
+            else if (GameMenuCommands.getMatcher(command, GameMenuCommands.EXIT) != null) {
                 System.out.println("Exit was successful!");
                 break;
             } else {
@@ -480,11 +505,66 @@ public class GameMenu {
     }
 
     public String attackEnemy(String input) {
+        Matcher rowMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.ROW);
+        Matcher columnMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.COLUMN);
+        if(rowMatcher == null)
+            return "Enter the row number!";
+        if(columnMatcher == null)
+            return "Enter the column number!";
+        int row = Integer.parseInt(rowMatcher.group("row")) - 1;
+        int column = Integer.parseInt(columnMatcher.group("column")) - 1;
+        switch(controller.attackEnemy(row, column)) {
+            case INVALID_COORDINATES:
+                return "Invalid coordinates!";
+            case NO_ENEMY_HERE:
+                return "No enemy here!";
+            case NO_UNITS_SELECTED:
+                return "No units selected!";
+            case ATTACKING_ENEMY_UNITS:
+                return "Attacking enemy units!";
+            default:
+                break;
+        }
         return null;
     }
 
-    public String airAttack(String input) {
+    public String areaAttack(String input) {
         return null;
+    }
+
+    public String disbandUnit(String input) {
+        return null;
+    }
+
+    public String buildSiegeWeapon(String input) {
+        Matcher rowMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.ROW);
+        Matcher columnMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.COLUMN);
+        Matcher typeMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.TYPE);
+        if(rowMatcher == null)
+            return "Enter the row number!";
+        if(columnMatcher == null)
+            return "Enter the column number!";
+        if(typeMatcher == null)
+            return "Enter the type!";
+        int row = Integer.parseInt(rowMatcher.group("row")) - 1;
+        int column = Integer.parseInt(columnMatcher.group("column")) - 1;
+        String type = typeMatcher.group("type").trim();
+        switch(controller.buildSiegeWeapon(type,row,column)){
+            case INVALID_COORDINATES:
+                return "Invalid coordinates!";
+            case INVALID_SIEGE_WEAPON_TYPE:
+                return "Invalid Siege Weapon Type!";
+            case NEEDS_MORE_ENGINEERS:
+                return "Needs more engineers!";
+            case NOT_ENOUGH_GOLD:
+                return "Needs more gold!";
+            case SIEGE_WEAPON_BUILT_SUCCESSFULLY:
+                return "Siege Weapon built successfully!";
+            default:
+                break;
+        }
+        return null;
+        
     }
 
 }

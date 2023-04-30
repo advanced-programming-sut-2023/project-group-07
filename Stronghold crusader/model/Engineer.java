@@ -10,14 +10,14 @@ public class Engineer extends Unit { // todo : make an engineer when making one.
     private boolean gonnaBringOil;
     private int[] returningLocation;
 
-    public Engineer(TypeOfPerson typeOfPerson, int[] currentLocation, Government government) {
-        super(typeOfPerson, currentLocation, government);
+    public Engineer(UnitTypes unitType, int[] currentLocation, Government government) {
+        super(unitType, currentLocation, government);
         hasOil = false;
         gonnaBringOil = false;
     }
 
-    public Engineer(TypeOfPerson typeOfPerson, int[] currentLocation, LordColor lordColor) {
-        super(typeOfPerson, currentLocation, lordColor);
+    public Engineer(UnitTypes unitType, int[] currentLocation, LordColor lordColor) {
+        super(unitType, currentLocation, lordColor);
         hasOil = false;
         gonnaBringOil = false;
     }

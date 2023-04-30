@@ -53,7 +53,7 @@ public class MapMenu {
             String rightString = MapMenuCommands.getMatcher(input, MapMenuCommands.MOVE_RIGHT).group("right");
             right = (rightString == null) ? 1 : Integer.parseInt(rightString.trim());
         }
-        if (!controller.checkMoveCordinates(this.x, this.y, up, down, left, right))
+        if (!controller.checkMoveCoordinates(this.x, this.y, up, down, left, right))
             System.out.println("Cordinates out of bounds or invalid!");
         else {
             this.x = controller.setMoveX(this.x, up, down);

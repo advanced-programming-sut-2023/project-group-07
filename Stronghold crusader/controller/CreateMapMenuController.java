@@ -6,7 +6,7 @@ import model.Map;
 import model.Texture;
 import model.Tree;
 import model.TypeOfBuilding;
-import model.TypeOfPerson;
+import model.UnitTypes;
 import model.MapPixel;
 import model.Rock;
 import model.Government;
@@ -50,7 +50,7 @@ public class CreateMapMenuController {
     public Messages setPixelTexture(int row, int column, String textureName) {
         int size = map.getSize();
         Texture texture = Texture.getTexture(textureName.trim());
-        if (row < 0 || row >= size || column < 0 || column >= size)
+        if (!areCoordinatesValid(row, column))
             return Messages.INVALID_COORDINATES;
         if (texture == null)
             return Messages.INVALID_TEXTURE;
@@ -65,9 +65,7 @@ public class CreateMapMenuController {
     public Messages setRegionTexture(int x1, int y1, int x2, int y2, String textureName) {
         int size = map.getSize();
         Texture texture = Texture.getTexture(textureName.trim());
-        if (x1 < 0 || x1 >= size || y1 < 0 || y1 >= size)
-            return Messages.INVALID_COORDINATES;
-        if (x2 < 0 || x2 >= size || y2 < 0 || y2 >= size)
+        if (!areCoordinatesValid(x1, y1) || !areCoordinatesValid(x2, y2))
             return Messages.INVALID_COORDINATES;
         if (x1 > x2 || y1 > y2)
             return Messages.INVALID_COORDINATES;
@@ -86,9 +84,7 @@ public class CreateMapMenuController {
 
     public Messages clearRegion(int x1, int y1, int x2, int y2) {
         int size = map.getSize();
-        if (x1 < 0 || x1 >= size || y1 < 0 || y1 >= size)
-            return Messages.INVALID_COORDINATES;
-        if (x2 < 0 || x2 >= size || y2 < 0 || y2 >= size)
+        if (!areCoordinatesValid(x1, y1) || !areCoordinatesValid(x2, y2))
             return Messages.INVALID_COORDINATES;
         if (x1 > x2 || y1 > y2)
             return Messages.INVALID_COORDINATES;
@@ -98,7 +94,7 @@ public class CreateMapMenuController {
 
     public Messages clearPixel(int row, int column) {
         int size = map.getSize();
-        if (row < 0 || row >= size || column < 0 || column >= size)
+        if (!areCoordinatesValid(row, column))
             return Messages.INVALID_COORDINATES;
         map.getMapPixel(row, column).backToDefault();
         return Messages.CLEAR_SUCCESSFUL;
@@ -114,7 +110,7 @@ public class CreateMapMenuController {
     public Messages dropTree(int row, int column, String treeName) {
         int size = map.getSize();
         Tree tree = Tree.getTree(treeName);
-        if (row < 0 || row >= size || column < 0 || column >= size)
+        if (!areCoordinatesValid(row, column))
             return Messages.INVALID_COORDINATES;
         if (tree == null)
             return Messages.INVALID_TEXTURE;
@@ -128,7 +124,7 @@ public class CreateMapMenuController {
     public Messages dropRock(int row, int column, String direction) {
         int size = map.getSize();
         Rock rock = Rock.getRock(direction);
-        if (row < 0 || row >= size || column < 0 || column >= size)
+        if (!areCoordinatesValid(row, column))
             return Messages.INVALID_COORDINATES;
         if (rock == null)
             return Messages.INVALID_DIRECTION;
@@ -146,10 +142,10 @@ public class CreateMapMenuController {
     public Messages dropUnit(int row, int column, int count, String type, String color) {
         int size = map.getSize();
         LordColor lordColor = LordColor.getColorByName(color);
-        TypeOfPerson unitName = TypeOfPerson.getTypeOfPersonFromString(type);
-        if(row < 0 || row >= size || column < 0 || column >= size)
+        UnitTypes unitType = UnitTypes.getUnitTypeFromString(type);
+        if(!areCoordinatesValid(row, column))
             return Messages.INVALID_COORDINATES;
-        if(unitName == null)
+        if(unitType == null)
             return Messages.INVALID_UNIT_NAME;
         if(lordColor == null || !map.doesHaveColor(lordColor))
             return Messages.INVALID_COLOR;
@@ -158,7 +154,7 @@ public class CreateMapMenuController {
             return Messages.CANT_PLACE_THIS;
         int[] currentLocation = {row, column};
         while(count-- > 0)
-            pixel.addPerson(new Unit(unitName, currentLocation, lordColor));
+            pixel.addPerson(new Unit(unitType, currentLocation, lordColor));
         return Messages.DROP_UNIT_SUCCESSFUL;
 
     }
@@ -222,6 +218,13 @@ public class CreateMapMenuController {
                 map.getMapPixel(row + j, column + i).addBuilding(building);
         return Messages.DEPLOYMENT_SUCCESSFUL;
     }
+
+    private boolean areCoordinatesValid(int row, int column){
+        int size = map.getSize();
+        if(row < 0 || row >= size || column < 0 || column >= size)
+            return false;
+        return true;
+    } 
 
     
     // todo : fix this

@@ -1,7 +1,7 @@
 package model;
 
 public class Unit extends Person {
-    protected TypeOfPerson typeOfPerson;
+    protected UnitTypes type;
     protected UnitStance unitStance;
     protected int damage;
     protected int bonusDamageRate;
@@ -10,25 +10,25 @@ public class Unit extends Person {
     protected boolean areaAttacking;
     protected int[] areaAttackLocation;
 
-    public Unit(TypeOfPerson typeOfPerson, int[] currentLocation, Government government) {
+    public Unit(UnitTypes type, int[] currentLocation, Government government) {
         super(currentLocation, government);
-        this.typeOfPerson = typeOfPerson;
-        super.hp = typeOfPerson.getHp();
-        super.movesLeft = typeOfPerson.getSpeed();
+        this.type = type;
+        super.hp = type.getHp();
+        super.movesLeft = type.getSpeed();
         unitStance = UnitStance.STAND_GROUND;
-        this.damage = typeOfPerson.getDamage();
+        this.damage = type.getDamage();
         this.bonusDamageRate = 1;
         this.isAttacking=false;
         this.areaAttacking=false;
     }
 
-    public Unit(TypeOfPerson typeOfPerson, int[] currentLocation, LordColor lordColor) {
+    public Unit(UnitTypes type, int[] currentLocation, LordColor lordColor) {
         super(currentLocation, lordColor);
-        this.typeOfPerson = typeOfPerson;
-        super.hp = typeOfPerson.getHp();
-        super.movesLeft = typeOfPerson.getSpeed();
+        this.type = type;
+        super.hp = type.getHp();
+        super.movesLeft = type.getSpeed();
         unitStance = UnitStance.STAND_GROUND;
-        this.damage = typeOfPerson.getDamage();
+        this.damage = type.getDamage();
         this.bonusDamageRate = 1;
         this.isAttacking=false;
         this.areaAttacking=false;
@@ -50,8 +50,8 @@ public class Unit extends Person {
         this.areaAttacking = areaAttacking;
     }
 
-    public TypeOfPerson getTypeOfPerson() {
-        return typeOfPerson;
+    public UnitTypes getType() {
+        return type;
     }
 
     public void setAttacking(boolean isAttacking) {

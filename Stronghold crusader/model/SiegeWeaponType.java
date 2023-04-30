@@ -33,4 +33,15 @@ public enum SiegeWeaponType {
     public int getEngineersNeeded() {
         return engineersNeeded;
     }
+
+    public int getGoldNeeded() {
+        return goldNeeded;
+    }
+
+    public static SiegeWeaponType getSiegeWeaponType(String type){
+        for(SiegeWeaponType siegeWeaponType : SiegeWeaponType.values())
+            if(siegeWeaponType.type.equals(type))
+                return siegeWeaponType;
+        return null;
+    }
 }

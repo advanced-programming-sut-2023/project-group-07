@@ -66,7 +66,7 @@ public class MapMenuController {
         return output;
     }
 
-    public boolean checkMoveCordinates(int x, int y, int up, int down, int left, int right) {
+    public boolean checkMoveCoordinates(int x, int y, int up, int down, int left, int right) {
         if (up > 0 || down < 0 || left > 0 || right < 0)
             return false;
         if ((x + up < 2 && up != 0) || (x + down > map.getSize() - 3 && down != 0))

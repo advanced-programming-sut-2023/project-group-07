@@ -5,7 +5,8 @@ import model.Texture;
 
 public class MapPixel {
     private Texture texture;
-    private ArrayList<Person> people = new ArrayList<Person>();
+    private ArrayList<Unit> units = new ArrayList<Unit>();
+    private ArrayList<NonMilitary> nonMilitaries = new ArrayList<NonMilitary>();
     private ArrayList<Building> buildings = new ArrayList<Building>();
     private LordColor lordKeep = null;
     private Tree tree = null;
@@ -24,11 +25,17 @@ public class MapPixel {
     }
 
     public void addPerson(Person person) {
-        people.add(person);
+        if(person instanceof Unit)
+            units.add((Unit)person);
+        else
+            nonMilitaries.add((NonMilitary)person);
     }
 
     public void removePerson(Person person) {
-        people.remove(person);
+        if(person instanceof Unit)
+            units.remove((Unit)person);
+        else
+            nonMilitaries.remove((NonMilitary)person);
     }
 
     public void setTree(Tree tree) {
@@ -50,11 +57,17 @@ public class MapPixel {
         this.rock = null;
         this.tree = null;
         this.buildings.clear();
-        this.people.clear();
+        this.units.clear();
+        this.nonMilitaries.clear();
     }
 
     public ArrayList<Person> getPeople() {
-        return (ArrayList<Person>) this.people.clone();
+        ArrayList <Person> people = new ArrayList<Person>();
+        for(Unit unit : this.units)
+            people.add(unit);
+        for(NonMilitary nonMilitary : this.nonMilitaries)
+            people.add(nonMilitary);
+        return people;
     }
 
     public ArrayList<Building> getBuildings() {
@@ -81,12 +94,6 @@ public class MapPixel {
         return (buildings.size() == 0 && rock == null && tree == null && lordKeep == null);
     }
 
-    private boolean doesHaveSoldier() {
-        for (Person person : people)
-            if (person instanceof Unit)
-                return true;
-        return false;
-    }
 
     private boolean doesHaveWall() {
         for (Building building : buildings) {
@@ -105,7 +112,7 @@ public class MapPixel {
     public String objectToShow() {
         if(this.lordKeep != null)
             return "K";
-        if (doesHaveSoldier())
+        if (!units.isEmpty())
             return "S";
         if (this.buildings.size() != 0)
             return doesHaveWall() ? "W" : "B";
@@ -120,9 +127,12 @@ public class MapPixel {
         String buildingsStr = "";
         String soldiersStr = "";
         for(Building building : this.buildings)
-            buildingsStr += building.getTypeOfBuilding();
+            buildingsStr += building.getTypeOfBuilding() + " (lord color: )" + building.getLordColor().toString() + "\n";
+        // for(Unit unit : this.units)
+        //     soldiersStr += unit.get
+        
         return ("<< type/texture >> : " + texture +
-                "\n << Buildings >> : " + buildingsStr);
+                "\n<< Buildings >> :\n" + buildingsStr);
     }
 
     public void pourOil() {

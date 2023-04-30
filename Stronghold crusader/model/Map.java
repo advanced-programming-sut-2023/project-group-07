@@ -233,10 +233,14 @@ public class Map {
     public void startGame(HashMap<LordColor, Government> governments){
         for(ArrayList<MapPixel> row : field){
             for(MapPixel pixel : row){
-                for(Building building : pixel.getBuildings())
+                for(Building building : pixel.getBuildings()){
                     building.setGovernment(governments.get(building.getLordColor()));
-                for(Person person : pixel.getPeople())
+                    governments.get(building.getLordColor()).addBuilding(building);
+                }
+                for(Person person : pixel.getPeople()){
                     person.setGovernment(governments.get(person.getLordColor()));
+                    governments.get(person.getLordColor()).addPerson(person);
+                }
             }
         }
     }

@@ -50,14 +50,14 @@ public class Government {
         return people;
     }
 
-    public void addPeople(Person person) {
+    public void addPerson(Person person) {
         people.add(person);
     }
 
     public void resetMovesLeft() {
         for(Person person: people){
             if(person instanceof Unit)
-                person.movesLeft=((Unit)person).typeOfPerson.getSpeed();
+                person.movesLeft=((Unit)person).type.getSpeed();
             if(person instanceof NonMilitary)
                 person.movesLeft=((NonMilitary)person).type.getSpeed();
         }

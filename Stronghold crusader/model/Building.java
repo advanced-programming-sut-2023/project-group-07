@@ -13,6 +13,7 @@ public class Building {
     
     public Building(Government government,TypeOfBuilding typeOfBuilding,int row,int column) {
         this.government=government;
+        this.lordColor = government.getColor();
         this.typeOfBuilding=typeOfBuilding;
         this.row=row;
         this.column=column;
@@ -26,6 +27,14 @@ public class Building {
         this.column = column;
         this.hp = typeOfBuilding.getHp();
     } 
+
+    public int getColumn() {
+        return column;
+    }
+
+    public int getRow() {
+        return row;
+    }
 
     public TypeOfBuilding getTypeOfBuilding() {
         return typeOfBuilding;

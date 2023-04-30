@@ -3,7 +3,7 @@ package model;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public enum TypeOfPerson {
+public enum UnitTypes {
     ARCHER("archer",MilitaryCampType.BARRACKS,12,new ArrayList<>(Arrays.asList(Resources.BOW)),3,20,350,40),
     CROSSBOWMAN("crossbowman",MilitaryCampType.BARRACKS,20,new ArrayList<>(Arrays.asList(Resources.CROSSBOW,Resources.LEATHER_ARMOR)),2,15,460,60),
     SPEARMAN("spearman",MilitaryCampType.BARRACKS,8,new ArrayList<>(Arrays.asList(Resources.SPEAR)),3,1,350,50),
@@ -32,7 +32,7 @@ public enum TypeOfPerson {
     private int hp;
     private int damage;
 
-    private TypeOfPerson(String type,MilitaryCampType militaryCampType,int goldNeeded,ArrayList<Resources> resourcesNeeded,int speed,int range,int hp,int damage){
+    private UnitTypes(String type,MilitaryCampType militaryCampType,int goldNeeded,ArrayList<Resources> resourcesNeeded,int speed,int range,int hp,int damage){
         this.type = type;
         this.militaryCampType=militaryCampType;
         this.goldNeeded=goldNeeded;
@@ -59,12 +59,9 @@ public enum TypeOfPerson {
         return hp;
     }
 
-    public static String getTypeOfPerson(TypeOfPerson typeOfPerson){
-        return typeOfPerson.type;
-    }
-    public static TypeOfPerson getTypeOfPersonFromString(String type){
-        for(TypeOfPerson typeOfPerson: TypeOfPerson.values())
-            if(typeOfPerson.type.equals(type)) return typeOfPerson;
+    public static UnitTypes getUnitTypeFromString(String type){
+        for(UnitTypes unitType: UnitTypes.values())
+            if(unitType.type.equals(type)) return unitType;
         return null;
     }
     public String getType() {
