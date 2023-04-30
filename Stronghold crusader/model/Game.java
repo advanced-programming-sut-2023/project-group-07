@@ -274,8 +274,6 @@ public class Game {
         selectedUnit.clear();
     }
 
-   
-
     public void disbandUnit() {
         map.getMapPixel(selectedUnitArea[0], selectedUnitArea[1]).getPeople().removeAll(selectedUnit);
         currentGovernment.getPeople().removeAll(selectedUnit);

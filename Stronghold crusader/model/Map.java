@@ -37,8 +37,13 @@ public class Map {
         if(maps.contains(map)){ 
             Gson gson = new Gson();
             JsonElement jsonElement = gson.toJsonTree(map).getAsJsonObject();
+            for(int i = 0 ; i < maps.size() ; i++){
+                if(maps.get(i).equals(map)){
+                    allMaps.remove(i);
+                    break;
+                }
+            }
             maps.remove(map);
-            allMaps.remove(jsonElement);
             FileWriter file = new FileWriter("Stronghold crusader/DB/Maps");
             file.write(allMaps.toString());
             file.close();

@@ -29,7 +29,7 @@ public enum GameMenuCommands {
     STOP_UNIT("\\s*stop\\s+unit\\s*"),
     SET_STANCE("^\\s*set\\s+(\\-x\\s+\\-?\\d+|\\-y\\s+\\-?\\d+|\\-s\\s+[a-z\\s]+|\\s)+$"),
     ATTACK_ENEMY("\\s*attack\\s+-e\\s+(?<row>\\d+)\\s+(?<column>\\d+)\\s*"),
-    AIR_ATTACK("^\\s*attack\\s+(\\-x\\s+\\-?\\d+|\\-y\\s+\\-?\\d+|\\s)+$"),
+    AREA_ATTACK("^\\s*attack\\s+(\\-x\\s+\\-?\\d+|\\-y\\s+\\-?\\d+|\\s)+$"),
     CREATE_UNIT("^\\s*createunit\\s+(\\-t\\s+[a-z\\s]+|\\-c\\s+\\d+|\\s)+$"),
     COUNT("\\-c\\s+(?<count>\\d+)"),
     EXIT("\\s*exit\\s*"),
@@ -47,7 +47,7 @@ public enum GameMenuCommands {
     ENTER_TRADE_MENU("^\\s*enter\\s*trade\\s*menu$"),
     POUR_OIL("^\\s*pour\\s+oil\\s+-d\\s+(?<direction>\\S+)\\s*$"),
     GIVE_OIL("^\\s*give\\s+oil\\s+$"),
-    BUILD_SIEGE_WEAPON("\\s*build(.+)"),
+    BUILD_SIEGE_WEAPON("^\\s*build\\s+(\\-x\\s+\\-?\\d+|\\-y\\s+\\-?\\d+|\\s)+$"),
     SIEGE_TYPE("\\-q\\s+(?<type>[a-z\\s]+)");
     
     private String regex;

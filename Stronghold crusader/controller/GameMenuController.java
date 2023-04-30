@@ -101,7 +101,7 @@ public class GameMenuController {
                     return Messages.THERES_AN_ENEMY_CLOSE_BY;
 
         if (typeOfBuilding.equals(TypeOfBuilding.GRANARY) || typeOfBuilding.equals(TypeOfBuilding.STOCK_PILE))
-            if (!map.isAdjacentToSameType(row, column, typeOfBuilding.getLength(), typeOfBuilding))
+            if (doesHaveThisBuilding(typeOfBuilding) && !map.isAdjacentToSameType(row, column, typeOfBuilding.getLength(), typeOfBuilding))
                 return Messages.MUST_BE_ADJACENT_TO_BUILDINGS_OF_THE_SAME_TYPE;
 
         boolean isWorking = true;
@@ -152,6 +152,13 @@ public class GameMenuController {
             for (int j = 0; j < typeOfBuilding.getWidth(); j++)
                 map.getMapPixel(row + j, column + i).addBuilding(building);
         return Messages.DEPLOYMENT_SUCCESSFUL;
+    }
+
+    private boolean doesHaveThisBuilding(TypeOfBuilding typeOfBuilding) {
+        for(Building building : game.getCurrentGovernment().getBuildings())
+            if(building.getTypeOfBuilding().equals(typeOfBuilding))
+                return true;
+        return false;
     }
 
     public Messages selectBuilding(int row, int column) {

@@ -505,8 +505,8 @@ public class GameMenu {
     }
 
     public String attackEnemy(String input) {
-        Matcher rowMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.ROW);
-        Matcher columnMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.COLUMN);
+        Matcher rowMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY).group("row");
+        Matcher columnMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY).grop;
         if(rowMatcher == null)
             return "Enter the row number!";
         if(columnMatcher == null)
