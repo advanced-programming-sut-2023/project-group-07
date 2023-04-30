@@ -103,6 +103,7 @@ public class CreateMapMenuController {
         return false;
     }
 
+    
     public Messages dropTree(int row, int column, String treeName) {
         int size = map.getSize();
         Tree tree = Tree.getTree(treeName);
