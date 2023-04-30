@@ -5,6 +5,9 @@ import controller.Directions;
 
 import java.util.ArrayList;
 
+import static model.UnitStance.DEFENSIVE;
+import static model.UnitStance.OFFENSIVE;
+
 public class Engineer extends Unit { // todo : make an engineer when making one. not a Unit
     private boolean hasOil;
     private boolean gonnaBringOil;
@@ -24,6 +27,7 @@ public class Engineer extends Unit { // todo : make an engineer when making one.
 
     @Override
     public void endTurn() {
+        super.endTurn(); // todo : delete if it is not supposed to be executed
         if (movePattern.size() == 0 && gonnaBringOil) {
             if (government.getResourceAmount(Resources.PITCH) > 0) {
                 government.changeResources(Resources.PITCH, -1);
@@ -31,6 +35,16 @@ public class Engineer extends Unit { // todo : make an engineer when making one.
                 gonnaBringOil = false;
                 setPath(returningLocation[0], returningLocation[1]);
             }
+        }
+        if (!hasOil) return;
+
+        int x = currentLocation[0], y = currentLocation[1];
+        Government owner = government;
+        ArrayList<Unit> opponentsUnits = Controller.getNearOpponentsUnits(x, y, range(), owner);
+        if ((opponentsUnits.size() >= 3 && unitStance.equals(DEFENSIVE)) ||
+                (opponentsUnits.size() >= 1 && unitStance.equals(OFFENSIVE))) {
+            pourOil(Directions.NORTH); // todo: chose a better direction.
+            Controller.sendToOilSmelter(this);
         }
     }
 

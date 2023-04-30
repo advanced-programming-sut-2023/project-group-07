@@ -4,7 +4,7 @@ public enum Directions {
     NORTH("n",-1,0),
     SOUTH("s",1,0),
     WEST("w",0,-1),
-    EAST("e",0,1)
+    EAST("e",0,1),
     ;
 
     private final String name;

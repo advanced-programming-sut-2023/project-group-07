@@ -356,4 +356,8 @@ public class Game {
         }
         return path;
     }
+
+    public ArrayList<Person> getPersonOfAPixel(int x, int y) {
+        return map.getMapPixel(x,y).getPeople();
+    }
 }
