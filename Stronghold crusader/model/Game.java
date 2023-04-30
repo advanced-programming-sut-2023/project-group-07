@@ -16,7 +16,7 @@ public class Game {
     private Government currentGovernment;
     private MilitaryCampType currentMilitaryCamp;
     private Building selectedBuilding;
-    private ArrayList<Unit> selectedUnit;
+    private ArrayList<Person> selectedUnit;
     private int[] selectedUnitArea;
     private int indexOfCurrentGovernment = 0;
 
@@ -140,7 +140,7 @@ public class Game {
     }
 
     public void selectUnit(int frow, int fcolumn, int srow, int scolumn) {
-        ArrayList<Unit> units = new ArrayList<>();
+        ArrayList<Person> units = new ArrayList<>();
         for (int i = frow; i <= srow; i++)
             for (int j = fcolumn; j <= scolumn; j++)
                 for (Person person : map.getMapPixel(i, j).getPeople())
@@ -151,14 +151,16 @@ public class Game {
     }
 
     public void moveUnit(int row, int column) {
-        for (Unit person : selectedUnit)
-            if (person.getGovernment().equals(currentGovernment)) {
-                person.setMovePattern(
-                        map.getPathList(person.currentLocation[0], person.currentLocation[1], row, column));
-                person.setPatrolling(false);
-                applyPersonMove(person);
-                person.setAttacking(false);
-                person.setPatrolling(false);
+        for (Person person : selectedUnit)
+            if(person instanceof Unit) {
+                Unit unit = (Unit) person;
+                if(unit.getGovernment().equals(currentGovernment)) {
+                    unit.setMovePattern(map.getPathList(person.currentLocation[0], person.currentLocation[1], row, column));
+                    unit.setPatrolling(false);
+                    applyPersonMove(person);
+                    unit.setAttacking(false);
+                    unit.setPatrolling(false);
+                }
             }
         selectedUnit.clear();
     }
@@ -180,7 +182,7 @@ public class Game {
     }
 
     public void patrolUnits(int frow, int fcolumn, int srow, int scolumn) {
-        for (Unit person : selectedUnit)
+        for (Person person : selectedUnit)
             if (person.getGovernment().equals(currentGovernment)) {
                 person.setPatrolLocation(new int[]{frow, fcolumn, srow, scolumn});
                 person.setPatrolling(true);
@@ -234,7 +236,7 @@ public class Game {
     }
 
     public void stopUnit() {
-        for (Unit person : selectedUnit)
+        for (Person person : selectedUnit)
             if (person.getGovernment().equals(currentGovernment)) {
                 person.setMovePattern(new ArrayList<int[]>());
                 person.setPatrolling(false);
@@ -253,7 +255,8 @@ public class Game {
 
     public void attackEnemy(int row, int column) {
         Person person = map.getMapPixel(row, column).getPeople().get(0);
-        for (Unit unit : selectedUnit) {
+        for (Person person2 : selectedUnit) {
+            Unit unit = (Unit) person2;
             unit.setAttacking(true);
             unit.setMovePattern(map.getPathList(unit.currentLocation[0], unit.currentLocation[1], row, column));
             unit.setPersonBeingAttacked(person);
@@ -264,8 +267,8 @@ public class Game {
     }
 
     public void areaAttack(int row, int column) {
-        for (Unit unit : selectedUnit) {
-            unit.getMovePattern().clear();
+        for (Person person2 : selectedUnit) {
+            Unit unit = (Unit) person2;
             unit.setPatrolling(false);
             unit.setAttacking(false);
             unit.setAreaAttacking(true);
@@ -277,6 +280,7 @@ public class Game {
     public void disbandUnit() {
         map.getMapPixel(selectedUnitArea[0], selectedUnitArea[1]).getPeople().removeAll(selectedUnit);
         currentGovernment.getPeople().removeAll(selectedUnit);
+        int size = selectedUnit.size();
     }
 
     public void endOfTurn() throws IOException {
@@ -313,8 +317,6 @@ public class Game {
             government.resetMovesLeft();
 
         }
-        Map.loadMaps(); // todo : why should this be here. we should load everything in the beginning
-        // and dont open any file again. answer: Too goshad to clone the maps
 
         Government government = getCurrentGovernment();
         int currentGovernmentIndex = governments.indexOf(government);
@@ -332,7 +334,7 @@ public class Game {
         return null;
     }
 
-    public ArrayList<Unit> getSelectedUnit() {
+    public ArrayList<Person> getSelectedUnit() {
         return selectedUnit;
     }
 
@@ -355,5 +357,9 @@ public class Game {
             }
         }
         return path;
+    }
+
+    public void endGame() throws IOException{
+        Map.loadMaps();
     }
 }

@@ -238,7 +238,7 @@ public class GameMenu {
         return "";
     }
 
-    public void towerAndGate(boolean isGate) {
+    private void towerAndGate(boolean isGate) {
         while (true) {
             String command = scanner.nextLine();
             if (GameMenuCommands.getMatcher(command, GameMenuCommands.REPAIR) != null) {
@@ -292,7 +292,7 @@ public class GameMenu {
         }
     }
 
-    public void militaryCamp() {
+    private void militaryCamp() {
         while (true) {
             String command = scanner.nextLine();
             if (GameMenuCommands.getMatcher(command, GameMenuCommands.CREATE_UNIT) != null) {
@@ -345,7 +345,7 @@ public class GameMenu {
         }
     }
 
-    public void armsWorkshop() {
+    private void armsWorkshop() {
         while (true) {
             String command = scanner.nextLine();
             if (GameMenuCommands.getMatcher(command, GameMenuCommands.CHANGE_ARMS) != null) {
@@ -363,7 +363,7 @@ public class GameMenu {
         }
     }
 
-    public void enteredBuilding() {
+    private void enteredBuilding() {
         while(true) {
             String command = scanner.nextLine();
             if(GameMenuCommands.getMatcher(command, GameMenuCommands.CHANGE_WORKING_STATE) != null){
@@ -379,7 +379,7 @@ public class GameMenu {
         }
     }
 
-    public String selectPixelUnit(String input) {
+    private String selectPixelUnit(String input) {
         Matcher rowMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.ROW);
         Matcher columnMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.COLUMN);
         String checkCoordinates = Controller.checkCoordinatesFormat(rowMatcher, columnMatcher);
@@ -398,7 +398,7 @@ public class GameMenu {
         return null;
     }
 
-    public String selectRegionUnit(String input) {
+    private String selectRegionUnit(String input) {
         Matcher x1Matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.FIRST_ROW);
         Matcher y1Matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.FIRST_COLUMN);
         Matcher x2Matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.SECOND_ROW);
@@ -422,7 +422,7 @@ public class GameMenu {
         return null;
     }
 
-    public String moveUnit(String input) {
+    private String moveUnit(String input) {
         Matcher rowMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.ROW);
         Matcher columnMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.COLUMN);
         String checkCoordinates = Controller.checkCoordinatesFormat(rowMatcher, columnMatcher);
@@ -443,7 +443,7 @@ public class GameMenu {
         return null;
     }
 
-    public String patrolUnit(String input) {
+    private String patrolUnit(String input) {
         Matcher x1Matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.FIRST_ROW);
         Matcher y1Matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.FIRST_COLUMN);
         Matcher x2Matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.SECOND_ROW);
@@ -479,7 +479,7 @@ public class GameMenu {
         return null;
     }
 
-    public String setStance(String input) {
+    private String setStance(String input) {
         Matcher rowMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.ROW);
         Matcher columnMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.COLUMN);
         Matcher stanceMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.STANCE);
@@ -522,15 +522,34 @@ public class GameMenu {
         return null;
     }
 
-    public String areaAttack(String input) {
+    private String areaAttack(String input) {
+        Matcher rowMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.ROW);
+        Matcher columnMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.COLUMN);
+        String checkCoordinates = Controller.checkCoordinatesFormat(rowMatcher, columnMatcher);
+        if (checkCoordinates != null)
+            return checkCoordinates;
+        int row = Integer.parseInt(rowMatcher.group("row"))-1;
+        int column = Integer.parseInt(columnMatcher.group("column"))-1;
+        switch(controller.areaAttack(row, column)) {
+            case NO_UNITS_SELECTED:
+                return "No units selected!";
+            case MUST_SELECT_RANGED_UNITS:
+                return "Must select only ranged units!";
+            case OUT_OF_RANGE:
+                return "Out of range!";
+            case AREA_ATTACKING_SET_SUCCESSFULLY:
+                return "Area attacking set successfully!";
+            default:
+                break;
+        }
         return null;
     }
 
-    public String disbandUnit(String input) {
+    private String disbandUnit(String input) {
         return null;
     }
 
-    public String buildSiegeWeapon(String input) {
+    private String buildSiegeWeapon(String input) {
         Matcher rowMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.ROW);
         Matcher columnMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.COLUMN);
         Matcher typeMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.TYPE);

@@ -206,7 +206,7 @@ public class GameMenuController {
     public Messages buildSiegeWeapon(String type, int row , int column) {
         Map map = game.getMap();
         Government currentGovernment = game.getCurrentGovernment();
-        ArrayList <Unit> selectedUnit = game.getSelectedUnit();
+        ArrayList <Person> selectedUnit = game.getSelectedUnit();
         SiegeWeaponType siegeWeaponType = SiegeWeaponType.getSiegeWeaponType(type);
         if(!areCoordinatesValid(row, column))
             return Messages.INVALID_COORDINATES;
@@ -214,7 +214,8 @@ public class GameMenuController {
             return Messages.INVALID_SIEGE_WEAPON_TYPE;
         int[] location = new int[2];
         int counter = 0;
-        for (Unit unit : selectedUnit) {
+        for (Person person : selectedUnit) {
+            
             if (unit.getType().equals(UnitTypes.ENGINEER)) {
                 location = unit.getCurrentLocation();
                 counter++;
@@ -235,7 +236,8 @@ public class GameMenuController {
         }
         map.getMapPixel(location[0], location[1]).getPeople().removeAll(engineers);
         currentGovernment.getPeople().removeAll(engineers);
-        SiegeWeapon siegeWeapon = new SiegeWeapon(siegeWeaponType, location);
+        SiegeWeapon siegeWeapon = new SiegeWeapon(siegeWeaponType, location,game.getCurrentGovernment());
+        game.getMap().getMapPixel(row, column).addSiegeWeapon(siegeWeapon);
         return Messages.SIEGE_WEAPON_BUILT_SUCCESSFULLY;
     }
 
@@ -417,13 +419,19 @@ public class GameMenuController {
     public Messages areaAttack(int row, int column) {
         if(game.getSelectedUnit().isEmpty())
             return Messages.NO_UNITS_SELECTED;
-        for(Unit unit : game.getSelectedUnit()) {
-            if(unit.getType().getRange()==1)
-                return Messages.MUST_SELECT_RANGED_UNITS;
+        for(Person person : game.getSelectedUnit()) {
+            if(person instanceof Person){
+                Unit unit = (Unit)person;
+                if(unit.getType().getRange()==1)
+                    return Messages.MUST_SELECT_RANGED_UNITS;
+            }
         }
-        for(Unit unit : game.getSelectedUnit()) {
-            if(unit.getType().getRange()<Math.abs(row-unit.getCurrentLocation()[0])+Math.abs(column-unit.getCurrentLocation()[1]))
-                return Messages.OUT_OF_RANGE;
+        for(Person person : game.getSelectedUnit()) {
+            if(person instanceof Unit) {
+                Unit unit = (Unit) person;
+                if(unit.getType().getRange()<Math.abs(row-unit.getCurrentLocation()[0])+Math.abs(column-unit.getCurrentLocation()[1]))
+                    return Messages.OUT_OF_RANGE;
+            }
         }
         game.areaAttack(row, column);
         return Messages.AREA_ATTACKING_SET_SUCCESSFULLY;
