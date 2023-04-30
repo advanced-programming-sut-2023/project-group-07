@@ -8,6 +8,7 @@ public class MapPixel {
     private ArrayList<Unit> units = new ArrayList<Unit>();
     private ArrayList<NonMilitary> nonMilitaries = new ArrayList<NonMilitary>();
     private ArrayList<Building> buildings = new ArrayList<Building>();
+    private ArrayList<SiegeWeapon> siegeWeapons = new ArrayList<SiegeWeapon>();
     private LordColor lordKeep = null;
     private Tree tree = null;
     private Rock rock = null;
@@ -18,6 +19,14 @@ public class MapPixel {
         this.texture = texture;
         this.doesHaveOil = doesHaveOil;
         this.isPassable = isPassable;
+    }
+
+    public void addSiegeWeapon(SiegeWeapon siegeWeapon) {
+        this.siegeWeapons.add(siegeWeapon);
+    }
+
+    public void removeSiegeWeapon(SiegeWeapon siegeWeapon) {
+        this.siegeWeapons.remove(siegeWeapon);
     }
 
     public void addBuilding(Building building) {
@@ -63,10 +72,12 @@ public class MapPixel {
 
     public ArrayList<Person> getPeople() {
         ArrayList <Person> people = new ArrayList<Person>();
+        if(!this.units.isEmpty())
         for(Unit unit : this.units)
-            people.add(unit);
-        for(NonMilitary nonMilitary : this.nonMilitaries)
-            people.add(nonMilitary);
+        people.add(unit);
+        if(!this.nonMilitaries.isEmpty())
+            for(NonMilitary nonMilitary : this.nonMilitaries)
+                people.add(nonMilitary);
         return people;
     }
 

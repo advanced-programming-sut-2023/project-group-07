@@ -6,6 +6,7 @@ import view.LoginMenu;
 public class LoginMenuTest {
     @Test
     public void loginTest(){
-        Assert.assertEquals("kir", "kir2");
+        LoginMenu loginMenu = new LoginMenu();
+        Assert.assertEquals();
     }
 }
