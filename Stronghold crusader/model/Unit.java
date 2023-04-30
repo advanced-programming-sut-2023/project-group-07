@@ -81,5 +81,8 @@ public class Unit extends Person {
     public void endTurn() {
         // todo : attack depending on state
     }
+    public int range(){
+        return type.getRange();
+    }
 
 }

@@ -362,4 +362,10 @@ public class Game {
     public void endGame() throws IOException{
         Map.loadMaps();
     }
+    public ArrayList<Person> getPersonOfAPixel(int x, int y) {
+        return map.getMapPixel(x,y).getPeople();
+    public void endGame() throws IOException{
+        Map.loadMaps();
+    } 
+
 }

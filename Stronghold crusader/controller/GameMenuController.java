@@ -3,16 +3,11 @@ package controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.regex.Matcher;
-
-import javax.swing.RowFilter;
 
 import model.*;
-import view.GameMenu;
 
 public class GameMenuController {
-    private Game game = Controller.currentGame;
+    private static Game game = Controller.currentGame;
 
     public void refreshGame() {
         this.game = Controller.currentGame;
@@ -549,11 +544,11 @@ public class GameMenuController {
         if (noOneHasOil) return Messages.NO_ONE_HAS_OIL;
         if (badDirection) return Messages.BAD_DIRECTION;
         engineer.pourOil(direction);
-        goTOOilSmelter(engineer);
+        sendToOilSmelter(engineer);
         return Messages.POUR_OIL_SUCCESSFUL;
     }
 
-    private void goTOOilSmelter(Engineer engineer) {
+    protected static void sendToOilSmelter(Engineer engineer) {
         ArrayList<int[]> path =
                 game.getNearestOilSmelterPath(engineer.getCurrentLocation(), game.getCurrentGovernment());
         engineer.goToOilSmelter(path);
@@ -575,7 +570,7 @@ public class GameMenuController {
         }
         if (getterEngineers.size() == 0) return Messages.NO_ONE_TO_GIVE_OIL_TO;
         for (Engineer engineer : getterEngineers){
-            goTOOilSmelter(engineer);
+            sendToOilSmelter(engineer);
         }
         return Messages.GIVING_OIL_SUCESSFUL;
     }
