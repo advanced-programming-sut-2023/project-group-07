@@ -46,7 +46,7 @@ public class GameMenu {
                 System.out.println(setStance(input));
             else if(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY)!=null)
                 System.out.println(attackEnemy(input));
-            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.AIR_ATTACK)!=null)
+            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.AREA_ATTACK)!=null)
                 System.out.println(areaAttack(input));
             else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.POUR_OIL)) != null)
                 System.out.println(pourOil(matcher));
@@ -505,14 +505,8 @@ public class GameMenu {
     }
 
     public String attackEnemy(String input) {
-        Matcher rowMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY).group("row");
-        Matcher columnMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY).grop;
-        if(rowMatcher == null)
-            return "Enter the row number!";
-        if(columnMatcher == null)
-            return "Enter the column number!";
-        int row = Integer.parseInt(rowMatcher.group("row")) - 1;
-        int column = Integer.parseInt(columnMatcher.group("column")) - 1;
+        int row = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY).group("row"))-1;
+        int column = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY).group("column"))-1;
         switch(controller.attackEnemy(row, column)) {
             case INVALID_COORDINATES:
                 return "Invalid coordinates!";
