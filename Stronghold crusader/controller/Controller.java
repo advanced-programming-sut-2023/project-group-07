@@ -26,6 +26,7 @@ public class Controller {
     }
 
     public static String trimmer(String string) {
+        if (string.length() == 0) return string;
         if (string.charAt(0) == '\"')
             return string.substring(1, string.length() - 1);
         return string;
