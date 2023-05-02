@@ -63,6 +63,7 @@ public class Building {
     public Government getGovernment(){
         return government;
     }
+    
     public LordColor getLordColor() {
         return lordColor;
     }
