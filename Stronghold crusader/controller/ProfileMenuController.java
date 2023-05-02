@@ -14,7 +14,6 @@ public class ProfileMenuController {
     }
 
     public Messages changeUsername(String username) throws IOException, NoSuchAlgorithmException {
-        System.out.println(username);
         if (!User.isUsernameValid(username)) return Messages.INVALID_USERNAME;
         else if (User.getUserByUsername(username) != null) return Messages.USERNAME_EXISTS;
         this.currentUser.setNewUsername(Controller.trimmer(username));
