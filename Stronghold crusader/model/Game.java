@@ -195,7 +195,7 @@ public class Game {
         for (Person person : government.getPeople()) {
             if (person.getMovePattern().size() == 0)
                 return;
-            if (person instanceof Unit && !((Unit) person).isAttacking()) {
+            if (person instanceof Unit && ((Unit) person).isAttacking()) {
                 Unit unit = (Unit) person;
                 int[] destination = unit.getPersonBeingAttacked().getCurrentLocation();
                 unit.setMovePattern(map.getPathList(person.currentLocation[0], person.currentLocation[1],
