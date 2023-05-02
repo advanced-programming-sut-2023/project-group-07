@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class TradeRequest {
     private static final ArrayList<TradeRequest> allTrades;
     private static int lastId;
-    private final double price;
+    private final int price;
     private final Resources resource;
     private final int amount;
     private final Government requester;
@@ -23,7 +23,7 @@ public class TradeRequest {
         lastId = 0;
     }
 
-    private TradeRequest(double price, Resources resource, int amount,
+    private TradeRequest(int price, Resources resource, int amount,
                          Government requester, Government receiver, String requesterMessage) {
         this.price = price;
         this.resource = resource;
@@ -38,7 +38,7 @@ public class TradeRequest {
         this.setId();
     }
 
-    public static void makeATradeRequest(double price, Resources resource, int amount,
+    public static void makeATradeRequest(int price, Resources resource, int amount,
                                          Government requester, Government receiver, String requesterMessage) {
         TradeRequest tradeRequest = new TradeRequest(price, resource, amount, requester, receiver, requesterMessage);
         allTrades.add(tradeRequest);
@@ -73,7 +73,7 @@ public class TradeRequest {
         return tradeHistory;
     }
 
-    public double price() {
+    public int price() {
         return price;
     }
 

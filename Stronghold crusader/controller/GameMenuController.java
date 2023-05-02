@@ -96,7 +96,8 @@ public class GameMenuController {
                     return Messages.THERES_AN_ENEMY_CLOSE_BY;
 
         if (typeOfBuilding.equals(TypeOfBuilding.GRANARY) || typeOfBuilding.equals(TypeOfBuilding.STOCK_PILE))
-            if (doesHaveThisBuilding(typeOfBuilding) && !map.isAdjacentToSameType(row, column, typeOfBuilding.getLength(), typeOfBuilding))
+            if (doesHaveThisBuilding(typeOfBuilding)
+                    && !map.isAdjacentToSameType(row, column, typeOfBuilding.getLength(), typeOfBuilding))
                 return Messages.MUST_BE_ADJACENT_TO_BUILDINGS_OF_THE_SAME_TYPE;
 
         boolean isWorking = true;
@@ -112,22 +113,23 @@ public class GameMenuController {
             building = militaryCamp;
         } else
             building = new Building(currentGovernment, typeOfBuilding, row, column);
+        currentGovernment.addBuilding(building);
         if (!currentGovernment.getNoLaborBuildings().contains(typeOfBuilding)) {
             if (currentGovernment.getPeasant() >= typeOfBuilding.getWorkerInUse()) {
                 currentGovernment.changePeasant(-typeOfBuilding.getWorkerInUse());
                 building.setWorkers(typeOfBuilding.getWorkerInUse());
                 for (int i = 0; i < typeOfBuilding.getWorkerInUse(); i++) {
                     NonMilitary nonMilitary = new NonMilitary(
-                            new int[]{map.getKeepPosition(indexOfCurrentGovernment)[0],
-                                    map.getKeepPosition(indexOfCurrentGovernment)[1]},
+                            new int[] { map.getKeepPosition(currentGovernment.getColor())[0],
+                                    map.getKeepPosition(currentGovernment.getColor())[1] },
                             currentGovernment, typeOfBuilding.getWorkerType());
-                    map.getMapPixel(map.getKeepPosition(indexOfCurrentGovernment)[0],
-                            map.getKeepPosition(indexOfCurrentGovernment)[1]).addPerson(nonMilitary);
+                    map.getMapPixel(map.getKeepPosition(currentGovernment.getColor())[0],
+                            map.getKeepPosition(currentGovernment.getColor())[1]).addPerson(nonMilitary);
                     nonMilitary.setMovePattern(map.getPathList(nonMilitary.getCurrentLocation()[0],
                             nonMilitary.getCurrentLocation()[1], row, column));
                     nonMilitary.setPatrolLocation(
-                            new int[]{row, column, map.getKeepPosition(indexOfCurrentGovernment)[0],
-                                    map.getKeepPosition(indexOfCurrentGovernment)[1]});
+                            new int[] { row, column, map.getKeepPosition(currentGovernment.getColor())[0],
+                                    map.getKeepPosition(currentGovernment.getColor())[1] });
                     nonMilitary.setPatrolling(true);
                     int frow = nonMilitary.getCurrentLocation()[0], fcolumn = nonMilitary.getCurrentLocation()[1];
                     nonMilitary.move();
@@ -146,6 +148,19 @@ public class GameMenuController {
         for (int i = 0; i < typeOfBuilding.getLength(); i++)
             for (int j = 0; j < typeOfBuilding.getWidth(); j++)
                 map.getMapPixel(row + j, column + i).addBuilding(building);
+        if (building instanceof GateHouse) {
+            map.getMapPixel(row, column + (int) (typeOfBuilding.getLength() / 2) - 1).setAccess();
+            map.getMapPixel(row, column + (int) (typeOfBuilding.getLength() / 2)).setAccess();
+            map.getMapPixel(row, column + (int) (typeOfBuilding.getLength() / 2) + 1).setAccess();
+            ;
+            map.getMapPixel(row + typeOfBuilding.getWidth() - 1, column + (int) (typeOfBuilding.getLength() / 2) - 1)
+                    .setAccess();
+            map.getMapPixel(row + typeOfBuilding.getWidth() - 1, column + (int) (typeOfBuilding.getLength() / 2))
+                    .setAccess();
+            map.getMapPixel(row + typeOfBuilding.getWidth() - 1, column + (int) (typeOfBuilding.getLength() / 2) + 1)
+                    .setAccess();
+            ;
+        }
         return Messages.DEPLOYMENT_SUCCESSFUL;
     }
 
@@ -192,7 +207,6 @@ public class GameMenuController {
         else
             return Messages.ENTERED_BUILDING_SUCCESSFULLY;
     }
-
 
     public String getSelectedBuilding() {
         return game.getSelectedBuilding().getTypeOfBuilding().getBuildingName();
@@ -242,15 +256,18 @@ public class GameMenuController {
         if (!(game.getSelectedBuilding() instanceof Tower || game.getSelectedBuilding() instanceof GateHouse))
             return Messages.CANT_REPAIR_THIS;
         int buildResource = game.getSelectedBuilding().getTypeOfBuilding().getResourceAmount();
-        int damagedResource = (int) (game.getSelectedBuilding().getTypeOfBuilding().getResourceAmount() * game.getSelectedBuilding().getHp()
+        int damagedResource = (int) (game.getSelectedBuilding().getTypeOfBuilding().getResourceAmount()
+                * game.getSelectedBuilding().getHp()
                 / game.getSelectedBuilding().getTypeOfBuilding().getHp());
         if (buildResource - damagedResource > game.getCurrentGovernment().getResources()
                 .get(game.getSelectedBuilding().getTypeOfBuilding().getResourceNeeded()))
             return Messages.NOT_ENOUGH_RESOURCES;
         if (game.getSelectedBuilding().getHp() == game.getSelectedBuilding().getTypeOfBuilding().getHp())
             return Messages.ALREADY_AT_FULL_HP;
-        for (int i = game.getSelectedBuilding().getColumn(); i < game.getSelectedBuilding().getTypeOfBuilding().getLength(); i++)
-            for (int j = game.getSelectedBuilding().getRow(); j < game.getSelectedBuilding().getTypeOfBuilding().getWidth(); j++)
+        for (int i = game.getSelectedBuilding().getColumn(); i < game.getSelectedBuilding().getTypeOfBuilding()
+                .getLength(); i++)
+            for (int j = game.getSelectedBuilding().getRow(); j < game.getSelectedBuilding().getTypeOfBuilding()
+                    .getWidth(); j++)
                 if (game.isAnEnemyCloseBy(j, i))
                     return Messages.THERES_AN_ENEMY_CLOSE_BY;
         game.getSelectedBuilding().repair();
@@ -262,17 +279,17 @@ public class GameMenuController {
 
     public Messages createUnit(String type, int count) {
         UnitTypes unitType = UnitTypes.getUnitTypeFromString(type);
-        if (unitType.equals(null))
+        if (unitType == null || type.equals("lord"))
             return Messages.INVALID_UNIT_NAME;
         if (count < 0 || count > game.getCurrentGovernment().getPeasant())
             return Messages.INVALID_NUMBER;
+        if (!game.getCurrentMilitaryCamp().equals(unitType.getMilitaryCampType()))
+            return Messages.CANT_CREATE_THIS_UNIT_HERE;
         if (unitType.getGoldNeeded() * count > game.getCurrentGovernment().getGold())
             return Messages.NOT_ENOUGH_GOLD;
         for (Resources resource : unitType.getResourcesNeeded())
             if (game.getCurrentGovernment().getResources().get(resource) < count)
                 return Messages.NOT_ENOUGH_RESOURCES;
-        if (!game.getCurrentMilitaryCamp().equals(unitType.getMilitaryCampType()))
-            return Messages.CANT_CREATE_THIS_UNIT_HERE;
         game.createTroop(unitType, count);
         return Messages.UNIT_CREATED_SUCCESSFULLY;
     }
@@ -297,26 +314,30 @@ public class GameMenuController {
         String output = "";
         if (militaryCamp.equals("barracks")) {
             for (UnitTypes unitType : UnitTypes.values()) {
-                if (unitType.getMilitaryCampType().equals(MilitaryCampType.BARRACKS))
+                if (!unitType.equals(UnitTypes.LORD)
+                        && unitType.getMilitaryCampType().equals(MilitaryCampType.BARRACKS))
                     output += unitType.getType() + "    " + unitType.getGoldNeeded() + " gold\n";
             }
         } else if (militaryCamp.equals("mercenary post")) {
             for (UnitTypes unitType : UnitTypes.values()) {
-                if (unitType.getMilitaryCampType().equals(MilitaryCampType.MERCENARY_POST))
+                if (!unitType.equals(UnitTypes.LORD)
+                        && unitType.getMilitaryCampType().equals(MilitaryCampType.MERCENARY_POST))
                     output += unitType.getType() + "    " + unitType.getGoldNeeded() + " gold\n";
             }
         } else if (militaryCamp.equals("engineer's guild")) {
             for (UnitTypes unitType : UnitTypes.values()) {
-                if (unitType.getMilitaryCampType().equals(MilitaryCampType.ENGINEER_GUILD))
+                if (!unitType.equals(UnitTypes.LORD)
+                        && unitType.getMilitaryCampType().equals(MilitaryCampType.ENGINEER_GUILD))
                     output += unitType.getType() + "    " + unitType.getGoldNeeded() + " gold\n";
             }
         } else if (militaryCamp.equals("cathedral")) {
             for (UnitTypes unitType : UnitTypes.values()) {
-                if (unitType.getMilitaryCampType().equals(MilitaryCampType.CATHEDRAL))
+                if (!unitType.equals(UnitTypes.LORD)
+                        && unitType.getMilitaryCampType().equals(MilitaryCampType.CATHEDRAL))
                     output += unitType.getType() + "    " + unitType.getGoldNeeded() + " gold\n";
             }
         }
-        return null;
+        return output;
     }
 
     public void changeArms() {
@@ -354,8 +375,7 @@ public class GameMenuController {
             return Messages.INVALID_COORDINATES;
         if (game.getSelectedUnit().isEmpty())
             return Messages.NO_UNITS_SELECTED;
-        if (!map.getMapPixel(row, column).canDropObject()
-                || !map.getMapPixel(row, column).getTexture().canDropBuilding()) {
+        if (!map.getMapPixel(row, column).getTexture().canDropBuilding()) {
             return Messages.CANT_MOVE_UNITS_TO_THIS_LOCATION;
         }
         game.moveUnit(row - 1, column - 1);
@@ -427,7 +447,8 @@ public class GameMenuController {
         for (Person person : game.getSelectedUnit()) {
             if (person instanceof Unit) {
                 Unit unit = (Unit) person;
-                if (unit.getType().getRange() < Math.abs(row - unit.getCurrentLocation()[0]) + Math.abs(column - unit.getCurrentLocation()[1]))
+                if (unit.getType().getRange() < Math.abs(row - unit.getCurrentLocation()[0])
+                        + Math.abs(column - unit.getCurrentLocation()[1]))
                     return Messages.OUT_OF_RANGE;
             }
         }
@@ -507,6 +528,29 @@ public class GameMenuController {
         return Messages.SHOP_SUCCESSFUL;
     }
 
+    public String showGold() {
+        return "Your gold: " + game.getCurrentGovernment().getGold();
+    }
+
+    public String showCurrentPlayer() {
+        return "Current player: " + game.getCurrentGovernment().getUser().getUsername() + " (color "
+                + game.getCurrentGovernment().getColor().toString() + ")";
+    }
+
+    public String nextTurn() throws IOException {
+        game.nextTurn();
+        return game.gameOver() ? game.endGame() : null;
+    }
+
+    public String nextTurnMessage() {
+        return "Now " + game.getCurrentGovernment().getColor().toString() + " lord (player "
+                + game.getCurrentGovernment().getUser().getUsername() + ") is playing!";
+    }
+
+    public String showTaxRate() {
+        return "Tax rate: " + game.getCurrentGovernment().getTaxRate();
+    }
+
     public ArrayList<Integer> getPopularityFactors() {
         Government government = game.getCurrentGovernment();
         ArrayList<Integer> factorsInOrder = new ArrayList<>();
@@ -548,16 +592,18 @@ public class GameMenuController {
                 }
             }
         }
-        if (noOneHasOil) return Messages.NO_ONE_HAS_OIL;
-        if (badDirection) return Messages.BAD_DIRECTION;
+        if (noOneHasOil)
+            return Messages.NO_ONE_HAS_OIL;
+        if (badDirection)
+            return Messages.BAD_DIRECTION;
         engineer.pourOil(direction);
         sendToOilSmelter(engineer);
         return Messages.POUR_OIL_SUCCESSFUL;
     }
 
     protected static void sendToOilSmelter(Engineer engineer) {
-        ArrayList<int[]> path =
-                game.getNearestOilSmelterPath(engineer.getCurrentLocation(), game.getCurrentGovernment());
+        ArrayList<int[]> path = game.getNearestOilSmelterPath(engineer.getCurrentLocation(),
+                game.getCurrentGovernment());
         engineer.goToOilSmelter(path);
     }
 

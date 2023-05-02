@@ -1,5 +1,6 @@
 package view;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -20,7 +21,7 @@ public class GameMenu {
     private final TradeMenu tradeMenu = new TradeMenu();
     private Scanner scanner;
 
-    public void run(Scanner scanner) {
+    public void run(Scanner scanner) throws IOException{
         controller.refreshGame();
         this.scanner = scanner;
         Matcher matcher;
@@ -28,6 +29,8 @@ public class GameMenu {
             String input = scanner.nextLine();
             if (GameMenuCommands.getMatcher(input, GameMenuCommands.DROP_BUILDING) != null)
                 System.out.println(dropBuilding(input));
+            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_CURRENT_PLAYER) != null)
+                System.out.println(controller.showCurrentPlayer());
             else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_MAP) != null)
                 mapMenu.run(scanner, input);
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_BUILDING) != null)
@@ -62,6 +65,19 @@ public class GameMenu {
                 System.out.print(getFoodList());
             else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.FOOD_RATE)) != null)
                 System.out.println(setFoodList(matcher));
+            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_GOLD)!=null)
+                System.out.println(controller.showGold());
+            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.TAX_RATE_SHOW)!=null)
+                System.out.println(controller.showTaxRate());
+            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.NEXT_TURN)!=null){
+                String returnMessage = controller.nextTurn();
+                if(returnMessage == null)
+                    System.out.println(controller.nextTurnMessage());
+                else{
+                    System.out.println(returnMessage);
+                    return;
+                }
+            }
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.ENTER_TRADE_MENU) != null) {
                 System.out.println("You have entered");
                 tradeMenu.run(scanner);
@@ -285,7 +301,7 @@ public class GameMenu {
                         break;
                 }
             } else if (GameMenuCommands.getMatcher(command, GameMenuCommands.EXIT) != null) {
-                System.out.println("Exit was successful!");
+                System.out.print("Exit was successful!");
                 break;
             } else
                 System.out.println("Invalid command!");
@@ -337,7 +353,7 @@ public class GameMenu {
                 System.out.println("Working state changed successfully!");
                 controller.changeWorkingState();
             } else if (GameMenuCommands.getMatcher(command, GameMenuCommands.EXIT) != null) {
-                System.out.println("Exit was successful!");
+                System.out.print("Exit was successful!");
                 break;
             } else {
                 System.out.println("Invalid command!");
@@ -355,7 +371,7 @@ public class GameMenu {
                 controller.changeWorkingState();
                 System.out.println("Working state changed successfully!");
             } else if (GameMenuCommands.getMatcher(command, GameMenuCommands.EXIT) != null) {
-                System.out.println("Exit was successful!");
+                System.out.print("Exit was successful!");
                 break;
             } else {
                 System.out.println("Invalid command!");
@@ -371,7 +387,7 @@ public class GameMenu {
                 controller.changeWorkingState();
             }
             else if (GameMenuCommands.getMatcher(command, GameMenuCommands.EXIT) != null) {
-                System.out.println("Exit was successful!");
+                System.out.print("Exit was successful!");
                 break;
             } else {
                 System.out.println("Invalid command!");
@@ -435,6 +451,8 @@ public class GameMenu {
                 return "Invalid coordinates!";
             case CANT_MOVE_UNITS_TO_THIS_LOCATION:
                 return "Can't move units to this location!";
+            case NO_UNITS_SELECTED:
+                return "No units selected!";
             case UNIT_MOVED_SUCCESSFULLY:
                 return "Units moved successfully!";
             default:
@@ -456,11 +474,13 @@ public class GameMenu {
         int fcolumn = Integer.parseInt(y1Matcher.group("fcolumn"));
         int srow = Integer.parseInt(x2Matcher.group("srow"));
         int scolumn = Integer.parseInt(y2Matcher.group("scolumn"));
-        switch (controller.selectUnit(frow, fcolumn, srow, scolumn)) {
+        switch (controller.patrolUnit(frow, fcolumn, srow, scolumn)) {
             case INVALID_COORDINATES:
                 return "Invalid coordinates!";
             case CANT_MOVE_UNITS_TO_THIS_LOCATION:
                 return "Can't move units to this location!";
+            case NO_UNITS_SELECTED:
+                return "No units selected!";
             case UNIT_MOVED_SUCCESSFULLY:
                 return "Patrol successful!";
             default:

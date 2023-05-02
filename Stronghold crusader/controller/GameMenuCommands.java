@@ -4,9 +4,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public enum GameMenuCommands {
-    SHOW_POPULARITY_FACTORS("\\s*show\\s+popularity\\s+factors\\s*"),
-    SHOW_POPULARITY("\\s*show\\s+popularity\\s*"),
-    SHOW_FOOD_LIST("\\s*show\\s+food\\s+list\\s*"),
+    SHOW_CURRENT_PLAYER("^\\s*show\\s+current\\s+player\\s*$"),
+    SHOW_POPULARITY_FACTORS("^\\s*show\\s+popularity\\s+factors\\s*$"),
+    SHOW_POPULARITY("^\\s*show\\s+popularity\\s*$"),
+    SHOW_FOOD_LIST("^\\s*show\\s+food\\s+list\\s*$"),
+    SHOW_GOLD ("^\\s*show\\s+gold\\s*$"),
     FOOD_RATE("\\s*food\\s+rate\\s+-r\\s+(?<rate>\\d+)\\s*"),
     FOOD_RATE_SHOW("\\s*food\\s+rate\\s+show\\s*"),
     TAX_RATE("\\s*tax\\s+rate\\s+-r\\s+(?<rate>\\d+)\\s*"),
@@ -25,7 +27,7 @@ public enum GameMenuCommands {
     SELECT_REGION_UNIT("^\\s*select\\s+unit\\s+(\\-x1\\s+\\-?\\d+|\\-y1\\s+\\-?\\d+|\\-x2\\s+\\-?\\d+|\\-y2\\s+\\-?\\d+|\\s)+$"),
     SELECT_BUILDING("\\s*select\\s+building\\s+((-x\\s+(?<row1>\\d+)\\s+-y\\s+(?<column1>\\d+)\\s*)|(-y\\s+(?<column2>\\d+)\\s+-x\\s+(?<row2>\\d+)\\s*))"),
     MOVE_UNIT("^\\s*move\\s+unit\\s+(\\-x\\s+\\-?\\d+|\\-y\\s+\\-?\\d+|\\s)+$"),
-    PATROL_UNIT("^\\s*select\\s+unit\\s+(\\-x1\\s+\\-?\\d+|\\-y1\\s+\\-?\\d+|\\-x2\\s+\\-?\\d+|\\-y2\\s+\\-?\\d+|\\s)+$"),
+    PATROL_UNIT("^\\s*patrol\\s+unit\\s+(\\-x1\\s+\\-?\\d+|\\-y1\\s+\\-?\\d+|\\-x2\\s+\\-?\\d+|\\-y2\\s+\\-?\\d+|\\s)+$"),
     STOP_UNIT("\\s*stop\\s+unit\\s*"),
     SET_STANCE("^\\s*set\\s+(\\-x\\s+\\-?\\d+|\\-y\\s+\\-?\\d+|\\-s\\s+[a-z\\s]+|\\s)+$"),
     ATTACK_ENEMY("\\s*attack\\s+-e\\s+(?<row>\\d+)\\s+(?<column>\\d+)\\s*"),
@@ -48,7 +50,8 @@ public enum GameMenuCommands {
     POUR_OIL("^\\s*pour\\s+oil\\s+-d\\s+(?<direction>\\S+)\\s*$"),
     GIVE_OIL("^\\s*give\\s+oil\\s+$"),
     BUILD_SIEGE_WEAPON("^\\s*build\\s+(\\-x\\s+\\-?\\d+|\\-y\\s+\\-?\\d+|\\s)+$"),
-    SIEGE_TYPE("\\-q\\s+(?<type>[a-z\\s]+)");
+    SIEGE_TYPE("\\-q\\s+(?<type>[a-z\\s]+)"),
+    NEXT_TURN("^\\s*next\\s+turn\\s*$");
     
     private String regex;
     private GameMenuCommands(String regex) {

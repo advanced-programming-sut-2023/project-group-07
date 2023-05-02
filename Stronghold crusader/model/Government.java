@@ -8,13 +8,14 @@ import java.util.HashSet;
 
 public class Government {
     private final LordColor color;
-    private final int row;
     private final int column;
+    private final int row;
+    private Unit lord;
     private int population;
     private int peasant;
     private int popularity;
     private User user;
-    private double gold;
+    private int gold;
     private int taxRate;
     private int fearRate;
     private int foodRate;
@@ -25,10 +26,12 @@ public class Government {
     private HashSet<Building> buildingsWaitingForWorkers = new HashSet<>();
     private HashSet<TypeOfBuilding> noLaborBuildings = new HashSet<>();
     private int numberOfBlessed = 0;
+    private int defeatedLords = 0;
+    private int score;
 
-    public Government(LordColor color, User user, double gold, int row, int column) {
+    public Government(LordColor color, User user, int gold, int row, int column) {
         population = 10;
-        popularity = 100; // todo: we can make a variable that show starting population and popularity
+        popularity = 100;
         this.user = user;
         this.gold = gold;
         peasant = 10;
@@ -40,6 +43,31 @@ public class Government {
         resources.put(Resources.STONE,50);
         resources.put(Resources.WOOD,100);
         resources.put(Resources.BREAD,100);
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void defeatLord(int gold){
+        defeatedLords++;
+        this.gold += gold;
+    }
+
+    public int getDefeatedLords() {
+        return defeatedLords;
+    }
+
+    public int getLordHp(){
+        return lord.getHp();
+    }
+
+    public void setLord(Unit lord) {
+        this.lord = lord;
     }
 
     public LordColor getColor() {
@@ -67,6 +95,7 @@ public class Government {
         return population;
     }
 
+    
     public int getPopularity() {
         return popularity;
     }
@@ -79,15 +108,15 @@ public class Government {
         return user;
     }
 
-    public double getGold() {
+    public int getGold() {
         return gold;
     }
 
-    public void setGold(double gold) {
+    public void setGold(int gold) {
         this.gold = gold;
     }
 
-    public void changeGold(double amount) {
+    public void changeGold(int amount) {
         this.gold += amount;
     }
 
@@ -111,7 +140,7 @@ public class Government {
         this.taxRate = taxRate;
     }
 
-    private int getTaxRate() {
+    public int getTaxRate() {
         return taxRate;
     }
 
