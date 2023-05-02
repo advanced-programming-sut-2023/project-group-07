@@ -23,7 +23,6 @@ public class Building {
     }
 
 
-
     public Building (LordColor lordColor, TypeOfBuilding typeOfBuilding, int row,int column){
         this.lordColor = lordColor;
         this.typeOfBuilding = typeOfBuilding;
