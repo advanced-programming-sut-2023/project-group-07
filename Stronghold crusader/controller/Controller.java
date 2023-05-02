@@ -14,7 +14,6 @@ import view.MenuPrinter;
 public class Controller {
     public static User currentUser;
     public static Game currentGame;
-    private static int maxPlayers = 4;
     public static final MenuPrinter menuPrinter = new MenuPrinter();
 
     public static int randomNumber(int max) {
@@ -51,10 +50,6 @@ public class Controller {
         byte[] digest = md.digest();
         String hex = String.format("%064x", new BigInteger(1, digest));
         return hex;
-    }
-
-    public static int maxPlayers() {
-        return maxPlayers;
     }
 
     public static String checkCoordinatesFormat(Matcher rowMatcher, Matcher columnMatcher) {

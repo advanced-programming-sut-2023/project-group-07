@@ -47,6 +47,10 @@ public class User {
         return username;
     }
 
+    public void changeHighScore(int score) {
+        highScore = Math.max(highScore, score);
+    }
+
     public boolean checkPassword(String password) throws NoSuchAlgorithmException{
         return Controller.toSHA256(password).equals(this.password);
     }

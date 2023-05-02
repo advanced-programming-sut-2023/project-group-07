@@ -43,7 +43,7 @@ public class CreateMapMenuController {
         this.mapMenuController.refreshMap(this.map);
     }
 
-    public void saveMap() throws IOException{
+    public void saveMap() throws IOException {
         Map.changeMaps(map, indexOfMap);
     }
 
@@ -101,8 +101,8 @@ public class CreateMapMenuController {
     }
 
     public boolean canDropKeep(HashMap<LordColor, int[]> keepsPositions, int row, int column) {
-        for(int[] position : keepsPositions.values())
-            if(position[0] == row && position[1] == column)
+        for (int[] position : keepsPositions.values())
+            if (position[0] <= row && row < position[0] + 12 && position[1] <= column && column < position[1] + 12)
                 return false;
         return true;
     }
@@ -135,40 +135,40 @@ public class CreateMapMenuController {
         return Messages.DROP_ROCK_SUCCESSFUL;
     }
 
-    public void removeMap() throws IOException{
+    public void removeMap() throws IOException {
         Map.removeMap(map);
     }
 
-    public Messages dropUnit(int row, int column, int count, String type, String color) {
+    public Messages dropUnit(int row, int column, int count, String type, String color, boolean isFromCreateMap) {
         int size = map.getSize();
         LordColor lordColor = LordColor.getColorByName(color);
         UnitTypes unitType = UnitTypes.getUnitTypeFromString(type);
-        if(!areCoordinatesValid(row, column))
+        if (!areCoordinatesValid(row, column))
             return Messages.INVALID_COORDINATES;
-        if(unitType == null)
+        if (unitType == null || (!isFromCreateMap && unitType.equals(UnitTypes.LORD)))
             return Messages.INVALID_UNIT_NAME;
-        if(lordColor == null || !map.doesHaveColor(lordColor))
+        if (lordColor == null || !map.doesHaveColor(lordColor))
             return Messages.INVALID_COLOR;
         MapPixel pixel = map.getMapPixel(row, column);
-        if(!pixel.getTexture().canDropUnit() || pixel.getRock()!= null)
+        if (!pixel.getTexture().canDropUnit() || pixel.getRock() != null)
             return Messages.CANT_PLACE_THIS;
-        int[] currentLocation = {row, column};
-        while(count-- > 0)
+        int[] currentLocation = { row, column };
+        while (count-- > 0)
             pixel.addPerson(new Unit(unitType, currentLocation, lordColor));
         return Messages.DROP_UNIT_SUCCESSFUL;
 
     }
 
-    public Messages dropBuilding (int row, int column, String type, String color){
+    public Messages dropBuilding(int row, int column, String type, String color) {
         int size = map.getSize();
         LordColor lordColor = LordColor.getColorByName(color);
         TypeOfBuilding typeOfBuilding = TypeOfBuilding.getBuilding(type);
-        if(typeOfBuilding == null)
+        if (typeOfBuilding == null)
             return Messages.INVALID_BUILDING_NAME;
-        if(lordColor == null || !map.doesHaveColor(lordColor))
+        if (lordColor == null || !map.doesHaveColor(lordColor))
             return Messages.INVALID_COLOR;
         if (row < 0 || row > size - typeOfBuilding.getWidth() + 1 || column < 0
-            || column > size - typeOfBuilding.getLength() + 1) {
+                || column > size - typeOfBuilding.getLength() + 1) {
             return Messages.INVALID_ROW_OR_COLUMN;
         }
         for (int i = 0; i < typeOfBuilding.getLength(); i++)
@@ -209,7 +209,8 @@ public class CreateMapMenuController {
         }
 
         if (typeOfBuilding.equals(TypeOfBuilding.GRANARY) || typeOfBuilding.equals(TypeOfBuilding.STOCK_PILE))
-            if (!map.isAdjacentToSameType(row, column, typeOfBuilding.getLength(), typeOfBuilding))
+            if (doesHaveThisBuilding(typeOfBuilding)
+                    && !map.isAdjacentToSameType(row, column, typeOfBuilding.getLength(), typeOfBuilding))
                 return Messages.MUST_BE_ADJACENT_TO_BUILDINGS_OF_THE_SAME_TYPE;
 
         Building building = new Building(lordColor, typeOfBuilding, row, column);
@@ -219,14 +220,22 @@ public class CreateMapMenuController {
         return Messages.DEPLOYMENT_SUCCESSFUL;
     }
 
-    private boolean areCoordinatesValid(int row, int column){
+    private boolean doesHaveThisBuilding(TypeOfBuilding typeOfBuilding) {
+        for (int i = 0; i < map.getSize(); i++)
+            for (int j = 0; j < map.getSize(); j++)
+                if (!map.getMapPixel(i, j).getBuildings().isEmpty()
+                        && map.getMapPixel(i, j).getBuildings().get(0).getTypeOfBuilding().equals(typeOfBuilding))
+                    return true;
+        return false;
+    }
+
+    private boolean areCoordinatesValid(int row, int column) {
         int size = map.getSize();
-        if(row < 0 || row >= size || column < 0 || column >= size)
+        if (row < 0 || row >= size || column < 0 || column >= size)
             return false;
         return true;
-    } 
+    }
 
-    
     // todo : fix this
     // public void addGovernment(int row, int column, int index) {
     // map.getMapPixel(row, column).setPlayerKeep(government);

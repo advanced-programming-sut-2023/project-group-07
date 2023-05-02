@@ -13,6 +13,8 @@ import java.util.Scanner;
 
 import static java.lang.Math.min;
 
+import java.io.IOException;
+
 public class PreGameMenu { // todo: this class haven't been tested
     private Scanner scanner;
     private final PreGameMenuController controller;
@@ -22,20 +24,17 @@ public class PreGameMenu { // todo: this class haven't been tested
         controller = new PreGameMenuController();
     }
 
-    public void run(Scanner scanner) {
+    public void run(Scanner scanner) throws IOException{
         this.scanner = scanner;
         Integer numberOfPlayers = getNumberOfPlayers();
         if (numberOfPlayers == null)
             return;
-        //todo : make a clone of map
         Map map = getChosenMap(numberOfPlayers);
         if (map == null)
-            return;
-        //todo : let the player choose a color, not forcing them! 
+            return; 
         ArrayList<Government> governments = getGovernments(numberOfPlayers, map);
         if (governments == null)
-            return;
-
+            return; 
         Integer earlyGameGolds = getGold();
         if (earlyGameGolds == null)
             return;
@@ -91,7 +90,7 @@ public class PreGameMenu { // todo: this class haven't been tested
     private Integer getNumberOfPlayers() {
         int numberOfPlayers;
         System.out.println("How many players are in the game?");
-        int maxPlayers = min(Controller.maxPlayers(), Map.maxPlayerOfMaps());
+        int maxPlayers = Map.maxPlayerOfMaps();
         while (true) {
             String input = scanner.nextLine();
             if (input.matches("\\s*exit\\s*"))
@@ -109,10 +108,12 @@ public class PreGameMenu { // todo: this class haven't been tested
 
     private ArrayList<Government> getGovernments(int numberOfPlayers, Map map) {
         ArrayList<Government> governments = new ArrayList<>();
-        governments.add(new Government(LordColor.getLordColor(0), Controller.currentUser, 0, map.getKeepPosition(0)[0],
-                map.getKeepPosition(0)[1]));
+        LordColor currentLordColor = LordColor.getLordColor(0);
+        governments.add(new Government(LordColor.getLordColor(0), Controller.currentUser, 0, map.getKeepPosition(currentLordColor)[0],
+                map.getKeepPosition(currentLordColor)[1]));
         for (int i = 1; i < numberOfPlayers; i++) {
-            System.out.println("Enter username of next player:");
+            currentLordColor = LordColor.getLordColor(i);
+            System.out.println("Enter username of next player (color " + currentLordColor + "):");
             String input = scanner.nextLine();
             if (input.matches("\\s*exit\\s*"))
                 return null;
@@ -124,8 +125,8 @@ public class PreGameMenu { // todo: this class haven't been tested
                     return null;
                 user = User.getUserByUsername(input);
             }
-            governments.add(new Government(LordColor.getLordColor(i), user, 0, map.getKeepPosition(i)[0],
-                    map.getKeepPosition(0)[1]));
+            governments.add(new Government(LordColor.getLordColor(i), user, 0, map.getKeepPosition(currentLordColor)[0],
+                    map.getKeepPosition(currentLordColor)[1]));
         }
         return governments;
     }

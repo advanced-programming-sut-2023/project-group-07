@@ -13,12 +13,23 @@ public class MapPixel {
     private Tree tree = null;
     private Rock rock = null;
     private boolean doesHaveOil;
-    private boolean isPassable;
+    private boolean canBeAccessed = false;
 
-    public MapPixel(Texture texture, boolean doesHaveOil, boolean isPassable) {
+    public MapPixel(Texture texture, boolean doesHaveOil) {
         this.texture = texture;
         this.doesHaveOil = doesHaveOil;
-        this.isPassable = isPassable;
+    }
+
+    public boolean canBeAccessed() {
+        return canBeAccessed;
+    }
+
+    public void resetAccess(){
+        canBeAccessed = false;
+    }
+
+    public void setAccess(){
+        canBeAccessed = true;
     }
 
     public void addSiegeWeapon(SiegeWeapon siegeWeapon) {
@@ -27,6 +38,10 @@ public class MapPixel {
 
     public void removeSiegeWeapon(SiegeWeapon siegeWeapon) {
         this.siegeWeapons.remove(siegeWeapon);
+    }
+
+    public LordColor getLordKeep(){
+        return this.lordKeep;
     }
 
     public void addBuilding(Building building) {
@@ -62,7 +77,6 @@ public class MapPixel {
     public void backToDefault() {
         this.texture = Texture.LAND;
         this.doesHaveOil = false;
-        this.isPassable = true;
         this.rock = null;
         this.tree = null;
         this.buildings.clear();
@@ -83,6 +97,14 @@ public class MapPixel {
 
     public ArrayList<Building> getBuildings() {
         return (ArrayList<Building>) this.buildings.clone();
+    }
+
+    public void removeBuilding(Building building) {
+        this.buildings.remove(building);
+    }
+
+    public void removeUnit(Unit unit) {
+        this.units.remove(unit);
     }
 
     public Tree getTree() {
@@ -120,11 +142,17 @@ public class MapPixel {
         return false;
     }
 
+    private boolean doesHaveLord(){
+        for(Unit unit : units)
+            if(unit.getType().equals(UnitTypes.LORD))
+                return true;
+        return false;
+    }
     public String objectToShow() {
         if(this.lordKeep != null)
             return "K";
         if (!units.isEmpty())
-            return "S";
+            return doesHaveLord() ? "L" : "S";
         if (this.buildings.size() != 0)
             return doesHaveWall() ? "W" : "B";
         if (this.tree != null)
@@ -135,15 +163,30 @@ public class MapPixel {
     }
 
     public String details(){
+        String output = "";
         String buildingsStr = "";
-        String soldiersStr = "";
+        String unitsStr = "";
+        output += "type/texture :" + texture.toString();
         for(Building building : this.buildings)
-            buildingsStr += building.getTypeOfBuilding() + " (lord color: )" + building.getLordColor().toString() + "\n";
-        // for(Unit unit : this.units)
-        //     soldiersStr += unit.get
-        
-        return ("<< type/texture >> : " + texture +
-                "\n<< Buildings >> :\n" + buildingsStr);
+            buildingsStr += building.getTypeOfBuilding().toString() + " (color: " + building.getLordColor().toString() + ")\n";
+        if (!buildingsStr.equals(""))
+            output += "\n<< BUILDINGS >>\n" + buildingsStr.trim();
+        for(LordColor lordColor : LordColor.values())
+            for(UnitTypes unitType : UnitTypes.values()){
+                int counter=0;
+                for(Unit unit : units)
+                    if(unit.getLordColor().equals(lordColor) && unit.getType().equals(unitType))
+                        counter++;
+                if(counter > 0){
+                    if(!unitType.equals(unitType.LORD)) 
+                        unitsStr += unitType.toString() + " (color: " + lordColor.toString() + ") (count: " + counter + ")\n";
+                    else
+                        unitsStr += unitType.toString() + " (color: " + lordColor.toString() + ")\n";
+                }
+            }
+        if(!unitsStr.equals(""))
+            output += "\n<< UNITS >>\n" + unitsStr.trim();
+        return output;
     }
 
     public void pourOil() {

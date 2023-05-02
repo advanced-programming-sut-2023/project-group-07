@@ -44,7 +44,7 @@ public class TradeMenu {
                 message = Controller.trimmer(
                         TradeCommands.getMatcher(input, TradeCommands.MESSAGE).group("message"));
         int amount = Integer.parseInt(TradeCommands.getMatcher(input, TradeCommands.AMOUNT).group("amount"));
-        double price = Double.parseDouble(TradeCommands.getMatcher(input, TradeCommands.PRICE).group("price"));
+        int price = Integer.parseInt(TradeCommands.getMatcher(input, TradeCommands.PRICE).group("price"));
         switch (controller.requestTrade(typeName, colorString, message, amount, price)) {
             case NEGATIVE_PRICE:
                 return "Price can't be negative.";
@@ -58,6 +58,8 @@ public class TradeMenu {
                 return "You can't request yourself.";
             case REQUEST_TRADE_SUCCESSFUL:
                 return "You have successfully made a trade request.";
+            default:
+                break;
         }
         return null;
     }
@@ -79,6 +81,8 @@ public class TradeMenu {
                 return "ID is invalid.";
             case REJECT_TRADE_SUCCESSFUL:
                 return "You have successfully rejected a trade.";
+            default:
+                break;
         }
         return null;
 
@@ -99,6 +103,8 @@ public class TradeMenu {
                 return "Requester don't have enough gold to pay you right now.";
             case INVALID_ID:
                 return "ID is invalid.";
+            default:
+                break;
         }
         return null;
     }

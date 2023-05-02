@@ -16,6 +16,7 @@ public class Person {
     public Person(int[] currentLocation, Government government) {
         this.currentLocation = currentLocation;
         this.government = government;
+        this.lordColor = government.getColor();
         patrolling = false;
     }
 
@@ -49,11 +50,21 @@ public class Person {
         return movePattern;
     }
 
+    public int getHp() {
+        return hp;
+    }
+
+    public void changeHP(int change) {
+        hp+=change;
+    }
+
     public void setGovernment(Government government) {
         this.government = government;
     }
 
     public void setMovePattern(ArrayList<int[]> movePattern) {
+        if(!movePattern.isEmpty())
+            movePattern.remove(0);
         this.movePattern = movePattern;
     }
 

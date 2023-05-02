@@ -14,7 +14,7 @@ public class Unit extends Person {
         super(currentLocation, government);
         this.type = type;
         super.hp = type.getHp();
-        super.movesLeft = type.getSpeed();
+        movesLeft = type.getSpeed();
         unitStance = UnitStance.STAND_GROUND;
         this.damage = type.getDamage();
         this.bonusDamageRate = 1;
@@ -26,12 +26,20 @@ public class Unit extends Person {
         super(currentLocation, lordColor);
         this.type = type;
         super.hp = type.getHp();
-        super.movesLeft = type.getSpeed();
+        movesLeft = type.getSpeed();
         unitStance = UnitStance.STAND_GROUND;
         this.damage = type.getDamage();
         this.bonusDamageRate = 1;
         this.isAttacking=false;
         this.areaAttacking=false;
+    }
+
+    public int getDamage() {
+        return damage;
+    }
+
+    public int getBonusDamageRate() {
+        return bonusDamageRate;
     }
 
     public int[] getAreaAttackLocation() {

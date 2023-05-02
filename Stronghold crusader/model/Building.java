@@ -1,11 +1,13 @@
 package model;
 
+import java.util.ArrayList;
+
 public class Building {
 
     protected Government government;
     protected int hp;
     protected TypeOfBuilding typeOfBuilding;
-    protected int workers;
+    protected int workersCount;
     protected int row;
     protected int column;
     protected boolean isWorking;
@@ -19,6 +21,8 @@ public class Building {
         this.column=column;
         this.hp=typeOfBuilding.getHp();
     }
+
+
 
     public Building (LordColor lordColor, TypeOfBuilding typeOfBuilding, int row,int column){
         this.lordColor = lordColor;
@@ -46,10 +50,10 @@ public class Building {
         return hp;
     }
     public void setWorkers(int workers) {
-        this.workers = workers;
+        this.workersCount = workers;
     }
-    public int getWorkers() {
-        return workers;
+    public int getWorkersCount() {
+        return workersCount;
     }
     public void workingState(boolean isWorking) {
         this.isWorking = isWorking;

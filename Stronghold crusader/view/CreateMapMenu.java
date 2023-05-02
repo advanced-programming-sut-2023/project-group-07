@@ -116,6 +116,12 @@ public class CreateMapMenu extends MapMenu {
         if (mapName == null)
             return Messages.EXIT_CREATE_MAP_MENU;
         controller.setNewMap(mapSize, mapName, numberOfPlayers, lordsPositions);
+        for(LordColor lordColor : lordsPositions.keySet()){
+            int row = lordsPositions.get(lordColor)[0];
+            int column = lordsPositions.get(lordColor)[1];
+            controller.dropBuilding(row, column+7, "stock pile", lordColor.toString());
+            controller.dropUnit(row + 3, column + 3 , 1, "lord", lordColor.toString(), true);
+        }
         return Messages.SET_MAP_SUCCESSFUL;
     }
 
@@ -382,7 +388,7 @@ public class CreateMapMenu extends MapMenu {
         int count = Integer.parseInt(countMatcher.group("count"));
         String type = typeMatcher.group("type").trim();
         String lordColor = colorMatcher.group("color");
-        switch(controller.dropUnit(row, column, count, type, lordColor)){
+        switch(controller.dropUnit(row, column, count, type, lordColor, false)){
             case INVALID_COORDINATES:
                 return "Invalid coordinates!";
             case INVALID_UNIT_NAME:

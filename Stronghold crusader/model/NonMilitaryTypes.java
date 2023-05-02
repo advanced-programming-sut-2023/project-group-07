@@ -1,7 +1,6 @@
 package model;
 
 public enum NonMilitaryTypes {
-    LORD(5000,3),
     JESTER(20,3),
     WOODCUTTER(100,3),
     HUNTER(100,3),

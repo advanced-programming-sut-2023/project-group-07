@@ -11,7 +11,7 @@ import com.google.gson.JsonElement;
 public class Map {
     private static ArrayList<Map> maps = new ArrayList<Map>();
     private static JsonArray allMaps = new JsonArray();
-    private static int maxPlayerOfMaps = 2;
+    private static int maxPlayerOfMaps = 8;
     private static final int MAX_DISTANCE = 1000;
     private int size;
     private ArrayList<ArrayList<MapPixel>> field = new ArrayList<ArrayList<MapPixel>>();
@@ -25,8 +25,14 @@ public class Map {
         this.numberOfPlayers = numberOfPlayers;
         this.keepsPositions = keepsPositions;
         buildMap();
-        for (LordColor lordColor : keepsPositions.keySet())
-            field.get(keepsPositions.get(lordColor)[0]).get(keepsPositions.get(lordColor)[1]).setPlayerKeep(lordColor);
+        for (LordColor lordColor : keepsPositions.keySet()) {
+            int row = keepsPositions.get(lordColor)[0];
+            int column = keepsPositions.get(lordColor)[1];
+            for (int i = row; i < row + 7; i++)
+                for (int j = column; j < column + 7; j++)
+                    field.get(i).get(j).setPlayerKeep(lordColor);
+            field.get(row+6).get(column+3).setAccess();
+        }
     }
 
     public static ArrayList<Map> getMaps() {
@@ -34,11 +40,11 @@ public class Map {
     }
 
     public static void removeMap(Map map) throws IOException {
-        if(maps.contains(map)){ 
+        if (maps.contains(map)) {
             Gson gson = new Gson();
             JsonElement jsonElement = gson.toJsonTree(map).getAsJsonObject();
-            for(int i = 0 ; i < maps.size() ; i++){
-                if(maps.get(i).equals(map)){
+            for (int i = 0; i < maps.size(); i++) {
+                if (maps.get(i).equals(map)) {
                     allMaps.remove(i);
                     break;
                 }
@@ -58,7 +64,7 @@ public class Map {
         for (int i = 0; i < size; i++) {
             field.add(new ArrayList<MapPixel>());
             for (int j = 0; j < size; j++)
-                field.get(i).add(new MapPixel(Texture.LAND, false, true));
+                field.get(i).add(new MapPixel(Texture.LAND, false));
         }
     }
 
@@ -139,43 +145,66 @@ public class Map {
         return maxPlayerOfMaps;
     }
 
-    public int[] getKeepPosition(int index) {
-        return keepsPositions.get(LordColor.getLordColor(index));
+    public int[] getKeepPosition(LordColor lordColor) {
+        return keepsPositions.get(lordColor);
     }
 
-    public ArrayList<int[]> getAdj(int row,int col){
+    public boolean areAdj(MapPixel mapPixel1, MapPixel mapPixel2) {
+        if (!mapPixel1.getTexture().canDropUnit() || !mapPixel2.getTexture().canDropUnit())
+            return false;
+        if (mapPixel1.getBuildings().isEmpty() && mapPixel2.getBuildings().isEmpty() && mapPixel1.getLordKeep()==null && mapPixel2.getLordKeep()==null)
+            return true;
+        if (mapPixel1.getBuildings().isEmpty() && mapPixel2.getBuildings().isEmpty() && mapPixel1.getLordKeep()!=null && mapPixel2.getLordKeep()!=null)
+            return true;
+        if ((mapPixel1.getBuildings().isEmpty() && mapPixel2.canBeAccessed())
+                || (mapPixel1.canBeAccessed() && mapPixel2.getBuildings().isEmpty()))
+            return true;
+        if (mapPixel1.getBuildings().isEmpty() && !mapPixel2.getBuildings().isEmpty()
+                && mapPixel2.getBuildings().get(0).getTypeOfBuilding().equals(TypeOfBuilding.WALL_STAIRS))
+            return true;
+        if (mapPixel2.getBuildings().isEmpty() && !mapPixel1.getBuildings().isEmpty()
+                && mapPixel1.getBuildings().get(0).getTypeOfBuilding().equals(TypeOfBuilding.WALL_STAIRS))
+            return true;
+        if (!mapPixel1.getBuildings().isEmpty() && !mapPixel2.getBuildings().isEmpty() && mapPixel1.getBuildings()
+                .get(0).getTypeOfBuilding().equals(mapPixel2.getBuildings().get(0).getTypeOfBuilding()))
+            return true;
+        return false;
+    }
+
+    public ArrayList<int[]> getAdj(int row, int col) {
         ArrayList<int[]> adj = new ArrayList<>();
-        if(row>0 && getMapPixel(row-1, col).canDropObject() && getMapPixel(row-1,col).getTexture().canDropBuilding()){
+        if (row > 0 && areAdj(getMapPixel(row,col), getMapPixel(row-1,col))) {
             int[] arr = new int[2];
-            arr[0]=row-1;
-            arr[1]=col;
+            arr[0] = row - 1;
+            arr[1] = col;
             adj.add(arr);
         }
-        if(col>0 && getMapPixel(row, col-1).canDropObject() && getMapPixel(row,col-1).getTexture().canDropBuilding()){
+        if (col > 0 && areAdj(getMapPixel(row,col), getMapPixel(row,col-1))) {
             int[] arr = new int[2];
-            arr[0]=row;
-            arr[1]=col-1;
+            arr[0] = row;
+            arr[1] = col - 1;
             adj.add(arr);
         }
-        if(row<size-1 && getMapPixel(row+1, col).canDropObject() && getMapPixel(row+1,col).getTexture().canDropBuilding()){
+        if (row < size - 1 && areAdj(getMapPixel(row,col), getMapPixel(row+1,col))) {
             int[] arr = new int[2];
-            arr[0]=row+1;
-            arr[1]=col;
+            arr[0] = row + 1;
+            arr[1] = col;
             adj.add(arr);
         }
-        if(col<size-1 && getMapPixel(row, col+1).canDropObject() && getMapPixel(row,col+1).getTexture().canDropBuilding()){
+        if (col < size - 1 && areAdj(getMapPixel(row,col), getMapPixel(row,col+1))) {
             int[] arr = new int[2];
-            arr[0]=row;
-            arr[1]=col+1;
+            arr[0] = row;
+            arr[1] = col + 1;
             adj.add(arr);
         }
         return adj;
     }
-    public void bfs(int srcRow, int srcCol,ArrayList<ArrayList<ArrayList<int[]>>> parent) {
-        
+
+    public void bfs(int srcRow, int srcCol, ArrayList<ArrayList<ArrayList<int[]>>> parent) {
+
         int[][] distance = new int[size][size];
-        for(int i=0; i<size; i++)
-            for(int j=0; j<size;j++) 
+        for (int i = 0; i < size; i++)
+            for (int j = 0; j < size; j++)
                 distance[i][j] = MAX_DISTANCE;
 
         Queue<Integer> queueX = new LinkedList<>();
@@ -183,38 +212,45 @@ public class Map {
         queueX.offer(srcRow);
         queueY.offer(srcCol);
 
-        parent.get(srcRow).get(srcCol).add(new int[]{-1,-1});
-        distance[srcRow][srcCol]=0;
+        parent.get(srcRow).get(srcCol).add(new int[] { -1, -1 });
+        distance[srcRow][srcCol] = 0;
 
-        while(!queueX.isEmpty()){
+        while (!queueX.isEmpty()) {
             int X = queueX.poll();
             int Y = queueY.poll();
-            for(int[] adj : getAdj(X, Y)){
+            for (int[] adj : getAdj(X, Y)) {
                 int x = adj[0], y = adj[1];
-                if(distance[x][y]>distance[X][Y]+1){
-                    distance[x][y]=distance[X][Y]+1;
+                if (distance[x][y] > distance[X][Y] + 1) {
+                    distance[x][y] = distance[X][Y] + 1;
                     queueX.offer(x);
                     queueY.offer(y);
                     parent.get(x).get(y).clear();
-                    parent.get(x).get(y).add(new int[]{X,Y});
-                }
-                else if(distance[x][y]==distance[X][Y]+1) parent.get(x).get(y).add(new int[]{X,Y});
+                    parent.get(x).get(y).add(new int[] { X, Y });
+                } else if (distance[x][y] == distance[X][Y] + 1)
+                    parent.get(x).get(y).add(new int[] { X, Y });
             }
         }
     }
 
-    public void findPath(ArrayList<int[]> path,ArrayList<ArrayList<ArrayList<int[]>>> parent,int[] coordinates){ // todo : isn't this a private method?
-        if(coordinates[0]==-1) return;
+    public void findPath(ArrayList<int[]> path, ArrayList<ArrayList<ArrayList<int[]>>> parent, int[] coordinates) { // todo
+                                                                                                                    // :
+                                                                                                                    // isn't
+                                                                                                                    // this
+                                                                                                                    // a
+                                                                                                                    // private
+                                                                                                                    // method?
+        if (coordinates[0] == -1)
+            return;
         int X = coordinates[0], Y = coordinates[1];
-        if(parent.get(X).get(Y).size()==0){
+        if (parent.get(X).get(Y).size() == 0) {
             return;
         }
-        
-        path.add(new int[]{parent.get(X).get(Y).get(0)[0],parent.get(X).get(Y).get(0)[1]});
+
+        path.add(new int[] { parent.get(X).get(Y).get(0)[0], parent.get(X).get(Y).get(0)[1] });
         findPath(path, parent, parent.get(X).get(Y).get(0));
     }
 
-    public ArrayList<int[]> getPathList(int firstRow,int firstColumn,int secondRow,int secondColumn){
+    public ArrayList<int[]> getPathList(int firstRow, int firstColumn, int secondRow, int secondColumn) {
         ArrayList<int[]> path = new ArrayList<>();
         ArrayList<ArrayList<ArrayList<int[]>>> parent = new ArrayList<ArrayList<ArrayList<int[]>>>();
         for (int k = 0; k < size; k++) {
@@ -231,23 +267,39 @@ public class Map {
         return path;
     }
 
-    public boolean doesHaveColor(LordColor color){
+    public boolean doesHaveColor(LordColor color) {
         return keepsPositions.keySet().contains(color);
     }
 
-    public void startGame(HashMap<LordColor, Government> governments){
-        for(ArrayList<MapPixel> row : field){
-            for(MapPixel pixel : row){
-                for(Building building : pixel.getBuildings()){
-                    building.setGovernment(governments.get(building.getLordColor()));
-                    governments.get(building.getLordColor()).addBuilding(building);
+    public void startGame(HashMap<LordColor, Government> governments) {
+        ArrayList<LordColor> toBeRemoved = new ArrayList<LordColor>();
+        for (LordColor lordColor : keepsPositions.keySet())
+            if (!governments.keySet().contains(lordColor))
+                toBeRemoved.add(lordColor);
+        for (LordColor lordColor : toBeRemoved)
+            keepsPositions.remove(lordColor);
+        for (ArrayList<MapPixel> row : field) {
+            for (MapPixel pixel : row) {
+                if (pixel.getLordKeep() != null && !governments.keySet().contains(pixel.getLordKeep()))
+                    pixel.setPlayerKeep(null);
+                for (Building building : pixel.getBuildings()) {
+                    if (governments.keySet().contains(building.getLordColor())) {
+                        building.setGovernment(governments.get(building.getLordColor()));
+                        governments.get(building.getLordColor()).addBuilding(building);
+                    } else
+                        pixel.removeBuilding(building);
                 }
-                for(Person person : pixel.getPeople()){
-                    person.setGovernment(governments.get(person.getLordColor()));
-                    governments.get(person.getLordColor()).addPerson(person);
+                for (Person person : pixel.getPeople()) {
+                    if (governments.keySet().contains(person.getLordColor())) {
+                        person.setGovernment(governments.get(person.getLordColor()));
+                        governments.get(person.getLordColor()).addPerson(person);
+                    } else
+                        pixel.removeUnit((Unit) person);
                 }
             }
         }
+        for (Government government : governments.values())
+            government.setLord((Unit) government.getPeople().get(0));
     }
 
     public boolean isAdjacentToSameType(int row, int column, int size, TypeOfBuilding typeOfBuilding) {
@@ -272,7 +324,7 @@ public class Map {
                                 .equals(typeOfBuilding))
                     return true;
 
-        if (column <getSize() - typeOfBuilding.getLength() + 1)
+        if (column < getSize() - typeOfBuilding.getLength() + 1)
             for (int i = 0; i < typeOfBuilding.getWidth(); i++)
                 if (!getMapPixel(row + i, column + typeOfBuilding.getLength()).getBuildings().isEmpty()
                         && getMapPixel(row + i, column + typeOfBuilding.getLength()).getBuildings().get(0)
@@ -288,10 +340,11 @@ public class Map {
 
     public ArrayList<Building> getAllBuildingsOfSomeone(Government owner) {
         ArrayList<Building> buildings = new ArrayList<>();
-        for (ArrayList<MapPixel> rowPixels : this.field){
-            for (MapPixel pixel : rowPixels){
-                for (Building building : pixel.getBuildings()){
-                    if (building.getGovernment().equals(owner)) buildings.add(building);
+        for (ArrayList<MapPixel> rowPixels : this.field) {
+            for (MapPixel pixel : rowPixels) {
+                for (Building building : pixel.getBuildings()) {
+                    if (building.getGovernment().equals(owner))
+                        buildings.add(building);
                 }
             }
         }
@@ -299,8 +352,9 @@ public class Map {
     }
 
     public boolean hasABuilding(Government owner, TypeOfBuilding type) {
-        for (Building building : getAllBuildingsOfSomeone(owner)){
-            if (building.getTypeOfBuilding().equals(type)) return true;
+        for (Building building : getAllBuildingsOfSomeone(owner)) {
+            if (building.getTypeOfBuilding().equals(type))
+                return true;
         }
         return false;
     }

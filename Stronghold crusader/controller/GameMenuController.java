@@ -96,7 +96,8 @@ public class GameMenuController {
                     return Messages.THERES_AN_ENEMY_CLOSE_BY;
 
         if (typeOfBuilding.equals(TypeOfBuilding.GRANARY) || typeOfBuilding.equals(TypeOfBuilding.STOCK_PILE))
-            if (doesHaveThisBuilding(typeOfBuilding) && !map.isAdjacentToSameType(row, column, typeOfBuilding.getLength(), typeOfBuilding))
+            if (doesHaveThisBuilding(typeOfBuilding)
+                    && !map.isAdjacentToSameType(row, column, typeOfBuilding.getLength(), typeOfBuilding))
                 return Messages.MUST_BE_ADJACENT_TO_BUILDINGS_OF_THE_SAME_TYPE;
 
         boolean isWorking = true;
@@ -112,22 +113,23 @@ public class GameMenuController {
             building = militaryCamp;
         } else
             building = new Building(currentGovernment, typeOfBuilding, row, column);
+        currentGovernment.addBuilding(building);
         if (!currentGovernment.getNoLaborBuildings().contains(typeOfBuilding)) {
             if (currentGovernment.getPeasant() >= typeOfBuilding.getWorkerInUse()) {
                 currentGovernment.changePeasant(-typeOfBuilding.getWorkerInUse());
                 building.setWorkers(typeOfBuilding.getWorkerInUse());
                 for (int i = 0; i < typeOfBuilding.getWorkerInUse(); i++) {
                     NonMilitary nonMilitary = new NonMilitary(
-                            new int[]{map.getKeepPosition(indexOfCurrentGovernment)[0],
-                                    map.getKeepPosition(indexOfCurrentGovernment)[1]},
+                            new int[] { map.getKeepPosition(currentGovernment.getColor())[0],
+                                    map.getKeepPosition(currentGovernment.getColor())[1] },
                             currentGovernment, typeOfBuilding.getWorkerType());
-                    map.getMapPixel(map.getKeepPosition(indexOfCurrentGovernment)[0],
-                            map.getKeepPosition(indexOfCurrentGovernment)[1]).addPerson(nonMilitary);
+                    map.getMapPixel(map.getKeepPosition(currentGovernment.getColor())[0],
+                            map.getKeepPosition(currentGovernment.getColor())[1]).addPerson(nonMilitary);
                     nonMilitary.setMovePattern(map.getPathList(nonMilitary.getCurrentLocation()[0],
                             nonMilitary.getCurrentLocation()[1], row, column));
                     nonMilitary.setPatrolLocation(
-                            new int[]{row, column, map.getKeepPosition(indexOfCurrentGovernment)[0],
-                                    map.getKeepPosition(indexOfCurrentGovernment)[1]});
+                            new int[] { row, column, map.getKeepPosition(currentGovernment.getColor())[0],
+                                    map.getKeepPosition(currentGovernment.getColor())[1] });
                     nonMilitary.setPatrolling(true);
                     int frow = nonMilitary.getCurrentLocation()[0], fcolumn = nonMilitary.getCurrentLocation()[1];
                     nonMilitary.move();
@@ -146,12 +148,25 @@ public class GameMenuController {
         for (int i = 0; i < typeOfBuilding.getLength(); i++)
             for (int j = 0; j < typeOfBuilding.getWidth(); j++)
                 map.getMapPixel(row + j, column + i).addBuilding(building);
+        if (building instanceof GateHouse) {
+            map.getMapPixel(row, column + (int) (typeOfBuilding.getLength() / 2) - 1).setAccess();
+            map.getMapPixel(row, column + (int) (typeOfBuilding.getLength() / 2)).setAccess();
+            map.getMapPixel(row, column + (int) (typeOfBuilding.getLength() / 2) + 1).setAccess();
+            ;
+            map.getMapPixel(row + typeOfBuilding.getWidth() - 1, column + (int) (typeOfBuilding.getLength() / 2) - 1)
+                    .setAccess();
+            map.getMapPixel(row + typeOfBuilding.getWidth() - 1, column + (int) (typeOfBuilding.getLength() / 2))
+                    .setAccess();
+            map.getMapPixel(row + typeOfBuilding.getWidth() - 1, column + (int) (typeOfBuilding.getLength() / 2) + 1)
+                    .setAccess();
+            ;
+        }
         return Messages.DEPLOYMENT_SUCCESSFUL;
     }
 
     private boolean doesHaveThisBuilding(TypeOfBuilding typeOfBuilding) {
-        for(Building building : game.getCurrentGovernment().getBuildings())
-            if(building.getTypeOfBuilding().equals(typeOfBuilding))
+        for (Building building : game.getCurrentGovernment().getBuildings())
+            if (building.getTypeOfBuilding().equals(typeOfBuilding))
                 return true;
         return false;
     }
@@ -178,39 +193,38 @@ public class GameMenuController {
                 game.setCurrentMilitaryCamp(MilitaryCampType.BARRACKS);
             if (militaryCamp.getTypeOfBuilding().equals(TypeOfBuilding.MERCENARY_POST))
                 game.setCurrentMilitaryCamp(MilitaryCampType.MERCENARY_POST);
-                if (militaryCamp.getTypeOfBuilding().equals(TypeOfBuilding.ENGINEERS_GUILD))
+            if (militaryCamp.getTypeOfBuilding().equals(TypeOfBuilding.ENGINEERS_GUILD))
                 game.setCurrentMilitaryCamp(MilitaryCampType.ENGINEER_GUILD);
             return Messages.ENTERED_MILITARY_CAMP;
         }
         if (game.getSelectedBuilding().getTypeOfBuilding().equals(TypeOfBuilding.BLACKSMITH) ||
-        game.getSelectedBuilding().getTypeOfBuilding().equals(TypeOfBuilding.FLETCHER) ||
+                game.getSelectedBuilding().getTypeOfBuilding().equals(TypeOfBuilding.FLETCHER) ||
                 game.getSelectedBuilding().getTypeOfBuilding().equals(TypeOfBuilding.POLETURNER)) {
             return Messages.ENTERED_ARMS_WORKSHOP;
         }
         if (game.getSelectedBuilding().getTypeOfBuilding().equals(TypeOfBuilding.MARKET))
             return Messages.ENTERED_MARKET;
-        else 
+        else
             return Messages.ENTERED_BUILDING_SUCCESSFULLY;
     }
-
 
     public String getSelectedBuilding() {
         return game.getSelectedBuilding().getTypeOfBuilding().getBuildingName();
     }
 
-    public Messages buildSiegeWeapon(String type, int row , int column) {
+    public Messages buildSiegeWeapon(String type, int row, int column) {
         Map map = game.getMap();
         Government currentGovernment = game.getCurrentGovernment();
-        ArrayList <Person> selectedUnit = game.getSelectedUnit();
+        ArrayList<Person> selectedUnit = game.getSelectedUnit();
         SiegeWeaponType siegeWeaponType = SiegeWeaponType.getSiegeWeaponType(type);
-        if(!areCoordinatesValid(row, column))
+        if (!areCoordinatesValid(row, column))
             return Messages.INVALID_COORDINATES;
-        if(siegeWeaponType == null)
+        if (siegeWeaponType == null)
             return Messages.INVALID_SIEGE_WEAPON_TYPE;
         int[] location = new int[2];
         int counter = 0;
         for (Person person : selectedUnit) {
-            
+            Unit unit = (Unit) person;
             if (unit.getType().equals(UnitTypes.ENGINEER)) {
                 location = unit.getCurrentLocation();
                 counter++;
@@ -231,24 +245,27 @@ public class GameMenuController {
         }
         map.getMapPixel(location[0], location[1]).getPeople().removeAll(engineers);
         currentGovernment.getPeople().removeAll(engineers);
-        SiegeWeapon siegeWeapon = new SiegeWeapon(siegeWeaponType, location,game.getCurrentGovernment());
+        SiegeWeapon siegeWeapon = new SiegeWeapon(siegeWeaponType, location, game.getCurrentGovernment());
         game.getMap().getMapPixel(row, column).addSiegeWeapon(siegeWeapon);
         return Messages.SIEGE_WEAPON_BUILT_SUCCESSFULLY;
     }
 
     public Messages repair() {
-         if (!(game.getSelectedBuilding() instanceof Tower || game.getSelectedBuilding() instanceof GateHouse))
+        if (!(game.getSelectedBuilding() instanceof Tower || game.getSelectedBuilding() instanceof GateHouse))
             return Messages.CANT_REPAIR_THIS;
         int buildResource = game.getSelectedBuilding().getTypeOfBuilding().getResourceAmount();
-        int damagedResource = (int) (game.getSelectedBuilding().getTypeOfBuilding().getResourceAmount() * game.getSelectedBuilding().getHp()
+        int damagedResource = (int) (game.getSelectedBuilding().getTypeOfBuilding().getResourceAmount()
+                * game.getSelectedBuilding().getHp()
                 / game.getSelectedBuilding().getTypeOfBuilding().getHp());
         if (buildResource - damagedResource > game.getCurrentGovernment().getResources()
                 .get(game.getSelectedBuilding().getTypeOfBuilding().getResourceNeeded()))
             return Messages.NOT_ENOUGH_RESOURCES;
         if (game.getSelectedBuilding().getHp() == game.getSelectedBuilding().getTypeOfBuilding().getHp())
             return Messages.ALREADY_AT_FULL_HP;
-        for (int i = game.getSelectedBuilding().getColumn(); i < game.getSelectedBuilding().getTypeOfBuilding().getLength(); i++)
-            for (int j = game.getSelectedBuilding().getRow(); j < game.getSelectedBuilding().getTypeOfBuilding().getWidth(); j++)
+        for (int i = game.getSelectedBuilding().getColumn(); i < game.getSelectedBuilding().getTypeOfBuilding()
+                .getLength(); i++)
+            for (int j = game.getSelectedBuilding().getRow(); j < game.getSelectedBuilding().getTypeOfBuilding()
+                    .getWidth(); j++)
                 if (game.isAnEnemyCloseBy(j, i))
                     return Messages.THERES_AN_ENEMY_CLOSE_BY;
         game.getSelectedBuilding().repair();
@@ -260,17 +277,17 @@ public class GameMenuController {
 
     public Messages createUnit(String type, int count) {
         UnitTypes unitType = UnitTypes.getUnitTypeFromString(type);
-        if (unitType.equals(null))
+        if (unitType == null || type.equals("lord"))
             return Messages.INVALID_UNIT_NAME;
         if (count < 0 || count > game.getCurrentGovernment().getPeasant())
             return Messages.INVALID_NUMBER;
+        if (!game.getCurrentMilitaryCamp().equals(unitType.getMilitaryCampType()))
+            return Messages.CANT_CREATE_THIS_UNIT_HERE;
         if (unitType.getGoldNeeded() * count > game.getCurrentGovernment().getGold())
             return Messages.NOT_ENOUGH_GOLD;
         for (Resources resource : unitType.getResourcesNeeded())
             if (game.getCurrentGovernment().getResources().get(resource) < count)
                 return Messages.NOT_ENOUGH_RESOURCES;
-        if (!game.getCurrentMilitaryCamp().equals(unitType.getMilitaryCampType()))
-            return Messages.CANT_CREATE_THIS_UNIT_HERE;
         game.createTroop(unitType, count);
         return Messages.UNIT_CREATED_SUCCESSFULLY;
     }
@@ -284,7 +301,7 @@ public class GameMenuController {
     }
 
     public Messages openGate() {
-         GateHouse gateHouse = (GateHouse) game.getSelectedBuilding();
+        GateHouse gateHouse = (GateHouse) game.getSelectedBuilding();
         if (gateHouse.getState() == false)
             return Messages.GATE_ALREADY_OPEN;
         gateHouse.setClosed(false);
@@ -295,26 +312,30 @@ public class GameMenuController {
         String output = "";
         if (militaryCamp.equals("barracks")) {
             for (UnitTypes unitType : UnitTypes.values()) {
-                if (unitType.getMilitaryCampType().equals(MilitaryCampType.BARRACKS))
+                if (!unitType.equals(UnitTypes.LORD)
+                        && unitType.getMilitaryCampType().equals(MilitaryCampType.BARRACKS))
                     output += unitType.getType() + "    " + unitType.getGoldNeeded() + " gold\n";
             }
         } else if (militaryCamp.equals("mercenary post")) {
             for (UnitTypes unitType : UnitTypes.values()) {
-                if (unitType.getMilitaryCampType().equals(MilitaryCampType.MERCENARY_POST))
+                if (!unitType.equals(UnitTypes.LORD)
+                        && unitType.getMilitaryCampType().equals(MilitaryCampType.MERCENARY_POST))
                     output += unitType.getType() + "    " + unitType.getGoldNeeded() + " gold\n";
             }
         } else if (militaryCamp.equals("engineer's guild")) {
             for (UnitTypes unitType : UnitTypes.values()) {
-                if (unitType.getMilitaryCampType().equals(MilitaryCampType.ENGINEER_GUILD))
+                if (!unitType.equals(UnitTypes.LORD)
+                        && unitType.getMilitaryCampType().equals(MilitaryCampType.ENGINEER_GUILD))
                     output += unitType.getType() + "    " + unitType.getGoldNeeded() + " gold\n";
             }
         } else if (militaryCamp.equals("cathedral")) {
             for (UnitTypes unitType : UnitTypes.values()) {
-                if (unitType.getMilitaryCampType().equals(MilitaryCampType.CATHEDRAL))
+                if (!unitType.equals(UnitTypes.LORD)
+                        && unitType.getMilitaryCampType().equals(MilitaryCampType.CATHEDRAL))
                     output += unitType.getType() + "    " + unitType.getGoldNeeded() + " gold\n";
             }
         }
-        return null;
+        return output;
     }
 
     public void changeArms() {
@@ -348,12 +369,11 @@ public class GameMenuController {
 
     public Messages moveUnit(int row, int column) {
         Map map = game.getMap();
-        if(!areCoordinatesValid(row, column))
+        if (!areCoordinatesValid(row, column))
             return Messages.INVALID_COORDINATES;
-        if(game.getSelectedUnit().isEmpty())
+        if (game.getSelectedUnit().isEmpty())
             return Messages.NO_UNITS_SELECTED;
-        if (!map.getMapPixel(row, column).canDropObject()
-                || !map.getMapPixel(row, column).getTexture().canDropBuilding()) {
+        if (!map.getMapPixel(row, column).getTexture().canDropBuilding()) {
             return Messages.CANT_MOVE_UNITS_TO_THIS_LOCATION;
         }
         game.moveUnit(row - 1, column - 1);
@@ -364,7 +384,7 @@ public class GameMenuController {
         Map map = game.getMap();
         if (!areCoordinatesValid(frow, fcolumn) || !areCoordinatesValid(srow, scolumn))
             return Messages.INVALID_COORDINATES;
-        if(game.getSelectedUnit().isEmpty())
+        if (game.getSelectedUnit().isEmpty())
             return Messages.NO_UNITS_SELECTED;
         if (!map.getMapPixel(frow, fcolumn).canDropObject()
                 || !map.getMapPixel(frow, fcolumn).getTexture().canDropBuilding()
@@ -377,54 +397,56 @@ public class GameMenuController {
     }
 
     public Messages stopUnit() {
-        if(game.getSelectedUnit().isEmpty())
+        if (game.getSelectedUnit().isEmpty())
             return Messages.NO_UNITS_SELECTED;
         game.stopUnit();
         return Messages.UNIT_STOPPED_SUCCESSFULLY;
     }
 
     public Messages setStance(int frow, int fcolumn, String stance) {
-        if(!areCoordinatesValid(frow, fcolumn))
+        if (!areCoordinatesValid(frow, fcolumn))
             return Messages.INVALID_COORDINATES;
         UnitStance unitStance = UnitStance.getStanceByName(stance);
         if (unitStance == null)
             return Messages.INVALID_STANCE;
-        if(game.getSelectedUnit().isEmpty())
+        if (game.getSelectedUnit().isEmpty())
             return Messages.NO_UNITS_SELECTED;
         game.setStance(frow, fcolumn, unitStance);
         return Messages.STANCE_CHANGED_SUCCESSFULLY;
     }
 
-    public Messages attackEnemy(int row,int column) {
-        if(!areCoordinatesValid(row,column))
+    public Messages attackEnemy(int row, int column) {
+        if (!areCoordinatesValid(row, column))
             return Messages.INVALID_COORDINATES;
         boolean isAnEnemy = false;
-        for(Person person : game.getMap().getMapPixel(row, column).getPeople())
-            if(!person.getGovernment().equals(game.getCurrentGovernment())){
+        for (Person person : game.getMap().getMapPixel(row, column).getPeople())
+            if (!person.getGovernment().equals(game.getCurrentGovernment())) {
                 isAnEnemy = true;
                 break;
             }
-        if(!isAnEnemy)
+        if (!isAnEnemy)
             return Messages.NO_ENEMY_HERE;
-        if(game.getSelectedUnit().isEmpty())
+        if (game.getSelectedUnit().isEmpty())
             return Messages.NO_UNITS_SELECTED;
         attackEnemy(row, column);
         return Messages.ATTACKING_ENEMY_UNITS;
     }
+
     public Messages areaAttack(int row, int column) {
-        if(game.getSelectedUnit().isEmpty())
+        if (game.getSelectedUnit().isEmpty())
             return Messages.NO_UNITS_SELECTED;
-        for(Person person : game.getSelectedUnit()) {
-            if(person instanceof Person){
-                Unit unit = (Unit)person;
-                if(unit.getType().getRange()==1)
+        for (Person person : game.getSelectedUnit()) {
+            if (person instanceof Person) {
+                Unit unit = (Unit) person;
+                if (unit.getType().getRange() == 1)
                     return Messages.MUST_SELECT_RANGED_UNITS;
             }
         }
-        for(Person person : game.getSelectedUnit()) {
-            if(person instanceof Unit) {
+        for (Person person : game.getSelectedUnit()) {
+            if (person instanceof Unit) {
                 Unit unit = (Unit) person;
-                if(unit.getType().getRange()<Math.abs(row-unit.getCurrentLocation()[0])+Math.abs(column-unit.getCurrentLocation()[1]))
+                if (unit.getType().getRange() < Math.abs(row - unit.getCurrentLocation()[0])
+                        + Math.abs(column - unit.getCurrentLocation()[1]))
                     return Messages.OUT_OF_RANGE;
             }
         }
@@ -504,6 +526,29 @@ public class GameMenuController {
         return Messages.SHOP_SUCCESSFUL;
     }
 
+    public String showGold() {
+        return "Your gold: " + game.getCurrentGovernment().getGold();
+    }
+
+    public String showCurrentPlayer() {
+        return "Current player: " + game.getCurrentGovernment().getUser().getUsername() + " (color "
+                + game.getCurrentGovernment().getColor().toString() + ")";
+    }
+
+    public String nextTurn() throws IOException {
+        game.nextTurn();
+        return game.gameOver() ? game.endGame() : null;
+    }
+
+    public String nextTurnMessage() {
+        return "Now " + game.getCurrentGovernment().getColor().toString() + " lord (player "
+                + game.getCurrentGovernment().getUser().getUsername() + ") is playing!";
+    }
+
+    public String showTaxRate() {
+        return "Tax rate: " + game.getCurrentGovernment().getTaxRate();
+    }
+
     public ArrayList<Integer> getPopularityFactors() {
         Government government = game.getCurrentGovernment();
         ArrayList<Integer> factorsInOrder = new ArrayList<>();
@@ -520,9 +565,9 @@ public class GameMenuController {
         Engineer engineer = null;
         boolean noOneHasOil = true;
         boolean badDirection = false;
-        ArrayList<Unit> selectedUnits = game.getSelectedUnit();
-        for (Unit unit : selectedUnits){
-            if (unit instanceof Engineer){
+        ArrayList<Person> selectedUnits = game.getSelectedUnit();
+        for (Person unit : selectedUnits) {
+            if (unit instanceof Engineer) {
                 Engineer engineerTemp = (Engineer) unit;
                 if (engineerTemp.hasOil()) {
                     noOneHasOil = false;
@@ -531,7 +576,7 @@ public class GameMenuController {
                     if (engineerTempCurrentLocation[0] + direction.x() < 0 ||
                             engineerTempCurrentLocation[0] + direction.x() >= map.getSize() ||
                             engineerTempCurrentLocation[1] + direction.y() < 0 ||
-                            engineerTempCurrentLocation[1] + direction.y() >= map.getSize()){
+                            engineerTempCurrentLocation[1] + direction.y() >= map.getSize()) {
                         badDirection = true;
                         continue;
                     }
@@ -541,35 +586,38 @@ public class GameMenuController {
                 }
             }
         }
-        if (noOneHasOil) return Messages.NO_ONE_HAS_OIL;
-        if (badDirection) return Messages.BAD_DIRECTION;
+        if (noOneHasOil)
+            return Messages.NO_ONE_HAS_OIL;
+        if (badDirection)
+            return Messages.BAD_DIRECTION;
         engineer.pourOil(direction);
         sendToOilSmelter(engineer);
         return Messages.POUR_OIL_SUCCESSFUL;
     }
 
     protected static void sendToOilSmelter(Engineer engineer) {
-        ArrayList<int[]> path =
-                game.getNearestOilSmelterPath(engineer.getCurrentLocation(), game.getCurrentGovernment());
+        ArrayList<int[]> path = game.getNearestOilSmelterPath(engineer.getCurrentLocation(),
+                game.getCurrentGovernment());
         engineer.goToOilSmelter(path);
     }
 
     public Messages giveOil() {
-        Map map = game.getMap(); 
+        Map map = game.getMap();
         if (!map.hasABuilding(game.getCurrentGovernment(), TypeOfBuilding.OIL_SMELTER))
             return Messages.DONT_HAVE_OIL_SMELTER;
-        ArrayList<Unit> selectedUnits = game.getSelectedUnit();
+        ArrayList<Person> selectedUnits = game.getSelectedUnit();
         ArrayList<Engineer> getterEngineers = new ArrayList<>();
-        for (Unit unit : selectedUnits){
-            if (unit instanceof Engineer){
+        for (Person unit : selectedUnits) {
+            if (unit instanceof Engineer) {
                 Engineer engineerTemp = (Engineer) unit;
-                if (!engineerTemp.hasOil()){
+                if (!engineerTemp.hasOil()) {
                     getterEngineers.add(engineerTemp);
                 }
             }
         }
-        if (getterEngineers.size() == 0) return Messages.NO_ONE_TO_GIVE_OIL_TO;
-        for (Engineer engineer : getterEngineers){
+        if (getterEngineers.size() == 0)
+            return Messages.NO_ONE_TO_GIVE_OIL_TO;
+        for (Engineer engineer : getterEngineers) {
             sendToOilSmelter(engineer);
         }
         return Messages.GIVING_OIL_SUCESSFUL;
