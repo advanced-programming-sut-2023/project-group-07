@@ -12,9 +12,16 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
 public class LoginMenuTest {
+    /*
+    we have te following user
+        user create -u FOR_UNIT_TEST -p Poop@2 Poop@2 -e URichard85@gmail.com -n "U Lion heart"
+       question pick -q 1 -a "Richard Senior" -c "Richard Senior"
+    */
+
     private LoginMenuController controller;
     @Before
-    public void setup(){
+    public void setup() throws IOException {
+        User.loadUsers();
         controller = new LoginMenuController();
     }
     @Test
@@ -47,7 +54,6 @@ public class LoginMenuTest {
                 "confirm","email","slogan","nickname");
         Assert.assertEquals(message,Messages.WEAK_PASSWORD_CHARACTERS);
 
-
         message = User.isPasswordStrong("!@a1A564");
         Assert.assertEquals(message,Messages.STRONG_PASSWORD);
 
@@ -58,6 +64,21 @@ public class LoginMenuTest {
         message = controller.signUp("Asername","r!@#$45865AA%",
                 "r!@#$45865AA%","email","slogan","nickname");
         Assert.assertEquals(message,Messages.INVALID_EMAIL_FORMAT);
+
+    }
+
+    @Test
+    public void testLogin() throws IOException, NoSuchAlgorithmException {
+        Messages message;
+
+        message = controller.login("FOR_UNIT_TEST!@#$%$#@$%$#@","Poop@2", false);
+        Assert.assertEquals(message, Messages.USERNAME_NOT_FOUND);
+
+        message = controller.login("FOR_UNIT_TEST","Poop)@2", false);
+        Assert.assertEquals(message, Messages.INCORRECT_PASSWORD);
+
+        message = controller.login("FOR_UNIT_TEST","Poop@2", false);
+        Assert.assertEquals(message, Messages.WAIT_FOR_LOGIN);
 
     }
 }
