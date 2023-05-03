@@ -89,5 +89,30 @@ public class ProfileMenuTest {
         testShowInfo();
     }
 
+    @Test
+    public void testChangePassword() throws IOException, NoSuchAlgorithmException {
+        String newPassword = "new1PassWor@";
+        Assert.assertEquals(controller.changePassword(currentPassword, ""), Messages.WEAK_PASSWORD_LENGTH);
+        Assert.assertEquals(controller.changePassword(currentPassword, "aaaaaaaa"),
+                Messages.WEAK_PASSWORD_CHARACTERS);
+        Assert.assertEquals(controller.changePassword(currentPassword, "aAAAAaaaa"),
+                Messages.WEAK_PASSWORD_CHARACTERS);
+        Assert.assertEquals(controller.changePassword(currentPassword, "!11111a"),
+                Messages.WEAK_PASSWORD_CHARACTERS);
+        Assert.assertEquals(controller.changePassword("029i3u", newPassword), Messages.INCORRECT_PASSWORD);
+        Assert.assertEquals(controller.changePassword(currentPassword, newPassword), Messages.CHANGE_PASSWORD_SUCCESSFUL);
+        currentPassword = newPassword;
+        Assert.assertEquals(controller.changePassword(currentPassword, password), Messages.CHANGE_PASSWORD_SUCCESSFUL);
+        currentPassword = password;
+    }
+
+    @Test
+    public void testChangeSlogan() throws IOException, NoSuchAlgorithmException {
+        currentSlogan = "hey";
+        controller.changeSlogan(currentSlogan);
+        testShowInfo();
+    }
+
+
 
 }
