@@ -179,11 +179,6 @@ public class User {
         usersArray = jsonArray;
     }
     public static void updateUsers() throws IOException {
-        for(User user1 :users){
-            for (User user2 : users){
-                if (user2.equals(user1)) System.out.println(user2.username);
-            }
-        }
         Gson gson = new Gson();
         usersArray = new JsonArray();
         for(User user : users) {
