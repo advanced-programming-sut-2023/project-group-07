@@ -120,16 +120,16 @@ public class GameMenuController {
                 building.setWorkers(typeOfBuilding.getWorkerInUse());
                 for (int i = 0; i < typeOfBuilding.getWorkerInUse(); i++) {
                     NonMilitary nonMilitary = new NonMilitary(
-                            new int[] { map.getKeepPosition(currentGovernment.getColor())[0],
-                                    map.getKeepPosition(currentGovernment.getColor())[1] },
+                            new int[]{map.getKeepPosition(currentGovernment.getColor())[0],
+                                    map.getKeepPosition(currentGovernment.getColor())[1]},
                             currentGovernment, typeOfBuilding.getWorkerType());
                     map.getMapPixel(map.getKeepPosition(currentGovernment.getColor())[0],
                             map.getKeepPosition(currentGovernment.getColor())[1]).addPerson(nonMilitary);
                     nonMilitary.setMovePattern(map.getPathList(nonMilitary.getCurrentLocation()[0],
                             nonMilitary.getCurrentLocation()[1], row, column));
                     nonMilitary.setPatrolLocation(
-                            new int[] { row, column, map.getKeepPosition(currentGovernment.getColor())[0],
-                                    map.getKeepPosition(currentGovernment.getColor())[1] });
+                            new int[]{row, column, map.getKeepPosition(currentGovernment.getColor())[0],
+                                    map.getKeepPosition(currentGovernment.getColor())[1]});
                     nonMilitary.setPatrolling(true);
                     int frow = nonMilitary.getCurrentLocation()[0], fcolumn = nonMilitary.getCurrentLocation()[1];
                     nonMilitary.move();
@@ -630,5 +630,27 @@ public class GameMenuController {
             sendToOilSmelter(engineer);
         }
         return Messages.GIVING_OIL_SUCESSFUL;
+    }
+
+    public Messages digTunnel(int x, int y) {
+        int size = game.getMap().getSize();
+        if (x < 0 || x > size - 1 || y < 0 || y > size - 1)
+            return Messages.INVALID_COORDINATES;
+        ArrayList<Person> selectedUnits = game.getSelectedUnit();
+        ArrayList<Tunneler> tunnelers = new ArrayList<>();
+        Government owner = game.getCurrentGovernment();
+        for (Person person : selectedUnits){
+            if (!person.getGovernment().equals(owner)) continue; // todo : is this necessary?
+            if (person instanceof Tunneler tunneler){
+                if (tunneler.isAvailable()) tunnelers.add(tunneler);
+            }
+        }
+        if (tunnelers.size() == 0) return Messages.NO_AVAILABLE_TUNNELER;
+        for(Tunneler tunneler : tunnelers){
+            //todo : sendToDestination()
+
+        }
+
+        return null; //todo
     }
 }

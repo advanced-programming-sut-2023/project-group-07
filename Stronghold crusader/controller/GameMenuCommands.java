@@ -51,7 +51,8 @@ public enum GameMenuCommands {
     GIVE_OIL("^\\s*give\\s+oil\\s+$"),
     BUILD_SIEGE_WEAPON("^\\s*build\\s+(\\-x\\s+\\-?\\d+|\\-y\\s+\\-?\\d+|\\s)+$"),
     SIEGE_TYPE("\\-q\\s+(?<type>[a-z\\s]+)"),
-    NEXT_TURN("^\\s*next\\s+turn\\s*$");
+    NEXT_TURN("^\\s*next\\s+turn\\s*$"),
+    DIG_TUNNEL("^\\s*dig\\s+tunnel((\\s+-x\\s+(?<x>-?\\d+))|(\\s+-y\\s+(?<y>-?\\d+))){2}\\s*$");
     
     private String regex;
     private GameMenuCommands(String regex) {

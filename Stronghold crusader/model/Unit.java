@@ -1,5 +1,7 @@
 package model;
 
+import static model.UnitTypes.ASSASSIN;
+
 public class Unit extends Person {
     protected UnitTypes type;
     protected UnitStance unitStance;
@@ -9,6 +11,7 @@ public class Unit extends Person {
     protected Person personBeingAttacked;
     protected boolean areaAttacking;
     protected int[] areaAttackLocation;
+    protected boolean isInvisible;
 
     public Unit(UnitTypes type, int[] currentLocation, Government government) {
         super(currentLocation, government);
@@ -18,8 +21,12 @@ public class Unit extends Person {
         unitStance = UnitStance.STAND_GROUND;
         this.damage = type.getDamage();
         this.bonusDamageRate = 1;
-        this.isAttacking=false;
-        this.areaAttacking=false;
+        this.isAttacking = false;
+        this.areaAttacking = false;
+
+        if (type.equals(ASSASSIN)) isInvisible = true;
+        else isInvisible = false;
+
     }
 
     public Unit(UnitTypes type, int[] currentLocation, LordColor lordColor) {
@@ -30,8 +37,8 @@ public class Unit extends Person {
         unitStance = UnitStance.STAND_GROUND;
         this.damage = type.getDamage();
         this.bonusDamageRate = 1;
-        this.isAttacking=false;
-        this.areaAttacking=false;
+        this.isAttacking = false;
+        this.areaAttacking = false;
     }
 
     public int getDamage() {
@@ -82,6 +89,14 @@ public class Unit extends Person {
         return unitStance;
     }
 
+    public boolean isInvisible() {
+        return isInvisible;
+    }
+
+    public void setInvisible(boolean invisible) {
+        isInvisible = invisible;
+    }
+
     public void setUnitStance(UnitStance unitStance) {
         this.unitStance = unitStance;
     }
@@ -89,7 +104,8 @@ public class Unit extends Person {
     public void endTurn() {
         // todo : attack depending on state
     }
-    public int range(){
+
+    public int range() {
         return type.getRange();
     }
 

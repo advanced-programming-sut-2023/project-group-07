@@ -21,7 +21,7 @@ public class GameMenu {
     private final TradeMenu tradeMenu = new TradeMenu();
     private Scanner scanner;
 
-    public void run(Scanner scanner) throws IOException{
+    public void run(Scanner scanner) throws IOException {
         controller.refreshGame();
         this.scanner = scanner;
         Matcher matcher;
@@ -29,32 +29,35 @@ public class GameMenu {
             String input = scanner.nextLine();
             if (GameMenuCommands.getMatcher(input, GameMenuCommands.DROP_BUILDING) != null)
                 System.out.println(dropBuilding(input));
-            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_CURRENT_PLAYER) != null)
+            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_CURRENT_PLAYER) != null)
                 System.out.println(controller.showCurrentPlayer());
             else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_MAP) != null)
                 mapMenu.run(scanner, input);
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_BUILDING) != null)
                 System.out.println(selectBuilding(input));
-            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_PIXEL_UNIT)!=null)
+            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_PIXEL_UNIT) != null)
                 System.out.println(selectPixelUnit(input));
-            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_REGION_UNIT)!=null)
+            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_REGION_UNIT) != null)
                 System.out.println(selectRegionUnit(input));
-            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.MOVE_UNIT)!=null)
+            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.MOVE_UNIT) != null)
                 System.out.println(moveUnit(input));
-            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.PATROL_UNIT)!=null)
+            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.PATROL_UNIT) != null)
                 System.out.println(patrolUnit(input));
-            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.STOP_UNIT)!=null)
+            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.STOP_UNIT) != null)
                 System.out.println(stopUnit());
-            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.SET_STANCE)!=null)
+            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SET_STANCE) != null)
                 System.out.println(setStance(input));
-            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY)!=null)
+            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY) != null)
                 System.out.println(attackEnemy(input));
-            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.AREA_ATTACK)!=null)
+            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.AREA_ATTACK) != null)
                 System.out.println(areaAttack(input));
             else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.POUR_OIL)) != null)
                 System.out.println(pourOil(matcher));
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.GIVE_OIL) != null)
                 System.out.println(giveOil());
+            else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.DIG_TUNNEL)) != null
+                    && matcher.group("x") != null && matcher.group("y") != null)
+                System.out.println(digTunnel(matcher));
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULARITY) != null)
                 System.out.println("Your popularity is : " + controller.getPopularity());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULARITY_FACTORS) != null)
@@ -65,20 +68,19 @@ public class GameMenu {
                 System.out.print(getFoodList());
             else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.FOOD_RATE)) != null)
                 System.out.println(setFoodList(matcher));
-            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_GOLD)!=null)
+            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_GOLD) != null)
                 System.out.println(controller.showGold());
-            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.TAX_RATE_SHOW)!=null)
+            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.TAX_RATE_SHOW) != null)
                 System.out.println(controller.showTaxRate());
-            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.NEXT_TURN)!=null){
+            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.NEXT_TURN) != null) {
                 String returnMessage = controller.nextTurn();
-                if(returnMessage == null)
+                if (returnMessage == null)
                     System.out.println(controller.nextTurnMessage());
-                else{
+                else {
                     System.out.println(returnMessage);
                     return;
                 }
-            }
-            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.ENTER_TRADE_MENU) != null) {
+            } else if (GameMenuCommands.getMatcher(input, GameMenuCommands.ENTER_TRADE_MENU) != null) {
                 System.out.println("You have entered");
                 tradeMenu.run(scanner);
             } else
@@ -87,8 +89,17 @@ public class GameMenu {
 
     }
 
+    private String digTunnel(Matcher matcher) {
+        int x = Integer.parseInt(matcher.group("x")),
+                y = Integer.parseInt(matcher.group("y"));
+        switch (controller.digTunnel(x,y)){
+         //todo
+        }
+        return null;
+    }
+
     private String giveOil() {
-        switch (controller.giveOil()){
+        switch (controller.giveOil()) {
             case DONT_HAVE_OIL_SMELTER:
                 return "You don't have oil smelter.";
             case NO_ONE_TO_GIVE_OIL_TO:
@@ -103,8 +114,8 @@ public class GameMenu {
         String directionString = matcher.group("direction");
         Directions direction = Directions.getByName(directionString);
         if (direction == null) return "Invalid direction.";
-        switch (controller.pourOil(direction)){
-            case NO_ONE_HAS_OIL :
+        switch (controller.pourOil(direction)) {
+            case NO_ONE_HAS_OIL:
                 return "There is no engineer with oil in selected units.";
             case BAD_DIRECTION:
                 return "You can't pour in this direction";
@@ -177,18 +188,18 @@ public class GameMenu {
         Matcher rowMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.ROW);
         Matcher columnMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.COLUMN);
         Matcher typeMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.TYPE);
-        if(rowMatcher == null)
+        if (rowMatcher == null)
             return "Enter the row number!";
-        if(columnMatcher == null)
+        if (columnMatcher == null)
             return "Enter the column number!";
-        if(typeMatcher == null)
+        if (typeMatcher == null)
             return "Enter the type!";
         int row = Integer.parseInt(rowMatcher.group("row")) - 1;
         int column = Integer.parseInt(columnMatcher.group("column")) - 1;
         String type = typeMatcher.group("type").trim();
         switch (controller.dropBuilding(row, column, type)) {
             case INVALID_BUILDING_NAME:
-             return "Invalid building name!";
+                return "Invalid building name!";
             case INVALID_ROW_OR_COLUMN:
                 return "Invalid row or column!";
             case THERES_ALREADY_BUILDING:
@@ -314,11 +325,11 @@ public class GameMenu {
             if (GameMenuCommands.getMatcher(command, GameMenuCommands.CREATE_UNIT) != null) {
                 Matcher typeMatcher = GameMenuCommands.getMatcher(command, GameMenuCommands.TYPE);
                 Matcher countMatcher = GameMenuCommands.getMatcher(command, GameMenuCommands.COUNT);
-                if(typeMatcher == null){
+                if (typeMatcher == null) {
                     System.out.println("Enter the unit type!");
                     continue;
                 }
-                if(countMatcher == null){
+                if (countMatcher == null) {
                     System.out.println("Enter the unit count!");
                     continue;
                 }
@@ -380,13 +391,12 @@ public class GameMenu {
     }
 
     private void enteredBuilding() {
-        while(true) {
+        while (true) {
             String command = scanner.nextLine();
-            if(GameMenuCommands.getMatcher(command, GameMenuCommands.CHANGE_WORKING_STATE) != null){
+            if (GameMenuCommands.getMatcher(command, GameMenuCommands.CHANGE_WORKING_STATE) != null) {
                 System.out.println("Working state changed successfully!");
                 controller.changeWorkingState();
-            }
-            else if (GameMenuCommands.getMatcher(command, GameMenuCommands.EXIT) != null) {
+            } else if (GameMenuCommands.getMatcher(command, GameMenuCommands.EXIT) != null) {
                 System.out.print("Exit was successful!");
                 break;
             } else {
@@ -446,7 +456,7 @@ public class GameMenu {
             return checkCoordinates;
         int row = Integer.parseInt(rowMatcher.group("row"));
         int column = Integer.parseInt(columnMatcher.group("column"));
-        switch(controller.moveUnit(row, column)){
+        switch (controller.moveUnit(row, column)) {
             case INVALID_COORDINATES:
                 return "Invalid coordinates!";
             case CANT_MOVE_UNITS_TO_THIS_LOCATION:
@@ -490,7 +500,7 @@ public class GameMenu {
     }
 
     public String stopUnit() {
-        switch(controller.stopUnit()){
+        switch (controller.stopUnit()) {
             case UNIT_STOPPED_SUCCESSFULLY:
                 return "Units stopped successfully!";
             default:
@@ -506,12 +516,12 @@ public class GameMenu {
         String checkCoordinates = Controller.checkCoordinatesFormat(rowMatcher, columnMatcher);
         if (checkCoordinates != null)
             return checkCoordinates;
-        if(stanceMatcher==null)
+        if (stanceMatcher == null)
             return "Please enter units stance!";
         int row = Integer.parseInt(rowMatcher.group("row"));
         int column = Integer.parseInt(columnMatcher.group("column"));
         String stance = stanceMatcher.group("stance");
-        switch(controller.setStance(row, column, stance)){
+        switch (controller.setStance(row, column, stance)) {
             case INVALID_STANCE:
                 return "Invalid stance!";
             case INVALID_COORDINATES:
@@ -525,9 +535,9 @@ public class GameMenu {
     }
 
     public String attackEnemy(String input) {
-        int row = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY).group("row"))-1;
-        int column = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY).group("column"))-1;
-        switch(controller.attackEnemy(row, column)) {
+        int row = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY).group("row")) - 1;
+        int column = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY).group("column")) - 1;
+        switch (controller.attackEnemy(row, column)) {
             case INVALID_COORDINATES:
                 return "Invalid coordinates!";
             case NO_ENEMY_HERE:
@@ -548,9 +558,9 @@ public class GameMenu {
         String checkCoordinates = Controller.checkCoordinatesFormat(rowMatcher, columnMatcher);
         if (checkCoordinates != null)
             return checkCoordinates;
-        int row = Integer.parseInt(rowMatcher.group("row"))-1;
-        int column = Integer.parseInt(columnMatcher.group("column"))-1;
-        switch(controller.areaAttack(row, column)) {
+        int row = Integer.parseInt(rowMatcher.group("row")) - 1;
+        int column = Integer.parseInt(columnMatcher.group("column")) - 1;
+        switch (controller.areaAttack(row, column)) {
             case NO_UNITS_SELECTED:
                 return "No units selected!";
             case MUST_SELECT_RANGED_UNITS:
@@ -573,16 +583,16 @@ public class GameMenu {
         Matcher rowMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.ROW);
         Matcher columnMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.COLUMN);
         Matcher typeMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.TYPE);
-        if(rowMatcher == null)
+        if (rowMatcher == null)
             return "Enter the row number!";
-        if(columnMatcher == null)
+        if (columnMatcher == null)
             return "Enter the column number!";
-        if(typeMatcher == null)
+        if (typeMatcher == null)
             return "Enter the type!";
         int row = Integer.parseInt(rowMatcher.group("row")) - 1;
         int column = Integer.parseInt(columnMatcher.group("column")) - 1;
         String type = typeMatcher.group("type").trim();
-        switch(controller.buildSiegeWeapon(type,row,column)){
+        switch (controller.buildSiegeWeapon(type, row, column)) {
             case INVALID_COORDINATES:
                 return "Invalid coordinates!";
             case INVALID_SIEGE_WEAPON_TYPE:
@@ -597,7 +607,7 @@ public class GameMenu {
                 break;
         }
         return null;
-        
+
     }
 
 }
