@@ -59,8 +59,8 @@ public class ProfileMenuTest {
                         "\nNickname : " + currentNickname +
                         "\nEmail : " + currentEmail +
                         "\nSlogan : " + currentSlogan +
-                        "\nHighest score : " + 0 +
-                        "\nRank : " + 0
+                        "\nHighest score : " + user.getHighScore() +
+                        "\nRank : " + user.getRank()
                 , controller.showInfo());
     }
 

@@ -158,12 +158,6 @@ public class User {
     public static void addUser(User user) throws IOException {
         if (!users.contains(user)) users.add(user);
         updateUsers();
-//        users.add(user);
-//        Gson gson = new Gson();
-//        usersArray.add(gson.toJsonTree(user).getAsJsonObject());
-//        FileWriter file = new FileWriter("Stronghold crusader/DB/Users");
-//        file.write(usersArray.toString());
-//        file.close();
     }
 
     public static void loadUsers() throws IOException {
@@ -178,12 +172,18 @@ public class User {
         file.close();
         Gson gson = new Gson();
         JsonArray jsonArray = gson.fromJson(allUsers, JsonArray.class);
+        users.clear();
         for (JsonElement jsonElement : jsonArray) {
             users.add(gson.fromJson(jsonElement, User.class));
         }
         usersArray = jsonArray;
     }
     public static void updateUsers() throws IOException {
+        for(User user1 :users){
+            for (User user2 : users){
+                if (user2.equals(user1)) System.out.println(user2.username);
+            }
+        }
         Gson gson = new Gson();
         usersArray = new JsonArray();
         for(User user : users) {
