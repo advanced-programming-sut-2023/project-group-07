@@ -84,6 +84,10 @@ public class MapPixel {
         this.nonMilitaries.clear();
     }
 
+    public ArrayList<Unit> getUnits() {
+        return units;
+    }
+
     public ArrayList<Person> getPeople() {
         ArrayList <Person> people = new ArrayList<Person>();
         if(!this.units.isEmpty())
@@ -174,14 +178,17 @@ public class MapPixel {
         for(LordColor lordColor : LordColor.values())
             for(UnitTypes unitType : UnitTypes.values()){
                 int counter=0;
+                int hpSum = 0; 
                 for(Unit unit : units)
-                    if(unit.getLordColor().equals(lordColor) && unit.getType().equals(unitType))
+                    if(unit.getLordColor().equals(lordColor) && unit.getType().equals(unitType)){
+                        hpSum += unit.getHp();
                         counter++;
+                    }
                 if(counter > 0){
                     if(!unitType.equals(unitType.LORD)) 
-                        unitsStr += unitType.toString() + " (color: " + lordColor.toString() + ") (count: " + counter + ")\n";
+                        unitsStr += unitType.toString() + " (color: " + lordColor.toString() + ") (count: " + counter + ") (Average Hp: " + (int)(hpSum/counter) +  ")\n";
                     else
-                        unitsStr += unitType.toString() + " (color: " + lordColor.toString() + ")\n";
+                        unitsStr += unitType.toString() + " (color: " + lordColor.toString() + ") (Hp: " + hpSum + ")\n";
                 }
             }
         if(!unitsStr.equals(""))

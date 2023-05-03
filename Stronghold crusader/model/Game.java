@@ -69,9 +69,18 @@ public class Game {
         for (int i = 0; i < count; i++) {
             int[] location = new int[] { map.getKeepPosition(currentGovernment.getColor())[0] + 7,
                     map.getKeepPosition(currentGovernment.getColor())[1] + 3 };
-            Unit unit = new Unit(unitType, location, currentGovernment);
-            map.getMapPixel(map.getKeepPosition(currentGovernment.getColor())[0],
-                    map.getKeepPosition(currentGovernment.getColor())[1]).addPerson(unit);
+            Unit unit;
+            if(unitType.equals(UnitTypes.ENGINEER)){
+                Engineer engineer = new Engineer(unitType,new int[]{location[0],location[1]},currentGovernment);
+                unit = engineer;
+            }
+            else if(unitType.equals(UnitTypes.TUNNELER)) {
+                Tunneler tunneler = new Tunneler(unitType,new int[]{location[0],location[1]},currentGovernment);
+                unit = tunneler;
+            }
+            else
+                unit = new Unit(unitType, location, currentGovernment);
+            map.getMapPixel(location[0], location[1]).addPerson(unit);
             currentGovernment.addPerson(unit);
         }
     }
@@ -130,11 +139,12 @@ public class Game {
         }
     }
 
-    public void nextTurn() throws IOException {
+    public String nextTurn() throws IOException {
         indexOfCurrentGovernment = (indexOfCurrentGovernment + 1) % governments.size();
         currentGovernment = governments.get(indexOfCurrentGovernment);
         if (indexOfCurrentGovernment == 0)
-            endOfTurn();
+            return endOfTurn();
+        return "";
     }
 
     public boolean gameOver() {
@@ -324,8 +334,11 @@ public class Game {
                         || column + i - Math.abs(j) >= map.getSize())
                     continue;
                 for (Person person : map.getMapPixel(row + j, column + i - Math.abs(j)).getPeople()) {
-                    if (!person.getGovernment().equals(unit.getGovernment()))
+                    if (!person.getGovernment().equals(unit.getGovernment())){
+                        if(person instanceof Unit && ((Unit)person).isInvisible())
+                            continue;
                         return new int[] { row + j, column + i - Math.abs(j) };
+                    }
                 }
             }
             for (int j = i; j >= -i; j--) {
@@ -333,8 +346,11 @@ public class Game {
                         || column - i + Math.abs(j) >= map.getSize())
                     continue;
                 for (Person person : map.getMapPixel(row + j, column - i + Math.abs(j)).getPeople()) {
-                    if (!person.getGovernment().equals(unit.getGovernment()))
+                    if (!person.getGovernment().equals(unit.getGovernment())){
+                        if(person instanceof Unit && ((Unit)person).isInvisible())
+                            continue;
                         return new int[] { row + j, column - i + Math.abs(j) };
+                    }
                 }
             }
         }
@@ -362,9 +378,20 @@ public class Game {
                         if (!person2.getGovernment().equals(unit.getGovernment()))
                             person2.changeHP(-unit.getDamage() * unit.getBonusDamageRate());
                     }
+                    if(getLordInPixel(enemyLocation)!=null && getLordInPixel(enemyLocation).getHp()<=0) {
+                        if(getLordInPixel(enemyLocation).getGovernment().getDefeatedBy()==null)
+                            getLordInPixel(enemyLocation).getGovernment().setDefeatedBy(government);
+                    }
                 }
             }
         }
+    }
+
+    private Unit getLordInPixel(int[] location) {
+        for (Unit unit : map.getMapPixel(location[0], location[1]).getUnits())
+            if (unit.getType().equals(UnitTypes.LORD))
+                return unit;
+        return null;
     }
 
     public void removeEliminatedPeople(Government government) {
@@ -386,8 +413,10 @@ public class Game {
         }
     }
 
-    public void endOfTurn() throws IOException {
-        for (Government government : governments) {
+    public String endOfTurn() throws IOException {
+        ArrayList<Government> randomGovernments = (ArrayList<Government>)governments.clone();
+        Collections.shuffle(randomGovernments);
+        for (Government government : randomGovernments) {
             government.setPopularity(government.getPopularity() + government.getTaxEffectOnPopularity()); // todo:
             // update
             government.changeGold((int) (government.getTaxAmount() * government.getPopulation()));
@@ -424,8 +453,8 @@ public class Game {
         }
         for (Government government : governments) {
             removeEliminatedPeople(government);
-            eliminateDefeatedLords();
         }
+        return eliminateDefeatedLords();
 
     }
 
@@ -510,9 +539,10 @@ public class Game {
 
     }
 
-    private void eliminateDefeatedLords() {
-        ArrayList<Government> defeatedGovernments = getDefeatedGovernments();
-        for (Government government : defeatedGovernments) {
+    private String eliminateDefeatedLords() {
+        String result = "";
+        for (Government government : getDefeatedGovernments()) {
+            result += government.getColor() + " Lord has been defeated by " + government.getDefeatedBy().getColor() + " lord!\n";
             this.governments.remove(government);
             this.nonPlayingGovernments.add(government);
             ArrayList<Building> buildings = government.getBuildings();
@@ -536,8 +566,9 @@ public class Game {
                     pixel.setPlayerKeep(null);
                     pixel.resetAccess();
                 }
-                   
+
         }
+        return result;
 
     }
 

@@ -45,7 +45,7 @@ public class PreGameMenu { // todo: this class haven't been tested
     }
 
     private Integer getGold() {
-        System.out.print("How many gold do you want to begin with? ");
+        System.out.print("How much gold do you want to begin with? ");
         while (true) {
             System.out.println("Enter a positive whole number:");
             String input = scanner.nextLine();

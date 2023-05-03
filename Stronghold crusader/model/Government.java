@@ -27,6 +27,7 @@ public class Government {
     private HashSet<TypeOfBuilding> noLaborBuildings = new HashSet<>();
     private int numberOfBlessed = 0;
     private int defeatedLords = 0;
+    private Government defeatedBy = null;
     private int score;
 
     public Government(LordColor color, User user, int gold, int row, int column) {
@@ -47,6 +48,14 @@ public class Government {
 
     public void setScore(int score) {
         this.score = score;
+    }
+
+    public void setDefeatedBy(Government defeatedBy) {
+        this.defeatedBy = defeatedBy;
+    }
+
+    public Government getDefeatedBy() {
+        return defeatedBy;
     }
 
     public int getScore() {

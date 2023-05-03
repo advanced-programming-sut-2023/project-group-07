@@ -74,12 +74,14 @@ public class GameMenu {
                 System.out.println(controller.showTaxRate());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.NEXT_TURN) != null) {
                 String returnMessage = controller.nextTurn();
-                if (returnMessage == null)
-                    System.out.println(controller.nextTurnMessage());
-                else {
+                if (returnMessage != null && returnMessage.contains("GAME OVER!")){
                     System.out.println(returnMessage);
                     return;
                 }
+                else if(returnMessage != null)
+                    System.out.println(returnMessage + controller.nextTurnMessage());
+                else
+                    System.out.println(controller.nextTurnMessage());
             } else if (GameMenuCommands.getMatcher(input, GameMenuCommands.ENTER_TRADE_MENU) != null) {
                 System.out.println("You have entered");
                 tradeMenu.run(scanner);

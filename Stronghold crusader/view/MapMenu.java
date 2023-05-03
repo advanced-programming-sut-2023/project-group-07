@@ -18,8 +18,10 @@ public class MapMenu {
         showMap(initialInput);
         while (true) {
             String input = scanner.nextLine();
-            if (input.matches("\\s*exit\\s*"))
+            if (input.matches("\\s*exit\\s*")){
+                System.out.println("Exit was successful!");
                 return;
+            }
             else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_MAP) != null) {
                 String showMapStr = showMap(input);
                 if (showMapStr != null)

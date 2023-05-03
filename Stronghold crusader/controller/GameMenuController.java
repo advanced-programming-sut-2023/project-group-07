@@ -152,14 +152,12 @@ public class GameMenuController {
             map.getMapPixel(row, column + (int) (typeOfBuilding.getLength() / 2) - 1).setAccess();
             map.getMapPixel(row, column + (int) (typeOfBuilding.getLength() / 2)).setAccess();
             map.getMapPixel(row, column + (int) (typeOfBuilding.getLength() / 2) + 1).setAccess();
-            ;
             map.getMapPixel(row + typeOfBuilding.getWidth() - 1, column + (int) (typeOfBuilding.getLength() / 2) - 1)
                     .setAccess();
             map.getMapPixel(row + typeOfBuilding.getWidth() - 1, column + (int) (typeOfBuilding.getLength() / 2))
                     .setAccess();
             map.getMapPixel(row + typeOfBuilding.getWidth() - 1, column + (int) (typeOfBuilding.getLength() / 2) + 1)
                     .setAccess();
-            ;
         }
         return Messages.DEPLOYMENT_SUCCESSFUL;
     }
@@ -496,7 +494,7 @@ public class GameMenuController {
     }
 
     private String showResource(Resources resource) {
-        return ("*Name:" + resource + ":" +
+        return ("*Name:" + resource +
                 "\nBuying price: " + resource.getBuyingPrice() +
                 "\nSelling price: " + resource.getSellingPrice() +
                 "\nAmount: " + game.getCurrentGovernment().getResourceAmount(resource) + "\n");
@@ -538,8 +536,10 @@ public class GameMenuController {
     }
 
     public String nextTurn() throws IOException {
-        game.nextTurn();
-        return game.gameOver() ? game.endGame() : null;
+        String result = "";
+        result += game.nextTurn();
+        if(game.gameOver()) result += game.endGame();
+        return result.equals("") ? null : result;
     }
 
     public String nextTurnMessage() {
