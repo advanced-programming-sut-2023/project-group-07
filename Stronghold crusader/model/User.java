@@ -156,12 +156,14 @@ public class User {
     }
 
     public static void addUser(User user) throws IOException {
-        users.add(user);
-        Gson gson = new Gson();
-        usersArray.add(gson.toJsonTree(user).getAsJsonObject());
-        FileWriter file = new FileWriter("Stronghold crusader/DB/Users");
-        file.write(usersArray.toString());
-        file.close();
+        if (!users.contains(user)) users.add(user);
+        updateUsers();
+//        users.add(user);
+//        Gson gson = new Gson();
+//        usersArray.add(gson.toJsonTree(user).getAsJsonObject());
+//        FileWriter file = new FileWriter("Stronghold crusader/DB/Users");
+//        file.write(usersArray.toString());
+//        file.close();
     }
 
     public static void loadUsers() throws IOException {
