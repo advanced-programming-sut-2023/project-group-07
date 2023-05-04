@@ -8,6 +8,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 
 import model.*;
+import model.Map;
 import view.CaptchaPrinter;
 import view.MenuPrinter;
 
@@ -93,5 +94,46 @@ public class Controller {
 
     public static void sendToOilSmelter(Engineer engineer) {
         GameMenuController.sendToOilSmelter(engineer);
+    }
+
+    public static void sendToCoordinate(int x, int y, Person person) {
+        int currentX = person.getCurrentLocation()[0],
+                currentY = person.getCurrentLocation()[1];
+        ArrayList<int[]> path = currentGame.getMap().getPathList(currentX, currentY, x, y);
+        person.setMovePattern(path);
+    }
+
+    public static boolean isThereWall(int x, int y) {
+        Map map = currentGame.getMap();
+        MapPixel pixel = map.getMapPixel(x, y);
+        for (Building building : pixel.getBuildings()) {
+            TypeOfBuilding type = building.getTypeOfBuilding();
+            if (type.equals(TypeOfBuilding.WALL_STAIRS) ||
+                    type.equals(TypeOfBuilding.LOW_WALL) ||
+                    type.equals(TypeOfBuilding.CRENELATED_WALL) ||
+                    type.equals(TypeOfBuilding.STONE_WALL))
+                return true;
+
+        }
+        return false;
+    }
+
+    public static void breakWall(int x, int y) {
+        Map map = currentGame.getMap();
+        MapPixel pixel = map.getMapPixel(x, y);
+        for (Building building : pixel.getBuildings()) {
+            TypeOfBuilding type = building.getTypeOfBuilding();
+            if (type.equals(TypeOfBuilding.WALL_STAIRS) ||
+                    type.equals(TypeOfBuilding.LOW_WALL) ||
+                    type.equals(TypeOfBuilding.CRENELATED_WALL) ||
+                    type.equals(TypeOfBuilding.STONE_WALL))
+                building.remove();
+
+        }
+    }
+
+    public static ArrayList<int[]> getPathToWall(int x, int y, Government owner) {
+        //todo
+        return null;
     }
 }
