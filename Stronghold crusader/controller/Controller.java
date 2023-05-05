@@ -19,8 +19,11 @@ public class Controller {
     private static Random random;
 
     public static int randomNumber(int max) {
-        Random random = new Random();
         return random.nextInt(max);
+    }
+
+    public static double randomDouble(double min, double max) {
+        return random.nextDouble(min, max);
     }
 
     public static char getRandomChar(char c, int max) {
@@ -137,7 +140,8 @@ public class Controller {
         //todo : write path for tunneler
         return null;
     }
-    public static Random getRandom(){
+
+    public static Random getRandom() {
         if (random == null) random = new Random();
         return random;
     }

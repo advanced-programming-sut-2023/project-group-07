@@ -352,13 +352,13 @@ public class Government {
     }
 
     public void increasePercentOfBlessed() { // todo : should be called after a turn
-        int numberOfBlessed = getNumberOfBlessed();
-        double randomFactor = Controller.getRandom().nextDouble(0.5,1); // a number less than 1
-        numberOfBlessed += round(maxBlessedThisTurn() * randomFactor);
+        double numberOfBlessed = getNumberOfBlessed();
+        double randomFactor = Controller.randomDouble(0.5, 1); // a number less than 1
+        numberOfBlessed += maxBlessedThisTurn() * randomFactor;
         percentOfBlessed = (double) numberOfBlessed / population;
     }
-    private int maxBlessedThisTurn(){
-        //todo : write max blessed this turn
-        return 0;
+
+    private int maxBlessedThisTurn() {
+        return numberOfCathedrals() * 5 + numberOfChurches() * 2; // this may change
     }
 }
