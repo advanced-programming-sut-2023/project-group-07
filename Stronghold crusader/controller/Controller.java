@@ -159,7 +159,7 @@ public class Controller {
         }
         if (targetBuilding != null) {
             int targetX = targetBuilding.row(), targetY = targetBuilding.column();
-            return map().getPathList(x,y, targetX, targetY);
+            return map().getStraightPathList(x,y, targetX, targetY);
         }
         return null;
     }

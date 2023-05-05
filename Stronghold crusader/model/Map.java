@@ -352,4 +352,20 @@ public class Map {
         }
         return false;
     }
+
+    public ArrayList<int[]> getStraightPathList(int x, int y, int targetX, int targetY) {
+        int currentX = x, currentY = y;
+        ArrayList<int[]> path = new ArrayList<>();
+        while (currentY != targetY || currentX != targetY){
+            int xDistance = targetX - currentX, yDistance = targetY - currentY;
+
+            if (xDistance > 0) currentX++;
+            if (xDistance < 0) currentX--;
+            if (yDistance > 0) currentY++;
+            if (yDistance < 0) currentY--; // have strange path that can be better
+
+            path.add(new int[]{currentX, currentY});
+        }
+        return path;
+    }
 }
