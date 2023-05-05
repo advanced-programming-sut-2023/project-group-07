@@ -96,7 +96,7 @@ public class Government {
             if(person instanceof Unit)
                 person.movesLeft=((Unit)person).type.getSpeed();
             if(person instanceof NonMilitary)
-                person.movesLeft=((NonMilitary)person).type.getSpeed();
+                person.movesLeft=((NonMilitary)person).getType().getSpeed();
         }
     }
 
@@ -193,6 +193,10 @@ public class Government {
 
     public void removeBuilding(Building building) {
         this.buildings.remove(building);
+    }
+
+    public void removePerson(Person person) {
+        this.people.remove(person);
     }
 
     public HashSet<Building> getBuildingsWaitingForWorkers() {

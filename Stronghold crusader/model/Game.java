@@ -5,10 +5,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+
+import static org.mockito.ArgumentMatchers.contains;
+
 import java.io.IOException;
 
 import controller.Controller;
 import controller.Messages;
+import net.bytebuddy.implementation.bytecode.ByteCodeAppender.Size;
 
 public class Game {
     private final Map map;
@@ -70,15 +74,13 @@ public class Game {
             int[] location = new int[] { map.getKeepPosition(currentGovernment.getColor())[0] + 7,
                     map.getKeepPosition(currentGovernment.getColor())[1] + 3 };
             Unit unit;
-            if(unitType.equals(UnitTypes.ENGINEER)){
-                Engineer engineer = new Engineer(unitType,new int[]{location[0],location[1]},currentGovernment);
+            if (unitType.equals(UnitTypes.ENGINEER)) {
+                Engineer engineer = new Engineer(unitType, new int[] { location[0], location[1] }, currentGovernment);
                 unit = engineer;
-            }
-            else if(unitType.equals(UnitTypes.TUNNELER)) {
-                Tunneler tunneler = new Tunneler(unitType,new int[]{location[0],location[1]},currentGovernment);
+            } else if (unitType.equals(UnitTypes.TUNNELER)) {
+                Tunneler tunneler = new Tunneler(unitType, new int[] { location[0], location[1] }, currentGovernment);
                 unit = tunneler;
-            }
-            else
+            } else
                 unit = new Unit(unitType, location, currentGovernment);
             map.getMapPixel(location[0], location[1]).addPerson(unit);
             currentGovernment.addPerson(unit);
@@ -196,6 +198,8 @@ public class Game {
                     applyPersonMove(person);
                     unit.setAttacking(false);
                     unit.setPatrolling(false);
+                    unit.setAreaAttacking(false);
+                    unit.setAttackingBuilding(false);
                 }
             }
         selectedUnit.clear();
@@ -236,6 +240,10 @@ public class Game {
                             map.getPathList(person.currentLocation[0], person.currentLocation[1], frow, fcolumn));
                 applyPersonMove(person);
                 person.setPatrolling(true);
+                if(person instanceof Unit)
+                    ((Unit) person).setAttacking(false);
+                    ((Unit) person).setAreaAttacking(false);
+                    ((Unit) person).setAttackingBuilding(false);(false);
             }
         selectedUnit.clear();
     }
@@ -267,13 +275,22 @@ public class Game {
         for (Person person : government.getPeople()) {
             if (person instanceof Unit && ((Unit) person).isAttacking()) {
                 Unit unit = (Unit) person;
-                if (unit.getPersonBeingAttacked().hp == -1) {
+                if (unit.getPersonBeingAttacked().hp <= 0) {
                     unit.setAttacking(false);
                     continue;
                 }
                 unit.setMovePattern(map.getPathList(unit.currentLocation[0], unit.currentLocation[1],
                         unit.getPersonBeingAttacked().currentLocation[0],
-                        unit.getPersonBeingAttacked().currentLocation[0]));
+                        unit.getPersonBeingAttacked().currentLocation[1]));
+            } else if (person instanceof Unit && ((Unit) person).isAttackingBuilding()) {
+                Unit unit = (Unit) person;
+                if (unit.getBuildingBeingAttacked().getHp() <= 0) {
+                    unit.setAttackingBuilding(false);
+                    continue;
+                }
+                unit.setMovePattern(map.getPathList(unit.currentLocation[0], unit.currentLocation[1],
+                        unit.getBuildingBeingAttacked().getRow(),
+                        unit.getBuildingBeingAttacked().getColumn()));
             }
         }
     }
@@ -283,6 +300,12 @@ public class Game {
             if (person.getGovernment().equals(currentGovernment)) {
                 person.setMovePattern(new ArrayList<int[]>());
                 person.setPatrolling(false);
+                if(person instanceof Unit){
+                    ((Unit)person).setAttackingBuilding(false);
+                    ((Unit)person).setAttacking(false);
+                    ((Unit)person).setAreaAttacking(false);
+                }
+
             }
         selectedUnit.clear();
     }
@@ -296,15 +319,49 @@ public class Game {
         selectedUnit.clear();
     }
 
-    public void attackEnemy(int row, int column) {
-        Person person = map.getMapPixel(row, column).getPeople().get(0);
+    public void attackEnemy(int row, int column, Person person) {
         for (Person person2 : selectedUnit) {
             Unit unit = (Unit) person2;
             unit.setAttacking(true);
             unit.setMovePattern(map.getPathList(unit.currentLocation[0], unit.currentLocation[1], row, column));
             unit.setPersonBeingAttacked(person);
+            unit.setBuildingBeingAttacked(null);
             applyPersonMove(unit);
             unit.setPatrolling(false);
+            unit.setAttackingBuilding(false);
+            unit.setAreaAttacking(false);
+        }
+        selectedUnit.clear();
+    }
+
+    public void attackBuildings(Building building) {
+        for (Person person2 : selectedUnit) {
+            Unit unit = (Unit) person2;
+            if(!canAttackBuilding(unit))
+                continue;
+            unit.setAttackingBuilding(true);
+            ArrayList <int[]> path = new ArrayList<int[]>();
+            int row = building.getRow();
+            int column = building.getColumn();
+            for(int i = row ; i < row + building.getTypeOfBuilding().getWidth() ; i++)
+                if(!(path = map.getPathList(unit.currentLocation[0], unit.currentLocation[1], i, column-1)).isEmpty())
+                    break;
+            for(int i = row ; (i < row + building.getTypeOfBuilding().getWidth()) && path.isEmpty() ; i++)
+                if(!(path = map.getPathList(unit.currentLocation[0], unit.currentLocation[1], i, column + building.getTypeOfBuilding().getLength())).isEmpty())
+                    break;
+            for(int j = column ; (j < column + building.getTypeOfBuilding().getLength()) && path.isEmpty() ; j++)
+                 if(!(path = map.getPathList(unit.currentLocation[0], unit.currentLocation[1], row-1, j)).isEmpty())
+                    break;
+            for(int j = column ; (j < column + building.getTypeOfBuilding().getLength()) && path.isEmpty() ; j++)
+                 if(!(path = map.getPathList(unit.currentLocation[0], unit.currentLocation[1], row+building.getTypeOfBuilding().getWidth(), j)).isEmpty())
+                    break;
+            unit.setMovePattern(path);
+            unit.setBuildingBeingAttacked(building);
+            unit.setPersonBeingAttacked(null);
+            applyPersonMove(unit);
+            unit.setPatrolling(false);
+            unit.setAttacking(false);
+            unit.setAreaAttacking(false);
         }
         selectedUnit.clear();
     }
@@ -314,6 +371,7 @@ public class Game {
             Unit unit = (Unit) person2;
             unit.setPatrolling(false);
             unit.setAttacking(false);
+            unit.setAttackingBuilding(false);
             unit.setAreaAttacking(true);
             unit.setAreaAttackLocation(new int[] { row, column });
         }
@@ -326,7 +384,7 @@ public class Game {
         int size = selectedUnit.size();
     }
 
-    public int[] nearestEnemy(Unit unit) {
+    private int[] nearestEnemy(Unit unit) {
         for (int i = 0; i <= unit.type.getRange(); i++) {
             int row = unit.getCurrentLocation()[0], column = unit.getCurrentLocation()[1];
             for (int j = -i; j <= i; j++) {
@@ -334,8 +392,9 @@ public class Game {
                         || column + i - Math.abs(j) >= map.getSize())
                     continue;
                 for (Person person : map.getMapPixel(row + j, column + i - Math.abs(j)).getPeople()) {
-                    if (!person.getGovernment().equals(unit.getGovernment())){
-                        if(person instanceof Unit && ((Unit)person).isInvisible())
+                    if (!person.getGovernment().equals(unit.getGovernment())) {
+                        if (person instanceof Unit && ((Unit) person).isInvisible()
+                                && Math.abs(j) + Math.abs(i - Math.abs(j)) > 1)
                             continue;
                         return new int[] { row + j, column + i - Math.abs(j) };
                     }
@@ -346,8 +405,9 @@ public class Game {
                         || column - i + Math.abs(j) >= map.getSize())
                     continue;
                 for (Person person : map.getMapPixel(row + j, column - i + Math.abs(j)).getPeople()) {
-                    if (!person.getGovernment().equals(unit.getGovernment())){
-                        if(person instanceof Unit && ((Unit)person).isInvisible())
+                    if (!person.getGovernment().equals(unit.getGovernment())) {
+                        if (person instanceof Unit && ((Unit) person).isInvisible()
+                                && Math.abs(j) + Math.abs(i - Math.abs(j)) > 1)
                             continue;
                         return new int[] { row + j, column - i + Math.abs(j) };
                     }
@@ -378,14 +438,28 @@ public class Game {
                         if (!person2.getGovernment().equals(unit.getGovernment()))
                             person2.changeHP(-unit.getDamage() * unit.getBonusDamageRate());
                     }
-                    if(getLordInPixel(enemyLocation)!=null && getLordInPixel(enemyLocation).getHp()<=0) {
-                        if(getLordInPixel(enemyLocation).getGovernment().getDefeatedBy()==null)
+                    if (getLordInPixel(enemyLocation) != null && getLordInPixel(enemyLocation).getHp() <= 0) {
+                        if (getLordInPixel(enemyLocation).getGovernment().getDefeatedBy() == null)
                             getLordInPixel(enemyLocation).getGovernment().setDefeatedBy(government);
                     }
+                } else {
+                    Building building = unit.getBuildingBeingAttacked();
+                    int row = unit.getCurrentLocation()[0], column = unit.getCurrentLocation()[1];
+                    if (building == null || (Math.abs(building.getRow() - row)
+                            + Math.abs(building.getColumn() - column)) > unit.type.getRange())
+                        continue;
+                    building.changeHp(-unit.getDamage() * unit.getBonusDamageRate());
                 }
             }
         }
     }
+
+    public boolean canAttackBuilding(Unit unit) {
+        return !(unit.getType().equals(UnitTypes.ARABIAN_BOW) || unit.getType().equals(UnitTypes.ARCHER)
+                || unit.getType().equals(UnitTypes.HORSE_ARCHER) || unit.getType().equals(UnitTypes.SLINGER)
+                || unit.getType().equals(UnitTypes.CROSSBOWMAN));
+    }
+
 
     private Unit getLordInPixel(int[] location) {
         for (Unit unit : map.getMapPixel(location[0], location[1]).getUnits())
@@ -402,19 +476,41 @@ public class Game {
                 map.getMapPixel(person.currentLocation[0], person.currentLocation[1]).removePerson(person);
             }
         }
-        government.getPeople().removeAll(eliminatedPeople);
+        for(Person person : eliminatedPeople)
+            government.removePerson(person);
+    }
+
+    public void removeEliminatedBuildings(Government government){
+        ArrayList<Building> eliminatedBuildings = new ArrayList<>();
+        for(Building building : government.getBuildings()){
+            if(building.getHp() <= 0) {
+                eliminatedBuildings.add(building);
+                for(int i=0;i<building.getTypeOfBuilding().getWidth();i++)
+                    for(int j=0;j<building.getTypeOfBuilding().getLength();j++){
+                        MapPixel pixel =  map.getMapPixel(building.getRow()+i, building.getColumn()+j);
+                        pixel.removeBuilding(building);
+                        pixel.resetAccess();
+                    }
+            }
+        }
+        for(Building building : eliminatedBuildings)
+            government.removeBuilding(building);
+
     }
 
     public void resourceDelivery(Government government) {
         for (Person person : government.getPeople()) {
-            if (person instanceof NonMilitary) {
-
+            if (person instanceof NonMilitary
+                    && person.currentLocation[0] == map.getKeepPosition(government.getColor())[0] + 7
+                    && person.currentLocation[1] == map.getKeepPosition(government.getColor())[1] + 3) {
+                        NonMilitary nonMilitary = (NonMilitary) person;
+                        //government.changeResources(nonMilitary, );
             }
         }
     }
 
     public String endOfTurn() throws IOException {
-        ArrayList<Government> randomGovernments = (ArrayList<Government>)governments.clone();
+        ArrayList<Government> randomGovernments = (ArrayList<Government>) governments.clone();
         Collections.shuffle(randomGovernments);
         for (Government government : randomGovernments) {
             government.setPopularity(government.getPopularity() + government.getTaxEffectOnPopularity()); // todo:
@@ -453,6 +549,7 @@ public class Game {
         }
         for (Government government : governments) {
             removeEliminatedPeople(government);
+            removeEliminatedBuildings(government);
         }
         return eliminateDefeatedLords();
 
@@ -542,7 +639,8 @@ public class Game {
     private String eliminateDefeatedLords() {
         String result = "";
         for (Government government : getDefeatedGovernments()) {
-            result += government.getColor() + " Lord has been defeated by " + government.getDefeatedBy().getColor() + " lord!\n";
+            result += government.getColor() + " Lord has been defeated by " + government.getDefeatedBy().getColor()
+                    + " lord!\n";
             this.governments.remove(government);
             this.nonPlayingGovernments.add(government);
             ArrayList<Building> buildings = government.getBuildings();

@@ -20,7 +20,6 @@ public class Main {
         // mn.run(new Scanner(System.in));
         // CreateMapMenu cm = new CreateMapMenu();
         // cm.run(new Scanner(System.in));
-        
         System.out.print(Colors.YELLOW_BOLD);
         System.out.print("Loading maps and users...");
         User.loadUsers();

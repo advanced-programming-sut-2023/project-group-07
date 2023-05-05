@@ -232,13 +232,7 @@ public class Map {
         }
     }
 
-    public void findPath(ArrayList<int[]> path, ArrayList<ArrayList<ArrayList<int[]>>> parent, int[] coordinates) { // todo
-                                                                                                                    // :
-                                                                                                                    // isn't
-                                                                                                                    // this
-                                                                                                                    // a
-                                                                                                                    // private
-                                                                                                                    // method?
+    public void findPath(ArrayList<int[]> path, ArrayList<ArrayList<ArrayList<int[]>>> parent, int[] coordinates) {
         if (coordinates[0] == -1)
             return;
         int X = coordinates[0], Y = coordinates[1];

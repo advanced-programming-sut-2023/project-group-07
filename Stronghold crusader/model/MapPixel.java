@@ -172,7 +172,7 @@ public class MapPixel {
         String unitsStr = "";
         output += "type/texture :" + texture.toString();
         for(Building building : this.buildings)
-            buildingsStr += building.getTypeOfBuilding().toString() + " (color: " + building.getLordColor().toString() + ")\n";
+            buildingsStr += building.getTypeOfBuilding().toString() + " (color: " + building.getLordColor().toString() + ") (Hp: " + building.getHp() +  ")\n";
         if (!buildingsStr.equals(""))
             output += "\n<< BUILDINGS >>\n" + buildingsStr.trim();
         for(LordColor lordColor : LordColor.values())

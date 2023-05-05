@@ -35,6 +35,10 @@ public class Building {
         return column;
     }
 
+    public void changeHp(int amount){
+        hp += amount;
+    }
+
     public int getRow() {
         return row;
     }

@@ -3,13 +3,14 @@ package model;
 import java.util.ArrayList;
 
 public class ConvertingResources extends Building {
-    Resources resource;
+    private Resources resource;
     protected ArrayList<Person> Workers = new ArrayList<>();
+    private ConvertingResourcesTypes type;
 
-    public ConvertingResources(Government government, TypeOfBuilding typeOfBuilding, int row, int column,
-            Resources resource) {
+    public ConvertingResources(Government government, TypeOfBuilding typeOfBuilding, int row, int column,ConvertingResourcesTypes convertingResourcesTypes) {
         super(government, typeOfBuilding, row, column);
-        this.resource = resource;
+        this.resource = convertingResourcesTypes.getResourceDelivered();
+        this.type = convertingResourcesTypes;
     }
 
     public void setResource(Resources resource) {

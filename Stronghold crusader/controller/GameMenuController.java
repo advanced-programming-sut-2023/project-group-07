@@ -102,15 +102,18 @@ public class GameMenuController {
 
         boolean isWorking = true;
         Building building;
-        if (typeOfBuilding.isGate()) {
+        if (typeOfBuilding.getType().equals("gate")) {
             GateHouse gateHouse = new GateHouse(currentGovernment, typeOfBuilding, row, column);
             building = gateHouse;
-        } else if (typeOfBuilding.isTower()) {
+        } else if (typeOfBuilding.getType().equals("tower")) {
             Tower tower = new Tower(currentGovernment, typeOfBuilding, row, column);
             building = tower;
-        } else if (typeOfBuilding.isMilitaryCamp()) {
+        } else if (typeOfBuilding.getType().equals("military camp")) {
             MilitaryCamp militaryCamp = new MilitaryCamp(currentGovernment, typeOfBuilding, row, column);
             building = militaryCamp;
+        } else if (typeOfBuilding.getType().equals("converting resources")) {
+            ConvertingResources convertingResources = new ConvertingResources(currentGovernment, typeOfBuilding, row, column,ConvertingResourcesTypes.getTypeByName(name));
+            building = convertingResources;
         } else
             building = new Building(currentGovernment, typeOfBuilding, row, column);
         currentGovernment.addBuilding(building);
@@ -122,7 +125,7 @@ public class GameMenuController {
                     NonMilitary nonMilitary = new NonMilitary(
                             new int[]{map.getKeepPosition(currentGovernment.getColor())[0],
                                     map.getKeepPosition(currentGovernment.getColor())[1]},
-                            currentGovernment, typeOfBuilding.getWorkerType());
+                            currentGovernment, typeOfBuilding.getWorkerType(),building);
                     map.getMapPixel(map.getKeepPosition(currentGovernment.getColor())[0],
                             map.getKeepPosition(currentGovernment.getColor())[1]).addPerson(nonMilitary);
                     nonMilitary.setMovePattern(map.getPathList(nonMilitary.getCurrentLocation()[0],
@@ -418,20 +421,47 @@ public class GameMenuController {
     public Messages attackEnemy(int row, int column) {
         if (!areCoordinatesValid(row, column))
             return Messages.INVALID_COORDINATES;
-        boolean isAnEnemy = false;
-        for (Person person : game.getMap().getMapPixel(row, column).getPeople())
-            if (!person.getGovernment().equals(game.getCurrentGovernment())) {
-                isAnEnemy = true;
-                break;
-            }
-        if (!isAnEnemy)
-            return Messages.NO_ENEMY_HERE;
         if (game.getSelectedUnit().isEmpty())
             return Messages.NO_UNITS_SELECTED;
-        attackEnemy(row, column);
+        Person enemy = null;
+        for (Person person : game.getMap().getMapPixel(row, column).getPeople())
+            if (!person.getGovernment().equals(game.getCurrentGovernment())) {
+                enemy = person;
+                break;
+            }
+        if (enemy == null)
+            return Messages.NO_ENEMY_HERE;
+        game.attackEnemy(row, column,enemy);
         return Messages.ATTACKING_ENEMY_UNITS;
     }
 
+    public Messages attackBuilding(int row, int column) {
+        if(!areCoordinatesValid(row, column))
+            return Messages.INVALID_COORDINATES;
+        Building enemyBuilding = null;
+        for(Building building : game.getMap().getMapPixel(row, column).getBuildings())
+            if(!building.getGovernment().equals(game.getCurrentGovernment())){
+                enemyBuilding = building;
+                break;
+            }
+        if(enemyBuilding == null)
+            return Messages.NO_ENEMY_HERE;
+        if(game.getSelectedUnit().isEmpty())
+            return Messages.NO_UNITS_SELECTED;
+        boolean canAnyOneDamageBuilding = false;
+        for (Person person : game.getSelectedUnit()){
+            if(game.canAttackBuilding((Unit)person)){
+                canAnyOneDamageBuilding = true;
+                break;
+            }
+        }
+        if(canAnyOneDamageBuilding == false)
+            return Messages.NO_UNIT_CAN_ATTACK_BUILDINGS;
+        game.attackBuildings(enemyBuilding);
+        return Messages.ATTACKING_ENEMY_BUILDINGS;
+
+    }
+    
     public Messages areaAttack(int row, int column) {
         if (game.getSelectedUnit().isEmpty())
             return Messages.NO_UNITS_SELECTED;

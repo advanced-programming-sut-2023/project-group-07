@@ -49,6 +49,8 @@ public class GameMenu {
                 System.out.println(setStance(input));
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY) != null)
                 System.out.println(attackEnemy(input));
+            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_BUILDING) != null)
+                System.out.println(attackBuilding(input));
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.AREA_ATTACK) != null)
                 System.out.println(areaAttack(input));
             else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.POUR_OIL)) != null)
@@ -536,7 +538,7 @@ public class GameMenu {
         return null;
     }
 
-    public String attackEnemy(String input) {
+    private String attackEnemy(String input) {
         int row = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY).group("row")) - 1;
         int column = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY).group("column")) - 1;
         switch (controller.attackEnemy(row, column)) {
@@ -552,6 +554,26 @@ public class GameMenu {
                 break;
         }
         return null;
+    }
+
+    private String attackBuilding(String input){
+        int row = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_BUILDING).group("row")) - 1;
+        int column = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_BUILDING).group("column")) - 1;
+        switch (controller.attackBuilding(row, column)) {
+            case INVALID_COORDINATES:
+                return "Invalid coordinates!";
+            case NO_ENEMY_HERE:
+                return "No enemy building here!";
+            case NO_UNITS_SELECTED:
+                return "No units selected!";
+            case NO_UNIT_CAN_ATTACK_BUILDINGS:
+                return "No unit can attack buildings!";
+            case ATTACKING_ENEMY_BUILDINGS:
+                return "Attacking enemy buildings!";
+            default:
+                break;
+        }
+        return null; 
     }
 
     private String areaAttack(String input) {
