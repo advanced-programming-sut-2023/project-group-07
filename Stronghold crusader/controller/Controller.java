@@ -16,10 +16,14 @@ public class Controller {
     public static User currentUser;
     public static Game currentGame;
     public static final MenuPrinter menuPrinter = new MenuPrinter();
+    private static Random random;
 
     public static int randomNumber(int max) {
-        Random random = new Random();
         return random.nextInt(max);
+    }
+
+    public static double randomDouble(double min, double max) {
+        return random.nextDouble(min, max);
     }
 
     public static char getRandomChar(char c, int max) {
@@ -127,13 +131,18 @@ public class Controller {
                     type.equals(TypeOfBuilding.LOW_WALL) ||
                     type.equals(TypeOfBuilding.CRENELATED_WALL) ||
                     type.equals(TypeOfBuilding.STONE_WALL))
-                building.remove();
+                building.destroy();
 
         }
     }
 
-    public static ArrayList<int[]> getPathToWall(int x, int y, Government owner) {
-        //todo
+    public static ArrayList<int[]> getPathForTunneler(int x, int y, Government owner) {
+        //todo : write path for tunneler
         return null;
+    }
+
+    public static Random getRandom() {
+        if (random == null) random = new Random();
+        return random;
     }
 }

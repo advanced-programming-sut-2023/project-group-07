@@ -1,10 +1,12 @@
 package model;
 
-import controller.Messages;
+import controller.Controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+
+import static java.lang.Math.round;
 
 public class Government {
     private final LordColor color;
@@ -25,7 +27,7 @@ public class Government {
     private ArrayList<Person> people = new ArrayList<>();
     private HashSet<Building> buildingsWaitingForWorkers = new HashSet<>();
     private HashSet<TypeOfBuilding> noLaborBuildings = new HashSet<>();
-    private int numberOfBlessed = 0;
+    private double percentOfBlessed = 0.0;
     private int defeatedLords = 0;
     private Government defeatedBy = null;
     private int score;
@@ -41,9 +43,9 @@ public class Government {
         this.color = color;
         for (Resources resource : Resources.values())
             resources.put(resource, 0);
-        resources.put(Resources.STONE,50);
-        resources.put(Resources.WOOD,100);
-        resources.put(Resources.BREAD,100);
+        resources.put(Resources.STONE, 50);
+        resources.put(Resources.WOOD, 100);
+        resources.put(Resources.BREAD, 100);
     }
 
     public void setScore(int score) {
@@ -62,7 +64,7 @@ public class Government {
         return score;
     }
 
-    public void defeatLord(int gold){
+    public void defeatLord(int gold) {
         defeatedLords++;
         this.gold += gold;
     }
@@ -71,7 +73,7 @@ public class Government {
         return defeatedLords;
     }
 
-    public int getLordHp(){
+    public int getLordHp() {
         return lord.getHp();
     }
 
@@ -92,11 +94,11 @@ public class Government {
     }
 
     public void resetMovesLeft() {
-        for(Person person: people){
-            if(person instanceof Unit)
-                person.movesLeft=((Unit)person).type.getSpeed();
-            if(person instanceof NonMilitary)
-                person.movesLeft=((NonMilitary)person).getType().getSpeed();
+        for (Person person : people) {
+            if (person instanceof Unit)
+                person.movesLeft = ((Unit) person).type.getSpeed();
+            if (person instanceof NonMilitary)
+                person.movesLeft = ((NonMilitary) person).getType().getSpeed();
         }
     }
 
@@ -104,7 +106,7 @@ public class Government {
         return population;
     }
 
-    
+
     public int getPopularity() {
         return popularity;
     }
@@ -297,8 +299,12 @@ public class Government {
         return number;
     }
 
-    public int getPercentOfBlessed() {
-        return numberOfBlessed * 100 / population;
+    public double getPercentOfBlessed() {
+        return percentOfBlessed;
+    }
+
+    public int getNumberOfBlessed() {
+        return (int) (percentOfBlessed / 100 * population);
     }
 
     public int getChangesOnPopularity() {
@@ -326,8 +332,7 @@ public class Government {
     }
 
     public int getReligionEffectOnPopularity() {
-        int percentOfBlessed = getPercentOfBlessed();
-        return (percentOfBlessed / 25) * 2 + numberOfChurches() * 2 + numberOfCathedrals() * 4;
+        return (int) (percentOfBlessed / 25) * 2 + numberOfChurches() * 2 + numberOfCathedrals() * 4;
     }
 
     public int getTaxEffectOnPopularity() {
@@ -344,5 +349,16 @@ public class Government {
 
     public int getFoodEffectOnPopularity() {
         return (int) (foodPerPerson() - 1) * 8;
+    }
+
+    public void increasePercentOfBlessed() { // todo : should be called after a turn
+        double numberOfBlessed = getNumberOfBlessed();
+        double randomFactor = Controller.randomDouble(0.5, 1); // a number less than 1
+        numberOfBlessed += maxBlessedThisTurn() * randomFactor;
+        percentOfBlessed = (double) numberOfBlessed / population;
+    }
+
+    private int maxBlessedThisTurn() {
+        return numberOfCathedrals() * 5 + numberOfChurches() * 2; // this may change
     }
 }

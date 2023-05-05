@@ -620,6 +620,9 @@ public class Game {
             removeEliminatedPeople(government);
             removeEliminatedBuildings(government);
         }
+        for (Government government : governments){
+            government.increasePercentOfBlessed();
+        }
         return eliminateDefeatedLords();
 
     }
