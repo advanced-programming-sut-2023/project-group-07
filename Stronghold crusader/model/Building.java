@@ -81,4 +81,8 @@ public class Building {
     public int column() {
         return column;
     }
+
+    public void remove() {
+        hp = 0;
+    }
 }

@@ -1,7 +1,6 @@
 package model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class Person {
     protected Government government;
@@ -85,5 +84,7 @@ public class Person {
     public LordColor getLordColor() {
         return lordColor;
     }
-
+    public void instantDie(){
+        hp = 0;
+    }
 }

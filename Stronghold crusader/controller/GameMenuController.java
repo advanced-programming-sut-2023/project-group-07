@@ -677,10 +677,10 @@ public class GameMenuController {
         }
         if (tunnelers.size() == 0) return Messages.NO_AVAILABLE_TUNNELER;
         for(Tunneler tunneler : tunnelers){
-            //todo : sendToDestination()
-
+            tunneler.setAvailable(false);
+            Controller.sendToCoordinate(x,y, tunneler);
         }
-
-        return null; //todo
+        return Messages.SUCCESSFUL_DIG_TUNNEL;
     }
+
 }
