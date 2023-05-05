@@ -6,8 +6,13 @@ import model.Texture;
 public class MapPixel {
     private Texture texture;
     private ArrayList<Unit> units = new ArrayList<Unit>();
+    private ArrayList<Engineer> engineers = new ArrayList<Engineer>();
     private ArrayList<NonMilitary> nonMilitaries = new ArrayList<NonMilitary>();
-    private ArrayList<Building> buildings = new ArrayList<Building>();
+    private ArrayList<Building> normalBuildings = new ArrayList<Building>();
+    private ArrayList<GateHouse> gateHouses = new ArrayList<GateHouse>();
+    private ArrayList<Tower> towers = new ArrayList<Tower>();
+    private ArrayList<MilitaryCamp> militaryCamps = new ArrayList<MilitaryCamp>();
+    private ArrayList<ConvertingResources> convertingResources = new ArrayList<ConvertingResources>();
     private ArrayList<SiegeWeapon> siegeWeapons = new ArrayList<SiegeWeapon>();
     private LordColor lordKeep = null;
     private Tree tree = null;
@@ -24,11 +29,11 @@ public class MapPixel {
         return canBeAccessed;
     }
 
-    public void resetAccess(){
+    public void resetAccess() {
         canBeAccessed = false;
     }
 
-    public void setAccess(){
+    public void setAccess() {
         canBeAccessed = true;
     }
 
@@ -40,26 +45,35 @@ public class MapPixel {
         this.siegeWeapons.remove(siegeWeapon);
     }
 
-    public LordColor getLordKeep(){
+    public LordColor getLordKeep() {
         return this.lordKeep;
     }
 
     public void addBuilding(Building building) {
-        buildings.add(building);
+        if (building instanceof GateHouse)
+            gateHouses.add((GateHouse) building);
+        else if (building instanceof Tower)
+            towers.add((Tower) building);
+        else if (building instanceof MilitaryCamp)
+            militaryCamps.add((MilitaryCamp) building);
+        else if (building instanceof ConvertingResources)
+            convertingResources.add((ConvertingResources) building);
+        else
+            normalBuildings.add(building);
     }
 
     public void addPerson(Person person) {
-        if(person instanceof Unit)
-            units.add((Unit)person);
+        if (person instanceof Unit)
+            units.add((Unit) person);
         else
-            nonMilitaries.add((NonMilitary)person);
+            nonMilitaries.add((NonMilitary) person);
     }
 
     public void removePerson(Person person) {
-        if(person instanceof Unit)
-            units.remove((Unit)person);
+        if (person instanceof Unit)
+            units.remove((Unit) person);
         else
-            nonMilitaries.remove((NonMilitary)person);
+            nonMilitaries.remove((NonMilitary) person);
     }
 
     public void setTree(Tree tree) {
@@ -79,9 +93,13 @@ public class MapPixel {
         this.doesHaveOil = false;
         this.rock = null;
         this.tree = null;
-        this.buildings.clear();
         this.units.clear();
         this.nonMilitaries.clear();
+        this.militaryCamps.clear();
+        this.towers.clear();
+        this.convertingResources.clear();
+        this.gateHouses.clear();
+        this.normalBuildings.clear();
     }
 
     public ArrayList<Unit> getUnits() {
@@ -89,26 +107,40 @@ public class MapPixel {
     }
 
     public ArrayList<Person> getPeople() {
-        ArrayList <Person> people = new ArrayList<Person>();
-        if(!this.units.isEmpty())
-        for(Unit unit : this.units)
-        people.add(unit);
-        if(!this.nonMilitaries.isEmpty())
-            for(NonMilitary nonMilitary : this.nonMilitaries)
-                people.add(nonMilitary);
+        ArrayList<Person> people = new ArrayList<Person>();
+        for (Unit unit : this.units)
+            people.add(unit);
+        for (NonMilitary nonMilitary : this.nonMilitaries)
+            people.add(nonMilitary);
         return people;
     }
 
     public ArrayList<Building> getBuildings() {
-        return (ArrayList<Building>) this.buildings.clone();
+        ArrayList<Building> buildings = new ArrayList<Building>();
+        for (GateHouse gateHouse : this.gateHouses)
+            buildings.add(gateHouse);
+        for (Tower tower : this.towers)
+            buildings.add(tower);
+        for (MilitaryCamp militaryCamp : this.militaryCamps)
+            buildings.add(militaryCamp);
+        for (ConvertingResources convertingResources : this.convertingResources)
+            buildings.add(convertingResources);
+        for (Building building : this.normalBuildings)
+            buildings.add(building);
+        return buildings;
     }
 
     public void removeBuilding(Building building) {
-        this.buildings.remove(building);
-    }
-
-    public void removeUnit(Unit unit) {
-        this.units.remove(unit);
+        if (building instanceof GateHouse)
+            gateHouses.remove((GateHouse) building);
+        else if (building instanceof Tower)
+            towers.remove((Tower) building);
+        else if (building instanceof MilitaryCamp)
+            militaryCamps.remove((MilitaryCamp) building);
+        else if (building instanceof ConvertingResources)
+            convertingResources.remove((ConvertingResources) building);
+        else
+            normalBuildings.remove(building);
     }
 
     public Tree getTree() {
@@ -128,12 +160,11 @@ public class MapPixel {
     }
 
     public boolean canDropObject() {
-        return (buildings.size() == 0 && rock == null && tree == null && lordKeep == null);
+        return (getBuildings().size() == 0 && rock == null && tree == null && lordKeep == null);
     }
 
-
     private boolean doesHaveWall() {
-        for (Building building : buildings) {
+        for (Building building : normalBuildings) {
             if (building instanceof Tower || building instanceof GateHouse)
                 return true;
             if (building.getTypeOfBuilding().equals(TypeOfBuilding.LOW_WALL))
@@ -146,18 +177,19 @@ public class MapPixel {
         return false;
     }
 
-    private boolean doesHaveLord(){
-        for(Unit unit : units)
-            if(unit.getType().equals(UnitTypes.LORD))
+    private boolean doesHaveLord() {
+        for (Unit unit : units)
+            if (unit.getType().equals(UnitTypes.LORD))
                 return true;
         return false;
     }
+
     public String objectToShow() {
-        if(this.lordKeep != null)
+        if (this.lordKeep != null)
             return "K";
         if (!units.isEmpty())
             return doesHaveLord() ? "L" : "S";
-        if (this.buildings.size() != 0)
+        if (getBuildings().size() != 0)
             return doesHaveWall() ? "W" : "B";
         if (this.tree != null)
             return "T";
@@ -166,32 +198,35 @@ public class MapPixel {
         return "";
     }
 
-    public String details(){
+    public String details() {
         String output = "";
         String buildingsStr = "";
         String unitsStr = "";
         output += "type/texture :" + texture.toString();
-        for(Building building : this.buildings)
-            buildingsStr += building.getTypeOfBuilding().toString() + " (color: " + building.getLordColor().toString() + ") (Hp: " + building.getHp() +  ")\n";
+        for (Building building : getBuildings())
+            buildingsStr += building.getTypeOfBuilding().toString() + " (color: " + building.getLordColor().toString()
+                    + ") (Hp: " + building.getHp() + ")\n";
         if (!buildingsStr.equals(""))
             output += "\n<< BUILDINGS >>\n" + buildingsStr.trim();
-        for(LordColor lordColor : LordColor.values())
-            for(UnitTypes unitType : UnitTypes.values()){
-                int counter=0;
-                int hpSum = 0; 
-                for(Unit unit : units)
-                    if(unit.getLordColor().equals(lordColor) && unit.getType().equals(unitType)){
+        for (LordColor lordColor : LordColor.values())
+            for (UnitTypes unitType : UnitTypes.values()) {
+                int counter = 0;
+                int hpSum = 0;
+                for (Unit unit : units)
+                    if (unit.getLordColor().equals(lordColor) && unit.getType().equals(unitType)) {
                         hpSum += unit.getHp();
                         counter++;
                     }
-                if(counter > 0){
-                    if(!unitType.equals(unitType.LORD)) 
-                        unitsStr += unitType.toString() + " (color: " + lordColor.toString() + ") (count: " + counter + ") (Average Hp: " + (int)(hpSum/counter) +  ")\n";
+                if (counter > 0) {
+                    if (!unitType.equals(unitType.LORD))
+                        unitsStr += unitType.toString() + " (color: " + lordColor.toString() + ") (count: " + counter
+                                + ") (Average Hp: " + (int) (hpSum / counter) + ")\n";
                     else
-                        unitsStr += unitType.toString() + " (color: " + lordColor.toString() + ") (Hp: " + hpSum + ")\n";
+                        unitsStr += unitType.toString() + " (color: " + lordColor.toString() + ") (Hp: " + hpSum
+                                + ")\n";
                 }
             }
-        if(!unitsStr.equals(""))
+        if (!unitsStr.equals(""))
             output += "\n<< UNITS >>\n" + unitsStr.trim();
         return output;
     }

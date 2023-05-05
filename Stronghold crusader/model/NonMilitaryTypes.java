@@ -1,25 +1,25 @@
 package model;
 
 public enum NonMilitaryTypes {
-    JESTER(20,3),
-    WOODCUTTER(100,3),
-    HUNTER(100,3),
-    FARMER(100,3),
-    PEASANT(20,3),
-    ORDINARY_PERSON(20,2),
-    STONE_MASON(100,2),
-    IRON_MINER(100,2),
-    PITCH_DIGGER(100,3),
-    MILL_BOY(100,4),
-    BAKER(100,3),
-    BREWER(100,3),
-    INNKEEPER(100,3),
-    FLETCHER(100,2),
-    ARMOURER(100,2),
-    BLACKSMITH(100,2),
-    POLETURNER(100,2),
-    TANNER(100,2),
-    PRIEST(100,2);
+    JESTER(20,12),
+    WOODCUTTER(100,12),
+    HUNTER(100,12),
+    FARMER(100,12),
+    PEASANT(20,12),
+    ORDINARY_PERSON(20,8),
+    STONE_MASON(100,8),
+    IRON_MINER(100,8),
+    PITCH_DIGGER(100,12),
+    MILL_BOY(100,16),
+    BAKER(100,12),
+    BREWER(100,12),
+    INNKEEPER(100,12),
+    FLETCHER(100,8),
+    ARMOURER(100,8),
+    BLACKSMITH(100,8),
+    POLETURNER(100,8),
+    TANNER(100,8),
+    PRIEST(100,8);
 
     private int hp;
     private int speed;

@@ -12,6 +12,15 @@ public class ConvertingResources extends Building {
         this.resource = convertingResourcesTypes.getResourceDelivered();
         this.type = convertingResourcesTypes;
     }
+    public ConvertingResources(LordColor lordColor, TypeOfBuilding typeOfBuilding, int row, int column,ConvertingResourcesTypes convertingResourcesTypes) {
+        super(lordColor, typeOfBuilding, row, column);
+        this.resource = convertingResourcesTypes.getResourceDelivered();
+        this.type = convertingResourcesTypes;
+    }
+
+    public ConvertingResourcesTypes getType() {
+        return type;
+    }
 
     public void setResource(Resources resource) {
         this.resource = resource;

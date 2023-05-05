@@ -112,7 +112,8 @@ public class GameMenuController {
             MilitaryCamp militaryCamp = new MilitaryCamp(currentGovernment, typeOfBuilding, row, column);
             building = militaryCamp;
         } else if (typeOfBuilding.getType().equals("converting resources")) {
-            ConvertingResources convertingResources = new ConvertingResources(currentGovernment, typeOfBuilding, row, column,ConvertingResourcesTypes.getTypeByName(name));
+            ConvertingResources convertingResources = new ConvertingResources(currentGovernment, typeOfBuilding, row,
+                    column, ConvertingResourcesTypes.getTypeByName(name));
             building = convertingResources;
         } else
             building = new Building(currentGovernment, typeOfBuilding, row, column);
@@ -123,16 +124,17 @@ public class GameMenuController {
                 building.setWorkers(typeOfBuilding.getWorkerInUse());
                 for (int i = 0; i < typeOfBuilding.getWorkerInUse(); i++) {
                     NonMilitary nonMilitary = new NonMilitary(
-                            new int[]{map.getKeepPosition(currentGovernment.getColor())[0],
-                                    map.getKeepPosition(currentGovernment.getColor())[1]},
-                            currentGovernment, typeOfBuilding.getWorkerType(),building);
+                        new int[] { map.getKeepPosition(currentGovernment.getColor())[0],
+                            map.getKeepPosition(currentGovernment.getColor())[1] },
+                            currentGovernment, typeOfBuilding.getWorkerType(), building);
+                    ArrayList<int[]> path = game.pathToBuilding(nonMilitary, building);
                     map.getMapPixel(map.getKeepPosition(currentGovernment.getColor())[0],
                             map.getKeepPosition(currentGovernment.getColor())[1]).addPerson(nonMilitary);
                     nonMilitary.setMovePattern(map.getPathList(nonMilitary.getCurrentLocation()[0],
-                            nonMilitary.getCurrentLocation()[1], row, column));
+                            nonMilitary.getCurrentLocation()[1], path.get(path.size()-1)[0], path.get(path.size()-1)[1]));
                     nonMilitary.setPatrolLocation(
-                            new int[]{row, column, map.getKeepPosition(currentGovernment.getColor())[0],
-                                    map.getKeepPosition(currentGovernment.getColor())[1]});
+                            new int[] { path.get(path.size()-1)[0], path.get(path.size()-1)[1], map.getKeepPosition(currentGovernment.getColor())[0],
+                                    map.getKeepPosition(currentGovernment.getColor())[1] });
                     nonMilitary.setPatrolling(true);
                     int frow = nonMilitary.getCurrentLocation()[0], fcolumn = nonMilitary.getCurrentLocation()[1];
                     nonMilitary.move();
@@ -226,7 +228,8 @@ public class GameMenuController {
         int counter = 0;
         for (Person person : selectedUnit) {
 
-            if (!(person instanceof Unit)) continue;
+            if (!(person instanceof Unit))
+                continue;
 
             if (((Unit) person).getType().equals(UnitTypes.ENGINEER)) {
                 location = person.getCurrentLocation();
@@ -431,37 +434,37 @@ public class GameMenuController {
             }
         if (enemy == null)
             return Messages.NO_ENEMY_HERE;
-        game.attackEnemy(row, column,enemy);
+        game.attackEnemy(row, column, enemy);
         return Messages.ATTACKING_ENEMY_UNITS;
     }
 
     public Messages attackBuilding(int row, int column) {
-        if(!areCoordinatesValid(row, column))
+        if (!areCoordinatesValid(row, column))
             return Messages.INVALID_COORDINATES;
         Building enemyBuilding = null;
-        for(Building building : game.getMap().getMapPixel(row, column).getBuildings())
-            if(!building.getGovernment().equals(game.getCurrentGovernment())){
+        for (Building building : game.getMap().getMapPixel(row, column).getBuildings())
+            if (!building.getGovernment().equals(game.getCurrentGovernment())) {
                 enemyBuilding = building;
                 break;
             }
-        if(enemyBuilding == null)
+        if (enemyBuilding == null)
             return Messages.NO_ENEMY_HERE;
-        if(game.getSelectedUnit().isEmpty())
+        if (game.getSelectedUnit().isEmpty())
             return Messages.NO_UNITS_SELECTED;
         boolean canAnyOneDamageBuilding = false;
-        for (Person person : game.getSelectedUnit()){
-            if(game.canAttackBuilding((Unit)person)){
+        for (Person person : game.getSelectedUnit()) {
+            if (game.canAttackBuilding((Unit) person)) {
                 canAnyOneDamageBuilding = true;
                 break;
             }
         }
-        if(canAnyOneDamageBuilding == false)
+        if (canAnyOneDamageBuilding == false)
             return Messages.NO_UNIT_CAN_ATTACK_BUILDINGS;
         game.attackBuildings(enemyBuilding);
         return Messages.ATTACKING_ENEMY_BUILDINGS;
 
     }
-    
+
     public Messages areaAttack(int row, int column) {
         if (game.getSelectedUnit().isEmpty())
             return Messages.NO_UNITS_SELECTED;
@@ -568,7 +571,8 @@ public class GameMenuController {
     public String nextTurn() throws IOException {
         String result = "";
         result += game.nextTurn();
-        if(game.gameOver()) result += game.endGame();
+        if (game.gameOver())
+            result += game.endGame();
         return result.equals("") ? null : result;
     }
 
@@ -600,8 +604,10 @@ public class GameMenuController {
         ArrayList<Person> selectedUnits = game.getSelectedUnit();
         for (Person person : selectedUnits) {
             Unit unit;
-            if (person instanceof Unit) unit = (Unit) person;
-            else continue;
+            if (person instanceof Unit)
+                unit = (Unit) person;
+            else
+                continue;
 
             if (unit instanceof Engineer) {
                 Engineer engineerTemp = (Engineer) unit;
@@ -645,8 +651,10 @@ public class GameMenuController {
         ArrayList<Engineer> getterEngineers = new ArrayList<>();
         for (Person person : selectedUnits) {
             Unit unit;
-            if (person instanceof Unit) unit = (Unit) person;
-            else continue;
+            if (person instanceof Unit)
+                unit = (Unit) person;
+            else
+                continue;
 
             if (unit instanceof Engineer) {
                 Engineer engineerTemp = (Engineer) unit;
@@ -655,7 +663,8 @@ public class GameMenuController {
                 }
             }
         }
-        if (getterEngineers.size() == 0) return Messages.NO_ONE_TO_GIVE_OIL_TO;
+        if (getterEngineers.size() == 0)
+            return Messages.NO_ONE_TO_GIVE_OIL_TO;
         for (Engineer engineer : getterEngineers) {
             sendToOilSmelter(engineer);
         }
@@ -669,16 +678,19 @@ public class GameMenuController {
         ArrayList<Person> selectedUnits = game.getSelectedUnit();
         ArrayList<Tunneler> tunnelers = new ArrayList<>();
         Government owner = game.getCurrentGovernment();
-        for (Person person : selectedUnits){
-            if (!person.getGovernment().equals(owner)) continue; // todo : is this necessary?
-            if (person instanceof Tunneler tunneler){
-                if (tunneler.isAvailable()) tunnelers.add(tunneler);
+        for (Person person : selectedUnits) {
+            if (!person.getGovernment().equals(owner))
+                continue; // todo : is this necessary?
+            if (person instanceof Tunneler tunneler) {
+                if (tunneler.isAvailable())
+                    tunnelers.add(tunneler);
             }
         }
-        if (tunnelers.size() == 0) return Messages.NO_AVAILABLE_TUNNELER;
-        for(Tunneler tunneler : tunnelers){
+        if (tunnelers.size() == 0)
+            return Messages.NO_AVAILABLE_TUNNELER;
+        for (Tunneler tunneler : tunnelers) {
             tunneler.setAvailable(false);
-            Controller.sendToCoordinate(x,y, tunneler);
+            Controller.sendToCoordinate(x, y, tunneler);
         }
         return Messages.SUCCESSFUL_DIG_TUNNEL;
     }

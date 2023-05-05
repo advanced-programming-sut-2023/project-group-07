@@ -4,15 +4,21 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import model.Map;
 import model.Texture;
+import model.Tower;
 import model.Tree;
 import model.TypeOfBuilding;
 import model.UnitTypes;
 import model.MapPixel;
+import model.MilitaryCamp;
 import model.Rock;
 import model.Government;
 import model.LordColor;
 import model.Unit;
 import model.Building;
+import model.ConvertingResources;
+import model.ConvertingResourcesTypes;
+import model.GateHouse;
+
 import java.io.IOException;
 
 public class CreateMapMenuController {
@@ -209,23 +215,39 @@ public class CreateMapMenuController {
         }
 
         if (typeOfBuilding.equals(TypeOfBuilding.GRANARY) || typeOfBuilding.equals(TypeOfBuilding.STOCK_PILE))
-            if (doesHaveThisBuilding(typeOfBuilding)
+            if (doesHaveThisBuilding(typeOfBuilding , lordColor)
                     && !map.isAdjacentToSameType(row, column, typeOfBuilding.getLength(), typeOfBuilding))
                 return Messages.MUST_BE_ADJACENT_TO_BUILDINGS_OF_THE_SAME_TYPE;
-
-        Building building = new Building(lordColor, typeOfBuilding, row, column);
+        Building building;
+        if (typeOfBuilding.getType().equals("gate")) {
+            GateHouse gateHouse = new GateHouse(lordColor, typeOfBuilding, row, column);
+            building = gateHouse;
+        } else if (typeOfBuilding.getType().equals("tower")) {
+            Tower tower = new Tower(lordColor, typeOfBuilding, row, column);
+            building = tower;
+        } else if (typeOfBuilding.getType().equals("military camp")) {
+            MilitaryCamp militaryCamp = new MilitaryCamp(lordColor, typeOfBuilding, row, column);
+            building = militaryCamp;
+        } else if (typeOfBuilding.getType().equals("converting resources")) {
+            ConvertingResources convertingResources = new ConvertingResources(lordColor, typeOfBuilding, row, column,ConvertingResourcesTypes.getTypeByName(type));
+            building = convertingResources;
+        } else
+            building = new Building(lordColor, typeOfBuilding, row, column);
         for (int i = 0; i < typeOfBuilding.getLength(); i++)
             for (int j = 0; j < typeOfBuilding.getWidth(); j++)
                 map.getMapPixel(row + j, column + i).addBuilding(building);
         return Messages.DEPLOYMENT_SUCCESSFUL;
     }
 
-    private boolean doesHaveThisBuilding(TypeOfBuilding typeOfBuilding) {
+    private boolean doesHaveThisBuilding(TypeOfBuilding typeOfBuilding , LordColor lordColor) {
         for (int i = 0; i < map.getSize(); i++)
-            for (int j = 0; j < map.getSize(); j++)
-                if (!map.getMapPixel(i, j).getBuildings().isEmpty()
-                        && map.getMapPixel(i, j).getBuildings().get(0).getTypeOfBuilding().equals(typeOfBuilding))
+            for (int j = 0; j < map.getSize(); j++){
+                if(map.getMapPixel(i, j).getBuildings().isEmpty())
+                    continue;
+                Building building = map.getMapPixel(i, j).getBuildings().get(0);
+                if (building.getTypeOfBuilding().equals(typeOfBuilding) && building.getLordColor().equals(lordColor))
                     return true;
+            }
         return false;
     }
 

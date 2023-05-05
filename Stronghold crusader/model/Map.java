@@ -288,7 +288,7 @@ public class Map {
                         person.setGovernment(governments.get(person.getLordColor()));
                         governments.get(person.getLordColor()).addPerson(person);
                     } else
-                        pixel.removeUnit((Unit) person);
+                        pixel.removePerson((Unit) person);
                 }
             }
         }

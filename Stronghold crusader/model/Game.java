@@ -240,10 +240,10 @@ public class Game {
                             map.getPathList(person.currentLocation[0], person.currentLocation[1], frow, fcolumn));
                 applyPersonMove(person);
                 person.setPatrolling(true);
-                if(person instanceof Unit)
+                if (person instanceof Unit)
                     ((Unit) person).setAttacking(false);
-                    ((Unit) person).setAreaAttacking(false);
-                    ((Unit) person).setAttackingBuilding(false);(false);
+                ((Unit) person).setAreaAttacking(false);
+                ((Unit) person).setAttackingBuilding(false);
             }
         selectedUnit.clear();
     }
@@ -261,14 +261,54 @@ public class Game {
                 continue;
             if (!person.isPatrolling())
                 continue;
-            if (person.currentLocation[0] == person.patrolLocation[2]
-                    && person.currentLocation[1] == person.patrolLocation[3])
-                person.setPatrolLocation(new int[] { person.patrolLocation[2], person.patrolLocation[3],
-                        person.patrolLocation[0], person.patrolLocation[1] });
-            int frow = person.patrolLocation[0], fcolumn = person.patrolLocation[1], srow = person.patrolLocation[2],
-                    scolumn = person.patrolLocation[3];
-            person.setMovePattern(map.getPathList(frow, fcolumn, srow, scolumn));
+            if (person instanceof Unit) {
+                if (person.currentLocation[0] == person.patrolLocation[2]
+                        && person.currentLocation[1] == person.patrolLocation[3])
+                    person.setPatrolLocation(new int[] { person.patrolLocation[2], person.patrolLocation[3],
+                            person.patrolLocation[0], person.patrolLocation[1] });
+                int frow = person.patrolLocation[0], fcolumn = person.patrolLocation[1],
+                        srow = person.patrolLocation[2],
+                        scolumn = person.patrolLocation[3];
+                person.setMovePattern(map.getPathList(frow, fcolumn, srow, scolumn));
+            } else {
+                NonMilitary nonMilitary = (NonMilitary) person;
+                if (nonMilitary.isMovingNeededResources()) {
+                    ArrayList<int[]> path = pathToBuilding(nonMilitary, nonMilitary.getWorkBuilding());
+                    if (path.isEmpty() && isNextToBuilding(nonMilitary, nonMilitary.getWorkBuilding())) {
+                        nonMilitary.setMovePattern(map.getPathList(person.getCurrentLocation()[0],
+                                person.getCurrentLocation()[1], map.getKeepPosition(government.getColor())[0],
+                                map.getKeepPosition(government.getColor())[1]));
+                        nonMilitary
+                                .setPatrolLocation(
+                                        new int[] { nonMilitary.getCurrentLocation()[0],
+                                                nonMilitary.getCurrentLocation()[1],
+                                                map.getKeepPosition(government.getColor())[0],
+                                                map.getKeepPosition(government.getColor())[1] });
+                    } else {
+                        nonMilitary.setMovePattern(path);
+                        nonMilitary
+                                .setPatrolLocation(
+                                        new int[] { nonMilitary.patrolLocation[0], nonMilitary.patrolLocation[1],
+                                                path.get(path.size() - 1)[0], path.get(path.size() - 1)[1] });
+
+                    }
+                }
+            }
         }
+    }
+
+    private boolean isNextToBuilding(Person person, Building building) {
+        int row = person.getCurrentLocation()[0];
+        int column = person.getCurrentLocation()[1];
+        if (row > 0 && map.getMapPixel(row - 1, column).getBuildings().contains(building))
+            return true;
+        if (row < map.getSize() - 1 && map.getMapPixel(row + 1, column).getBuildings().contains(building))
+            return true;
+        if (column > 0 && map.getMapPixel(row, column - 1).getBuildings().contains(building))
+            return true;
+        if (column < map.getSize() - 1 && map.getMapPixel(row, column + 1).getBuildings().contains(building))
+            return true;
+        return false;
     }
 
     public void setAttackPattern(Government government) {
@@ -300,10 +340,10 @@ public class Game {
             if (person.getGovernment().equals(currentGovernment)) {
                 person.setMovePattern(new ArrayList<int[]>());
                 person.setPatrolling(false);
-                if(person instanceof Unit){
-                    ((Unit)person).setAttackingBuilding(false);
-                    ((Unit)person).setAttacking(false);
-                    ((Unit)person).setAreaAttacking(false);
+                if (person instanceof Unit) {
+                    ((Unit) person).setAttackingBuilding(false);
+                    ((Unit) person).setAttacking(false);
+                    ((Unit) person).setAreaAttacking(false);
                 }
 
             }
@@ -335,35 +375,45 @@ public class Game {
     }
 
     public void attackBuildings(Building building) {
-        for (Person person2 : selectedUnit) {
-            Unit unit = (Unit) person2;
-            if(!canAttackBuilding(unit))
+        for (Person person : selectedUnit) {
+            Unit unit = (Unit) person;
+            if (!canAttackBuilding(unit))
                 continue;
-            unit.setAttackingBuilding(true);
-            ArrayList <int[]> path = new ArrayList<int[]>();
-            int row = building.getRow();
-            int column = building.getColumn();
-            for(int i = row ; i < row + building.getTypeOfBuilding().getWidth() ; i++)
-                if(!(path = map.getPathList(unit.currentLocation[0], unit.currentLocation[1], i, column-1)).isEmpty())
-                    break;
-            for(int i = row ; (i < row + building.getTypeOfBuilding().getWidth()) && path.isEmpty() ; i++)
-                if(!(path = map.getPathList(unit.currentLocation[0], unit.currentLocation[1], i, column + building.getTypeOfBuilding().getLength())).isEmpty())
-                    break;
-            for(int j = column ; (j < column + building.getTypeOfBuilding().getLength()) && path.isEmpty() ; j++)
-                 if(!(path = map.getPathList(unit.currentLocation[0], unit.currentLocation[1], row-1, j)).isEmpty())
-                    break;
-            for(int j = column ; (j < column + building.getTypeOfBuilding().getLength()) && path.isEmpty() ; j++)
-                 if(!(path = map.getPathList(unit.currentLocation[0], unit.currentLocation[1], row+building.getTypeOfBuilding().getWidth(), j)).isEmpty())
-                    break;
+            ArrayList<int[]> path = pathToBuilding(person, building);
             unit.setMovePattern(path);
-            unit.setBuildingBeingAttacked(building);
-            unit.setPersonBeingAttacked(null);
-            applyPersonMove(unit);
-            unit.setPatrolling(false);
-            unit.setAttacking(false);
-            unit.setAreaAttacking(false);
+            if (!path.isEmpty()) {
+                unit.setBuildingBeingAttacked(building);
+                unit.setAttackingBuilding(true);
+                unit.setPersonBeingAttacked(null);
+                applyPersonMove(unit);
+                unit.setPatrolling(false);
+                unit.setAttacking(false);
+                unit.setAreaAttacking(false);
+            }
         }
         selectedUnit.clear();
+    }
+
+    public ArrayList<int[]> pathToBuilding(Person person, Building building) {
+        ArrayList<int[]> path = new ArrayList<int[]>();
+        int row = building.getRow();
+        int column = building.getColumn();
+        for (int i = row; i < row + building.getTypeOfBuilding().getWidth(); i++)
+            if (!(path = map.getPathList(person.currentLocation[0], person.currentLocation[1], i, column - 1))
+                    .isEmpty())
+                break;
+        for (int i = row; (i < row + building.getTypeOfBuilding().getWidth()) && path.isEmpty(); i++)
+            if (!(path = map.getPathList(person.currentLocation[0], person.currentLocation[1], i,
+                    column + building.getTypeOfBuilding().getLength())).isEmpty())
+                break;
+        for (int j = column; (j < column + building.getTypeOfBuilding().getLength()) && path.isEmpty(); j++)
+            if (!(path = map.getPathList(person.currentLocation[0], person.currentLocation[1], row - 1, j)).isEmpty())
+                break;
+        for (int j = column; (j < column + building.getTypeOfBuilding().getLength()) && path.isEmpty(); j++)
+            if (!(path = map.getPathList(person.currentLocation[0], person.currentLocation[1],
+                    row + building.getTypeOfBuilding().getWidth(), j)).isEmpty())
+                break;
+        return path;
     }
 
     public void areaAttack(int row, int column) {
@@ -460,7 +510,6 @@ public class Game {
                 || unit.getType().equals(UnitTypes.CROSSBOWMAN));
     }
 
-
     private Unit getLordInPixel(int[] location) {
         for (Unit unit : map.getMapPixel(location[0], location[1]).getUnits())
             if (unit.getType().equals(UnitTypes.LORD))
@@ -476,35 +525,55 @@ public class Game {
                 map.getMapPixel(person.currentLocation[0], person.currentLocation[1]).removePerson(person);
             }
         }
-        for(Person person : eliminatedPeople)
+        for (Person person : eliminatedPeople)
             government.removePerson(person);
     }
 
-    public void removeEliminatedBuildings(Government government){
+    public void removeEliminatedBuildings(Government government) {
         ArrayList<Building> eliminatedBuildings = new ArrayList<>();
-        for(Building building : government.getBuildings()){
-            if(building.getHp() <= 0) {
+        for (Building building : government.getBuildings()) {
+            if (building.getHp() <= 0) {
                 eliminatedBuildings.add(building);
-                for(int i=0;i<building.getTypeOfBuilding().getWidth();i++)
-                    for(int j=0;j<building.getTypeOfBuilding().getLength();j++){
-                        MapPixel pixel =  map.getMapPixel(building.getRow()+i, building.getColumn()+j);
+                for (int i = 0; i < building.getTypeOfBuilding().getWidth(); i++)
+                    for (int j = 0; j < building.getTypeOfBuilding().getLength(); j++) {
+                        MapPixel pixel = map.getMapPixel(building.getRow() + i, building.getColumn() + j);
                         pixel.removeBuilding(building);
                         pixel.resetAccess();
                     }
             }
         }
-        for(Building building : eliminatedBuildings)
+        for (Building building : eliminatedBuildings)
             government.removeBuilding(building);
 
     }
 
     public void resourceDelivery(Government government) {
         for (Person person : government.getPeople()) {
-            if (person instanceof NonMilitary
-                    && person.currentLocation[0] == map.getKeepPosition(government.getColor())[0] + 7
-                    && person.currentLocation[1] == map.getKeepPosition(government.getColor())[1] + 3) {
-                        NonMilitary nonMilitary = (NonMilitary) person;
-                        //government.changeResources(nonMilitary, );
+            if (person instanceof NonMilitary) {
+                NonMilitary nonMilitary = (NonMilitary) person;
+                if (nonMilitary.currentLocation[0] == map.getKeepPosition(government.getColor())[0] + 7
+                        && nonMilitary.currentLocation[1] == map.getKeepPosition(government.getColor())[1] + 3) {
+                    if (nonMilitary.getWorkBuilding() instanceof ConvertingResources) {
+                        ConvertingResources convertingResources = (ConvertingResources) nonMilitary.getWorkBuilding();
+                        if (nonMilitary.isMovingResources()) {
+                            government.changeResources(convertingResources.getResource(),
+                                    convertingResources.getType().getResourceDeliveredAmount());
+                            nonMilitary.setMovingResources(false);
+                        }
+                        if (convertingResources.getType().getResourceNeededAmount() < government
+                                .getResourceAmount(convertingResources.getType().getResourceNeeded())) {
+                            government.changeResources(convertingResources.getType().getResourceNeeded(),
+                                    -convertingResources.getType().getResourceNeededAmount());
+                            nonMilitary.setMovingNeededResources(true);
+                        }
+                    }
+
+                } else if (nonMilitary.isMovingNeededResources()
+                        && nonMilitary.currentLocation[0] == nonMilitary.getPatrolLocation()[2]
+                        && nonMilitary.currentLocation[1] == nonMilitary.getPatrolLocation()[3]) {
+                    nonMilitary.setMovingNeededResources(false);
+                    nonMilitary.setMovingResources(true);
+                }
             }
         }
     }
