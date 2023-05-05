@@ -16,6 +16,7 @@ public class Controller {
     public static User currentUser;
     public static Game currentGame;
     public static final MenuPrinter menuPrinter = new MenuPrinter();
+    private static Random random;
 
     public static int randomNumber(int max) {
         Random random = new Random();
@@ -135,5 +136,9 @@ public class Controller {
     public static ArrayList<int[]> getPathForTunneler(int x, int y, Government owner) {
         //todo : write path for tunneler
         return null;
+    }
+    public static Random getRandom(){
+        if (random == null) random = new Random();
+        return random;
     }
 }
