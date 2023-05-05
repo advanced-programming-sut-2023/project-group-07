@@ -103,13 +103,12 @@ public class Controller {
     public static void sendToCoordinate(int x, int y, Person person) {
         int currentX = person.getCurrentLocation()[0],
                 currentY = person.getCurrentLocation()[1];
-        ArrayList<int[]> path = currentGame.getMap().getPathList(currentX, currentY, x, y);
+        ArrayList<int[]> path = map().getPathList(currentX, currentY, x, y);
         person.setMovePattern(path);
     }
 
     public static boolean isThereOpponentWall(int x, int y, Government government) {
-        Map map = currentGame.getMap();
-        MapPixel pixel = map.getMapPixel(x, y);
+        MapPixel pixel = map().getMapPixel(x, y);
         for (Building building : pixel.getBuildings()) {
             TypeOfBuilding type = building.getTypeOfBuilding();
             if (!building.getGovernment().equals(government) && type.getType().equals("wall"))
@@ -120,8 +119,7 @@ public class Controller {
     }
 
     public static boolean isThereOpponentTower(int x, int y, Government government) {
-        Map map = currentGame.getMap();
-        MapPixel pixel = map.getMapPixel(x, y);
+        MapPixel pixel = map().getMapPixel(x, y);
         for (Building building : pixel.getBuildings()) {
             TypeOfBuilding type = building.getTypeOfBuilding();
             if (!building.getGovernment().equals(government) && type.getType().equals("tower"))
@@ -132,8 +130,7 @@ public class Controller {
     } // todo : combine these methods
 
     public static void breakOpponentWall(int x, int y, Government government) {
-        Map map = currentGame.getMap();
-        MapPixel pixel = map.getMapPixel(x, y);
+        MapPixel pixel = map().getMapPixel(x, y);
         for (Building building : pixel.getBuildings()) {
             TypeOfBuilding type = building.getTypeOfBuilding();
             if (!building.getGovernment().equals(government) && type.getType().equals("wall"))
@@ -142,8 +139,7 @@ public class Controller {
     }
 
     public static void damageOpponentTower(int x, int y, Government government, int damage) {
-        Map map = currentGame.getMap();
-        MapPixel pixel = map.getMapPixel(x, y);
+        MapPixel pixel = map().getMapPixel(x, y);
         for (Building building : pixel.getBuildings()) {
             TypeOfBuilding type = building.getTypeOfBuilding();
             if (!building.getGovernment().equals(government) && type.getType().equals("tower"))
@@ -151,9 +147,61 @@ public class Controller {
         }
     }
 
-    public static ArrayList<int[]> getPathForTunneler(int x, int y, Government owner) {
-        //todo : write path for tunneler
+    public static ArrayList<int[]> getPathForTunneler(int x, int y, Government owner) {//todo : test this
+        Building targetBuilding =null;
+
+        for (int range = 0; range < size(); range++) {
+            Building buildingInRange = getDefendingOpponentBuildingInRange(x, y, range, owner);
+            if (buildingInRange != null) {
+                targetBuilding = buildingInRange;
+                break;
+            }
+        }
+        if (targetBuilding != null) {
+            int targetX = targetBuilding.row(), targetY = targetBuilding.column();
+            return map().getPathList(x,y, targetX, targetY);
+        }
         return null;
+    }
+
+    private static Building getDefendingOpponentBuildingInRange(int x, int y, int range, Government owner) {
+        for (int targetX : new int[]{x - range, x + range}) {
+            if (targetX < 0 || targetX >= size()) continue;
+            for (int targetY = y - range; targetY <= y + range; targetY++) {
+                if (targetY < 0 || targetY >= size()) continue;
+                Building building = getDefendingOpponentBuildingOnCoordinates(owner, x, y);
+                if (building != null) return building;
+            }
+        }
+        for (int targetY : new int[]{y - range, y + range}) {
+            if (targetY < 0 || targetY > size()) continue;
+            for (int targetX = x - range + 1; targetX <= x + range - 1; targetX++) {
+                if (targetX < 0 || targetX >= size()) continue;
+                Building building = getDefendingOpponentBuildingOnCoordinates(owner, x, y);
+                if (building != null) return building;
+            }
+        }
+        return null;
+    }// todo : test the method
+
+    private static Building getDefendingOpponentBuildingOnCoordinates(Government owner, int x, int y) {
+        for (Building building : map().getMapPixel(x, y).getBuildings()) {
+            TypeOfBuilding type = building.getTypeOfBuilding();
+            if (!building.getGovernment().equals(owner) &&
+                    (type.getType().equals("wall") || type.getType().equals("tower")))
+                return building;
+        }
+        return null;
+    }
+
+    public static int size() {
+        Map map = map();
+        int size = map.getSize();
+        return size;
+    }
+
+    public static Map map() {
+        return currentGame.getMap();
     }
 
     public static Random getRandom() {

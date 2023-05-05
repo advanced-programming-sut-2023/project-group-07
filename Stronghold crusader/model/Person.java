@@ -70,6 +70,7 @@ public class Person {
     }
 
     public void move() {
+        if (movePattern == null) return;
         int numberOfMoves = movesLeft;
         for (int i = 0; i < Math.min(numberOfMoves, movePattern.size()); i++) {
             if (i == Math.min(numberOfMoves, movePattern.size()) - 1)
