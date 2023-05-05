@@ -178,8 +178,8 @@ public class Government {
     }
 
     public HashMap<Resources, Integer> getResources() {
-        return resources;
-    } // todo: make this clone.
+        return (HashMap<Resources, Integer>) resources.clone();
+    }
 
     public void changeResources(Resources resource, int amount) {
         resources.put(resource, resources.get(resource) + amount);
@@ -351,7 +351,7 @@ public class Government {
         return (int) (foodPerPerson() - 1) * 8;
     }
 
-    public void increasePercentOfBlessed() { // todo : should be called after a turn
+    public void increasePercentOfBlessed() {
         double numberOfBlessed = getNumberOfBlessed();
         double randomFactor = Controller.randomDouble(0.5, 1); // a number less than 1
         numberOfBlessed += maxBlessedThisTurn() * randomFactor;

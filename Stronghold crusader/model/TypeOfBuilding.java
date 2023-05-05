@@ -104,7 +104,7 @@ public enum TypeOfBuilding {
         return buildingName;
     }
 
-    public static TypeOfBuilding getBuilding(String input) { // todo : make this for
+    public static TypeOfBuilding getBuilding(String input) {
         for (TypeOfBuilding typeOfBuilding : TypeOfBuilding.values()) {
             if (typeOfBuilding.buildingName.equals(input))
                 return typeOfBuilding;
