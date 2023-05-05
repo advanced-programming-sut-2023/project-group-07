@@ -107,32 +107,47 @@ public class Controller {
         person.setMovePattern(path);
     }
 
-    public static boolean isThereWall(int x, int y) {
+    public static boolean isThereOpponentWall(int x, int y, Government government) {
         Map map = currentGame.getMap();
         MapPixel pixel = map.getMapPixel(x, y);
         for (Building building : pixel.getBuildings()) {
             TypeOfBuilding type = building.getTypeOfBuilding();
-            if (type.equals(TypeOfBuilding.WALL_STAIRS) ||
-                    type.equals(TypeOfBuilding.LOW_WALL) ||
-                    type.equals(TypeOfBuilding.CRENELATED_WALL) ||
-                    type.equals(TypeOfBuilding.STONE_WALL))
+            if (!building.getGovernment().equals(government) && type.getType().equals("wall"))
                 return true;
 
         }
         return false;
     }
 
-    public static void breakWall(int x, int y) {
+    public static boolean isThereOpponentTower(int x, int y, Government government) {
         Map map = currentGame.getMap();
         MapPixel pixel = map.getMapPixel(x, y);
         for (Building building : pixel.getBuildings()) {
             TypeOfBuilding type = building.getTypeOfBuilding();
-            if (type.equals(TypeOfBuilding.WALL_STAIRS) ||
-                    type.equals(TypeOfBuilding.LOW_WALL) ||
-                    type.equals(TypeOfBuilding.CRENELATED_WALL) ||
-                    type.equals(TypeOfBuilding.STONE_WALL))
-                building.destroy();
+            if (!building.getGovernment().equals(government) && type.getType().equals("tower"))
+                return true;
 
+        }
+        return false;
+    } // todo : combine these methods
+
+    public static void breakOpponentWall(int x, int y, Government government) {
+        Map map = currentGame.getMap();
+        MapPixel pixel = map.getMapPixel(x, y);
+        for (Building building : pixel.getBuildings()) {
+            TypeOfBuilding type = building.getTypeOfBuilding();
+            if (!building.getGovernment().equals(government) && type.getType().equals("wall"))
+                building.destroy();
+        }
+    }
+
+    public static void damageOpponentTower(int x, int y, Government government, int damage) {
+        Map map = currentGame.getMap();
+        MapPixel pixel = map.getMapPixel(x, y);
+        for (Building building : pixel.getBuildings()) {
+            TypeOfBuilding type = building.getTypeOfBuilding();
+            if (!building.getGovernment().equals(government) && type.getType().equals("tower"))
+                building.changeHp(-damage);
         }
     }
 
@@ -145,4 +160,5 @@ public class Controller {
         if (random == null) random = new Random();
         return random;
     }
+
 }

@@ -71,15 +71,15 @@ public class Game {
             currentGovernment.changeResources(resource, -count);
         currentGovernment.changePeasant(-count);
         for (int i = 0; i < count; i++) {
-            int[] location = new int[] { map.getKeepPosition(currentGovernment.getColor())[0] + 7,
-                    map.getKeepPosition(currentGovernment.getColor())[1] + 3 };
+            int[] location = new int[]{map.getKeepPosition(currentGovernment.getColor())[0] + 7,
+                    map.getKeepPosition(currentGovernment.getColor())[1] + 3};
             Unit unit;
-            if (unitType.equals(UnitTypes.ENGINEER)) {
-                Engineer engineer = new Engineer(unitType, new int[] { location[0], location[1] }, currentGovernment);
-                unit = engineer;
-            } else if (unitType.equals(UnitTypes.TUNNELER)) {
-                Tunneler tunneler = new Tunneler(unitType, new int[] { location[0], location[1] }, currentGovernment);
+            if (unitType.equals(UnitTypes.TUNNELER)) {
+                Tunneler tunneler = new Tunneler(unitType, new int[]{location[0], location[1]}, currentGovernment);
                 unit = tunneler;
+            } else if (unitType.equals(UnitTypes.ENGINEER)) {
+                Engineer engineer = new Engineer(unitType, new int[]{location[0], location[1]}, currentGovernment);
+                unit = engineer;
             } else
                 unit = new Unit(unitType, location, currentGovernment);
             map.getMapPixel(location[0], location[1]).addPerson(unit);
@@ -184,7 +184,7 @@ public class Game {
                     if (person instanceof Unit)
                         units.add((Unit) person);
         this.selectedUnit = units;
-        this.selectedUnitArea = new int[] { frow, fcolumn, srow, scolumn };
+        this.selectedUnitArea = new int[]{frow, fcolumn, srow, scolumn};
     }
 
     public void moveUnit(int row, int column) {
@@ -231,7 +231,7 @@ public class Game {
     public void patrolUnits(int frow, int fcolumn, int srow, int scolumn) {
         for (Person person : selectedUnit)
             if (person.getGovernment().equals(currentGovernment)) {
-                person.setPatrolLocation(new int[] { frow, fcolumn, srow, scolumn });
+                person.setPatrolLocation(new int[]{frow, fcolumn, srow, scolumn});
                 person.setPatrolling(true);
                 if (person.currentLocation[0] == frow && person.currentLocation[1] == fcolumn)
                     person.setMovePattern(map.getPathList(frow, fcolumn, srow, scolumn));
@@ -264,8 +264,8 @@ public class Game {
             if (person instanceof Unit) {
                 if (person.currentLocation[0] == person.patrolLocation[2]
                         && person.currentLocation[1] == person.patrolLocation[3])
-                    person.setPatrolLocation(new int[] { person.patrolLocation[2], person.patrolLocation[3],
-                            person.patrolLocation[0], person.patrolLocation[1] });
+                    person.setPatrolLocation(new int[]{person.patrolLocation[2], person.patrolLocation[3],
+                            person.patrolLocation[0], person.patrolLocation[1]});
                 int frow = person.patrolLocation[0], fcolumn = person.patrolLocation[1],
                         srow = person.patrolLocation[2],
                         scolumn = person.patrolLocation[3];
@@ -280,16 +280,16 @@ public class Game {
                                 map.getKeepPosition(government.getColor())[1]));
                         nonMilitary
                                 .setPatrolLocation(
-                                        new int[] { nonMilitary.getCurrentLocation()[0],
+                                        new int[]{nonMilitary.getCurrentLocation()[0],
                                                 nonMilitary.getCurrentLocation()[1],
                                                 map.getKeepPosition(government.getColor())[0],
-                                                map.getKeepPosition(government.getColor())[1] });
+                                                map.getKeepPosition(government.getColor())[1]});
                     } else {
                         nonMilitary.setMovePattern(path);
                         nonMilitary
                                 .setPatrolLocation(
-                                        new int[] { nonMilitary.patrolLocation[0], nonMilitary.patrolLocation[1],
-                                                path.get(path.size() - 1)[0], path.get(path.size() - 1)[1] });
+                                        new int[]{nonMilitary.patrolLocation[0], nonMilitary.patrolLocation[1],
+                                                path.get(path.size() - 1)[0], path.get(path.size() - 1)[1]});
 
                     }
                 }
@@ -423,7 +423,7 @@ public class Game {
             unit.setAttacking(false);
             unit.setAttackingBuilding(false);
             unit.setAreaAttacking(true);
-            unit.setAreaAttackLocation(new int[] { row, column });
+            unit.setAreaAttackLocation(new int[]{row, column});
         }
         selectedUnit.clear();
     }
@@ -446,7 +446,7 @@ public class Game {
                         if (person instanceof Unit && ((Unit) person).isInvisible()
                                 && Math.abs(j) + Math.abs(i - Math.abs(j)) > 1)
                             continue;
-                        return new int[] { row + j, column + i - Math.abs(j) };
+                        return new int[]{row + j, column + i - Math.abs(j)};
                     }
                 }
             }
@@ -459,7 +459,7 @@ public class Game {
                         if (person instanceof Unit && ((Unit) person).isInvisible()
                                 && Math.abs(j) + Math.abs(i - Math.abs(j)) > 1)
                             continue;
-                        return new int[] { row + j, column - i + Math.abs(j) };
+                        return new int[]{row + j, column - i + Math.abs(j)};
                     }
                 }
             }
@@ -620,7 +620,7 @@ public class Game {
             removeEliminatedPeople(government);
             removeEliminatedBuildings(government);
         }
-        for (Government government : governments){
+        for (Government government : governments) {
             government.increasePercentOfBlessed();
         }
         return eliminateDefeatedLords();

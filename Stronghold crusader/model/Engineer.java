@@ -33,7 +33,7 @@ public class Engineer extends Unit { // todo : make an engineer when making one.
                 government.changeResources(Resources.PITCH, -1);
                 hasOil = true;
                 gonnaBringOil = false;
-                setPath(returningLocation[0], returningLocation[1]);
+                Controller.sendToCoordinate(returningLocation[0], returningLocation[1],this);
             }
         }
         if (!hasOil) return;
@@ -67,9 +67,5 @@ public class Engineer extends Unit { // todo : make an engineer when making one.
         setMovePattern(path);
     }
 
-    private void setPath(int finalX, int finalY) {
-        Map map = Controller.currentGame.getMap();
-        ArrayList<int[]> path = map.getPathList(currentLocation[0], currentLocation[1], finalX, finalY);
-        setMovePattern(path);
-    }
+
 }

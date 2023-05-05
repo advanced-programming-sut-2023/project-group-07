@@ -2,9 +2,10 @@ package model;
 
 import controller.Controller;
 
-public class Tunneler extends Engineer { // todo : when making tunneler, call this class not its super classes
+public class Tunneler extends Unit { // todo : when making tunneler, call this class not its super classes
     private boolean isAvailable;
     private boolean isTunneling;
+    private int hittingDamage = 500; // todo : writing this in enum or something
 
     public Tunneler(UnitTypes unitType, int[] currentLocation, Government government) {
         super(unitType, currentLocation, government);
@@ -36,11 +37,17 @@ public class Tunneler extends Engineer { // todo : when making tunneler, call th
                 currentLocation = new int[]{currentX, currentY};
                 movePattern.remove(0);
                 movesLeft--;
-
-                if (Controller.isThereWall(currentX, currentY)) {
-                    Controller.breakWall(currentX, currentY);
-                    instantDie();
+                boolean gonnaDie = false;
+                if (Controller.isThereOpponentWall(currentX, currentY, getGovernment())) {
+                    Controller.breakOpponentWall(currentX, currentY, getGovernment());
+                    gonnaDie = true;
                 }
+                if (Controller.isThereOpponentTower(currentX, currentY, getGovernment())) {
+                    Controller.damageOpponentTower(currentX, currentY, getGovernment(), hittingDamage);
+                    gonnaDie = true;
+                }
+                if (gonnaDie) instantDie();
+
             }
         }
     }

@@ -1,5 +1,7 @@
 package model;
 
+import controller.Controller;
+
 import java.util.ArrayList;
 
 public class Person {
@@ -54,7 +56,7 @@ public class Person {
     }
 
     public void changeHP(int change) {
-        hp+=change;
+        hp += change;
     }
 
     public void setGovernment(Government government) {
@@ -62,7 +64,7 @@ public class Person {
     }
 
     public void setMovePattern(ArrayList<int[]> movePattern) {
-        if(!movePattern.isEmpty())
+        if (!movePattern.isEmpty())
             movePattern.remove(0);
         this.movePattern = movePattern;
     }
@@ -71,7 +73,7 @@ public class Person {
         int numberOfMoves = movesLeft;
         for (int i = 0; i < Math.min(numberOfMoves, movePattern.size()); i++) {
             if (i == Math.min(numberOfMoves, movePattern.size()) - 1)
-                currentLocation = new int[] { movePattern.get(0)[0], movePattern.get(0)[1] };
+                currentLocation = new int[]{movePattern.get(0)[0], movePattern.get(0)[1]};
             movePattern.remove(0);
             movesLeft--;
         }
@@ -84,7 +86,9 @@ public class Person {
     public LordColor getLordColor() {
         return lordColor;
     }
-    public void instantDie(){
+
+    public void instantDie() {
         hp = 0;
     }
+
 }
