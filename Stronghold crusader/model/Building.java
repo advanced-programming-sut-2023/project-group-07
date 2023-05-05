@@ -1,7 +1,5 @@
 package model;
 
-import java.util.ArrayList;
-
 public class Building {
 
     protected Government government;
@@ -82,7 +80,7 @@ public class Building {
         return column;
     }
 
-    public void remove() {
+    public void destroy() {
         hp = 0;
     }
 }

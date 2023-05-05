@@ -51,7 +51,7 @@ public class Tunneler extends Engineer { // todo : when making tunneler, call th
         if (!isAvailable && !isTunneling && movePattern.size() == 0) {
             isTunneling = true;
             isInvisible = true;
-            setMovePattern(Controller.getPathToWall(currentLocation[0], currentLocation[1], government));
+            setMovePattern(Controller.getPathForTunneler(currentLocation[0], currentLocation[1], government));
         }
     }
 }

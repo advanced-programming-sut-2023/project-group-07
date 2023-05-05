@@ -127,13 +127,13 @@ public class Controller {
                     type.equals(TypeOfBuilding.LOW_WALL) ||
                     type.equals(TypeOfBuilding.CRENELATED_WALL) ||
                     type.equals(TypeOfBuilding.STONE_WALL))
-                building.remove();
+                building.destroy();
 
         }
     }
 
-    public static ArrayList<int[]> getPathToWall(int x, int y, Government owner) {
-        //todo
+    public static ArrayList<int[]> getPathForTunneler(int x, int y, Government owner) {
+        //todo : write path for tunneler
         return null;
     }
 }
