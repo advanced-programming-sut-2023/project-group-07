@@ -687,8 +687,24 @@ public class GameMenuController {
         if (x < 0 || x > size - 1 || y < 0 || y > size - 1)
             return Messages.INVALID_COORDINATES;
         ArrayList<Person> selectedUnits = game.getSelectedUnit();
-        ArrayList<Tunneler> tunnelers = new ArrayList<>();
         Government owner = game.getCurrentGovernment();
+        ArrayList<Tunneler> tunnelers = getTunnelers(selectedUnits, owner);
+
+        if (tunnelers.size() == 0)
+            return Messages.NO_AVAILABLE_TUNNELER;
+        sendTunnelersToWork(x, y, tunnelers);
+        return Messages.SUCCESSFUL_DIG_TUNNEL;
+    }
+
+    private void sendTunnelersToWork(int x, int y, ArrayList<Tunneler> tunnelers) {
+        for (Tunneler tunneler : tunnelers) {
+            tunneler.setAvailable(false);
+            Controller.sendToCoordinate(x, y, tunneler);
+        }
+    }
+
+    private ArrayList<Tunneler> getTunnelers(ArrayList<Person> selectedUnits, Government owner) {
+        ArrayList<Tunneler> tunnelers = new ArrayList<>();
         for (Person person : selectedUnits) {
             if (!person.getGovernment().equals(owner))
                 continue; // todo : is this necessary?
@@ -697,13 +713,7 @@ public class GameMenuController {
                     tunnelers.add(tunneler);
             }
         }
-        if (tunnelers.size() == 0)
-            return Messages.NO_AVAILABLE_TUNNELER;
-        for (Tunneler tunneler : tunnelers) {
-            tunneler.setAvailable(false);
-            Controller.sendToCoordinate(x, y, tunneler);
-        }
-        return Messages.SUCCESSFUL_DIG_TUNNEL;
+        return tunnelers;
     }
 
 }

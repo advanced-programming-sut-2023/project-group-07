@@ -99,7 +99,12 @@ public class GameMenu {
         int x = Integer.parseInt(matcher.group("x")),
                 y = Integer.parseInt(matcher.group("y"));
         switch (controller.digTunnel(x,y)){
-         //todo
+            case INVALID_COORDINATES :
+                return "Coordinates are invalid.";
+            case NO_AVAILABLE_TUNNELER:
+                return "There is no available tunneler in selected units.";
+            case SUCCESSFUL_DIG_TUNNEL:
+                return "Digging tunnel started successfully.";
         }
         return null;
     }
