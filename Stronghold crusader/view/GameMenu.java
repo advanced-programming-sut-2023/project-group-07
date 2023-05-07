@@ -610,7 +610,10 @@ public class GameMenu {
 
     private String disbandUnit() {
         switch (controller.disbandUnit()){
-            //todo
+            case NO_UNITS_SELECTED :
+                return "You don't have any selected unit.";
+            case UNITS_DISBANDED_SUCCESSFULLY:
+                return "You disbanded units successfully.";
         }
         return null;
     }
