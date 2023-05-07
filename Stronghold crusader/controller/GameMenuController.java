@@ -215,7 +215,7 @@ public class GameMenuController {
         return game.getSelectedBuilding().getTypeOfBuilding().getBuildingName();
     }
 
-    public Messages buildSiegeWeapon(String type, int row, int column) {
+    public Messages buildSiegeWeapon(String type, int row, int column) { // todo : review this method
         Map map = game.getMap();
         Government currentGovernment = game.getCurrentGovernment();
         ArrayList<Person> selectedUnit = game.getSelectedUnit();

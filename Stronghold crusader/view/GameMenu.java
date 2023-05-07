@@ -39,6 +39,8 @@ public class GameMenu {
                 System.out.println(selectPixelUnit(input));
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_REGION_UNIT) != null)
                 System.out.println(selectRegionUnit(input));
+            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.BUILD_SIEGE_WEAPON) != null)
+                System.out.println(buildSiegeWeapon(input));
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.MOVE_UNIT) != null)
                 System.out.println(moveUnit(input));
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.PATROL_UNIT) != null)
@@ -600,7 +602,7 @@ public class GameMenu {
     }
 
     private String disbandUnit(String input) {
-        return null;
+        return null; // todo
     }
 
     private String buildSiegeWeapon(String input) {
