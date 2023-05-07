@@ -361,4 +361,8 @@ public class Government {
     private int maxBlessedThisTurn() {
         return numberOfCathedrals() * 5 + numberOfChurches() * 2; // this may change
     }
+
+    public void updateFoodRate() {
+        if (getFoodsNumber() == 0) foodRate = -2;
+    }
 }

@@ -592,6 +592,7 @@ public class Game {
             // update
             government.changeGold((int) (government.getTaxAmount() * government.getPopulation()));
             government.giveFood();
+            government.updateFoodRate();
             government.changePeasant(0); // todo: number of added peasants each turn
             HashSet<Building> startedWorkingBuildings = new HashSet<>();
             for (Building building : currentGovernment.getBuildingsWaitingForWorkers()) {
