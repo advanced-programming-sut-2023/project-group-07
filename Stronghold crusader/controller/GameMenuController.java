@@ -208,7 +208,7 @@ public class GameMenuController {
             if (militaryCamp.getTypeOfBuilding().equals(TypeOfBuilding.MERCENARY_POST))
                 game.setCurrentMilitaryCamp(MilitaryCampType.MERCENARY_POST);
             if (militaryCamp.getTypeOfBuilding().equals(TypeOfBuilding.ENGINEERS_GUILD))
-                game.setCurrentMilitaryCamp(MilitaryCampType.ENGINEER_GUILD);
+                game.setCurrentMilitaryCamp(MilitaryCampType.ENGINEERS_GUILD);
             return Messages.ENTERED_MILITARY_CAMP;
         }
         if (game.getSelectedBuilding().getTypeOfBuilding().equals(TypeOfBuilding.BLACKSMITH) ||
@@ -342,7 +342,7 @@ public class GameMenuController {
         } else if (militaryCamp.equals("engineer's guild")) {
             for (UnitTypes unitType : UnitTypes.values()) {
                 if (!unitType.equals(UnitTypes.LORD)
-                        && unitType.getMilitaryCampType().equals(MilitaryCampType.ENGINEER_GUILD))
+                        && unitType.getMilitaryCampType().equals(MilitaryCampType.ENGINEERS_GUILD))
                     output += unitType.getType() + "    " + unitType.getGoldNeeded() + " gold\n";
             }
         } else if (militaryCamp.equals("cathedral")) {
@@ -714,6 +714,31 @@ public class GameMenuController {
             }
         }
         return tunnelers;
+    }
+
+    public Messages disbandUnit() {
+        ArrayList<Person> selectedUnits = game.getSelectedUnit();
+        if (selectedUnits.size() == 0) return Messages.NO_UNITS_SELECTED;
+        for (Person person : selectedUnits) {
+            if (person instanceof Unit unit) {
+                disbandAUnit(unit);
+            }
+        }
+        return Messages.UNITS_DISBANDED_SUCCESSFULLY;
+    }
+
+    private void disbandAUnit(Unit unit) {
+        MilitaryCampType campType = unit.getType().getMilitaryCampType();
+        String campName = campType.name(); // such as BARRACKS, ENGINEERS_GUILD, MERCENARY_POST, CATHEDRAL
+        Government owner = unit.getGovernment();
+        for (Building building : owner.getBuildings()) {
+            String buildingName = building.getTypeOfBuilding().name(); // these four have same names in both enums
+            if (building.getGovernment().equals(owner) && buildingName.equals(campName)) {
+                int x = building.getRow(), y = building.getColumn();
+                Controller.sendToCoordinate(x, y, unit);
+                break;
+            }
+        }
     }
 
 }

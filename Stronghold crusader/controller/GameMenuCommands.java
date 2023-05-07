@@ -53,7 +53,8 @@ public enum GameMenuCommands {
     BUILD_SIEGE_WEAPON("^\\s*build\\s+(\\-x\\s+\\-?\\d+|\\-y\\s+\\-?\\d+|\\s)+$"),
     SIEGE_TYPE("\\-q\\s+(?<type>[a-z\\s]+)"),
     NEXT_TURN("^\\s*next\\s+turn\\s*$"),
-    DIG_TUNNEL("^\\s*dig\\s+tunnel((\\s+-x\\s+(?<x>-?\\d+))|(\\s+-y\\s+(?<y>-?\\d+))){2}\\s*$");
+    DIG_TUNNEL("^\\s*dig\\s+tunnel((\\s+-x\\s+(?<x>-?\\d+))|(\\s+-y\\s+(?<y>-?\\d+))){2}\\s*$"),
+    DISBAND_UNIT("^\\s*disband\\s+unit\\s*$");
     
     private String regex;
     private GameMenuCommands(String regex) {

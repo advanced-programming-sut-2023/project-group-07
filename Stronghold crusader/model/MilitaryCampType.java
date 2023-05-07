@@ -2,8 +2,7 @@ package model;
 
 public enum MilitaryCampType {
     BARRACKS,
-    ENGINEER_GUILD,
+    ENGINEERS_GUILD,
     MERCENARY_POST,
-    CATHEDRAL,
-    ;
+    CATHEDRAL;
 }

@@ -62,6 +62,8 @@ public class GameMenu {
             else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.DIG_TUNNEL)) != null
                     && matcher.group("x") != null && matcher.group("y") != null)
                 System.out.println(digTunnel(matcher));
+            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.DISBAND_UNIT) != null)
+                System.out.println(disbandUnit());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULARITY) != null)
                 System.out.println("Your popularity is : " + controller.getPopularity());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULARITY_FACTORS) != null)
@@ -606,8 +608,11 @@ public class GameMenu {
         return null;
     }
 
-    private String disbandUnit(String input) {
-        return null; // todo
+    private String disbandUnit() {
+        switch (controller.disbandUnit()){
+            //todo
+        }
+        return null;
     }
 
     private String buildSiegeWeapon(String input) {
