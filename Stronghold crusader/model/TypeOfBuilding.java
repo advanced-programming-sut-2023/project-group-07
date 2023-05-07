@@ -38,7 +38,7 @@ public enum TypeOfBuilding {
     TANNER(500, 4, 4, 1, "tanner", null, 100, Resources.WOOD, 100,"converting resources",NonMilitaryTypes.TANNER),
     OIL_SMELTER(300, 4, 8, 0, "oil smelter", null, 100, Resources.IRON, 10,"building",null),
     PITCH_DITCH(-1, 1, 1, 0, "pitch ditch", null, 0, Resources.PITCH, 1,"building",null),
-    CAGED_WAR_DOGS(-1, 2, 2, 0, "caged war dogs", null, 100, Resources.WOOD, 10,"building",null),
+    CAGED_WAR_DOGS(1, 2, 2, 0, "caged war dogs", null, 100, Resources.WOOD, 10,"caged war dogs",null),
     SIEGE_TENT(100, 3, 3, 0, "siege tent", null, 0, Resources.WOOD, 0,"building",null),
     STABLE(300, 6, 6, 0, "stable", null, 400, Resources.WOOD, 20,"building",null),
     APPLE_ORCHARD(200, 9, 9, 1, "apple orchard", Texture.MEADOW, 0, Resources.WOOD, 5,"converting resources",NonMilitaryTypes.FARMER),

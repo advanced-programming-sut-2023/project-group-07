@@ -148,7 +148,7 @@ public class Controller {
     }
 
     public static ArrayList<int[]> getPathForTunneler(int x, int y, Government owner) {//todo : test this
-        Building targetBuilding =null;
+        Building targetBuilding = null;
 
         for (int range = 0; range < size(); range++) {
             Building buildingInRange = getDefendingOpponentBuildingInRange(x, y, range, owner);
@@ -159,7 +159,7 @@ public class Controller {
         }
         if (targetBuilding != null) {
             int targetX = targetBuilding.row(), targetY = targetBuilding.column();
-            return map().getStraightPathList(x,y, targetX, targetY);
+            return map().getStraightPathList(x, y, targetX, targetY);
         }
         return null;
     }
@@ -209,4 +209,7 @@ public class Controller {
         return random;
     }
 
+    public static void releaseDogs(int numberOfDogs, int x, int y) {
+        currentGame.releaseDogs(numberOfDogs, x, y, currentGame.getCurrentGovernment());
+    }
 }

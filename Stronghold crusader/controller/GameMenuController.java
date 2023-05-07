@@ -102,21 +102,32 @@ public class GameMenuController {
 
         boolean isWorking = true;
         Building building;
-        if (typeOfBuilding.getType().equals("gate")) {
-            GateHouse gateHouse = new GateHouse(currentGovernment, typeOfBuilding, row, column);
-            building = gateHouse;
-        } else if (typeOfBuilding.getType().equals("tower")) {
-            Tower tower = new Tower(currentGovernment, typeOfBuilding, row, column);
-            building = tower;
-        } else if (typeOfBuilding.getType().equals("military camp")) {
-            MilitaryCamp militaryCamp = new MilitaryCamp(currentGovernment, typeOfBuilding, row, column);
-            building = militaryCamp;
-        } else if (typeOfBuilding.getType().equals("converting resources")) {
-            ConvertingResources convertingResources = new ConvertingResources(currentGovernment, typeOfBuilding, row,
-                    column, ConvertingResourcesTypes.getTypeByName(name));
-            building = convertingResources;
-        } else
-            building = new Building(currentGovernment, typeOfBuilding, row, column);
+        switch (typeOfBuilding.getType()) {
+            case "gate":
+                GateHouse gateHouse = new GateHouse(currentGovernment, typeOfBuilding, row, column);
+                building = gateHouse;
+                break;
+            case "tower":
+                Tower tower = new Tower(currentGovernment, typeOfBuilding, row, column);
+                building = tower;
+                break;
+            case "military camp":
+                MilitaryCamp militaryCamp = new MilitaryCamp(currentGovernment, typeOfBuilding, row, column);
+                building = militaryCamp;
+                break;
+            case "converting resources":
+                ConvertingResources convertingResources = new ConvertingResources(currentGovernment, typeOfBuilding, row,
+                        column, ConvertingResourcesTypes.getTypeByName(name));
+                building = convertingResources;
+                break;
+            case "caged war dogs":
+                CagedWarDogs cagedWarDogs = new CagedWarDogs(currentGovernment, typeOfBuilding, row, column);
+                building = cagedWarDogs;
+                break;
+            default:
+                building = new Building(currentGovernment, typeOfBuilding, row, column);
+                break;
+        }
         currentGovernment.addBuilding(building);
         if (!currentGovernment.getNoLaborBuildings().contains(typeOfBuilding)) {
             if (currentGovernment.getPeasant() >= typeOfBuilding.getWorkerInUse()) {
@@ -124,17 +135,17 @@ public class GameMenuController {
                 building.setWorkers(typeOfBuilding.getWorkerInUse());
                 for (int i = 0; i < typeOfBuilding.getWorkerInUse(); i++) {
                     NonMilitary nonMilitary = new NonMilitary(
-                        new int[] { map.getKeepPosition(currentGovernment.getColor())[0],
-                            map.getKeepPosition(currentGovernment.getColor())[1] },
+                            new int[]{map.getKeepPosition(currentGovernment.getColor())[0],
+                                    map.getKeepPosition(currentGovernment.getColor())[1]},
                             currentGovernment, typeOfBuilding.getWorkerType(), building);
                     ArrayList<int[]> path = game.pathToBuilding(nonMilitary, building);
                     map.getMapPixel(map.getKeepPosition(currentGovernment.getColor())[0],
                             map.getKeepPosition(currentGovernment.getColor())[1]).addPerson(nonMilitary);
                     nonMilitary.setMovePattern(map.getPathList(nonMilitary.getCurrentLocation()[0],
-                            nonMilitary.getCurrentLocation()[1], path.get(path.size()-1)[0], path.get(path.size()-1)[1]));
+                            nonMilitary.getCurrentLocation()[1], path.get(path.size() - 1)[0], path.get(path.size() - 1)[1]));
                     nonMilitary.setPatrolLocation(
-                            new int[] { path.get(path.size()-1)[0], path.get(path.size()-1)[1], map.getKeepPosition(currentGovernment.getColor())[0],
-                                    map.getKeepPosition(currentGovernment.getColor())[1] });
+                            new int[]{path.get(path.size() - 1)[0], path.get(path.size() - 1)[1], map.getKeepPosition(currentGovernment.getColor())[0],
+                                    map.getKeepPosition(currentGovernment.getColor())[1]});
                     nonMilitary.setPatrolling(true);
                     int frow = nonMilitary.getCurrentLocation()[0], fcolumn = nonMilitary.getCurrentLocation()[1];
                     nonMilitary.move();

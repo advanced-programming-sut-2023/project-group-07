@@ -22,7 +22,8 @@ public enum UnitTypes {
     ASSASSIN("assassin",MilitaryCampType.MERCENARY_POST,60,new ArrayList<>(Arrays.asList()),12,1,400,100),
     HORSE_ARCHER("horse archer",MilitaryCampType.MERCENARY_POST,80,new ArrayList<>(Arrays.asList()),20,25,460,50),
     ARABIAN_SWORDSMAN("arabian swordsman",MilitaryCampType.MERCENARY_POST,80,new ArrayList<>(Arrays.asList()),4,1,650,130),
-    FIRE_THROWERS("fire thrower",MilitaryCampType.MERCENARY_POST,100,new ArrayList<>(Arrays.asList()),12,10,250,90);
+    FIRE_THROWERS("fire thrower",MilitaryCampType.MERCENARY_POST,100,new ArrayList<>(Arrays.asList()),12,10,250,90),
+    WAR_DOG("war dog",null,80,new ArrayList<>(Arrays.asList()),6,1,200,70);
 
     
     private final String type;

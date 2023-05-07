@@ -83,4 +83,6 @@ public class Building {
     public void destroy() {
         hp = 0;
     }
+
+
 }

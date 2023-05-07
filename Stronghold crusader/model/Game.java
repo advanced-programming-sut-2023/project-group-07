@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import static model.TypeOfBuilding.CAGED_WAR_DOGS;
 import static org.mockito.ArgumentMatchers.contains;
 
 import java.io.IOException;
@@ -181,8 +182,11 @@ public class Game {
         for (int i = frow; i <= srow; i++)
             for (int j = fcolumn; j <= scolumn; j++)
                 for (Person person : map.getMapPixel(i, j).getPeople())
-                    if (person instanceof Unit)
-                        units.add((Unit) person);
+                    if (person instanceof Unit unit) {
+                        if (unit.getType().equals(UnitTypes.WAR_DOG)) continue;
+                        units.add(unit);
+                    }
+
         this.selectedUnit = units;
         this.selectedUnitArea = new int[]{frow, fcolumn, srow, scolumn};
     }
@@ -542,8 +546,10 @@ public class Game {
                     }
             }
         }
-        for (Building building : eliminatedBuildings)
+        for (Building building : eliminatedBuildings) {
+            if (building instanceof CagedWarDogs cagedWarDogs) cagedWarDogs.releaseDogs();
             government.removeBuilding(building);
+        }
 
     }
 
@@ -742,4 +748,13 @@ public class Game {
 
     }
 
+    public void releaseDogs(int numberOfDogs, int x, int y, Government owner) {
+        // todo
+        for (int i = 0; i < numberOfDogs; i++) {
+            Unit unit = new Unit(UnitTypes.WAR_DOG, new int[]{x, y}, owner);
+            unit.setUnitStance(UnitStance.OFFENSIVE);
+            map.getMapPixel(x, y).addPerson(unit);
+            owner.addPerson(unit);
+        }
+    }
 }
