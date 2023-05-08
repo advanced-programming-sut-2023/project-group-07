@@ -191,6 +191,8 @@ public class MapPixel {
             return doesHaveLord() ? "L" : "S";
         if (getBuildings().size() != 0)
             return doesHaveWall() ? "W" : "B";
+        if(!nonMilitaries.isEmpty())
+            return "P";
         if (this.tree != null)
             return "T";
         if (this.rock != null)

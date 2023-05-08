@@ -19,11 +19,11 @@ public class Controller {
     private static Random random;
 
     public static int randomNumber(int max) {
-        return random.nextInt(max);
+        return getRandom().nextInt(max);
     }
 
     public static double randomDouble(double min, double max) {
-        return random.nextDouble(min, max);
+        return getRandom().nextDouble(min, max);
     }
 
     public static char getRandomChar(char c, int max) {

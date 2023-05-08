@@ -35,7 +35,7 @@ public enum GameMenuCommands {
     AREA_ATTACK("^\\s*attack\\s+(\\-x\\s+\\-?\\d+|\\-y\\s+\\-?\\d+|\\s)+$"),
     CREATE_UNIT("^\\s*createunit\\s+(\\-t\\s+[a-z\\s]+|\\-c\\s+\\d+|\\s)+$"),
     COUNT("\\-c\\s+(?<count>\\d+)"),
-    EXIT("\\s*exit\\s*"),
+    EXIT("^\\s*exit\\s*$"),
     SHOW_UNITS("\\s*show\\s+units\\s*"),
     REPAIR("\\s*repair\\s*"),
     CLOSE_GATE("\\s*close\\s+gate\\s*"),
