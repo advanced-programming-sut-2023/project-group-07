@@ -65,7 +65,7 @@ public class GameMenu {
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.DISBAND_UNIT) != null)
                 System.out.println(disbandUnit());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULARITY) != null)
-                System.out.println("Your popularity is : " + controller.getPopularity());
+                System.out.println(getPopularity());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULARITY_FACTORS) != null)
                 System.out.println(getPopularityFactors());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.FOOD_RATE_SHOW) != null)
@@ -89,7 +89,7 @@ public class GameMenu {
                 else
                     System.out.println(controller.nextTurnMessage());
             } else if (GameMenuCommands.getMatcher(input, GameMenuCommands.ENTER_TRADE_MENU) != null) {
-                System.out.println("You have entered");
+                System.out.println("You have entered trade menu");
                 tradeMenu.run(scanner);
             } else
                 System.out.println("Invalid command!");
@@ -149,7 +149,8 @@ public class GameMenu {
     }
 
     private String setFoodList(Matcher matcher) {
-        int rate = Integer.parseInt(matcher.group("rate"));
+        String rateString = Controller.trimmer(matcher.group("rate"));
+        int rate = Integer.parseInt(rateString);
         switch (controller.setFoodList(rate)) {
             case INVALID_RATE:
                 return "Rate is not in valid range.";
@@ -172,16 +173,16 @@ public class GameMenu {
 
     private String getPopulation() {
         return null;
-    }
+    } // todo get population
 
     private String getPopularity() {
-        // System.out.println("Your popularity: "+.getPopularity()+);
-        return null;
+        return  "Your popularity is : " + controller.getPopularity();
+
     }
 
     private String setTaxRate() {
         return null;
-    }
+    } // todo set tax
 
     private String showTaxRate() {
         Government government = Controller.currentGame.getCurrentGovernment();

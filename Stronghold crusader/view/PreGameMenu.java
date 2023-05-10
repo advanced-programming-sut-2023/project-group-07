@@ -15,7 +15,7 @@ import static java.lang.Math.min;
 
 import java.io.IOException;
 
-public class PreGameMenu { // todo: this class haven't been tested
+public class PreGameMenu {
     private Scanner scanner;
     private final PreGameMenuController controller;
     private final GameMenu gameMenu = new GameMenu();
@@ -41,6 +41,7 @@ public class PreGameMenu { // todo: this class haven't been tested
 
         Game game = new Game(map, governments, earlyGameGolds);
         Controller.currentGame = game;
+        System.out.println("You have entered the game.");
         gameMenu.run(scanner);
     }
 

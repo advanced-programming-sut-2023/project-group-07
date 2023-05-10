@@ -13,7 +13,7 @@ public enum GameMenuCommands {
     FOOD_RATE_SHOW("\\s*food\\s+rate\\s+show\\s*"),
     TAX_RATE("\\s*tax\\s+rate\\s+-r\\s+(?<rate>\\d+)\\s*"),
     TAX_RATE_SHOW("\\s*tax\\s+rate\\s+show\\s*"),
-    FEAR_RATE("\\s*fear\\s+rate\\s+-r\\s+(?<rate>\\d+)\\s*"),
+    FEAR_RATE("\\s*fear\\s+rate\\s+-r\\s+(?<rate>\\d+|\"\\d+\")\\s*"),
     DROP_BUILDING("\\s*dropbuilding(.+)"),
     ROW("\\-x\\s+(?<row>\\d+)"),
     COLUMN("\\-y\\s+(?<column>\\d+)"),

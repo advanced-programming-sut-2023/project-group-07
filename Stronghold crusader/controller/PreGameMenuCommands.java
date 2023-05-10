@@ -2,8 +2,7 @@ package controller;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 public enum PreGameMenuCommands {
-    SET_PIXEL_TEXTURE("sard"),
-    SET_REGION_TEXTURE("sag");
+    ;
 
     private String regex;
     private PreGameMenuCommands(String regex){

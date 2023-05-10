@@ -641,7 +641,7 @@ public class Game {
         ArrayList<Government> randomGovernments = (ArrayList<Government>) governments.clone();
         Collections.shuffle(randomGovernments);
         for (Government government : randomGovernments) {
-            government.setPopularity(government.getPopularity() + government.getTaxEffectOnPopularity()); // todo:
+            government.setPopularity(government.getPopularity() + government.getChangesOnPopularity()); // todo:
             // update
             government.changeGold((int) (government.getTaxAmount() * government.getPopulation()));
             government.giveFood();

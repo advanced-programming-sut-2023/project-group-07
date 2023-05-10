@@ -21,8 +21,10 @@ public class TradeMenu {
         Matcher matcher;
         while (true) {
             String input = scanner.nextLine();
-            if (input.matches("\\s*exit\\s*"))
+            if (input.matches("\\s*exit\\s*")){
+                System.out.println("You have exited");
                 return;
+            }
             else if (TradeCommands.getMatcher(input, TradeCommands.TRADE_LIST) != null)
                 showAvailableTrades();
             else if (TradeCommands.getMatcher(input, TradeCommands.TRADE_HISTORY) != null)
@@ -43,8 +45,13 @@ public class TradeMenu {
                 colorString = TradeCommands.getMatcher(input, TradeCommands.COLOR).group("color"),
                 message = Controller.trimmer(
                         TradeCommands.getMatcher(input, TradeCommands.MESSAGE).group("message"));
-        int amount = Integer.parseInt(TradeCommands.getMatcher(input, TradeCommands.AMOUNT).group("amount"));
-        int price = Integer.parseInt(TradeCommands.getMatcher(input, TradeCommands.PRICE).group("price"));
+        int amount, price;
+        try {
+            amount = Integer.parseInt(TradeCommands.getMatcher(input, TradeCommands.AMOUNT).group("amount"));
+            price = Integer.parseInt(TradeCommands.getMatcher(input, TradeCommands.PRICE).group("price"));
+        } catch (NumberFormatException e) {
+            return "input a valid number.";
+        }
         switch (controller.requestTrade(typeName, colorString, message, amount, price)) {
             case NEGATIVE_PRICE:
                 return "Price can't be negative.";
