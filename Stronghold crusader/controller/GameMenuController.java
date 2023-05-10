@@ -724,4 +724,11 @@ public class GameMenuController {
 
     }
 
+    public Messages setTax(int rate) {
+        if (rate > 8 || rate < -3){
+            return Messages.INVALID_RATE;
+        }
+        game.getCurrentGovernment().setTaxRate(rate);
+        return Messages.SETTING_TAX_SUCCESSFUL;
+    }
 }

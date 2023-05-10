@@ -51,7 +51,7 @@ public class GameMenu {
                 System.out.println(setStance(input));
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY) != null)
                 System.out.println(attackEnemy(input));
-            else if(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_BUILDING) != null)
+            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_BUILDING) != null)
                 System.out.println(attackBuilding(input));
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.AREA_ATTACK) != null)
                 System.out.println(areaAttack(input));
@@ -78,13 +78,14 @@ public class GameMenu {
                 System.out.println(controller.showGold());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.TAX_RATE_SHOW) != null)
                 System.out.println(controller.showTaxRate());
+            else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.TAX_RATE)) != null)
+                System.out.println(setTaxRate(matcher));
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.NEXT_TURN) != null) {
                 String returnMessage = controller.nextTurn();
-                if (returnMessage != null && returnMessage.contains("GAME OVER!")){
+                if (returnMessage != null && returnMessage.contains("GAME OVER!")) {
                     System.out.println(returnMessage);
                     return;
-                }
-                else if(returnMessage != null)
+                } else if (returnMessage != null)
                     System.out.println(returnMessage + controller.nextTurnMessage());
                 else
                     System.out.println(controller.nextTurnMessage());
@@ -100,8 +101,8 @@ public class GameMenu {
     private String digTunnel(Matcher matcher) {
         int x = Integer.parseInt(matcher.group("x")),
                 y = Integer.parseInt(matcher.group("y"));
-        switch (controller.digTunnel(x,y)){
-            case INVALID_COORDINATES :
+        switch (controller.digTunnel(x, y)) {
+            case INVALID_COORDINATES:
                 return "Coordinates are invalid.";
             case NO_AVAILABLE_TUNNELER:
                 return "There is no available tunneler in selected units.";
@@ -176,13 +177,25 @@ public class GameMenu {
     } // todo get population
 
     private String getPopularity() {
-        return  "Your popularity is : " + controller.getPopularity();
+        return "Your popularity is : " + controller.getPopularity();
 
     }
 
-    private String setTaxRate() {
+    private String setTaxRate(Matcher matcher) {
+        int rate;
+        try {
+            rate = Integer.parseInt(matcher.group("rate"));
+        } catch (NumberFormatException e) {
+            return "Invalid number format.";
+        }
+        switch (controller.setTax(rate)) {
+            case INVALID_RATE:
+                return "Rate is not in valid range";
+            case SETTING_TAX_SUCCESSFUL:
+                return "You have successfully set your tax.";
+        }
         return null;
-    } // todo set tax
+    }
 
     private String showTaxRate() {
         Government government = Controller.currentGame.getCurrentGovernment();
@@ -566,7 +579,7 @@ public class GameMenu {
         return null;
     }
 
-    private String attackBuilding(String input){
+    private String attackBuilding(String input) {
         int row = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_BUILDING).group("row")) - 1;
         int column = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_BUILDING).group("column")) - 1;
         switch (controller.attackBuilding(row, column)) {
@@ -583,7 +596,7 @@ public class GameMenu {
             default:
                 break;
         }
-        return null; 
+        return null;
     }
 
     private String areaAttack(String input) {
@@ -610,8 +623,8 @@ public class GameMenu {
     }
 
     private String disbandUnit() {
-        switch (controller.disbandUnit()){
-            case NO_UNITS_SELECTED :
+        switch (controller.disbandUnit()) {
+            case NO_UNITS_SELECTED:
                 return "You don't have any selected unit.";
             case UNITS_DISBANDED_SUCCESSFULLY:
                 return "You disbanded units successfully.";

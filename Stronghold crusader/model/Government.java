@@ -263,8 +263,8 @@ public class Government {
             if (resource.getType() == TypeOfResource.FOOD) {
                 int amountOfResource = resources.get(resource);
                 if (amountOfResource >= foodsToGive) {
-                    foodsToGive = 0;
                     resources.replace(resource, amountOfResource - foodsToGive);
+                    foodsToGive = 0;
                 } else {
                     foodsToGive -= amountOfResource;
                     resources.replace(resource, 0);
