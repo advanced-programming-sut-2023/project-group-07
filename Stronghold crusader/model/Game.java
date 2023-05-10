@@ -800,7 +800,6 @@ public class Game {
     }
 
     public void releaseDogs(int numberOfDogs, int x, int y, Government owner) {
-        // todo
         for (int i = 0; i < numberOfDogs; i++) {
             Unit unit = new Unit(UnitTypes.WAR_DOG, new int[] { x, y }, owner);
             unit.setUnitStance(UnitStance.OFFENSIVE);

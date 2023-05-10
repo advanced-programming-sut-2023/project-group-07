@@ -6,11 +6,8 @@ import java.util.HashMap;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 
-import javax.management.StandardEmitterMBean;
-
 import controller.*;
 
-import model.Game;
 import model.Government;
 import model.Resources;
 
@@ -69,17 +66,19 @@ public class GameMenu {
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULARITY_FACTORS) != null)
                 System.out.println(getPopularityFactors());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.FOOD_RATE_SHOW) != null)
-                System.out.println("Your food rate is : " + controller.getFoodRate());
+                System.out.println(showFoodRate());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_FOOD_LIST) != null)
                 System.out.print(getFoodList());
             else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.FOOD_RATE)) != null)
                 System.out.println(setFoodList(matcher));
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_GOLD) != null)
-                System.out.println(controller.showGold());
+                System.out.println(showGold());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.TAX_RATE_SHOW) != null)
-                System.out.println(controller.showTaxRate());
+                System.out.println(showTaxRate());
             else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.TAX_RATE)) != null)
                 System.out.println(setTaxRate(matcher));
+            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULATION) != null)
+                System.out.println(getPopulation());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.NEXT_TURN) != null) {
                 String returnMessage = controller.nextTurn();
                 if (returnMessage != null && returnMessage.contains("GAME OVER!")) {
@@ -96,6 +95,14 @@ public class GameMenu {
                 System.out.println("Invalid command!");
         }
 
+    }
+
+    private String showFoodRate() {
+        return "Your food rate is : " + controller.getFoodRate();
+    }
+
+    private String showGold() {
+        return "You have " + controller.getGold() + " gold.";
     }
 
     private String digTunnel(Matcher matcher) {
@@ -139,7 +146,7 @@ public class GameMenu {
         return null;
     }
 
-    private String getPopularityFactors() { // todo : check this
+    private String getPopularityFactors() {
         ArrayList<Integer> factorsInOrder = controller.getPopularityFactors();
         return "Popularity factors:\n" +
                 "Food : " + factorsInOrder.get(0) + "\n" +
@@ -163,7 +170,7 @@ public class GameMenu {
         return null;
     }
 
-    private String getFoodList() { // todo: haven't been checked
+    private String getFoodList() {
         String result = "";
         HashMap<Resources, Integer> foodList = controller.getFoodList();
         for (Resources food : foodList.keySet()) {
@@ -173,8 +180,8 @@ public class GameMenu {
     }
 
     private String getPopulation() {
-        return null;
-    } // todo get population
+        return "Your population is " + controller.getPopulation();
+    }
 
     private String getPopularity() {
         return "Your popularity is : " + controller.getPopularity();
@@ -198,9 +205,8 @@ public class GameMenu {
     }
 
     private String showTaxRate() {
-        Government government = Controller.currentGame.getCurrentGovernment();
-        return ("Your tax rate: " + government.getTaxAmount() + "coins\n" +
-                "Popularity effect: " + government.getTaxEffectOnPopularity());
+        return ("Your tax rate: " + controller.showTaxRate() + "coins\n" +
+                "Popularity effect: " + controller.getTaxEffectOnPopularity());
     }
 
     private void endOfTurn() {

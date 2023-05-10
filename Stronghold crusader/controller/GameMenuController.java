@@ -259,9 +259,9 @@ public class GameMenuController {
             return Messages.NOT_ENOUGH_RESOURCES;
         if (game.getSelectedBuilding().getHp() == game.getSelectedBuilding().getTypeOfBuilding().getHp())
             return Messages.ALREADY_AT_FULL_HP;
-        for (int i = game.getSelectedBuilding().getColumn(); i < game.getSelectedBuilding().getColumn()+game.getSelectedBuilding().getTypeOfBuilding()
+        for (int i = game.getSelectedBuilding().getColumn(); i < game.getSelectedBuilding().getColumn() + game.getSelectedBuilding().getTypeOfBuilding()
                 .getLength(); i++)
-            for (int j = game.getSelectedBuilding().getRow(); j < game.getSelectedBuilding().getColumn()+game.getSelectedBuilding().getTypeOfBuilding()
+            for (int j = game.getSelectedBuilding().getRow(); j < game.getSelectedBuilding().getColumn() + game.getSelectedBuilding().getTypeOfBuilding()
                     .getWidth(); j++)
                 if (game.isAnEnemyCloseBy(j, i))
                     return Messages.THERES_AN_ENEMY_CLOSE_BY;
@@ -572,8 +572,8 @@ public class GameMenuController {
                 + game.getCurrentGovernment().getUser().getUsername() + ") is playing!";
     }
 
-    public String showTaxRate() {
-        return "Tax rate: " + game.getCurrentGovernment().getTaxRate();
+    public int showTaxRate() {
+        return game.getCurrentGovernment().getTaxRate();
     }
 
     public ArrayList<Integer> getPopularityFactors() {
@@ -712,7 +712,7 @@ public class GameMenuController {
         Government owner = unit.getGovernment();
         Map map = game.getMap();
         int[] keepPosition = map.getKeepPosition(owner.getColor());
-        NonMilitary nonMilitary = new NonMilitary(new int[] { keepPosition[0] + 7, keepPosition[1] + 3 }, owner,
+        NonMilitary nonMilitary = new NonMilitary(new int[]{keepPosition[0] + 7, keepPosition[1] + 3}, owner,
                 NonMilitaryTypes.PEASANT, null);
         MapPixel personPixel = map.getMapPixel(keepPosition[0] + 7, keepPosition[1] + 3);
         personPixel.addPerson(nonMilitary);
@@ -725,10 +725,22 @@ public class GameMenuController {
     }
 
     public Messages setTax(int rate) {
-        if (rate > 8 || rate < -3){
+        if (rate > 8 || rate < -3) {
             return Messages.INVALID_RATE;
         }
         game.getCurrentGovernment().setTaxRate(rate);
         return Messages.SETTING_TAX_SUCCESSFUL;
+    }
+
+    public int getPopulation() {
+        return game.getCurrentGovernment().getPopulation();
+    }
+
+    public int getTaxEffectOnPopularity() {
+        return game.getCurrentGovernment().getTaxEffectOnPopularity();
+    }
+
+    public int getGold() {
+        return game.getCurrentGovernment().getGold();
     }
 }
