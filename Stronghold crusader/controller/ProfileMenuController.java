@@ -49,32 +49,34 @@ public class ProfileMenuController {
         User.updateUsers();
     }
 
-    public String removeSlogan() throws IOException, NoSuchAlgorithmException {
+    public void removeSlogan() throws IOException, NoSuchAlgorithmException {
         this.currentUser.removeSlogan();
         User.updateUsers();
-        return "Slogan removed successfully!";
     }
 
-    public String showHighScore() {
-        return "Your highest score is : " + this.currentUser.getHighScore();
+    public int getHighScore() {
+        return this.currentUser.getHighScore();
     }
 
-    public String showRank() {
-        return "Your rank among all of the players is : " + this.currentUser.getRank();
+    public int getRank() {
+        return this.currentUser.getRank();
     }
 
-    public String showSlogan() {
-        if (this.currentUser.getSlogan().equals("")) return "Slogan is empty!";
-        return "Your slogan is : " + this.currentUser.getSlogan();
+    public String getSlogan() {
+        return this.currentUser.getSlogan();
     }
 
-    public String showInfo() {
-        return ("Username : " + this.currentUser.getUsername() +
-                "\nNickname : " + this.currentUser.getNickname() +
-                "\nEmail : " + this.currentUser.getEmail() +
-                "\nSlogan : " + this.currentUser.getSlogan() +
-                "\nHighest score : " + this.currentUser.getHighScore() +
-                "\nRank : " + this.currentUser.getRank());
+    public String[] getInfo() {
+        String[] info = new String[]
+                {
+                this.currentUser.getUsername(),
+                this.currentUser.getNickname(),
+                this.currentUser.getEmail(),
+                this.currentUser.getSlogan(),
+                ((Integer) this.currentUser.getHighScore()).toString(),
+                ((Integer) this.currentUser.getRank()).toString()
+        };
+        return info;
     }
 
 }
