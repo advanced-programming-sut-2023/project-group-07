@@ -320,10 +320,9 @@ public class Government {
         int change = 0;
         for (Building building : buildings) {
             if (building.getTypeOfBuilding() == TypeOfBuilding.INN)
-                // change += building.getPopularityEffect();
-                ; // todo : make inn class and set popularity effect
+                change += 1; // is not clean
         }
-        return change; // todo
+        return change;
     }
 
     public int getFearEffectOnPopularity() {
