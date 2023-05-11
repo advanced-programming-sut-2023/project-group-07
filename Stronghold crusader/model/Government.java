@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import static java.lang.Math.min;
 import static java.lang.Math.round;
 
 public class Government {
@@ -354,7 +355,8 @@ public class Government {
         double numberOfBlessed = getNumberOfBlessed();
         double randomFactor = Controller.randomDouble(0.5, 1); // a number less than 1
         numberOfBlessed += maxBlessedThisTurn() * randomFactor;
-        percentOfBlessed = (double) numberOfBlessed / population;
+        percentOfBlessed = (double) numberOfBlessed * 100 / population ;
+        percentOfBlessed = min(percentOfBlessed,100);
     }
 
     private int maxBlessedThisTurn() {
