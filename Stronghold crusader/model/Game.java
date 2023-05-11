@@ -643,7 +643,7 @@ public class Game {
         ArrayList<Government> randomGovernments = (ArrayList<Government>) governments.clone();
         Collections.shuffle(randomGovernments);
         for (Government government : randomGovernments) {
-            government.setPopularity(government.getPopularity() + government.getChangesOnPopularity()); // todo:
+            government.updatePopularity();
             // update
             government.changeGold((int) (government.getTaxAmount() * government.getPopulation()));
             government.giveFood();
@@ -682,6 +682,10 @@ public class Game {
         }
         for (Government government : governments) {
             government.increasePercentOfBlessed();
+            for (Person person : government.getPeople()){
+                if (person instanceof Unit unit)
+                    unit.endTurn();
+            }
         }
         return eliminateDefeatedLords();
 

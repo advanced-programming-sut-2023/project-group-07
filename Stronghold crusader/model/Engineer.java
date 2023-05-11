@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import static model.UnitStance.DEFENSIVE;
 import static model.UnitStance.OFFENSIVE;
 
-public class Engineer extends Unit { // todo : make an engineer when making one. not a Unit
+public class Engineer extends Unit {
     private boolean hasOil;
     private boolean gonnaBringOil;
     private int[] returningLocation;

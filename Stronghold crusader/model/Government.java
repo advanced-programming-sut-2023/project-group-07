@@ -364,4 +364,8 @@ public class Government {
     public void updateFoodRate() {
         if (getFoodsNumber() == 0) foodRate = -2;
     }
+
+    public void updatePopularity() {
+        popularity =  getPopularity() + getChangesOnPopularity();
+    }
 }
