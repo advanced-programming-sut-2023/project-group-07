@@ -746,4 +746,14 @@ public class GameMenuController {
     public int getGold() {
         return game.getCurrentGovernment().getGold();
     }
+
+    public Messages setFearRate(int rate) {
+        if (rate < -5 || rate > 5) return Messages.INVALID_RATE;
+        game.getCurrentGovernment().setFearRate(rate);
+        return Messages.SET_FEAR_RATE_SUCCESSFUL;
+    }
+
+    public int getFearRate() {
+        return game.getCurrentGovernment().getFearRate();
+    }
 }

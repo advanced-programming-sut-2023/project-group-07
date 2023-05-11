@@ -327,7 +327,7 @@ public class Government {
     }
 
     public int getFearEffectOnPopularity() {
-        int fearRate = getFearRate();
+        int fearRate = -getFearRate();
         return fearRate;
     }
 
