@@ -514,7 +514,7 @@ public class Game {
                 if (enemyLocation != null) {
                     for (Person person2 : map.getMapPixel(enemyLocation[0], enemyLocation[1]).getPeople()) {
                         if (!person2.getGovernment().equals(unit.getGovernment()))
-                            person2.changeHP(-unit.getDamage() * unit.getBonusDamageRate());
+                            person2.changeHP((int)(-unit.getDamage() * unit.getBonusDamageRate()));
                     }
                     if (getLordInPixel(enemyLocation) != null && getLordInPixel(enemyLocation).getHp() <= 0) {
                         if (getLordInPixel(enemyLocation).getGovernment().getDefeatedBy() == null)
@@ -526,7 +526,7 @@ public class Game {
                     if (building == null || (Math.abs(building.getRow() - row)
                             + Math.abs(building.getColumn() - column)) > unit.type.getRange())
                         continue;
-                    building.changeHp(-unit.getDamage() * unit.getBonusDamageRate());
+                    building.changeHp((int)(-unit.getDamage() * unit.getBonusDamageRate()));
                 }
             }
         }
