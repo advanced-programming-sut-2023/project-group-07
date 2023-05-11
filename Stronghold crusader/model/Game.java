@@ -648,6 +648,7 @@ public class Game {
             government.changeGold((int) (government.getTaxAmount() * government.getPopulation()));
             government.giveFood();
             government.updateFoodRate();
+            government.updateTaxRate();
             HashSet<Building> startedWorkingBuildings = new HashSet<>();
             for (Building building : government.getBuildingsWaitingForWorkers()) {
                 if (!government.getNoLaborBuildings().contains(building.getTypeOfBuilding())
