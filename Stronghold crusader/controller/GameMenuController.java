@@ -131,6 +131,7 @@ public class GameMenuController {
         }
         currentGovernment.changeGold(-building.getTypeOfBuilding().getCost());
         currentGovernment.changeResources(building.getTypeOfBuilding().getResourceNeeded(),-building.getTypeOfBuilding().getResourceAmount());
+        System.out.println(currentGovernment.getResourceAmount(building.getTypeOfBuilding().getResourceNeeded()));
         currentGovernment.addBuilding(building);
         if (!currentGovernment.getNoLaborBuildings().contains(typeOfBuilding)) {
             if (currentGovernment.getPeasant() >= typeOfBuilding.getWorkerInUse()) {

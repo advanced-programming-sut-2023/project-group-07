@@ -72,6 +72,7 @@ public enum TypeOfBuilding {
         this.buildingName = buildingName;
         this.cost = cost;
         this.resourceNeeded = resourceNeeded;
+        this.resourceAmount = resourceAmount;
         this.type = type;
         this.workerType = workerType;
     }

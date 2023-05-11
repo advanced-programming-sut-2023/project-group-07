@@ -615,18 +615,20 @@ public class Game {
         building.setWorkers(building.getTypeOfBuilding().getWorkerInUse());
         for (int i = 0; i < building.getTypeOfBuilding().getWorkerInUse(); i++) {
             NonMilitary nonMilitary = new NonMilitary(
-                    new int[] { map.getKeepPosition(government.getColor())[0],
-                            map.getKeepPosition(government.getColor())[1] },
+                    new int[] { map.getKeepPosition(government.getColor())[0]+7,
+                            map.getKeepPosition(government.getColor())[1]+3 },
                     government, building.getTypeOfBuilding().getWorkerType(), building);
             ArrayList<int[]> path = pathToBuilding(nonMilitary, building);
-            map.getMapPixel(map.getKeepPosition(government.getColor())[0],
-                    map.getKeepPosition(government.getColor())[1]).addPerson(nonMilitary);
+            // for(int[] a : path) 
+            // System.out.println(a[0]+","+a[1]);
+            map.getMapPixel(map.getKeepPosition(government.getColor())[0]+7,
+                    map.getKeepPosition(government.getColor())[1]+3).addPerson(nonMilitary);
             nonMilitary.setMovePattern(map.getPathList(nonMilitary.getCurrentLocation()[0],
                     nonMilitary.getCurrentLocation()[1], path.get(path.size() - 1)[0],
                     path.get(path.size() - 1)[1]));
             nonMilitary.setPatrolLocation(
-                    new int[] { map.getKeepPosition(government.getColor())[0],
-                            map.getKeepPosition(government.getColor())[1],
+                    new int[] { map.getKeepPosition(government.getColor())[0]+7,
+                            map.getKeepPosition(government.getColor())[1]+3,
                             path.get(path.size() - 1)[0], path.get(path.size() - 1)[1] });
             nonMilitary.setPatrolling(true);
             int frow = nonMilitary.getCurrentLocation()[0], fcolumn = nonMilitary.getCurrentLocation()[1];
