@@ -668,6 +668,7 @@ public class Game {
             setPatrolPattern(government);
             updateMovePatterns(government);
             moveUnitsInQueue(government);
+            resourceDelivery(government);
             government.resetMovesLeft();
         }
         for (Government government : governments) {

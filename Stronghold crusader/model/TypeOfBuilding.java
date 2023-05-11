@@ -7,7 +7,7 @@ public enum TypeOfBuilding {
     STONE_WALL(800, 1, 1, 0, "stone wall", null, 0, Resources.STONE, 2,"wall",null),
     CRENELATED_WALL(1000, 1, 1, 0, "crenelated wall", null, 0, Resources.STONE, 2,"wall",null),
     LITTLE_STONE_GATE(1000, 5, 5, 0, "little stone gate", null, 0, Resources.STONE, 20,"gate",null),
-    LARGE_STONE_GATE(2000, 7, 7, 0, "large stone gate", null, 0, Resources.STONE, 10,"gate",null),
+    LARGE_STONE_GATE(2000, 7, 7, 0, "large stone gate", null, 0, Resources.STONE, 30,"gate",null),
     DRAW_BRIDGE(-1, 5, 5, 0, "draw bridge", null, 0, Resources.WOOD, 10,"bridge",null),
     LOOK_OUT_TOWER(250, 3, 3, 0, "look out tower", null, 0, Resources.STONE, 10,"tower",null),
     PERIMETER_TURRENT(1000, 4, 4, 0, "perimeter turret", null, 0, Resources.STONE, 10,"tower",null),

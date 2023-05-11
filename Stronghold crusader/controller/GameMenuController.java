@@ -78,7 +78,7 @@ public class GameMenuController {
                 for (int j = 0; j < typeOfBuilding.getWidth(); j++)
                     if (!map.getMapPixel(row + j, column + i).getTexture().equals(typeOfBuilding.getTexture()))
                         acceptedPixels++;
-            if (acceptedPixels * 4 > typeOfBuilding.getLength() * typeOfBuilding.getWidth())
+            if (acceptedPixels * 4 < typeOfBuilding.getLength() * typeOfBuilding.getWidth())
                 return Messages.CANT_PLACE_THIS;
         }
 
@@ -129,6 +129,8 @@ public class GameMenuController {
                 building = new Building(currentGovernment, typeOfBuilding, row, column);
                 break;
         }
+        currentGovernment.changeGold(-building.getTypeOfBuilding().getCost());
+        currentGovernment.changeResources(building.getTypeOfBuilding().getResourceNeeded(),-building.getTypeOfBuilding().getResourceAmount());
         currentGovernment.addBuilding(building);
         if (!currentGovernment.getNoLaborBuildings().contains(typeOfBuilding)) {
             if (currentGovernment.getPeasant() >= typeOfBuilding.getWorkerInUse()) {
