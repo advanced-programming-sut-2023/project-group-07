@@ -324,7 +324,7 @@ public class GameMenuController {
                         && unitType.getMilitaryCampType().equals(MilitaryCampType.MERCENARY_POST))
                     output += unitType.getType() + "    " + unitType.getGoldNeeded() + " gold\n";
             }
-        } else if (militaryCamp.equals("engineer's guild")) {
+        } else if (militaryCamp.equals("engineer guild")) {
             for (UnitTypes unitType : UnitTypes.values()) {
                 if (!unitType.equals(UnitTypes.LORD)
                         && unitType.getMilitaryCampType().equals(MilitaryCampType.ENGINEERS_GUILD))
@@ -592,13 +592,6 @@ public class GameMenuController {
         return factorsInOrder;
     }
 
-    public Messages setFearRate(int rate) {
-        if(rate>5 || rate<-5)
-            return Messages.INVALID_RATE;
-        game.getCurrentGovernment().setFearRate(rate);
-        return Messages.SETTING_FEAR_RATE_SUCCESSFUL;
-    }
-
     public int showFearRate() {
         return game.getCurrentGovernment().getFearRate();
     }
@@ -764,6 +757,7 @@ public class GameMenuController {
         Map.loadMaps();
         User.sortUsers();
         User.updateUsers();
+    }
     public Messages setFearRate(int rate) {
         if (rate < -5 || rate > 5) return Messages.INVALID_RATE;
         game.getCurrentGovernment().setFearRate(rate);

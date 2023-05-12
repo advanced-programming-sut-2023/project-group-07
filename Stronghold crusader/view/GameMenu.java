@@ -68,7 +68,7 @@ public class GameMenu {
                 System.out.println(getPopularityFactors());
             else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.FEAR_RATE)) != null)
                 System.out.println(setFearRate(matcher));
-            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_FEAR_RATE) != null)
+            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.FEAR_RATE_SHOW) != null)
                 System.out.println(showFearRate());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.FOOD_RATE_SHOW) != null)
                 System.out.println(showFoodRate());
@@ -109,10 +109,6 @@ public class GameMenu {
                 System.out.println("Invalid command!");
         }
 
-    }
-
-    private String showFearRate() {
-        return "Your fear rate is "+controller.getFearRate();
     }
 
     private String setFearRate(Matcher matcher) {
@@ -238,22 +234,6 @@ public class GameMenu {
         return null;
     }
     
-    private String setFearRate(Matcher matcher) {
-        int rate;
-        try {
-            rate = Integer.parseInt(matcher.group("rate"));
-        } catch (NumberFormatException e) {
-            return "Invalid number format.";
-        }
-        switch (controller.setFearRate(rate)) {
-            case INVALID_RATE:
-                return "Rate is not in valid range";
-            case SETTING_FEAR_RATE_SUCCESSFUL:
-                return "You have successfully set your fear rate.";
-        }
-        return null;
-    }
-
     private String showFearRate() {
         return "Your fear rate: " + controller.showFearRate();
     }
