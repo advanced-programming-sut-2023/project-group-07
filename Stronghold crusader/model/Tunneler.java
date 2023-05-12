@@ -55,7 +55,12 @@ public class Tunneler extends Unit {
     @Override
     public void endTurn() {
         super.endTurn();// todo : delete if it is not supposed to be executed
-        if (!isAvailable && !isTunneling && movePattern.size() == 0) {
+        if (!isAvailable && !isTunneling &&  movePattern == null ){
+            isTunneling = true;
+            isInvisible = true;
+            setMovePattern(Controller.getPathForTunneler(currentLocation[0], currentLocation[1], government));
+        }
+        else if (!isAvailable && !isTunneling && movePattern.size() == 0) {
             isTunneling = true;
             isInvisible = true;
             setMovePattern(Controller.getPathForTunneler(currentLocation[0], currentLocation[1], government));

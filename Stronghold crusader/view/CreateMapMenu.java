@@ -23,6 +23,7 @@ public class CreateMapMenu extends MapMenu {
         while (true) {
             if (setMap().equals(Messages.EXIT_CREATE_MAP_MENU))
                 return;
+            System.out.println("Now modify your map.");
             while (true) {
                 String input = scanner.nextLine();
                 if (input.matches("\\s*exit\\s*")) {

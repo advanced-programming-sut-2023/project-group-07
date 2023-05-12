@@ -2,22 +2,8 @@ package controller;
 
 import java.util.HashMap;
 import java.util.ArrayList;
-import model.Map;
-import model.Texture;
-import model.Tower;
-import model.Tree;
-import model.TypeOfBuilding;
-import model.UnitTypes;
-import model.MapPixel;
-import model.MilitaryCamp;
-import model.Rock;
-import model.Government;
-import model.LordColor;
-import model.Unit;
-import model.Building;
-import model.ConvertingResources;
-import model.ConvertingResourcesTypes;
-import model.GateHouse;
+
+import model.*;
 
 import java.io.IOException;
 
@@ -159,8 +145,16 @@ public class CreateMapMenuController {
         if (!pixel.getTexture().canDropUnit() || pixel.getRock() != null)
             return Messages.CANT_PLACE_THIS;
         int[] currentLocation = { row, column };
-        while (count-- > 0)
-            pixel.addPerson(new Unit(unitType, currentLocation, lordColor));
+        while (count-- > 0){
+            Person person;
+            if (unitType.equals(UnitTypes.TUNNELER))
+                person = new Tunneler(unitType, currentLocation, lordColor);
+            else if (unitType.equals(UnitTypes.ENGINEER))
+                person = new Engineer(unitType, currentLocation, lordColor);
+            else
+                person = new Unit(unitType, currentLocation, lordColor);
+            pixel.addPerson(person);
+        }
         return Messages.DROP_UNIT_SUCCESSFUL;
 
     }

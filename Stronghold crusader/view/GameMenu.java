@@ -82,10 +82,6 @@ public class GameMenu {
                 System.out.println(showTaxRate());
             else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.TAX_RATE)) != null)
                 System.out.println(setTaxRate(matcher));
-            else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.FEAR_RATE)) != null)
-                System.out.println(setFearRate(matcher));
-                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.FEAR_RATE_SHOW) != null)
-                System.out.println(showFearRate());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULATION) != null)
                 System.out.println(getPopulation());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.NEXT_TURN) != null) {
