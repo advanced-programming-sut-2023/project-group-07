@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import controller.*;
 
 import model.Government;
+import model.Map;
 import model.Resources;
 
 public class GameMenu {
@@ -77,12 +78,21 @@ public class GameMenu {
                 System.out.println(showTaxRate());
             else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.TAX_RATE)) != null)
                 System.out.println(setTaxRate(matcher));
+            else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.FEAR_RATE)) != null)
+                System.out.println(setFearRate(matcher));
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.FEAR_RATE_SHOW) != null)
+                System.out.println(showFearRate());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULATION) != null)
                 System.out.println(getPopulation());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.NEXT_TURN) != null) {
                 String returnMessage = controller.nextTurn();
                 if (returnMessage != null && returnMessage.contains("GAME OVER!")) {
                     System.out.println(returnMessage);
+                    System.out.print(Colors.YELLOW_BOLD);
+                    System.out.print("Reseting maps and users...");
+                    controller.resetMapsAndUsers();
+                    System.out.print("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+                    System.out.print(Colors.RESET);
                     return;
                 } else if (returnMessage != null)
                     System.out.println(returnMessage + controller.nextTurnMessage());
@@ -203,19 +213,32 @@ public class GameMenu {
         }
         return null;
     }
+    
+    private String setFearRate(Matcher matcher) {
+        int rate;
+        try {
+            rate = Integer.parseInt(matcher.group("rate"));
+        } catch (NumberFormatException e) {
+            return "Invalid number format.";
+        }
+        switch (controller.setFearRate(rate)) {
+            case INVALID_RATE:
+                return "Rate is not in valid range";
+            case SETTING_FEAR_RATE_SUCCESSFUL:
+                return "You have successfully set your fear rate.";
+        }
+        return null;
+    }
+
+    private String showFearRate() {
+        return "Your fear rate: " + controller.showFearRate();
+    }
 
     private String showTaxRate() {
-        return ("Your tax rate: " + controller.showTaxRate() + "coins\n" +
+        return ("Your tax rate: " + controller.showTaxRate() + " coins\n" +
                 "Popularity effect: " + controller.getTaxEffectOnPopularity());
     }
 
-    private void endOfTurn() {
-
-    }
-
-    private void showMap() {
-
-    }
 
     private String dropBuilding(String input) {
         Matcher rowMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.ROW);
@@ -551,14 +574,16 @@ public class GameMenu {
             return checkCoordinates;
         if (stanceMatcher == null)
             return "Please enter units stance!";
-        int row = Integer.parseInt(rowMatcher.group("row"));
-        int column = Integer.parseInt(columnMatcher.group("column"));
+        int row = Integer.parseInt(rowMatcher.group("row"))-1;
+        int column = Integer.parseInt(columnMatcher.group("column"))-1;
         String stance = stanceMatcher.group("stance");
         switch (controller.setStance(row, column, stance)) {
             case INVALID_STANCE:
                 return "Invalid stance!";
             case INVALID_COORDINATES:
                 return "Invalid coordinates!";
+            case NO_UNITS_SELECTED:
+                return "No units selected!";
             case STANCE_CHANGED_SUCCESSFULLY:
                 return "Stance changed successfully!";
             default:

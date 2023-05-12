@@ -221,7 +221,7 @@ public class CreateMapMenu extends MapMenu {
             case BUILDING_EXIST:
                 return "There are some buildings in this pixel!";
             case SET_TEXTURE_SUCCESSFUL:
-                return "Set type/texture successfull!";
+                return "Set type/texture successful!";
             default:
                 break;
         }

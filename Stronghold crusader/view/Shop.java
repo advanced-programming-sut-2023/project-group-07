@@ -15,7 +15,7 @@ public class Shop {
     public void run(Scanner scanner) {
         while (true) {
             String input = scanner.nextLine();
-            if (input.matches("\\s*back\\s*"))
+            if (input.matches("\\s*exit\\s*"))
                 return;
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_PRICE_LIST) != null)
                 System.out.println(controller.showPriceList());

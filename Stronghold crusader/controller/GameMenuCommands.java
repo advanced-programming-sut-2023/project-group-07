@@ -9,12 +9,13 @@ public enum GameMenuCommands {
     SHOW_POPULARITY("^\\s*show\\s+popularity\\s*$"),
     SHOW_FOOD_LIST("^\\s*show\\s+food\\s+list\\s*$"),
     SHOW_GOLD ("^\\s*show\\s+gold\\s*$"),
-    FOOD_RATE("\\s*food\\s+rate\\s+-r\\s+(?<rate>\\d+)\\s*"),
+    FOOD_RATE("\\s*food\\s+rate\\s+-r\\s+(?<rate>\\-?\\d+)\\s*"),
     FOOD_RATE_SHOW("\\s*food\\s+rate\\s+show\\s*"),
-    TAX_RATE("\\s*tax\\s+rate\\s+-r\\s+(?<rate>-?\\d+)\\s*"),
+    TAX_RATE("^\\s*tax\\s+rate\\s+-r\\s+(?<rate>-?\\d+)\\s*$"),
     SHOW_POPULATION("^\\s*show\\s+population\\s*$"),
     TAX_RATE_SHOW("\\s*tax\\s+rate\\s+show\\s*"),
-    FEAR_RATE("\\s*fear\\s+rate\\s+-r\\s+(?<rate>\\d+|\"\\d+\")\\s*"), //todo : write fear rate
+    FEAR_RATE_SHOW("^\\s*fear\\s+rate\\s+show\\s*$"),
+    FEAR_RATE("^\\s*fear\\s+rate\\s+-r\\s+(?<rate>\\-?\\d+)\\s*$"), //todo : write fear rate
     DROP_BUILDING("\\s*dropbuilding(.+)"),
     ROW("\\-x\\s+(?<row>\\d+)"),
     COLUMN("\\-y\\s+(?<column>\\d+)"),

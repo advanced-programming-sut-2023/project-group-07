@@ -9,6 +9,7 @@ public class NonMilitary extends Person {
         super(currentLocation, government);
         this.type = type;
         this.workBuilding = workBuilding;
+        this.hp = type.getHp();
     }
 
     public boolean isMovingNeededResources() {

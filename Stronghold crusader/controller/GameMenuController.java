@@ -130,8 +130,8 @@ public class GameMenuController {
                 break;
         }
         currentGovernment.changeGold(-building.getTypeOfBuilding().getCost());
-        currentGovernment.changeResources(building.getTypeOfBuilding().getResourceNeeded(),-building.getTypeOfBuilding().getResourceAmount());
-        System.out.println(currentGovernment.getResourceAmount(building.getTypeOfBuilding().getResourceNeeded()));
+        currentGovernment.changeResources(building.getTypeOfBuilding().getResourceNeeded(),
+                -building.getTypeOfBuilding().getResourceAmount());
         currentGovernment.addBuilding(building);
         if (!currentGovernment.getNoLaborBuildings().contains(typeOfBuilding)) {
             if (currentGovernment.getPeasant() >= typeOfBuilding.getWorkerInUse()) {
@@ -262,10 +262,12 @@ public class GameMenuController {
             return Messages.NOT_ENOUGH_RESOURCES;
         if (game.getSelectedBuilding().getHp() == game.getSelectedBuilding().getTypeOfBuilding().getHp())
             return Messages.ALREADY_AT_FULL_HP;
-        for (int i = game.getSelectedBuilding().getColumn(); i < game.getSelectedBuilding().getColumn() + game.getSelectedBuilding().getTypeOfBuilding()
-                .getLength(); i++)
-            for (int j = game.getSelectedBuilding().getRow(); j < game.getSelectedBuilding().getColumn() + game.getSelectedBuilding().getTypeOfBuilding()
-                    .getWidth(); j++)
+        for (int i = game.getSelectedBuilding().getColumn(); i < game.getSelectedBuilding().getColumn()
+                + game.getSelectedBuilding().getTypeOfBuilding()
+                        .getLength(); i++)
+            for (int j = game.getSelectedBuilding().getRow(); j < game.getSelectedBuilding().getColumn()
+                    + game.getSelectedBuilding().getTypeOfBuilding()
+                            .getWidth(); j++)
                 if (game.isAnEnemyCloseBy(j, i))
                     return Messages.THERES_AN_ENEMY_CLOSE_BY;
         game.getSelectedBuilding().repair();
@@ -585,9 +587,20 @@ public class GameMenuController {
         factorsInOrder.add(government.getFoodEffectOnPopularity());
         factorsInOrder.add(government.getTaxEffectOnPopularity());
         factorsInOrder.add(government.getReligionEffectOnPopularity());
-        factorsInOrder.add(government.getFearEffectOnPopularity());
+        factorsInOrder.add(government.getFearRate());
         factorsInOrder.add(government.getBuildingsEffectOnPopularity());
         return factorsInOrder;
+    }
+
+    public Messages setFearRate(int rate) {
+        if(rate>5 || rate<-5)
+            return Messages.INVALID_RATE;
+        game.getCurrentGovernment().setFearRate(rate);
+        return Messages.SETTING_FEAR_RATE_SUCCESSFUL;
+    }
+
+    public int showFearRate() {
+        return game.getCurrentGovernment().getFearRate();
     }
 
     public Messages pourOil(Directions direction) {
@@ -715,7 +728,7 @@ public class GameMenuController {
         Government owner = unit.getGovernment();
         Map map = game.getMap();
         int[] keepPosition = map.getKeepPosition(owner.getColor());
-        NonMilitary nonMilitary = new NonMilitary(new int[]{keepPosition[0] + 7, keepPosition[1] + 3}, owner,
+        NonMilitary nonMilitary = new NonMilitary(new int[] { keepPosition[0] + 7, keepPosition[1] + 3 }, owner,
                 NonMilitaryTypes.PEASANT, null);
         MapPixel personPixel = map.getMapPixel(keepPosition[0] + 7, keepPosition[1] + 3);
         personPixel.addPerson(nonMilitary);
@@ -745,5 +758,11 @@ public class GameMenuController {
 
     public int getGold() {
         return game.getCurrentGovernment().getGold();
+    }
+
+    public void resetMapsAndUsers() throws IOException {
+        Map.loadMaps();
+        User.sortUsers();
+        User.updateUsers();
     }
 }

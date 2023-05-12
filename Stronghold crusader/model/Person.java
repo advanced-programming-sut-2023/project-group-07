@@ -72,8 +72,9 @@ public class Person {
     public void move() {
         if (movePattern == null) return;
         int numberOfMoves = movesLeft;
-        for (int i = 0; i < Math.min(numberOfMoves, movePattern.size()); i++) {
-            if (i == Math.min(numberOfMoves, movePattern.size()) - 1)
+        int size = movePattern.size();
+        for (int i = 0; i < Math.min(numberOfMoves, size); i++) {
+            if (i == Math.min(numberOfMoves, size) - 1)
                 currentLocation = new int[]{movePattern.get(0)[0], movePattern.get(0)[1]};
             movePattern.remove(0);
             movesLeft--;

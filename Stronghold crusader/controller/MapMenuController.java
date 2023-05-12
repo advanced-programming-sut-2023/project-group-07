@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import model.MapPixel;
 import model.Texture;
+import model.Government;
 
 public class MapMenuController {
     private Map map;
@@ -23,7 +24,7 @@ public class MapMenuController {
         return output;
     }
 
-    public ArrayList<ArrayList<String>> getMapObjects(int x, int y) {
+    public ArrayList<ArrayList<String>> getMapObjects(int x, int y, Government government) {
         ArrayList<ArrayList<String>> output = new ArrayList<ArrayList<String>>();
         int x1 = getCornersRow(x)[0], x2 = getCornersRow(x)[1];
         int y1 = getCornersColumn(y)[0], y2 = getCornersColumn(y)[1];
@@ -31,7 +32,7 @@ public class MapMenuController {
         for (int i = 0; i < field.size(); i++) {
             output.add(new ArrayList<String>());
             for (int j = 0; j < field.get(i).size(); j++)
-                output.get(i).add(field.get(i).get(j).objectToShow());
+                output.get(i).add(field.get(i).get(j).objectToShow(government));
         }
         return output;
     }

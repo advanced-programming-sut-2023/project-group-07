@@ -23,6 +23,7 @@ public class Game {
     private MilitaryCampType currentMilitaryCamp;
     private Building selectedBuilding;
     private ArrayList<Person> selectedUnit = new ArrayList<>();
+    private ArrayList<MapPixel> accessChanged = new ArrayList<>();
     private int[] selectedUnitArea = new int[4];
     private int indexOfCurrentGovernment = 0;
 
@@ -166,11 +167,12 @@ public class Game {
     }
 
     public String nextTurn() throws IOException {
+        resetAccess();
         indexOfCurrentGovernment = (indexOfCurrentGovernment + 1) % governments.size();
+        String result = (indexOfCurrentGovernment == 0) ? endOfTurn() : "";
         currentGovernment = governments.get(indexOfCurrentGovernment);
-        if (indexOfCurrentGovernment == 0)
-            return endOfTurn();
-        return "";
+        setAccess();
+        return result;
     }
 
     public boolean gameOver() {
@@ -221,7 +223,8 @@ public class Game {
                 Unit unit = (Unit) person;
                 if (unit.getGovernment().equals(currentGovernment)) {
                     unit.setMovePattern(
-                            map.getPathList(person.currentLocation[0], person.currentLocation[1], row, column));
+                            map.getPathList(person.currentLocation[0], person.currentLocation[1], row, column,
+                                    unit.getType().equals(UnitTypes.ASSASSIN)));
                     unit.setPatrolling(false);
                     applyPersonMove(person);
                     unit.setAttacking(false);
@@ -241,37 +244,40 @@ public class Game {
                 Unit unit = (Unit) person;
                 int[] destination = unit.getPersonBeingAttacked().getCurrentLocation();
                 unit.setMovePattern(map.getPathList(person.currentLocation[0], person.currentLocation[1],
-                        destination[0], destination[1]));
+                        destination[0], destination[1], unit.getType().equals(UnitTypes.ASSASSIN)));
             } else {
                 int[] destination = person.getMovePattern().get(person.getMovePattern().size() - 1);
                 person.setMovePattern(map.getPathList(person.currentLocation[0], person.currentLocation[1],
-                        destination[0], destination[1]));
+                        destination[0], destination[1], false));
             }
         }
     }
 
     public void moveUnitsInQueue(Government government) {
-        for (Person person : government.getPeople()) {
+        for (Person person : government.getPeople())
             applyPersonMove(person);
-        }
     }
 
     public void patrolUnits(int frow, int fcolumn, int srow, int scolumn) {
         for (Person person : selectedUnit)
-            if (person.getGovernment().equals(currentGovernment)) {
-                person.setPatrolLocation(new int[] { frow, fcolumn, srow, scolumn });
-                person.setPatrolling(true);
-                if (person.currentLocation[0] == frow && person.currentLocation[1] == fcolumn)
-                    person.setMovePattern(map.getPathList(frow, fcolumn, srow, scolumn));
-                else
-                    person.setMovePattern(
-                            map.getPathList(person.currentLocation[0], person.currentLocation[1], frow, fcolumn));
-                applyPersonMove(person);
-                person.setPatrolling(true);
-                if (person instanceof Unit)
-                    ((Unit) person).setAttacking(false);
-                ((Unit) person).setAreaAttacking(false);
-                ((Unit) person).setAttackingBuilding(false);
+            if (person instanceof Unit unit) {
+                if (person.getGovernment().equals(currentGovernment)) {
+                    person.setPatrolLocation(new int[] { frow, fcolumn, srow, scolumn });
+                    person.setPatrolling(true);
+                    if (person.currentLocation[0] == frow && person.currentLocation[1] == fcolumn)
+                        person.setMovePattern(map.getPathList(frow, fcolumn, srow, scolumn,
+                                unit.getType().equals(UnitTypes.ASSASSIN)));
+                    else
+                        person.setMovePattern(
+                                map.getPathList(person.currentLocation[0], person.currentLocation[1], frow, fcolumn,
+                                        unit.getType().equals(UnitTypes.ASSASSIN)));
+                    applyPersonMove(person);
+                    person.setPatrolling(true);
+                    if (person instanceof Unit)
+                        ((Unit) person).setAttacking(false);
+                    ((Unit) person).setAreaAttacking(false);
+                    ((Unit) person).setAttackingBuilding(false);
+                }
             }
         selectedUnit.clear();
     }
@@ -289,7 +295,7 @@ public class Game {
                 continue;
             if (!person.isPatrolling())
                 continue;
-            if (person instanceof Unit) {
+            if (person instanceof Unit unit) {
                 if (person.currentLocation[0] == person.patrolLocation[2]
                         && person.currentLocation[1] == person.patrolLocation[3])
                     person.setPatrolLocation(new int[] { person.patrolLocation[2], person.patrolLocation[3],
@@ -297,22 +303,23 @@ public class Game {
                 int frow = person.patrolLocation[0], fcolumn = person.patrolLocation[1],
                         srow = person.patrolLocation[2],
                         scolumn = person.patrolLocation[3];
-                person.setMovePattern(map.getPathList(frow, fcolumn, srow, scolumn));
+                person.setMovePattern(
+                        map.getPathList(frow, fcolumn, srow, scolumn, unit.getType().equals(UnitTypes.ASSASSIN)));
             } else {
                 NonMilitary nonMilitary = (NonMilitary) person;
-                if (nonMilitary.isMovingNeededResources()) {
+                if (nonMilitary.isMovingResources()) {
                     ArrayList<int[]> path = pathToBuilding(nonMilitary, nonMilitary.getWorkBuilding());
-                    if (path.isEmpty() && isNextToBuilding(nonMilitary, nonMilitary.getWorkBuilding())) {
+                    if (path.size() == 1 && isNextToBuilding(nonMilitary, nonMilitary.getWorkBuilding())) {
                         nonMilitary.setMovePattern(map.getPathList(person.getCurrentLocation()[0],
-                                person.getCurrentLocation()[1], map.getKeepPosition(government.getColor())[0],
-                                map.getKeepPosition(government.getColor())[1]));
+                                person.getCurrentLocation()[1], map.getKeepPosition(government.getColor())[0] + 7,
+                                map.getKeepPosition(government.getColor())[1] + 3, false));
                         nonMilitary
                                 .setPatrolLocation(
                                         new int[] { nonMilitary.getCurrentLocation()[0],
                                                 nonMilitary.getCurrentLocation()[1],
-                                                map.getKeepPosition(government.getColor())[0],
-                                                map.getKeepPosition(government.getColor())[1] });
-                    } else {
+                                                map.getKeepPosition(government.getColor())[0] + 7,
+                                                map.getKeepPosition(government.getColor())[1] + 3 });
+                    } else if (path.size() == 1) {
                         nonMilitary.setMovePattern(path);
                         nonMilitary
                                 .setPatrolLocation(
@@ -349,7 +356,7 @@ public class Game {
                 }
                 unit.setMovePattern(map.getPathList(unit.currentLocation[0], unit.currentLocation[1],
                         unit.getPersonBeingAttacked().currentLocation[0],
-                        unit.getPersonBeingAttacked().currentLocation[1]));
+                        unit.getPersonBeingAttacked().currentLocation[1], unit.getType().equals(UnitTypes.ASSASSIN)));
             } else if (person instanceof Unit && ((Unit) person).isAttackingBuilding()) {
                 Unit unit = (Unit) person;
                 if (unit.getBuildingBeingAttacked().getHp() <= 0) {
@@ -358,7 +365,7 @@ public class Game {
                 }
                 unit.setMovePattern(map.getPathList(unit.currentLocation[0], unit.currentLocation[1],
                         unit.getBuildingBeingAttacked().getRow(),
-                        unit.getBuildingBeingAttacked().getColumn()));
+                        unit.getBuildingBeingAttacked().getColumn(), unit.getType().equals(UnitTypes.ASSASSIN)));
             }
         }
     }
@@ -380,9 +387,8 @@ public class Game {
 
     public void setStance(int row, int column, UnitStance unitStance) {
         for (Person person : map.getMapPixel(row, column).getPeople()) {
-            if (person.getGovernment().equals(currentGovernment)) {
+            if (person.getGovernment().equals(currentGovernment) && person instanceof Unit)
                 ((Unit) person).setUnitStance(unitStance);
-            }
         }
         selectedUnit.clear();
     }
@@ -391,7 +397,8 @@ public class Game {
         for (Person person2 : selectedUnit) {
             Unit unit = (Unit) person2;
             unit.setAttacking(true);
-            unit.setMovePattern(map.getPathList(unit.currentLocation[0], unit.currentLocation[1], row, column));
+            unit.setMovePattern(map.getPathList(unit.currentLocation[0], unit.currentLocation[1], row, column,
+                    unit.getType().equals(UnitTypes.ASSASSIN)));
             unit.setPersonBeingAttacked(person);
             unit.setBuildingBeingAttacked(null);
             applyPersonMove(unit);
@@ -427,19 +434,20 @@ public class Game {
         int row = building.getRow();
         int column = building.getColumn();
         for (int i = row; i < row + building.getTypeOfBuilding().getWidth(); i++)
-            if (!(path = map.getPathList(person.currentLocation[0], person.currentLocation[1], i, column - 1))
+            if (!(path = map.getPathList(person.currentLocation[0], person.currentLocation[1], i, column - 1, false))
                     .isEmpty())
                 break;
         for (int i = row; (i < row + building.getTypeOfBuilding().getWidth()) && path.isEmpty(); i++)
             if (!(path = map.getPathList(person.currentLocation[0], person.currentLocation[1], i,
-                    column + building.getTypeOfBuilding().getLength())).isEmpty())
+                    column + building.getTypeOfBuilding().getLength(), false)).isEmpty())
                 break;
         for (int j = column; (j < column + building.getTypeOfBuilding().getLength()) && path.isEmpty(); j++)
-            if (!(path = map.getPathList(person.currentLocation[0], person.currentLocation[1], row - 1, j)).isEmpty())
+            if (!(path = map.getPathList(person.currentLocation[0], person.currentLocation[1], row - 1, j, false))
+                    .isEmpty())
                 break;
         for (int j = column; (j < column + building.getTypeOfBuilding().getLength()) && path.isEmpty(); j++)
             if (!(path = map.getPathList(person.currentLocation[0], person.currentLocation[1],
-                    row + building.getTypeOfBuilding().getWidth(), j)).isEmpty())
+                    row + building.getTypeOfBuilding().getWidth(), j, false)).isEmpty())
                 break;
         return path;
     }
@@ -462,12 +470,15 @@ public class Game {
         int size = selectedUnit.size();
     }
 
-    private int[] nearestEnemy(Unit unit) {
-        for (int i = 0; i <= unit.type.getRange(); i++) {
+    private int[] nearestEnemy(Unit unit, int range) {
+        for (int i = 0; i <= range; i++) {
             int row = unit.getCurrentLocation()[0], column = unit.getCurrentLocation()[1];
             for (int j = -i; j <= i; j++) {
                 if (row + j < 0 || row + j >= map.getSize() || column + i - Math.abs(j) < 0
-                        || column + i - Math.abs(j) >= map.getSize())
+                        || column + i - Math.abs(j) >= map.getSize()
+                        || (range == 1 && !areOnTheSameLevel(
+                                map.getMapPixel(unit.getCurrentLocation()[0], unit.getCurrentLocation()[1]),
+                                map.getMapPixel(row + j, column + i - Math.abs(j)))))
                     continue;
                 for (Person person : map.getMapPixel(row + j, column + i - Math.abs(j)).getPeople()) {
                     if (!person.getGovernment().equals(unit.getGovernment())) {
@@ -480,7 +491,9 @@ public class Game {
             }
             for (int j = i; j >= -i; j--) {
                 if (row + j < 0 || row + j >= map.getSize() || column - i + Math.abs(j) < 0
-                        || column - i + Math.abs(j) >= map.getSize())
+                        || column - i + Math.abs(j) >= map.getSize() || (range == 1 && !areOnTheSameLevel(
+                                map.getMapPixel(unit.getCurrentLocation()[0], unit.getCurrentLocation()[1]),
+                                map.getMapPixel(row + j, column + i - Math.abs(j)))))
                     continue;
                 for (Person person : map.getMapPixel(row + j, column - i + Math.abs(j)).getPeople()) {
                     if (!person.getGovernment().equals(unit.getGovernment())) {
@@ -495,30 +508,68 @@ public class Game {
         return null;
     }
 
-    public void checkStance(Unit unit) {
-        if (!unit.isAttacking() && !unit.isPatrolling() && unit.getMovePattern().isEmpty()) {
-            if (unit.getUnitStance().equals(UnitStance.DEFENSIVE)) {
-                // if()
-            }
-            if (unit.getUnitStance().equals(UnitStance.OFFENSIVE)) {
+    private boolean areOnTheSameLevel(MapPixel mapPixel1, MapPixel mapPixel2) {
+        if(mapPixel1.getBuildings().isEmpty() ^ mapPixel2.getBuildings().isEmpty())
+            return false;
+        if(mapPixel1.getBuildings().isEmpty() && mapPixel2.getBuildings().isEmpty())
+            return true;
+        if (mapPixel1.getBuildings().get(0).getTypeOfBuilding().getHeight() == mapPixel2.getBuildings().get(0)
+                .getTypeOfBuilding().getHeight())
+            return true;
+        return false;
 
+    }
+
+    public void checkStance(Government government) {
+        for (Person person : government.getPeople())
+            if (person instanceof Unit unit) {
+                if (!unit.isAttacking() && !unit.isPatrolling() && unit.getMovePattern().isEmpty()) {
+                    if (unit.getUnitStance().equals(UnitStance.DEFENSIVE)) {
+                        if (nearestEnemy(unit, unit.getType().getRange()) != null)
+                            return;
+                        int range = (unit.getType().getRange() > 1) ? (int) (unit.getType().getRange() * (1.5))
+                                : unit.getType().getRange() + 5;
+                        int[] enemy = nearestEnemy(unit, range);
+                        unit.setMovePattern(map.getPathList(unit.getCurrentLocation()[0], unit.getCurrentLocation()[1],
+                                enemy[0], enemy[1], unit.getType().equals(UnitTypes.ASSASSIN)));
+                        applyPersonMove(unit);
+                        unit.setMovePattern(new ArrayList<>());
+                    }
+                    if (unit.getUnitStance().equals(UnitStance.OFFENSIVE)) {
+                        if (nearestEnemy(unit, unit.getType().getRange()) != null)
+                            return;
+                        int range = (unit.getType().getRange() > 1) ? unit.getType().getRange() * 2
+                                : unit.getType().getRange() + 10;
+                        int[] enemy = nearestEnemy(unit, range);
+                        unit.setMovePattern(map.getPathList(unit.getCurrentLocation()[0], unit.getCurrentLocation()[1],
+                                enemy[0], enemy[1], unit.getType().equals(UnitTypes.ASSASSIN)));
+                        applyPersonMove(unit);
+                        unit.setMovePattern(new ArrayList<>());
+                    }
+                }
             }
-        }
     }
 
     public void attackAllOthers(Government government) {
         for (Person person : government.getPeople()) {
             if (person instanceof Unit) {
                 Unit unit = (Unit) person;
-                int enemyLocation[] = nearestEnemy(unit);
+                int range = unit.getType().getRange();
+                if (unit.getType().getRange() > 1)
+                    range = unit.getType().getRange()
+                            + map.getMapPixel(unit.currentLocation[0], unit.currentLocation[1]).getBuildings().get(0)
+                                    .getTypeOfBuilding().getHeight();
+                int enemyLocation[] = nearestEnemy(unit, range);
                 if (enemyLocation != null) {
                     for (Person person2 : map.getMapPixel(enemyLocation[0], enemyLocation[1]).getPeople()) {
                         if (!person2.getGovernment().equals(unit.getGovernment()))
-                            person2.changeHP(-unit.getDamage() * unit.getBonusDamageRate());
+                            person2.changeHP(-(int) (unit.getDamage() * (1 + government.getFearRate() * 5 / 100)));
                     }
                     if (getLordInPixel(enemyLocation) != null && getLordInPixel(enemyLocation).getHp() <= 0) {
-                        if (getLordInPixel(enemyLocation).getGovernment().getDefeatedBy() == null)
+                        if (getLordInPixel(enemyLocation).getGovernment().getDefeatedBy() == null){
                             getLordInPixel(enemyLocation).getGovernment().setDefeatedBy(government);
+                            government.defeatLord(getLordInPixel(enemyLocation).getGovernment().getGold());
+                        }
                     }
                 } else {
                     Building building = unit.getBuildingBeingAttacked();
@@ -526,10 +577,49 @@ public class Game {
                     if (building == null || (Math.abs(building.getRow() - row)
                             + Math.abs(building.getColumn() - column)) > unit.type.getRange())
                         continue;
-                    building.changeHp(-unit.getDamage() * unit.getBonusDamageRate());
+                    building.changeHp(-(int) (unit.getDamage() * (1 + government.getFearRate() * 5 / 100)));
                 }
             }
         }
+    }
+
+    private void setAccess() {
+        for (Person person : currentGovernment.getPeople()) {
+            if (person instanceof Unit && ((Unit) person).getType().equals(UnitTypes.LADDERMAN)) {
+                Unit unit = (Unit) person;
+                int row = unit.getCurrentLocation()[0], column = unit.getCurrentLocation()[1];
+                MapPixel pixel = null;
+                if (row - 1 >= 0 && enemyWallExists(row - 1, column))
+                    pixel = map.getMapPixel(row - 1, column);
+                else if (row + 1 < map.getSize() && enemyWallExists(row + 1, column))
+                    pixel = map.getMapPixel(row + 1, column);
+                else if (column - 1 >= 0 && enemyWallExists(row, column - 1))
+                    pixel = map.getMapPixel(row, column - 1);
+                else if (column + 1 < map.getSize() && enemyWallExists(row, column + 1))
+                    pixel = map.getMapPixel(row, column + 1);
+                if (pixel != null && !pixel.canBeAccessed()) {
+                    pixel.setAccess();
+                    accessChanged.add(pixel);
+                }
+            }
+        }
+    }
+
+    private void resetAccess() {
+        for (MapPixel pixel : accessChanged)
+            pixel.resetAccess();
+        accessChanged.clear();
+    }
+
+    private boolean enemyWallExists(int row, int column) {
+        for (Building building : map.getMapPixel(row, column).getBuildings())
+            if (!building.getGovernment().equals(currentGovernment)) {
+                TypeOfBuilding type = building.getTypeOfBuilding();
+                if (type.equals(TypeOfBuilding.LOW_WALL) || type.equals(TypeOfBuilding.STONE_WALL)
+                        || type.equals(TypeOfBuilding.CRENELATED_WALL))
+                    return true;
+            }
+        return false;
     }
 
     public boolean canAttackBuilding(Unit unit) {
@@ -588,11 +678,15 @@ public class Game {
                         ConvertingResources convertingResources = (ConvertingResources) nonMilitary.getWorkBuilding();
                         if (nonMilitary.isMovingResources()) {
                             government.changeResources(convertingResources.getResource(),
-                                    convertingResources.getType().getResourceDeliveredAmount());
+                                    (int) (convertingResources.getType().getResourceDeliveredAmount()
+                                            * (1 - government.getFearRate() * 1 / 5)));
                             nonMilitary.setMovingResources(false);
                         }
-                        if (convertingResources.getType().getResourceNeededAmount() < government
-                                .getResourceAmount(convertingResources.getType().getResourceNeeded())) {
+                        if (convertingResources.getType().getResourceNeeded() == null)
+                            nonMilitary.setMovingNeededResources(true);
+                        if (convertingResources.getType().getResourceNeeded() != null
+                                && convertingResources.getType().getResourceNeededAmount() <= government
+                                        .getResourceAmount(convertingResources.getType().getResourceNeeded())) {
                             government.changeResources(convertingResources.getType().getResourceNeeded(),
                                     -convertingResources.getType().getResourceNeededAmount());
                             nonMilitary.setMovingNeededResources(true);
@@ -615,20 +709,19 @@ public class Game {
         building.setWorkers(building.getTypeOfBuilding().getWorkerInUse());
         for (int i = 0; i < building.getTypeOfBuilding().getWorkerInUse(); i++) {
             NonMilitary nonMilitary = new NonMilitary(
-                    new int[] { map.getKeepPosition(government.getColor())[0]+7,
-                            map.getKeepPosition(government.getColor())[1]+3 },
+                    new int[] { map.getKeepPosition(government.getColor())[0] + 7,
+                            map.getKeepPosition(government.getColor())[1] + 3 },
                     government, building.getTypeOfBuilding().getWorkerType(), building);
+            government.addPerson(nonMilitary);
             ArrayList<int[]> path = pathToBuilding(nonMilitary, building);
-            // for(int[] a : path) 
-            // System.out.println(a[0]+","+a[1]);
-            map.getMapPixel(map.getKeepPosition(government.getColor())[0]+7,
-                    map.getKeepPosition(government.getColor())[1]+3).addPerson(nonMilitary);
+            map.getMapPixel(map.getKeepPosition(government.getColor())[0] + 7,
+                    map.getKeepPosition(government.getColor())[1] + 3).addPerson(nonMilitary);
             nonMilitary.setMovePattern(map.getPathList(nonMilitary.getCurrentLocation()[0],
                     nonMilitary.getCurrentLocation()[1], path.get(path.size() - 1)[0],
-                    path.get(path.size() - 1)[1]));
+                    path.get(path.size() - 1)[1], false));
             nonMilitary.setPatrolLocation(
-                    new int[] { map.getKeepPosition(government.getColor())[0]+7,
-                            map.getKeepPosition(government.getColor())[1]+3,
+                    new int[] { map.getKeepPosition(government.getColor())[0] + 7,
+                            map.getKeepPosition(government.getColor())[1] + 3,
                             path.get(path.size() - 1)[0], path.get(path.size() - 1)[1] });
             nonMilitary.setPatrolling(true);
             int frow = nonMilitary.getCurrentLocation()[0], fcolumn = nonMilitary.getCurrentLocation()[1];
@@ -666,21 +759,18 @@ public class Game {
                 }
             } else
                 changePeasant((int) (government.getPopularity() / 10) - 5, government);
-
             setPatrolPattern(government);
             updateMovePatterns(government);
             moveUnitsInQueue(government);
+            checkStance(government);
             resourceDelivery(government);
             government.resetMovesLeft();
         }
-        for (Government government : governments) {
+        for (Government government : governments)
             attackAllOthers(government);
-        }
         for (Government government : governments) {
             removeEliminatedPeople(government);
             removeEliminatedBuildings(government);
-        }
-        for (Government government : governments) {
             government.increasePercentOfBlessed();
         }
         return eliminateDefeatedLords();
@@ -709,7 +799,7 @@ public class Game {
         ArrayList<Building> buildings = map.getAllBuildingsOfSomeone(owner);
         for (Building building : buildings) {
             if (building.getTypeOfBuilding().equals(TypeOfBuilding.OIL_SMELTER)) {
-                ArrayList<int[]> pathTemp = map.getPathList(x, y, building.row(), building.column());
+                ArrayList<int[]> pathTemp = map.getPathList(x, y, building.row(), building.column(), false);
                 if (path == null) {
                     path = pathTemp;
                     continue;
@@ -730,9 +820,7 @@ public class Game {
                     + "\nGold: " + government.getGold() + "\n";
             counter++;
         }
-
         return result;
-
     }
 
     public ArrayList<Person> getPersonOfAPixel(int x, int y) {

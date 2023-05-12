@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
@@ -225,9 +226,7 @@ public class User {
         for (int i = 0; i < users.size(); i++) {
             for (int j = i + 1; j < users.size(); j++) {
                 if (doesHaveHigherRank(users.get(j), users.get(i))) {
-                    User tmp = users.get(j);
-                    users.set(j, users.get(i));
-                    users.set(i, tmp);
+                    Collections.swap(users, i, j);
                 }
             }
         }

@@ -66,7 +66,11 @@ public class MapMenu {
 
     protected void printMap() {
         ArrayList<ArrayList<Colors>> mapColorList = controller.getMapColorList(this.x, this.y);
-        ArrayList<ArrayList<String>> mapObjects = controller.getMapObjects(this.x, this.y);
+        ArrayList<ArrayList<String>> mapObjects;
+        if(Controller.currentGame == null)
+            mapObjects = controller.getMapObjects(this.x, this.y, null);
+        else 
+            mapObjects = controller.getMapObjects(this.x, this.y, Controller.currentGame.getCurrentGovernment());
         int numberOfRows = mapColorList.size();
         int numberOfColumns = mapColorList.get(0).size();
         int numberOfRowSplitters = numberOfColumns * 6 + 1;

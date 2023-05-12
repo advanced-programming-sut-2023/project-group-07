@@ -6,7 +6,6 @@ public class Unit extends Person {
     protected UnitTypes type;
     protected UnitStance unitStance;
     protected int damage;
-    protected int bonusDamageRate;
     protected boolean isAttacking;
     protected Person personBeingAttacked;
     protected Building buildingBeingAttacked;
@@ -22,7 +21,6 @@ public class Unit extends Person {
         movesLeft = type.getSpeed();
         unitStance = UnitStance.STAND_GROUND;
         this.damage = type.getDamage();
-        this.bonusDamageRate = 1;
         this.isAttacking = false;
         this.isAttackingBuilding = false;
         this.areaAttacking = false;
@@ -39,7 +37,6 @@ public class Unit extends Person {
         movesLeft = type.getSpeed();
         unitStance = UnitStance.STAND_GROUND;
         this.damage = type.getDamage();
-        this.bonusDamageRate = 1;
         this.isAttacking = false;
         this.areaAttacking = false;
     }
@@ -47,11 +44,7 @@ public class Unit extends Person {
     public int getDamage() {
         return damage;
     }
-
-    public int getBonusDamageRate() {
-        return bonusDamageRate;
-    }
-
+    
     public int[] getAreaAttackLocation() {
         return areaAttackLocation;
     }

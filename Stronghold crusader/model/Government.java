@@ -112,7 +112,7 @@ public class Government {
     }
 
     public void setPopularity(int popularity) {
-        this.popularity = popularity;
+        this.popularity = Math.min(Math.max(0,popularity),100);
     }
 
     public User getUser() {
@@ -311,7 +311,7 @@ public class Government {
         int change = getFoodEffectOnPopularity() +
                 getTaxEffectOnPopularity() +
                 getReligionEffectOnPopularity() +
-                getFearEffectOnPopularity() +
+                getFearRate() +
                 getBuildingsEffectOnPopularity();
         return change;
     }
@@ -324,11 +324,6 @@ public class Government {
                 ; // todo : make inn class and set popularity effect
         }
         return change; // todo
-    }
-
-    public int getFearEffectOnPopularity() {
-        int fearRate = getFearRate();
-        return fearRate;
     }
 
     public int getReligionEffectOnPopularity() {

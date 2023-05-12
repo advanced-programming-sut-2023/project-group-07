@@ -31,7 +31,7 @@ public class Map {
             for (int i = row; i < row + 7; i++)
                 for (int j = column; j < column + 7; j++)
                     field.get(i).get(j).setPlayerKeep(lordColor);
-            field.get(row+6).get(column+3).setAccess();
+            field.get(row + 6).get(column + 3).setAccess();
         }
     }
 
@@ -149,12 +149,14 @@ public class Map {
         return keepsPositions.get(lordColor);
     }
 
-    public boolean areAdj(MapPixel mapPixel1, MapPixel mapPixel2) {
+    public boolean areAdj(MapPixel mapPixel1, MapPixel mapPixel2, boolean isAssassin) {
         if (!mapPixel1.getTexture().canDropUnit() || !mapPixel2.getTexture().canDropUnit())
             return false;
-        if (mapPixel1.getBuildings().isEmpty() && mapPixel2.getBuildings().isEmpty() && mapPixel1.getLordKeep()==null && mapPixel2.getLordKeep()==null)
+        if (mapPixel1.getBuildings().isEmpty() && mapPixel2.getBuildings().isEmpty() && mapPixel1.getLordKeep() == null
+                && mapPixel2.getLordKeep() == null)
             return true;
-        if (mapPixel1.getBuildings().isEmpty() && mapPixel2.getBuildings().isEmpty() && mapPixel1.getLordKeep()!=null && mapPixel2.getLordKeep()!=null)
+        if (mapPixel1.getBuildings().isEmpty() && mapPixel2.getBuildings().isEmpty() && mapPixel1.getLordKeep() != null
+                && mapPixel2.getLordKeep() != null)
             return true;
         if ((mapPixel1.getBuildings().isEmpty() && mapPixel2.canBeAccessed())
                 || (mapPixel1.canBeAccessed() && mapPixel2.getBuildings().isEmpty()))
@@ -168,30 +170,59 @@ public class Map {
         if (!mapPixel1.getBuildings().isEmpty() && !mapPixel2.getBuildings().isEmpty() && mapPixel1.getBuildings()
                 .get(0).getTypeOfBuilding().equals(mapPixel2.getBuildings().get(0).getTypeOfBuilding()))
             return true;
+        if (!mapPixel1.getBuildings().isEmpty() && !mapPixel2.getBuildings().isEmpty()
+                && areTowerGateWall(mapPixel1.getBuildings()
+                        .get(0), mapPixel2.getBuildings().get(0)))
+            return true;
+        if (isAssassin && mapPixel1.getBuildings().isEmpty() && !mapPixel2.getBuildings().isEmpty()){
+            Building building = mapPixel2.getBuildings().get(0);
+            switch (building.getTypeOfBuilding()){
+                case STONE_WALL:
+                case LOW_WALL:
+                case CRENELATED_WALL:
+                case ROUND_TOWER:
+                case SQUARE_TOWER:
+                case LOOK_OUT_TOWER:
+                case DEFENCE_TURRENT:
+                case PERIMETER_TURRENT:
+                    return true;
+            }
+        }
         return false;
     }
 
-    public ArrayList<int[]> getAdj(int row, int col) {
+    private boolean areTowerGateWall(Building building1, Building building2) {
+        if (building1.getTypeOfBuilding().getType().equals("tower")
+                || building1.getTypeOfBuilding().getType().equals("gate") ||
+                building1.getTypeOfBuilding().getType().equals("wall"))
+            if (building2.getTypeOfBuilding().getType().equals("tower")
+                    || building2.getTypeOfBuilding().getType().equals("gate") ||
+                    building2.getTypeOfBuilding().getType().equals("wall"))
+                return true;
+        return false;
+    }
+
+    public ArrayList<int[]> getAdj(int row, int col, boolean isAssassin) {
         ArrayList<int[]> adj = new ArrayList<>();
-        if (row > 0 && areAdj(getMapPixel(row,col), getMapPixel(row-1,col))) {
+        if (row > 0 && areAdj(getMapPixel(row, col), getMapPixel(row - 1, col), isAssassin)) {
             int[] arr = new int[2];
             arr[0] = row - 1;
             arr[1] = col;
             adj.add(arr);
         }
-        if (col > 0 && areAdj(getMapPixel(row,col), getMapPixel(row,col-1))) {
+        if (col > 0 && areAdj(getMapPixel(row, col), getMapPixel(row, col - 1), isAssassin)) {
             int[] arr = new int[2];
             arr[0] = row;
             arr[1] = col - 1;
             adj.add(arr);
         }
-        if (row < size - 1 && areAdj(getMapPixel(row,col), getMapPixel(row+1,col))) {
+        if (row < size - 1 && areAdj(getMapPixel(row, col), getMapPixel(row + 1, col), isAssassin)) {
             int[] arr = new int[2];
             arr[0] = row + 1;
             arr[1] = col;
             adj.add(arr);
         }
-        if (col < size - 1 && areAdj(getMapPixel(row,col), getMapPixel(row,col+1))) {
+        if (col < size - 1 && areAdj(getMapPixel(row, col), getMapPixel(row, col + 1), isAssassin)) {
             int[] arr = new int[2];
             arr[0] = row;
             arr[1] = col + 1;
@@ -200,7 +231,7 @@ public class Map {
         return adj;
     }
 
-    public void bfs(int srcRow, int srcCol, ArrayList<ArrayList<ArrayList<int[]>>> parent) {
+    public void bfs(int srcRow, int srcCol, ArrayList<ArrayList<ArrayList<int[]>>> parent, boolean isAssassin) {
 
         int[][] distance = new int[size][size];
         for (int i = 0; i < size; i++)
@@ -211,14 +242,12 @@ public class Map {
         Queue<Integer> queueY = new LinkedList<>();
         queueX.offer(srcRow);
         queueY.offer(srcCol);
-
         parent.get(srcRow).get(srcCol).add(new int[] { -1, -1 });
         distance[srcRow][srcCol] = 0;
-
         while (!queueX.isEmpty()) {
             int X = queueX.poll();
             int Y = queueY.poll();
-            for (int[] adj : getAdj(X, Y)) {
+            for (int[] adj : getAdj(X, Y, isAssassin)) {
                 int x = adj[0], y = adj[1];
                 if (distance[x][y] > distance[X][Y] + 1) {
                     distance[x][y] = distance[X][Y] + 1;
@@ -239,12 +268,11 @@ public class Map {
         if (parent.get(X).get(Y).size() == 0) {
             return;
         }
-
         path.add(new int[] { parent.get(X).get(Y).get(0)[0], parent.get(X).get(Y).get(0)[1] });
         findPath(path, parent, parent.get(X).get(Y).get(0));
     }
 
-    public ArrayList<int[]> getPathList(int firstRow, int firstColumn, int secondRow, int secondColumn) {
+    public ArrayList<int[]> getPathList(int firstRow, int firstColumn, int secondRow, int secondColumn, boolean isAssassin) {
         ArrayList<int[]> path = new ArrayList<>();
         ArrayList<ArrayList<ArrayList<int[]>>> parent = new ArrayList<ArrayList<ArrayList<int[]>>>();
         for (int k = 0; k < size; k++) {
@@ -253,7 +281,7 @@ public class Map {
                 parent.get(k).add(new ArrayList<>());
             }
         }
-        bfs(firstRow, firstColumn, parent);
+        bfs(firstRow, firstColumn, parent, isAssassin);
         findPath(path, parent, new int[] { secondRow, secondColumn });
         Collections.reverse(path);
         path.add(new int[] { secondRow, secondColumn });
@@ -293,7 +321,9 @@ public class Map {
             }
         }
         for (Government government : governments.values())
-            government.setLord((Unit) government.getPeople().get(0));
+            for(Person person : government.getPeople())
+                if(person instanceof Unit unit && unit.getType().equals(UnitTypes.LORD))
+                    government.setLord(unit);
     }
 
     public boolean isAdjacentToSameType(int row, int column, int size, TypeOfBuilding typeOfBuilding) {
@@ -356,15 +386,19 @@ public class Map {
     public ArrayList<int[]> getStraightPathList(int x, int y, int targetX, int targetY) {
         int currentX = x, currentY = y;
         ArrayList<int[]> path = new ArrayList<>();
-        while (currentY != targetY || currentX != targetY){
+        while (currentY != targetY || currentX != targetY) {
             int xDistance = targetX - currentX, yDistance = targetY - currentY;
 
-            if (xDistance > 0) currentX++;
-            if (xDistance < 0) currentX--;
-            if (yDistance > 0) currentY++;
-            if (yDistance < 0) currentY--; // have strange path that can be better
+            if (xDistance > 0)
+                currentX++;
+            if (xDistance < 0)
+                currentX--;
+            if (yDistance > 0)
+                currentY++;
+            if (yDistance < 0)
+                currentY--; // have strange path that can be better
 
-            path.add(new int[]{currentX, currentY});
+            path.add(new int[] { currentX, currentY });
         }
         return path;
     }

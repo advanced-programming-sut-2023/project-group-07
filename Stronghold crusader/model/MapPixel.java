@@ -184,10 +184,21 @@ public class MapPixel {
         return false;
     }
 
-    public String objectToShow() {
+    private boolean doesHaveVisibleUnit(Government government){
+        if(government == null)
+            return true;
+        for(Unit unit : units)
+            if(unit.getGovernment().equals(government))
+                return true;
+            else if(!unit.isInvisible())
+                return true;
+        return false;
+    }
+
+    public String objectToShow(Government government) {
         if (this.lordKeep != null)
             return "K";
-        if (!units.isEmpty())
+        if (doesHaveVisibleUnit(government))
             return doesHaveLord() ? "L" : "S";
         if (getBuildings().size() != 0)
             return doesHaveWall() ? "W" : "B";

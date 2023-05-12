@@ -103,7 +103,8 @@ public class Controller {
     public static void sendToCoordinate(int x, int y, Person person) {
         int currentX = person.getCurrentLocation()[0],
                 currentY = person.getCurrentLocation()[1];
-        ArrayList<int[]> path = map().getPathList(currentX, currentY, x, y);
+        boolean isAssassin = (person instanceof Unit && ((Unit) person).getType().equals(UnitTypes.ASSASSIN));
+        ArrayList<int[]> path = map().getPathList(currentX, currentY, x, y, isAssassin);
         person.setMovePattern(path);
     }
 
