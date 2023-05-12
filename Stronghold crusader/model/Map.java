@@ -386,6 +386,7 @@ public class Map {
     public ArrayList<int[]> getStraightPathList(int x, int y, int targetX, int targetY) {
         int currentX = x, currentY = y;
         ArrayList<int[]> path = new ArrayList<>();
+        path.add(new int[] { currentX, currentY });
         while (currentY != targetY || currentX != targetY) {
             int xDistance = targetX - currentX, yDistance = targetY - currentY;
 
