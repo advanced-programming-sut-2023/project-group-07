@@ -24,14 +24,6 @@ public class GameMenuController {
         return game.getGovernments();
     }
 
-    public void endOfTurn() throws IOException {
-        game.endOfTurn();
-        for (Government government : getGovernments()) { // todo : must be in game object
-            government.setPopularity(government.getPopularity() + government.getTaxEffectOnPopularity()); // todo :
-            government.setGold((int) (government.getGold() + government.getTaxAmount() * government.getPopulation())); // todo
-            // :
-        }
-    }
 
     public Messages dropBuilding(int row, int column, String name) {
         Map map = game.getMap();

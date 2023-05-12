@@ -2,7 +2,7 @@ package model;
 
 import controller.Controller;
 
-public class Tunneler extends Unit { // todo : when making tunneler, call this class not its super classes
+public class Tunneler extends Unit {
     private boolean isAvailable;
     private boolean isTunneling;
     private int hittingDamage = 500; // todo : writing this in enum or something

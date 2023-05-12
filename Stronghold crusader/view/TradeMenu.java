@@ -116,7 +116,7 @@ public class TradeMenu {
         return null;
     }
 
-    private void showTradeHistory() { // todo : this may change when adding 1-all
+    private void showTradeHistory() {
         ArrayList<TradeRequest> tradeHistory = controller.getTradeHistory();
         if (tradeHistory.size() == 0) System.out.println("You don't have any trade history.");
         else {
@@ -126,7 +126,7 @@ public class TradeMenu {
         }
     }
 
-    private void showNewRequests() { // todo : this may change when adding 1-all
+    private void showNewRequests() {
         ArrayList<TradeRequest> notSeenRequests = controller.getNotSeenRequests();
         if (notSeenRequests.size() == 0) System.out.println("You don't have any new trade request.");
         else {
@@ -139,7 +139,7 @@ public class TradeMenu {
         controller.setRequestsShown(notSeenRequests);
     }
 
-    private void showAvailableTrades() {  // todo : this may change when adding 1-all
+    private void showAvailableTrades() {
         ArrayList<TradeRequest> availableTrades = controller.getAvailableTrades();
         if (availableTrades.size() == 0) System.out.println("No available trade request");
         else {

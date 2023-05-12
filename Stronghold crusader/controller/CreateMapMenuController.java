@@ -259,8 +259,6 @@ public class CreateMapMenuController {
     }
 
     // todo : fix this
-    // public void addGovernment(int row, int column, int index) {
-    // map.getMapPixel(row, column).setPlayerKeep(government);
-    // }
+
 
 }
