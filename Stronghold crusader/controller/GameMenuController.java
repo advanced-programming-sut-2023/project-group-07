@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.mockito.internal.matchers.InstanceOf;
+
 import model.*;
 
 public class GameMenuController {
@@ -23,7 +25,6 @@ public class GameMenuController {
     public ArrayList<Government> getGovernments() {
         return game.getGovernments();
     }
-
 
     public Messages dropBuilding(int row, int column, String name) {
         Map map = game.getMap();
@@ -68,7 +69,7 @@ public class GameMenuController {
                 || typeOfBuilding.equals(TypeOfBuilding.PITCH_RIG)) {
             for (int i = 0; i < typeOfBuilding.getLength(); i++)
                 for (int j = 0; j < typeOfBuilding.getWidth(); j++)
-                    if (!map.getMapPixel(row + j, column + i).getTexture().equals(typeOfBuilding.getTexture()))
+                    if (map.getMapPixel(row + j, column + i).getTexture().equals(typeOfBuilding.getTexture()))
                         acceptedPixels++;
             if (acceptedPixels * 4 < typeOfBuilding.getLength() * typeOfBuilding.getWidth())
                 return Messages.CANT_PLACE_THIS;
@@ -150,6 +151,8 @@ public class GameMenuController {
             map.getMapPixel(row + typeOfBuilding.getWidth() - 1, column + (int) (typeOfBuilding.getLength() / 2) + 1)
                     .setAccess();
         }
+        if (typeOfBuilding.equals(TypeOfBuilding.HOVEL))
+            game.getCurrentGovernment().setPopulation(game.getCurrentGovernment().getPopulation() + 8);
         return Messages.DEPLOYMENT_SUCCESSFUL;
     }
 
@@ -201,22 +204,18 @@ public class GameMenuController {
         return game.getSelectedBuilding().getTypeOfBuilding().getBuildingName();
     }
 
-    public Messages buildSiegeWeapon(String type, int row, int column) { // todo : review this method
+    public Messages buildSiegeWeapon(String type) { // todo : review this method
         Map map = game.getMap();
         Government currentGovernment = game.getCurrentGovernment();
         ArrayList<Person> selectedUnit = game.getSelectedUnit();
         SiegeWeaponType siegeWeaponType = SiegeWeaponType.getSiegeWeaponType(type);
-        if (!areCoordinatesValid(row, column))
-            return Messages.INVALID_COORDINATES;
         if (siegeWeaponType == null)
             return Messages.INVALID_SIEGE_WEAPON_TYPE;
         int[] location = new int[2];
         int counter = 0;
         for (Person person : selectedUnit) {
-
             if (!(person instanceof Unit))
                 continue;
-
             if (((Unit) person).getType().equals(UnitTypes.ENGINEER)) {
                 location = person.getCurrentLocation();
                 counter++;
@@ -238,7 +237,8 @@ public class GameMenuController {
         map.getMapPixel(location[0], location[1]).getPeople().removeAll(engineers);
         currentGovernment.getPeople().removeAll(engineers);
         SiegeWeapon siegeWeapon = new SiegeWeapon(siegeWeaponType, location, game.getCurrentGovernment());
-        game.getMap().getMapPixel(row, column).addSiegeWeapon(siegeWeapon);
+        currentGovernment.addPerson(siegeWeapon);
+        game.getMap().getMapPixel(location[0], location[1]).addSiegeWeapon(siegeWeapon);
         return Messages.SIEGE_WEAPON_BUILT_SUCCESSFULLY;
     }
 
@@ -256,10 +256,10 @@ public class GameMenuController {
             return Messages.ALREADY_AT_FULL_HP;
         for (int i = game.getSelectedBuilding().getColumn(); i < game.getSelectedBuilding().getColumn()
                 + game.getSelectedBuilding().getTypeOfBuilding()
-                .getLength(); i++)
+                        .getLength(); i++)
             for (int j = game.getSelectedBuilding().getRow(); j < game.getSelectedBuilding().getColumn()
                     + game.getSelectedBuilding().getTypeOfBuilding()
-                    .getWidth(); j++)
+                            .getWidth(); j++)
                 if (game.isAnEnemyCloseBy(j, i))
                     return Messages.THERES_AN_ENEMY_CLOSE_BY;
         game.getSelectedBuilding().repair();
@@ -273,8 +273,10 @@ public class GameMenuController {
         UnitTypes unitType = UnitTypes.getUnitTypeFromString(type);
         if (unitType == null || type.equals("lord"))
             return Messages.INVALID_UNIT_NAME;
-        if (count < 0 || count > game.getCurrentGovernment().getPeasant())
+        if (count < 0)
             return Messages.INVALID_NUMBER;
+        if (count > game.getCurrentGovernment().getPeasant())
+            return Messages.NOT_ENOUGH_PEASANTS;
         if (!game.getCurrentMilitaryCamp().equals(unitType.getMilitaryCampType()))
             return Messages.CANT_CREATE_THIS_UNIT_HERE;
         if (unitType.getGoldNeeded() * count > game.getCurrentGovernment().getGold())
@@ -306,25 +308,25 @@ public class GameMenuController {
         String output = "";
         if (militaryCamp.equals("barracks")) {
             for (UnitTypes unitType : UnitTypes.values()) {
-                if (!unitType.equals(UnitTypes.LORD)
+                if (unitType.getMilitaryCampType() != null
                         && unitType.getMilitaryCampType().equals(MilitaryCampType.BARRACKS))
                     output += unitType.getType() + "    " + unitType.getGoldNeeded() + " gold\n";
             }
         } else if (militaryCamp.equals("mercenary post")) {
             for (UnitTypes unitType : UnitTypes.values()) {
-                if (!unitType.equals(UnitTypes.LORD)
+                if (unitType.getMilitaryCampType() != null
                         && unitType.getMilitaryCampType().equals(MilitaryCampType.MERCENARY_POST))
                     output += unitType.getType() + "    " + unitType.getGoldNeeded() + " gold\n";
             }
         } else if (militaryCamp.equals("engineer guild")) {
             for (UnitTypes unitType : UnitTypes.values()) {
-                if (!unitType.equals(UnitTypes.LORD)
+                if (unitType.getMilitaryCampType() != null
                         && unitType.getMilitaryCampType().equals(MilitaryCampType.ENGINEERS_GUILD))
                     output += unitType.getType() + "    " + unitType.getGoldNeeded() + " gold\n";
             }
         } else if (militaryCamp.equals("cathedral")) {
             for (UnitTypes unitType : UnitTypes.values()) {
-                if (!unitType.equals(UnitTypes.LORD)
+                if (unitType.getMilitaryCampType() != null
                         && unitType.getMilitaryCampType().equals(MilitaryCampType.CATHEDRAL))
                     output += unitType.getType() + "    " + unitType.getGoldNeeded() + " gold\n";
             }
@@ -357,7 +359,14 @@ public class GameMenuController {
             return Messages.INVALID_COORDINATES;
         if (frow > srow || fcolumn > scolumn)
             return Messages.INVALID_COORDINATES;
-        game.selectUnit(frow - 1, fcolumn - 1, srow - 1, scolumn - 1);
+        boolean isUnit = false;
+        for (Person person : game.getMap().getMapPixel(frow, scolumn).getPeople()) {
+            if (person instanceof Unit unit && unit.getGovernment().equals(game.getCurrentGovernment()))
+                isUnit = true;
+        }
+        if (!isUnit)
+            return Messages.NO_UNITS_HERE;
+        game.selectUnit(frow, fcolumn, srow, scolumn);
         return Messages.UNIT_SELECTED_SUCCESSFULLY;
     }
 
@@ -713,7 +722,7 @@ public class GameMenuController {
         Government owner = unit.getGovernment();
         Map map = game.getMap();
         int[] keepPosition = map.getKeepPosition(owner.getColor());
-        NonMilitary nonMilitary = new NonMilitary(new int[]{keepPosition[0] + 7, keepPosition[1] + 3}, owner,
+        NonMilitary nonMilitary = new NonMilitary(new int[] { keepPosition[0] + 7, keepPosition[1] + 3 }, owner,
                 NonMilitaryTypes.PEASANT, null);
         MapPixel personPixel = map.getMapPixel(keepPosition[0] + 7, keepPosition[1] + 3);
         personPixel.addPerson(nonMilitary);
@@ -750,8 +759,10 @@ public class GameMenuController {
         User.sortUsers();
         User.updateUsers();
     }
+
     public Messages setFearRate(int rate) {
-        if (rate < -5 || rate > 5) return Messages.INVALID_RATE;
+        if (rate < -5 || rate > 5)
+            return Messages.INVALID_RATE;
         game.getCurrentGovernment().setFearRate(rate);
         return Messages.SET_FEAR_RATE_SUCCESSFUL;
     }

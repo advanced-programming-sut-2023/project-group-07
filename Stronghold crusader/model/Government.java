@@ -38,7 +38,7 @@ public class Government {
         popularity = 100;
         this.user = user;
         this.gold = gold;
-        peasant = 10;
+        peasant = 0;
         this.row = row;
         this.column = column;
         this.color = color;
@@ -47,6 +47,10 @@ public class Government {
         resources.put(Resources.STONE, 50);
         resources.put(Resources.WOOD, 100);
         resources.put(Resources.BREAD, 100);
+    }
+
+    public void setPopulation(int population) {
+        this.population = population;
     }
 
     public void setScore(int score) {
@@ -364,10 +368,6 @@ public class Government {
 
     public void updateTaxRate() {
         if (gold == 0) taxRate = 0;
-    }
-
-    public void updatePopularity() {
-        popularity = getPopularity() + getChangesOnPopularity();
     }
 
 

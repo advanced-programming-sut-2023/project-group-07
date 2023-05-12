@@ -52,8 +52,7 @@ public enum GameMenuCommands {
     ENTER_TRADE_MENU("^\\s*enter\\s*trade\\s*menu$"),
     POUR_OIL("^\\s*pour\\s+oil\\s+-d\\s+(?<direction>\\S+)\\s*$"),
     GIVE_OIL("^\\s*give\\s+oil\\s*$"),
-    BUILD_SIEGE_WEAPON("^\\s*build\\s+(\\-x\\s+\\-?\\d+|\\-y\\s+\\-?\\d+|\\s)+$"),
-    SIEGE_TYPE("\\-q\\s+(?<type>[a-z\\s]+)"),
+    BUILD_SIEGE_WEAPON("^\\s*build\\s+-q\\s+(?<type>[a-z\\s]+)\\s*$"),
     NEXT_TURN("^\\s*next\\s+turn\\s*$"),
     DIG_TUNNEL("^\\s*dig\\s+tunnel((\\s+-x\\s+(?<x>-?\\d+))|(\\s+-y\\s+(?<y>-?\\d+))){2}\\s*$"),
     DISBAND_UNIT("^\\s*disband\\s+unit\\s*$");
