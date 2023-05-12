@@ -136,7 +136,7 @@ public class GameMenu {
     private String digTunnel(Matcher matcher) {
         int x = Integer.parseInt(matcher.group("x")),
                 y = Integer.parseInt(matcher.group("y"));
-        switch (controller.digTunnel(x, y)) {
+        switch (controller.digTunnel(x-1, y-1)) {
             case INVALID_COORDINATES:
                 return "Coordinates are invalid.";
             case NO_AVAILABLE_TUNNELER:
