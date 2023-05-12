@@ -264,10 +264,10 @@ public class GameMenuController {
             return Messages.ALREADY_AT_FULL_HP;
         for (int i = game.getSelectedBuilding().getColumn(); i < game.getSelectedBuilding().getColumn()
                 + game.getSelectedBuilding().getTypeOfBuilding()
-                        .getLength(); i++)
+                .getLength(); i++)
             for (int j = game.getSelectedBuilding().getRow(); j < game.getSelectedBuilding().getColumn()
                     + game.getSelectedBuilding().getTypeOfBuilding()
-                            .getWidth(); j++)
+                    .getWidth(); j++)
                 if (game.isAnEnemyCloseBy(j, i))
                     return Messages.THERES_AN_ENEMY_CLOSE_BY;
         game.getSelectedBuilding().repair();
@@ -593,7 +593,7 @@ public class GameMenuController {
     }
 
     public Messages setFearRate(int rate) {
-        if(rate>5 || rate<-5)
+        if (rate > 5 || rate < -5)
             return Messages.INVALID_RATE;
         game.getCurrentGovernment().setFearRate(rate);
         return Messages.SETTING_FEAR_RATE_SUCCESSFUL;
@@ -728,7 +728,7 @@ public class GameMenuController {
         Government owner = unit.getGovernment();
         Map map = game.getMap();
         int[] keepPosition = map.getKeepPosition(owner.getColor());
-        NonMilitary nonMilitary = new NonMilitary(new int[] { keepPosition[0] + 7, keepPosition[1] + 3 }, owner,
+        NonMilitary nonMilitary = new NonMilitary(new int[]{keepPosition[0] + 7, keepPosition[1] + 3}, owner,
                 NonMilitaryTypes.PEASANT, null);
         MapPixel personPixel = map.getMapPixel(keepPosition[0] + 7, keepPosition[1] + 3);
         personPixel.addPerson(nonMilitary);
@@ -764,10 +764,6 @@ public class GameMenuController {
         Map.loadMaps();
         User.sortUsers();
         User.updateUsers();
-    public Messages setFearRate(int rate) {
-        if (rate < -5 || rate > 5) return Messages.INVALID_RATE;
-        game.getCurrentGovernment().setFearRate(rate);
-        return Messages.SET_FEAR_RATE_SUCCESSFUL;
     }
 
     public int getFearRate() {
