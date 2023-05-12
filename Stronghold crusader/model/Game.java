@@ -833,19 +833,15 @@ public class Game {
         map.pourOil(x, y);
     }
 
-    public ArrayList<int[]> getNearestOilSmelterPath(int[] currentLocation, Government owner) {
-        int x = currentLocation[0], y = currentLocation[1];
-        ArrayList<int[]> path = null;
+    public ArrayList<int[]> sendToAOilSmelter(Engineer engineer) {
+        Government owner = engineer.getGovernment();
         ArrayList<Building> buildings = map.getAllBuildingsOfSomeone(owner);
+        ArrayList<int[]> path = null;
         for (Building building : buildings) {
-            if (building.getTypeOfBuilding().equals(TypeOfBuilding.OIL_SMELTER)) {
-                ArrayList<int[]> pathTemp = map.getPathList(x, y, building.row(), building.column(), false);
-                if (path == null) {
-                    path = pathTemp;
-                    continue;
-                }
-                if (pathTemp.size() < path.size())
-                    path = pathTemp;
+            if (building.getTypeOfBuilding().equals(TypeOfBuilding.OIL_SMELTER)){
+                ArrayList<int[]> tempPath = pathToBuilding(engineer, building);
+                if (path == null) path = tempPath;
+                else if (path.size() > tempPath.size()) path = tempPath;
             }
         }
         return path;

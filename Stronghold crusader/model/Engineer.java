@@ -27,23 +27,23 @@ public class Engineer extends Unit {
 
     @Override
     public void endTurn() {
-        super.endTurn(); // todo : delete if it is not supposed to be executed
+        //System.out.println("has oil : " + hasOil + " gonnabringOil " + gonnaBringOil +); // todo delete
+        super.endTurn();
         if (gonnaBringOil) {
-            if (movePattern == null){
+            if (movePattern == null) {
                 if (government.getResourceAmount(Resources.PITCH) > 0) {
                     government.changeResources(Resources.PITCH, -1);
                     hasOil = true;
-                    gonnaBringOil = false;
-                    Controller.sendToCoordinate(returningLocation[0], returningLocation[1], this);
                 }
-            }
-            else if (movePattern.size() == 0) {
+                gonnaBringOil = false;
+                Controller.sendToCoordinate(returningLocation[0], returningLocation[1], this);
+            } else if (movePattern.size() == 0) {
                 if (government.getResourceAmount(Resources.PITCH) > 0) {
                     government.changeResources(Resources.PITCH, -1);
                     hasOil = true;
-                    gonnaBringOil = false;
-                    Controller.sendToCoordinate(returningLocation[0], returningLocation[1], this);
                 }
+                gonnaBringOil = false;
+                Controller.sendToCoordinate(returningLocation[0], returningLocation[1], this);
             }
         }
         if (!hasOil) return;

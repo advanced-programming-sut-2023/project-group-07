@@ -639,9 +639,7 @@ public class GameMenuController {
     }
 
     protected static void sendToOilSmelter(Engineer engineer) {
-        ArrayList<int[]> path = game.getNearestOilSmelterPath(engineer.getCurrentLocation(),
-                game.getCurrentGovernment());
-        engineer.goToOilSmelter(path);
+         engineer.goToOilSmelter(game.sendToAOilSmelter(engineer));
     }
 
     public Messages giveOil() {
