@@ -170,7 +170,7 @@ public class Controller {
             if (targetX < 0 || targetX >= size()) continue;
             for (int targetY = y - range; targetY <= y + range; targetY++) {
                 if (targetY < 0 || targetY >= size()) continue;
-                Building building = getDefendingOpponentBuildingOnCoordinates(owner, x, y);
+                Building building = getDefendingOpponentBuildingOnCoordinates(owner, targetX, targetY);
                 if (building != null) return building;
             }
         }
@@ -178,7 +178,7 @@ public class Controller {
             if (targetY < 0 || targetY > size()) continue;
             for (int targetX = x - range + 1; targetX <= x + range - 1; targetX++) {
                 if (targetX < 0 || targetX >= size()) continue;
-                Building building = getDefendingOpponentBuildingOnCoordinates(owner, x, y);
+                Building building = getDefendingOpponentBuildingOnCoordinates(owner, targetX, targetY);
                 if (building != null) return building;
             }
         }

@@ -238,7 +238,7 @@ public class Game {
         selectedUnit.clear();
     }
 
-    public void updateMovePatterns(Government government) {
+    public void updateMovePatterns(Government government) { // vaghti ke pattern dakhelesh divar bashe chi mishe?
         for (Person person : government.getPeople()) {
             if (person.getMovePattern().size() == 0)
                 continue;

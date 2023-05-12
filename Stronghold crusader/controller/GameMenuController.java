@@ -697,7 +697,7 @@ public class GameMenuController {
         ArrayList<Tunneler> tunnelers = new ArrayList<>();
         for (Person person : selectedUnits) {
             if (!person.getGovernment().equals(owner))
-                continue; // todo : is this necessary?
+                continue;
             if (person instanceof Tunneler tunneler) {
                 if (tunneler.isAvailable())
                     tunnelers.add(tunneler);

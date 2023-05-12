@@ -82,10 +82,6 @@ public class GameMenu {
                 System.out.println(showTaxRate());
             else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.TAX_RATE)) != null)
                 System.out.println(setTaxRate(matcher));
-            else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.FEAR_RATE)) != null)
-                System.out.println(setFearRate(matcher));
-                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.FEAR_RATE_SHOW) != null)
-                System.out.println(showFearRate());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULATION) != null)
                 System.out.println(getPopulation());
             else if (GameMenuCommands.getMatcher(input, GameMenuCommands.NEXT_TURN) != null) {
@@ -140,7 +136,7 @@ public class GameMenu {
     private String digTunnel(Matcher matcher) {
         int x = Integer.parseInt(matcher.group("x")),
                 y = Integer.parseInt(matcher.group("y"));
-        switch (controller.digTunnel(x, y)) {
+        switch (controller.digTunnel(x-1, y-1)) {
             case INVALID_COORDINATES:
                 return "Coordinates are invalid.";
             case NO_AVAILABLE_TUNNELER:
