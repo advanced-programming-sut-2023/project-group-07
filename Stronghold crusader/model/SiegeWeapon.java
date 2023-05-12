@@ -1,13 +1,17 @@
 package model;
 
-public class SiegeWeapon extends Person {
+public class SiegeWeapon extends Unit {
     private SiegeWeaponType siegeWeaponType;
-    private int[] location;
 
     public SiegeWeapon(SiegeWeaponType siegeWeaponType,int[] location,Government government) {
-        super(location, government);
+        super(UnitTypes.SIEGE_WEAPON, location, government);
         this.siegeWeaponType = siegeWeaponType;
         this.hp = siegeWeaponType.getHp();
-        this.location = location;
+        this.damage = siegeWeaponType.getDamage();
     }
+
+    public SiegeWeaponType getSiegeWeaponType() {
+        return siegeWeaponType;
+    }
+
 }

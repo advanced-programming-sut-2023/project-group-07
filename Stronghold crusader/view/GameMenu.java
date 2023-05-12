@@ -147,6 +147,8 @@ public class GameMenu {
                 return "There is no available tunneler in selected units.";
             case SUCCESSFUL_DIG_TUNNEL:
                 return "Digging tunnel started successfully.";
+            default:
+                break;
         }
         return null;
     }
@@ -159,6 +161,8 @@ public class GameMenu {
                 return "None of selected units can get oil.";
             case GIVING_OIL_SUCESSFUL:
                 return "Engineers will get oil";
+            default:
+                break;
         }
         return null;
     }
@@ -174,6 +178,8 @@ public class GameMenu {
                 return "You can't pour in this direction";
             case POUR_OIL_SUCCESSFUL:
                 return "You have successfully poured oil.";
+            default:
+                break;
         }
         return null;
     }
@@ -198,6 +204,8 @@ public class GameMenu {
                 return "Setting food rate was successful.";
             case NOT_ENOUGH_FOOD:
                 return "You don't have any food. So food rate must be -2";
+            default:
+                break;
         }
         return null;
     }
@@ -232,6 +240,8 @@ public class GameMenu {
                 return "Rate is not in valid range";
             case SETTING_TAX_SUCCESSFUL:
                 return "You have successfully set your tax.";
+            default:
+                break;
         }
         return null;
     }
@@ -404,6 +414,9 @@ public class GameMenu {
                     case INVALID_NUMBER:
                         System.out.println("Invalid number!");
                         break;
+                    case NOT_ENOUGH_PEASANTS:
+                        System.out.println("Not enough peasants!");
+                        break;
                     case NOT_ENOUGH_GOLD:
                         System.out.println("Not enough gold!");
                         break;
@@ -473,11 +486,13 @@ public class GameMenu {
         String checkCoordinates = Controller.checkCoordinatesFormat(rowMatcher, columnMatcher);
         if (checkCoordinates != null)
             return checkCoordinates;
-        int row = Integer.parseInt(rowMatcher.group("row"));
-        int column = Integer.parseInt(columnMatcher.group("column"));
+        int row = Integer.parseInt(rowMatcher.group("row"))-1;
+        int column = Integer.parseInt(columnMatcher.group("column"))-1;
         switch (controller.selectUnit(row, column, row, column)) {
             case INVALID_COORDINATES:
                 return "Invalid Coordinates!";
+            case NO_UNITS_HERE:
+                return "No units here!";
             case UNIT_SELECTED_SUCCESSFULLY:
                 return "Unit selected successfully!";
             default:
@@ -495,10 +510,10 @@ public class GameMenu {
                 y2Matcher);
         if (checkRegionCoordinates != null)
             return checkRegionCoordinates;
-        int frow = Integer.parseInt(x1Matcher.group("frow"));
-        int fcolumn = Integer.parseInt(y1Matcher.group("fcolumn"));
-        int srow = Integer.parseInt(x2Matcher.group("srow"));
-        int scolumn = Integer.parseInt(y2Matcher.group("scolumn"));
+        int frow = Integer.parseInt(x1Matcher.group("frow"))-1;
+        int fcolumn = Integer.parseInt(y1Matcher.group("fcolumn"))-1;
+        int srow = Integer.parseInt(x2Matcher.group("srow"))-1;
+        int scolumn = Integer.parseInt(y2Matcher.group("scolumn"))-1;
         switch (controller.selectUnit(frow, fcolumn, srow, scolumn)) {
             case INVALID_COORDINATES:
                 return "Invalid Coordinates!";
@@ -665,24 +680,18 @@ public class GameMenu {
                 return "You don't have any selected unit.";
             case UNITS_DISBANDED_SUCCESSFULLY:
                 return "You disbanded units successfully.";
+            default:
+                break;
         }
         return null;
     }
 
     private String buildSiegeWeapon(String input) {
-        Matcher rowMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.ROW);
-        Matcher columnMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.COLUMN);
-        Matcher typeMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.TYPE);
-        if (rowMatcher == null)
-            return "Enter the row number!";
-        if (columnMatcher == null)
-            return "Enter the column number!";
-        if (typeMatcher == null)
-            return "Enter the type!";
-        int row = Integer.parseInt(rowMatcher.group("row")) - 1;
-        int column = Integer.parseInt(columnMatcher.group("column")) - 1;
+        Matcher typeMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.BUILD_SIEGE_WEAPON);
         String type = typeMatcher.group("type").trim();
-        switch (controller.buildSiegeWeapon(type, row, column)) {
+        if (type == null)
+            return "Enter the type!";
+        switch (controller.buildSiegeWeapon(type)) {
             case INVALID_COORDINATES:
                 return "Invalid coordinates!";
             case INVALID_SIEGE_WEAPON_TYPE:

@@ -26,6 +26,18 @@ public enum SiegeWeaponType {
         this.damage=damage;
     }
 
+    public int getDamage() {
+        return damage;
+    }
+
+    public int getRange() {
+        return range;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
     public int getHp() {
         return hp;
     }
