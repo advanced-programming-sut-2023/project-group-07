@@ -15,7 +15,7 @@ public enum GameMenuCommands {
     SHOW_POPULATION("^\\s*show\\s+population\\s*$"),
     TAX_RATE_SHOW("\\s*tax\\s+rate\\s+show\\s*"),
     FEAR_RATE_SHOW("^\\s*fear\\s+rate\\s+show\\s*$"),
-    FEAR_RATE("^\\s*fear\\s+rate\\s+-r\\s+(?<rate>\\-?\\d+)\\s*$"), //todo : write fear rate
+    FEAR_RATE("^\\s*fear\\s+rate\\s+-r\\s+(?<rate>\\-?\\d+)\\s*$"),
     DROP_BUILDING("\\s*dropbuilding(.+)"),
     ROW("\\-x\\s+(?<row>\\d+)"),
     COLUMN("\\-y\\s+(?<column>\\d+)"),

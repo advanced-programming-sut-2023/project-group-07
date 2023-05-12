@@ -55,13 +55,19 @@ public class ProfileMenuTest {
 
     @Test
     public void testShowInfo() {
-        Assert.assertEquals("Username : " + currentUsername +
-                        "\nNickname : " + currentNickname +
-                        "\nEmail : " + currentEmail +
-                        "\nSlogan : " + currentSlogan +
-                        "\nHighest score : " + user.getHighScore() +
-                        "\nRank : " + user.getRank()
-                , controller.showInfo());
+        String[] expectedInfo = new String[]
+                {
+                        currentUsername,
+                        currentNickname,
+                        currentEmail,
+                        currentSlogan,
+                        ((Integer) user.getHighScore()).toString(),
+                        ((Integer) user.getRank()).toString()
+                };
+        String[] realInfo = controller.getInfo();
+        for (int i = 0; i < expectedInfo.length; i++) {
+            Assert.assertEquals(expectedInfo[i], realInfo[i]);
+        }
     }
 
     @Test
@@ -112,7 +118,6 @@ public class ProfileMenuTest {
         controller.changeSlogan(currentSlogan);
         testShowInfo();
     }
-
 
 
 }

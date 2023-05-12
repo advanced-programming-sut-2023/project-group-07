@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import static java.lang.Math.min;
 import static java.lang.Math.round;
 
 public class Government {
@@ -320,10 +321,9 @@ public class Government {
         int change = 0;
         for (Building building : buildings) {
             if (building.getTypeOfBuilding() == TypeOfBuilding.INN)
-                // change += building.getPopularityEffect();
-                ; // todo : make inn class and set popularity effect
+                change += 1; // is not clean
         }
-        return change; // todo
+        return change;
     }
 
     public int getReligionEffectOnPopularity() {
@@ -350,7 +350,8 @@ public class Government {
         double numberOfBlessed = getNumberOfBlessed();
         double randomFactor = Controller.randomDouble(0.5, 1); // a number less than 1
         numberOfBlessed += maxBlessedThisTurn() * randomFactor;
-        percentOfBlessed = (double) numberOfBlessed / population;
+        percentOfBlessed = (double) numberOfBlessed * 100 / population ;
+        percentOfBlessed = min(percentOfBlessed,100);
     }
 
     private int maxBlessedThisTurn() {
@@ -360,4 +361,14 @@ public class Government {
     public void updateFoodRate() {
         if (getFoodsNumber() == 0) foodRate = -2;
     }
+
+    public void updateTaxRate() {
+        if (gold == 0) taxRate = 0;
+    }
+
+    public void updatePopularity() {
+        popularity = getPopularity() + getChangesOnPopularity();
+    }
+
+
 }

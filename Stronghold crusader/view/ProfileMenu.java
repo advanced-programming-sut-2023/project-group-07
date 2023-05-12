@@ -16,7 +16,7 @@ public class ProfileMenu {
         controller.refreshProfile();
         while (true) {
             String input = scanner.nextLine();
-            if(input.matches("\\s*exit\\s*"))
+            if (input.matches("\\s*exit\\s*"))
                 return;
             else if (ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_USERNAME) != null)
                 System.out.println(changeUsername(input));
@@ -29,18 +29,48 @@ public class ProfileMenu {
             else if (ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_SLOGAN) != null)
                 System.out.println(changeSlogan(input));
             else if (ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.REMOVE_SLOGAN) != null)
-                System.out.println(controller.removeSlogan());
+                System.out.println(removeSlogan());
             else if (ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.SHOW_HIGHSCORE) != null)
-                System.out.println(controller.showHighScore());
+                System.out.println(showHighScore());
             else if (ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.SHOW_RANK) != null)
-                System.out.println(controller.showRank());
+                System.out.println(showRank());
             else if (ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.SHOW_SLOGAN) != null)
-                System.out.println(controller.showSlogan());
+                System.out.println(showSlogan());
             else if (ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.SHOW_INFO) != null)
-                System.out.println(controller.showInfo());
+                System.out.println(showInfo());
             else
                 System.out.println("Invalid command!");
         }
+    }
+
+    public String showInfo() {
+        String[] info = controller.getInfo();
+        return ("Username : " + info[0] +
+                "\nNickname : " + info[1] +
+                "\nEmail : " + info[2] +
+                "\nSlogan : " + info[3] +
+                "\nHighest score : " + info[4] +
+                "\nRank : " + info[5]);
+    }
+
+    private String showSlogan() {
+        String slogan = controller.getSlogan();
+        if (slogan.equals("")) return "Slogan is empty!";
+        return "Your slogan is : " + slogan;
+    }
+
+    private String showRank() {
+        return "Your rank among all of the players is : " + controller.getRank();
+
+    }
+
+    private String showHighScore() {
+        return "Your highest score is : " + controller.getHighScore();
+    }
+
+    private String removeSlogan() throws IOException, NoSuchAlgorithmException {
+        controller.removeSlogan();
+        return "Slogan removed successfully!";
     }
 
     private String changeUsername(String input) throws IOException, NoSuchAlgorithmException {
@@ -62,7 +92,7 @@ public class ProfileMenu {
     private String changeNickname(String input) throws IOException, NoSuchAlgorithmException {
         String nickname =
                 ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_NICKNAME).group("nickname");
-       controller.changeNickname(nickname);
+        controller.changeNickname(nickname);
         return "Your nickname changed successfully!";
     }
 

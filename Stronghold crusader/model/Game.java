@@ -736,11 +736,12 @@ public class Game {
         ArrayList<Government> randomGovernments = (ArrayList<Government>) governments.clone();
         Collections.shuffle(randomGovernments);
         for (Government government : randomGovernments) {
-            government.setPopularity(government.getPopularity() + government.getChangesOnPopularity()); // todo:
+            government.updatePopularity();
             // update
             government.changeGold((int) (government.getTaxAmount() * government.getPopulation()));
             government.giveFood();
             government.updateFoodRate();
+            government.updateTaxRate();
             HashSet<Building> startedWorkingBuildings = new HashSet<>();
             for (Building building : government.getBuildingsWaitingForWorkers()) {
                 if (!government.getNoLaborBuildings().contains(building.getTypeOfBuilding())
@@ -772,6 +773,10 @@ public class Game {
             removeEliminatedPeople(government);
             removeEliminatedBuildings(government);
             government.increasePercentOfBlessed();
+            for (Person person : government.getPeople()){
+                if (person instanceof Unit unit)
+                    unit.endTurn();
+            }
         }
         return eliminateDefeatedLords();
 

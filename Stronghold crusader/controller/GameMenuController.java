@@ -764,5 +764,13 @@ public class GameMenuController {
         Map.loadMaps();
         User.sortUsers();
         User.updateUsers();
+    public Messages setFearRate(int rate) {
+        if (rate < -5 || rate > 5) return Messages.INVALID_RATE;
+        game.getCurrentGovernment().setFearRate(rate);
+        return Messages.SET_FEAR_RATE_SUCCESSFUL;
+    }
+
+    public int getFearRate() {
+        return game.getCurrentGovernment().getFearRate();
     }
 }
