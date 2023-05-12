@@ -215,7 +215,8 @@ public class MapPixel {
         String output = "";
         String buildingsStr = "";
         String unitsStr = "";
-        output += "type/texture :" + texture.toString();
+        output += "type/texture: " + texture.toString() + "\n";
+        output += "does have oil? " + ((this.doesHaveOil) ? "yes" : "no");
         for (Building building : getBuildings())
             buildingsStr += building.getTypeOfBuilding().toString() + " (color: " + building.getLordColor().toString()
                     + ") (Hp: " + building.getHp() + ")\n";
