@@ -24,14 +24,6 @@ public class GameMenuController {
         return game.getGovernments();
     }
 
-    public void endOfTurn() throws IOException {
-        game.endOfTurn();
-        for (Government government : getGovernments()) { // todo : must be in game object
-            government.setPopularity(government.getPopularity() + government.getTaxEffectOnPopularity()); // todo :
-            government.setGold((int) (government.getGold() + government.getTaxAmount() * government.getPopulation())); // todo
-            // :
-        }
-    }
 
     public Messages dropBuilding(int row, int column, String name) {
         Map map = game.getMap();
@@ -264,10 +256,10 @@ public class GameMenuController {
             return Messages.ALREADY_AT_FULL_HP;
         for (int i = game.getSelectedBuilding().getColumn(); i < game.getSelectedBuilding().getColumn()
                 + game.getSelectedBuilding().getTypeOfBuilding()
-                        .getLength(); i++)
+                .getLength(); i++)
             for (int j = game.getSelectedBuilding().getRow(); j < game.getSelectedBuilding().getColumn()
                     + game.getSelectedBuilding().getTypeOfBuilding()
-                            .getWidth(); j++)
+                    .getWidth(); j++)
                 if (game.isAnEnemyCloseBy(j, i))
                     return Messages.THERES_AN_ENEMY_CLOSE_BY;
         game.getSelectedBuilding().repair();
@@ -721,7 +713,7 @@ public class GameMenuController {
         Government owner = unit.getGovernment();
         Map map = game.getMap();
         int[] keepPosition = map.getKeepPosition(owner.getColor());
-        NonMilitary nonMilitary = new NonMilitary(new int[] { keepPosition[0] + 7, keepPosition[1] + 3 }, owner,
+        NonMilitary nonMilitary = new NonMilitary(new int[]{keepPosition[0] + 7, keepPosition[1] + 3}, owner,
                 NonMilitaryTypes.PEASANT, null);
         MapPixel personPixel = map.getMapPixel(keepPosition[0] + 7, keepPosition[1] + 3);
         personPixel.addPerson(nonMilitary);

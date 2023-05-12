@@ -113,7 +113,7 @@ public class TradeRequest {
     }
 
     @Override
-    public String toString() { // todo : this may change when adding 1-all. Add messages and receiver
+    public String toString() {
         String str = "ID." + this.getId() + " : " + this.requester().color() + " wants " +
                 this.amount() + " " + this.resource() + " for " + this.price() + " golds";
         if (!this.isAvailable) {

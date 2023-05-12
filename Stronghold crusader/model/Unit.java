@@ -114,7 +114,7 @@ public class Unit extends Person {
     }
 
     public void endTurn() {
-        // todo : attack depending on state
+        // please don't delete this method
     }
 
     public int range() {

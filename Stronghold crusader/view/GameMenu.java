@@ -123,6 +123,8 @@ public class GameMenu {
                 return "Rate is not in valid range.";
             case SET_FEAR_RATE_SUCCESSFUL:
                 return "Setting fear rate was successful.";
+            default:
+                break;
         }
         return null;
     }
