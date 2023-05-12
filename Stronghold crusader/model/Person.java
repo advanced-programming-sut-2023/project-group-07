@@ -64,6 +64,7 @@ public class Person {
     }
 
     public void setMovePattern(ArrayList<int[]> movePattern) {
+        if (movePattern == null) return;
         if (!movePattern.isEmpty())
             movePattern.remove(0);
         this.movePattern = movePattern;
