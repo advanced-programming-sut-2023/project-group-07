@@ -8,7 +8,7 @@ public enum GameMenuCommands {
     SHOW_POPULARITY_FACTORS("^\\s*show\\s+popularity\\s+factors\\s*$"),
     SHOW_POPULARITY("^\\s*show\\s+popularity\\s*$"),
     SHOW_FOOD_LIST("^\\s*show\\s+food\\s+list\\s*$"),
-    SHOW_GOLD ("^\\s*show\\s+gold\\s*$"),
+    SHOW_GOLD("^\\s*show\\s+gold\\s*$"),
     FOOD_RATE("\\s*food\\s+rate\\s+-r\\s+(?<rate>\\-?\\d+)\\s*"),
     FOOD_RATE_SHOW("\\s*food\\s+rate\\s+show\\s*"),
     TAX_RATE("^\\s*tax\\s+rate\\s+-r\\s+(?<rate>-?\\d+)\\s*$"),
@@ -26,10 +26,13 @@ public enum GameMenuCommands {
     TYPE("\\-t\\s+(?<type>[a-z\\s]+)"),
     STANCE("\\-s\\s+(?<stance>\\w+)"),
     SELECT_PIXEL_UNIT("^\\s*select\\s+unit\\s+(\\-x\\s+\\-?\\d+|\\-y\\s+\\-?\\d+|\\s)+$"),
-    SELECT_REGION_UNIT("^\\s*select\\s+unit\\s+(\\-x1\\s+\\-?\\d+|\\-y1\\s+\\-?\\d+|\\-x2\\s+\\-?\\d+|\\-y2\\s+\\-?\\d+|\\s)+$"),
-    SELECT_BUILDING("\\s*select\\s+building\\s+((-x\\s+(?<row1>\\d+)\\s+-y\\s+(?<column1>\\d+)\\s*)|(-y\\s+(?<column2>\\d+)\\s+-x\\s+(?<row2>\\d+)\\s*))"),
+    SELECT_REGION_UNIT(
+            "^\\s*select\\s+unit\\s+(\\-x1\\s+\\-?\\d+|\\-y1\\s+\\-?\\d+|\\-x2\\s+\\-?\\d+|\\-y2\\s+\\-?\\d+|\\s)+$"),
+    SELECT_BUILDING(
+            "\\s*select\\s+building\\s+((-x\\s+(?<row1>\\d+)\\s+-y\\s+(?<column1>\\d+)\\s*)|(-y\\s+(?<column2>\\d+)\\s+-x\\s+(?<row2>\\d+)\\s*))"),
     MOVE_UNIT("^\\s*move\\s+unit\\s+(\\-x\\s+\\-?\\d+|\\-y\\s+\\-?\\d+|\\s)+$"),
-    PATROL_UNIT("^\\s*patrol\\s+unit\\s+(\\-x1\\s+\\-?\\d+|\\-y1\\s+\\-?\\d+|\\-x2\\s+\\-?\\d+|\\-y2\\s+\\-?\\d+|\\s)+$"),
+    PATROL_UNIT(
+            "^\\s*patrol\\s+unit\\s+(\\-x1\\s+\\-?\\d+|\\-y1\\s+\\-?\\d+|\\-x2\\s+\\-?\\d+|\\-y2\\s+\\-?\\d+|\\s)+$"),
     STOP_UNIT("\\s*stop\\s+unit\\s*"),
     SET_STANCE("^\\s*set\\s+(\\-x\\s+\\-?\\d+|\\-y\\s+\\-?\\d+|\\-s\\s+[a-z\\s]+|\\s)+$"),
     ATTACK_ENEMY("\\s*attack\\s+enemy\\s+-e\\s+(?<row>\\d+)\\s+(?<column>\\d+)\\s*"),
@@ -56,8 +59,9 @@ public enum GameMenuCommands {
     NEXT_TURN("^\\s*next\\s+turn\\s*$"),
     DIG_TUNNEL("^\\s*dig\\s+tunnel((\\s+-x\\s+(?<x>-?\\d+))|(\\s+-y\\s+(?<y>-?\\d+))){2}\\s*$"),
     DISBAND_UNIT("^\\s*disband\\s+unit\\s*$");
-    
+
     private String regex;
+
     private GameMenuCommands(String regex) {
         this.regex = regex;
     }

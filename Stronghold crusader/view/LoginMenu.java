@@ -15,9 +15,10 @@ public class LoginMenu {
     private static Scanner scanner;
     private final LoginMenuController controller = new LoginMenuController();
     private final MainMenu mainMenu = new MainMenu();
+
     public void run(Scanner scanner) throws IOException, NoSuchAlgorithmException {
-        if(User.stayLoggedIn()!=null) {
-            Controller.currentUser=User.stayLoggedIn();
+        if (User.stayLoggedIn() != null) {
+            Controller.currentUser = User.stayLoggedIn();
             mainMenu.run(scanner);
         }
         LoginMenu.scanner = scanner;
@@ -29,12 +30,11 @@ public class LoginMenu {
             else if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.USER_LOGIN) != null) {
                 String login = userLogin(input);
                 System.out.println(login);
-                if (login.equals("Login successful!")){
+                if (login.equals("Login successful!")) {
                     mainMenu.run(scanner);
                     Controller.menuPrinter.print("LOGIN/REGISTER MENU", Colors.BLUE_BACKGROUND, 25, 1);
                 }
-            } 
-            else if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.FORGOT_MY_PASSWORD) != null)
+            } else if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.FORGOT_MY_PASSWORD) != null)
                 System.out.println(forgotMyPassword(scanner));
             else
                 System.out.println("Invalid command!");
@@ -48,7 +48,8 @@ public class LoginMenu {
         String nickname = extractNickname(input);
         String email = extractEmail(input);
         String slogan = extractSlogan(input);
-        if (slogan == null) return "there's an empty field!";
+        if (slogan == null)
+            return "there's an empty field!";
 
         switch (controller.signUp(username, password, passwordConfirm, email, slogan, nickname)) {
             case EMPTY_FIELD:
@@ -99,14 +100,18 @@ public class LoginMenu {
 
     private String extractPasswordConfirm(String input) {
         Matcher passwordMatcher = LoginMenuCommands.getMatcher(input, LoginMenuCommands.PASSWORD);
-        if (passwordMatcher.group("random") != null) return "random";
-        else return Controller.trimmer(passwordMatcher.group("password"));
+        if (passwordMatcher.group("random") != null)
+            return "random";
+        else
+            return Controller.trimmer(passwordMatcher.group("password"));
     }
 
     private String extractPassword(String input) {
         Matcher passwordMatcher = LoginMenuCommands.getMatcher(input, LoginMenuCommands.PASSWORD);
-        if (passwordMatcher.group("random") != null) return "random";
-        else return Controller.trimmer(passwordMatcher.group("passwordConfirm"));
+        if (passwordMatcher.group("random") != null)
+            return "random";
+        else
+            return Controller.trimmer(passwordMatcher.group("passwordConfirm"));
 
     }
 
@@ -125,18 +130,24 @@ public class LoginMenu {
     private String extractSlogan(String input) {
         String slogan = "";
         if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.SLOGAN) != null) {
-            Matcher sloganMarcher = LoginMenuCommands.getMatcher(input, LoginMenuCommands.SLOGAN);
-            slogan = Controller.trimmer(sloganMarcher.group("slogan"));
-            if (slogan.length() == 0) return null;
+            Matcher sloganMatcher = LoginMenuCommands.getMatcher(input, LoginMenuCommands.SLOGAN);
+            if (sloganMatcher.group("random") != null)
+                return "random";
+            slogan = Controller.trimmer(sloganMatcher.group("slogan"));
+            if (slogan.length() == 0)
+                return null;
         }
         return slogan;
     }
 
     private String userLogin(String input) throws IOException, NoSuchAlgorithmException {
-        String username = Controller.trimmer(LoginMenuCommands.getMatcher(input, LoginMenuCommands.USERNAME).group("username"));
-        String password = Controller.trimmer(LoginMenuCommands.getMatcher(input, LoginMenuCommands.PASSWORD_LOGIN).group("password"));
-        boolean stayLoggedIn=false;
-        if(LoginMenuCommands.getMatcher(input, LoginMenuCommands.STAY_LOGGED_IN)!=null) stayLoggedIn=true;
+        String username = Controller
+                .trimmer(LoginMenuCommands.getMatcher(input, LoginMenuCommands.USERNAME).group("username"));
+        String password = Controller
+                .trimmer(LoginMenuCommands.getMatcher(input, LoginMenuCommands.PASSWORD_LOGIN).group("password"));
+        boolean stayLoggedIn = false;
+        if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.STAY_LOGGED_IN) != null)
+            stayLoggedIn = true;
         switch (controller.login(username, password, stayLoggedIn)) {
             case USERNAME_NOT_FOUND:
                 return "Username and password didn't match!";
@@ -175,10 +186,14 @@ public class LoginMenu {
     }
 
     private boolean createUserFormat(String input) {
-        if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.USERNAME) == null) return false;
-        if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.PASSWORD) == null) return false;
-        if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.EMAIL) == null) return false;
-        if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.NICKNAME) == null) return false;
+        if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.USERNAME) == null)
+            return false;
+        if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.PASSWORD) == null)
+            return false;
+        if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.EMAIL) == null)
+            return false;
+        if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.NICKNAME) == null)
+            return false;
         return true;
     }
 
@@ -189,7 +204,8 @@ public class LoginMenu {
         if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.CHANGE_PASSWORD) != null) {
             username = LoginMenuCommands.getMatcher(input, LoginMenuCommands.USERNAME).group("username");
             password = LoginMenuCommands.getMatcher(input, LoginMenuCommands.PASSWORD_LOGIN).group("password");
-        } else return "Invalid format!";
+        } else
+            return "Invalid format!";
         switch (controller.forgotPassword(username, password)) {
             case USERNAME_NOT_FOUND:
                 return "Username not found!";
@@ -226,8 +242,14 @@ public class LoginMenu {
             String captcha = Controller.generateCaptcha(captchaPrinter);
             System.out.println("enter the security code :");
             String input = LoginMenu.scanner.nextLine();
-            if (input.equals("cancel")) return false;
-            else if (input.equals(captcha)) return true;
+            if (input.equals("cancel"))
+                return false;
+            else if (input.equals(captcha))
+                return true;
         }
+    }
+
+    public static void showRandomSlogan(String slogan) {
+        System.out.println("Your slogan is: \"" + slogan + "\"");
     }
 }

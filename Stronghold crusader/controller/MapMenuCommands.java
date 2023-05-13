@@ -1,4 +1,5 @@
 package controller;
+
 import java.util.regex.*;
 
 public enum MapMenuCommands {
@@ -13,11 +14,14 @@ public enum MapMenuCommands {
     GET_COLUMN("\\-y\\s+(?<column>\\-?\\d+)"),
     MAP_GUIDE("^\\s*map\\s+guide\\s*$"),
     SHOW_MAP("^\\s*show\\s+map\\s+(\\-x\\s+\\-?\\d+|\\-y\\s+\\-?\\d+|\\s)+$");
+
     private String regex;
-    private MapMenuCommands(String regex){
+
+    private MapMenuCommands(String regex) {
         this.regex = regex;
     }
-    public static Matcher getMatcher(String input , MapMenuCommands command){
+
+    public static Matcher getMatcher(String input, MapMenuCommands command) {
         Matcher matcher = Pattern.compile(command.regex).matcher(input);
         return (matcher.find()) ? matcher : null;
     }

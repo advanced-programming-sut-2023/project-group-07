@@ -55,7 +55,8 @@ public class ProfileMenu {
 
     private String showSlogan() {
         String slogan = controller.getSlogan();
-        if (slogan.equals("")) return "Slogan is empty!";
+        if (slogan.equals(""))
+            return "Slogan is empty!";
         return "Your slogan is : " + slogan;
     }
 
@@ -74,8 +75,7 @@ public class ProfileMenu {
     }
 
     private String changeUsername(String input) throws IOException, NoSuchAlgorithmException {
-        String username =
-                ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_USERNAME).group("username");
+        String username = ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_USERNAME).group("username");
         switch (controller.changeUsername(username)) {
             case INVALID_USERNAME:
                 return "Invalid username format!";
@@ -90,17 +90,14 @@ public class ProfileMenu {
     }
 
     private String changeNickname(String input) throws IOException, NoSuchAlgorithmException {
-        String nickname =
-                ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_NICKNAME).group("nickname");
+        String nickname = ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_NICKNAME).group("nickname");
         controller.changeNickname(nickname);
         return "Your nickname changed successfully!";
     }
 
     private String changePassword(String input) throws IOException, NoSuchAlgorithmException {
-        String newPassword =
-                ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_PASSWORD).group("new"),
-                oldPassword =
-                        ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_PASSWORD).group("old");
+        String newPassword = ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_PASSWORD).group("new"),
+                oldPassword = ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_PASSWORD).group("old");
         switch (controller.changePassword(oldPassword, newPassword)) {
             case INCORRECT_PASSWORD:
                 return "Incorrect password!";
@@ -123,15 +120,13 @@ public class ProfileMenu {
     }
 
     private String changeSlogan(String input) throws IOException, NoSuchAlgorithmException {
-        String slogan =
-                ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_SLOGAN).group("slogan");
+        String slogan = ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_SLOGAN).group("slogan");
         controller.changeSlogan(slogan);
         return "Slogan changed successfully!";
     }
 
     private String changeEmail(String input) throws IOException, NoSuchAlgorithmException {
-        String email =
-                ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_EMAIL).group("email");
+        String email = ProfileMenuCommands.getMatcher(input, ProfileMenuCommands.CHANGE_EMAIL).group("email");
         switch (controller.changeEmail(email)) {
             case EMAIL_EXISTS:
                 return "This email already exists!";

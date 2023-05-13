@@ -22,19 +22,23 @@ public enum TradeCommands {
     AMOUNT("-a\\s+(?<amount>\\d+)"),
     PRICE("-p\\s+(?<price>\\d+)"),
     COLOR("-c\\s+(?<color>([^\"\\s]+|\"[^\"]+\"))");
+
     private String regex;
-    private TradeCommands(String regex){
+
+    private TradeCommands(String regex) {
         this.regex = regex;
     }
-    public static Matcher getMatcher(String input , TradeCommands command){
+
+    public static Matcher getMatcher(String input, TradeCommands command) {
         Matcher matcher = Pattern.compile(command.regex).matcher(input);
         return (matcher.find()) ? matcher : null;
     }
 
     public static int countNumberOfAppearance(String input, TradeCommands command) {
-        int i=0;
+        int i = 0;
         Matcher matcher = getMatcher(input, command);
-        while (matcher.find()) i++;
+        while (matcher.find())
+            i++;
         return i;
     }
 }

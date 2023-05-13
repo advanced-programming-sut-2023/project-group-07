@@ -13,16 +13,16 @@ public class MapMenu {
     protected final MapMenuController controller = new MapMenuController();
     private int x;
     private int y;
+
     public void run(Scanner scanner, String initialInput) {
         controller.refreshMap(Controller.currentGame.getMap());
         showMap(initialInput);
         while (true) {
             String input = scanner.nextLine();
-            if (input.matches("\\s*exit\\s*")){
+            if (input.matches("\\s*exit\\s*")) {
                 System.out.println("Exit was successful!");
                 return;
-            }
-            else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_MAP) != null) {
+            } else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_MAP) != null) {
                 String showMapStr = showMap(input);
                 if (showMapStr != null)
                     System.out.println(showMapStr);
@@ -67,9 +67,9 @@ public class MapMenu {
     protected void printMap() {
         ArrayList<ArrayList<Colors>> mapColorList = controller.getMapColorList(this.x, this.y);
         ArrayList<ArrayList<String>> mapObjects;
-        if(Controller.currentGame == null)
+        if (Controller.currentGame == null)
             mapObjects = controller.getMapObjects(this.x, this.y, null);
-        else 
+        else
             mapObjects = controller.getMapObjects(this.x, this.y, Controller.currentGame.getCurrentGovernment());
         int numberOfRows = mapColorList.size();
         int numberOfColumns = mapColorList.get(0).size();

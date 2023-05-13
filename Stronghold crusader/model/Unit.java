@@ -25,8 +25,10 @@ public class Unit extends Person {
         this.isAttackingBuilding = false;
         this.areaAttacking = false;
 
-        if (type.equals(ASSASSIN)) isInvisible = true;
-        else isInvisible = false;
+        if (type.equals(ASSASSIN))
+            isInvisible = true;
+        else
+            isInvisible = false;
 
     }
 
@@ -44,7 +46,7 @@ public class Unit extends Person {
     public int getDamage() {
         return damage;
     }
-    
+
     public int[] getAreaAttackLocation() {
         return areaAttackLocation;
     }
@@ -114,7 +116,6 @@ public class Unit extends Person {
     }
 
     public void endTurn() {
-        // please don't delete this method
     }
 
     public int range() {

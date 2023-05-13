@@ -60,7 +60,8 @@ public class GameMenuController {
                 typeOfBuilding.equals(TypeOfBuilding.WHEAT_FARMER)) {
             for (int i = 0; i < typeOfBuilding.getLength(); i++)
                 for (int j = 0; j < typeOfBuilding.getWidth(); j++) {
-                    if (!map.getMapPixel(row + j, column + i).getTexture().equals(Texture.MEADOW))
+                    if (!map.getMapPixel(row + j, column + i).getTexture().equals(Texture.MEADOW)
+                            && !map.getMapPixel(row + j, column + i).getTexture().equals(Texture.MEADOW))
                         return Messages.CANT_PLACE_THIS;
                 }
         }
@@ -639,7 +640,7 @@ public class GameMenuController {
     }
 
     protected static void sendToOilSmelter(Engineer engineer) {
-         engineer.goToOilSmelter(game.sendToAOilSmelter(engineer));
+        engineer.goToOilSmelter(game.sendToAOilSmelter(engineer));
     }
 
     public Messages giveOil() {

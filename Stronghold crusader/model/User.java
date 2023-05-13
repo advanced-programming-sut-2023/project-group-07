@@ -52,7 +52,7 @@ public class User {
         highScore = Math.max(highScore, score);
     }
 
-    public boolean checkPassword(String password) throws NoSuchAlgorithmException{
+    public boolean checkPassword(String password) throws NoSuchAlgorithmException {
         return Controller.toSHA256(password).equals(this.password);
     }
 
@@ -100,7 +100,7 @@ public class User {
         return passwordRecoveryAnswer;
     }
 
-    public void setNewPassword(String newPassword) throws NoSuchAlgorithmException{
+    public void setNewPassword(String newPassword) throws NoSuchAlgorithmException {
         this.password = Controller.toSHA256(newPassword);
     }
 
@@ -157,7 +157,9 @@ public class User {
     }
 
     public static void addUser(User user) throws IOException {
-        if (!users.contains(user)) users.add(user);
+        if (!users.contains(user))
+            users.add(user);
+        sortUsers();
         updateUsers();
     }
 
@@ -179,10 +181,11 @@ public class User {
         }
         usersArray = jsonArray;
     }
+
     public static void updateUsers() throws IOException {
         Gson gson = new Gson();
         usersArray = new JsonArray();
-        for(User user : users) {
+        for (User user : users) {
             usersArray.add(gson.toJsonTree(user).getAsJsonObject());
         }
         FileWriter file = new FileWriter("Stronghold crusader/DB/Users");
@@ -194,7 +197,7 @@ public class User {
         Gson gson = new Gson();
         FileReader file = new FileReader("Stronghold crusader/DB/stayLoggedIn");
         Scanner scanner = new Scanner(file);
-        if(!scanner.hasNextLine()){
+        if (!scanner.hasNextLine()) {
             scanner.close();
             file.close();
             return null;
@@ -205,6 +208,7 @@ public class User {
         User user = gson.fromJson(userString, User.class);
         return user;
     }
+
     public static User getUserByUsername(String username) {
         for (User user : users) {
             if (user.getUsername().equals(username))
@@ -243,6 +247,5 @@ public class User {
             return true;
         return false;
     }
-
 
 }

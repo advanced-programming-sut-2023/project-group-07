@@ -5,7 +5,8 @@ public class NonMilitary extends Person {
     Building workBuilding;
     private boolean movingResources = false;
     private boolean movingNeededResources = false;
-    public NonMilitary(int[] currentLocation,Government government,NonMilitaryTypes type,Building workBuilding) {
+
+    public NonMilitary(int[] currentLocation, Government government, NonMilitaryTypes type, Building workBuilding) {
         super(currentLocation, government);
         this.type = type;
         this.workBuilding = workBuilding;
@@ -33,7 +34,7 @@ public class NonMilitary extends Person {
     }
 
     public void changeDeliveredResource() {
-        
+
     }
 
     public NonMilitaryTypes getType() {

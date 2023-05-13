@@ -60,7 +60,6 @@ public enum Resources {
         return null;
     }
 
-
     @Override
     public String toString() {
         return this.name;

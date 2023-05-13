@@ -5,6 +5,7 @@ public enum Food {
     BREAD,
     APPLE,
     CHEESE;
+
     private int amount;
-    
+
 }

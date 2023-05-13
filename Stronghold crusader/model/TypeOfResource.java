@@ -4,5 +4,5 @@ public enum TypeOfResource {
     FOOD,
     WEAPON,
     RAW_MATERIAL;
-    
+
 }

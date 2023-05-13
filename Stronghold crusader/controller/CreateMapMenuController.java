@@ -137,7 +137,8 @@ public class CreateMapMenuController {
         UnitTypes unitType = UnitTypes.getUnitTypeFromString(type);
         if (!areCoordinatesValid(row, column))
             return Messages.INVALID_COORDINATES;
-        if (unitType == null || (!isFromCreateMap && unitType.equals(UnitTypes.LORD)))
+        if (unitType == null || (!isFromCreateMap && unitType.equals(UnitTypes.LORD))
+                || unitType.equals(UnitTypes.ENGINEER) || unitType.equals(UnitTypes.TUNNELER))
             return Messages.INVALID_UNIT_NAME;
         if (lordColor == null || !map.doesHaveColor(lordColor))
             return Messages.INVALID_COLOR;
@@ -145,16 +146,8 @@ public class CreateMapMenuController {
         if (!pixel.getTexture().canDropUnit() || pixel.getRock() != null)
             return Messages.CANT_PLACE_THIS;
         int[] currentLocation = { row, column };
-        while (count-- > 0){
-            Person person;
-            if (unitType.equals(UnitTypes.TUNNELER))
-                person = new Tunneler(unitType, currentLocation, lordColor);
-            else if (unitType.equals(UnitTypes.ENGINEER))
-                person = new Engineer(unitType, currentLocation, lordColor);
-            else
-                person = new Unit(unitType, currentLocation, lordColor);
-            pixel.addPerson(person);
-        }
+        while (count-- > 0)
+            pixel.addPerson(new Unit(unitType, currentLocation, lordColor));
         return Messages.DROP_UNIT_SUCCESSFUL;
 
     }
@@ -209,7 +202,7 @@ public class CreateMapMenuController {
         }
 
         if (typeOfBuilding.equals(TypeOfBuilding.GRANARY) || typeOfBuilding.equals(TypeOfBuilding.STOCK_PILE))
-            if (doesHaveThisBuilding(typeOfBuilding , lordColor)
+            if (doesHaveThisBuilding(typeOfBuilding, lordColor)
                     && !map.isAdjacentToSameType(row, column, typeOfBuilding.getLength(), typeOfBuilding))
                 return Messages.MUST_BE_ADJACENT_TO_BUILDINGS_OF_THE_SAME_TYPE;
         Building building;
@@ -223,7 +216,8 @@ public class CreateMapMenuController {
             MilitaryCamp militaryCamp = new MilitaryCamp(lordColor, typeOfBuilding, row, column);
             building = militaryCamp;
         } else if (typeOfBuilding.getType().equals("converting resources")) {
-            ConvertingResources convertingResources = new ConvertingResources(lordColor, typeOfBuilding, row, column,ConvertingResourcesTypes.getTypeByName(type));
+            ConvertingResources convertingResources = new ConvertingResources(lordColor, typeOfBuilding, row, column,
+                    ConvertingResourcesTypes.getTypeByName(type));
             building = convertingResources;
         } else
             building = new Building(lordColor, typeOfBuilding, row, column);
@@ -233,10 +227,10 @@ public class CreateMapMenuController {
         return Messages.DEPLOYMENT_SUCCESSFUL;
     }
 
-    private boolean doesHaveThisBuilding(TypeOfBuilding typeOfBuilding , LordColor lordColor) {
+    private boolean doesHaveThisBuilding(TypeOfBuilding typeOfBuilding, LordColor lordColor) {
         for (int i = 0; i < map.getSize(); i++)
-            for (int j = 0; j < map.getSize(); j++){
-                if(map.getMapPixel(i, j).getBuildings().isEmpty())
+            for (int j = 0; j < map.getSize(); j++) {
+                if (map.getMapPixel(i, j).getBuildings().isEmpty())
                     continue;
                 Building building = map.getMapPixel(i, j).getBuildings().get(0);
                 if (building.getTypeOfBuilding().equals(typeOfBuilding) && building.getLordColor().equals(lordColor))
@@ -253,6 +247,5 @@ public class CreateMapMenuController {
     }
 
     // todo : fix this
-
 
 }

@@ -21,11 +21,10 @@ public class TradeMenu {
         Matcher matcher;
         while (true) {
             String input = scanner.nextLine();
-            if (input.matches("\\s*exit\\s*")){
+            if (input.matches("\\s*exit\\s*")) {
                 System.out.println("You have exited");
                 return;
-            }
-            else if (TradeCommands.getMatcher(input, TradeCommands.TRADE_LIST) != null)
+            } else if (TradeCommands.getMatcher(input, TradeCommands.TRADE_LIST) != null)
                 showAvailableTrades();
             else if (TradeCommands.getMatcher(input, TradeCommands.TRADE_HISTORY) != null)
                 showTradeHistory();
@@ -118,7 +117,8 @@ public class TradeMenu {
 
     private void showTradeHistory() {
         ArrayList<TradeRequest> tradeHistory = controller.getTradeHistory();
-        if (tradeHistory.size() == 0) System.out.println("You don't have any trade history.");
+        if (tradeHistory.size() == 0)
+            System.out.println("You don't have any trade history.");
         else {
             for (TradeRequest tradeRequest : tradeHistory) {
                 System.out.println(tradeRequest);
@@ -128,10 +128,13 @@ public class TradeMenu {
 
     private void showNewRequests() {
         ArrayList<TradeRequest> notSeenRequests = controller.getNotSeenRequests();
-        if (notSeenRequests.size() == 0) System.out.println("You don't have any new trade request.");
+        if (notSeenRequests.size() == 0)
+            System.out.println("You don't have any new trade request.");
         else {
-            if (notSeenRequests.size() == 1) System.out.println("You have 1 new trade request :");
-            else System.out.println("You have " + notSeenRequests.size() + " new trade requests :");
+            if (notSeenRequests.size() == 1)
+                System.out.println("You have 1 new trade request :");
+            else
+                System.out.println("You have " + notSeenRequests.size() + " new trade requests :");
             for (TradeRequest tradeRequest : notSeenRequests) {
                 System.out.println(tradeRequest);
             }
@@ -141,7 +144,8 @@ public class TradeMenu {
 
     private void showAvailableTrades() {
         ArrayList<TradeRequest> availableTrades = controller.getAvailableTrades();
-        if (availableTrades.size() == 0) System.out.println("No available trade request");
+        if (availableTrades.size() == 0)
+            System.out.println("No available trade request");
         else {
             for (TradeRequest tradeRequest : availableTrades) {
                 System.out.println(tradeRequest);

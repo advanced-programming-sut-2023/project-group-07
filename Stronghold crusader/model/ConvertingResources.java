@@ -7,12 +7,15 @@ public class ConvertingResources extends Building {
     protected ArrayList<Person> Workers = new ArrayList<>();
     private ConvertingResourcesTypes type;
 
-    public ConvertingResources(Government government, TypeOfBuilding typeOfBuilding, int row, int column,ConvertingResourcesTypes convertingResourcesTypes) {
+    public ConvertingResources(Government government, TypeOfBuilding typeOfBuilding, int row, int column,
+            ConvertingResourcesTypes convertingResourcesTypes) {
         super(government, typeOfBuilding, row, column);
         this.resource = convertingResourcesTypes.getResourceDelivered();
         this.type = convertingResourcesTypes;
     }
-    public ConvertingResources(LordColor lordColor, TypeOfBuilding typeOfBuilding, int row, int column,ConvertingResourcesTypes convertingResourcesTypes) {
+
+    public ConvertingResources(LordColor lordColor, TypeOfBuilding typeOfBuilding, int row, int column,
+            ConvertingResourcesTypes convertingResourcesTypes) {
         super(lordColor, typeOfBuilding, row, column);
         this.resource = convertingResourcesTypes.getResourceDelivered();
         this.type = convertingResourcesTypes;

@@ -111,13 +111,12 @@ public class Government {
         return population;
     }
 
-
     public int getPopularity() {
         return popularity;
     }
 
     public void setPopularity(int popularity) {
-        this.popularity = Math.min(Math.max(0,popularity),100);
+        this.popularity = Math.min(Math.max(0, popularity), 100);
     }
 
     public User getUser() {
@@ -354,8 +353,8 @@ public class Government {
         double numberOfBlessed = getNumberOfBlessed();
         double randomFactor = Controller.randomDouble(0.5, 1); // a number less than 1
         numberOfBlessed += maxBlessedThisTurn() * randomFactor;
-        percentOfBlessed = (double) numberOfBlessed * 100 / population ;
-        percentOfBlessed = min(percentOfBlessed,100);
+        percentOfBlessed = (double) numberOfBlessed * 100 / population;
+        percentOfBlessed = min(percentOfBlessed, 100);
     }
 
     private int maxBlessedThisTurn() {
@@ -363,12 +362,13 @@ public class Government {
     }
 
     public void updateFoodRate() {
-        if (getFoodsNumber() == 0) foodRate = -2;
+        if (getFoodsNumber() == 0)
+            foodRate = -2;
     }
 
     public void updateTaxRate() {
-        if (gold == 0) taxRate = 0;
+        if (gold == 0)
+            taxRate = 0;
     }
-
 
 }

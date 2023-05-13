@@ -17,7 +17,7 @@ public class CreateMapMenu extends MapMenu {
     private final CreateMapMenuController controller = new CreateMapMenuController(super.controller);
     private Scanner scanner;
 
-    public void run(Scanner scanner) throws IOException{
+    public void run(Scanner scanner) throws IOException {
         Controller.menuPrinter.print("CREATE/CHANGE MAPS", Colors.RED_BACKGROUND, 25, 1);
         this.scanner = scanner;
         while (true) {
@@ -57,9 +57,9 @@ public class CreateMapMenu extends MapMenu {
                     System.out.println(dropTree(input));
                 else if (CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.DROP_ROCK) != null)
                     System.out.println(dropRock(input));
-                else if(CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.DROP_UNIT) != null)
+                else if (CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.DROP_UNIT) != null)
                     System.out.println(dropUnit(input));
-                else if(CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.DROP_BUILDING) != null)
+                else if (CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.DROP_BUILDING) != null)
                     System.out.println(dropBuilding(input));
                 else
                     System.out.println("Invalid command!");
@@ -110,18 +110,18 @@ public class CreateMapMenu extends MapMenu {
         int numberOfPlayers = getNumberOfPlayers();
         if (numberOfPlayers < 0)
             return Messages.EXIT_CREATE_MAP_MENU;
-        HashMap<LordColor,int[]> lordsPositions = getKeepsPositions(numberOfPlayers, mapSize);
+        HashMap<LordColor, int[]> lordsPositions = getKeepsPositions(numberOfPlayers, mapSize);
         if (lordsPositions == null)
             return Messages.EXIT_CREATE_MAP_MENU;
         String mapName = getNewMapName();
         if (mapName == null)
             return Messages.EXIT_CREATE_MAP_MENU;
         controller.setNewMap(mapSize, mapName, numberOfPlayers, lordsPositions);
-        for(LordColor lordColor : lordsPositions.keySet()){
+        for (LordColor lordColor : lordsPositions.keySet()) {
             int row = lordsPositions.get(lordColor)[0];
             int column = lordsPositions.get(lordColor)[1];
-            controller.dropBuilding(row, column+7, "stock pile", lordColor.toString());
-            controller.dropUnit(row + 3, column + 3 , 1, "lord", lordColor.toString(), true);
+            controller.dropBuilding(row, column + 7, "stock pile", lordColor.toString());
+            controller.dropUnit(row + 3, column + 3, 1, "lord", lordColor.toString(), true);
         }
         return Messages.SET_MAP_SUCCESSFUL;
     }
@@ -141,7 +141,7 @@ public class CreateMapMenu extends MapMenu {
         }
     }
 
-    private HashMap<LordColor,int[]> getKeepsPositions(int numberOfPlayers, int mapSize) {
+    private HashMap<LordColor, int[]> getKeepsPositions(int numberOfPlayers, int mapSize) {
         int counter = 1;
         HashMap<LordColor, int[]> positions = new HashMap<LordColor, int[]>();
         while (counter <= numberOfPlayers) {
@@ -159,9 +159,9 @@ public class CreateMapMenu extends MapMenu {
             else {
                 int row = Integer.parseInt(rowMatcher.group("row")) - 1;
                 int column = Integer.parseInt(columnMatcher.group("column")) - 1;
-                if (row < 0 || row >= mapSize-7 || column < 0 || column >= mapSize-12)
+                if (row < 0 || row >= mapSize - 7 || column < 0 || column >= mapSize - 12)
                     System.out.println("Invalid Coordinates!");
-               if (!controller.canDropKeep(positions, row, column))
+                if (!controller.canDropKeep(positions, row, column))
                     System.out.println("There is already a lord castle in this position!");
                 else {
                     int[] keepPosition = new int[] { row, column };
@@ -235,7 +235,8 @@ public class CreateMapMenu extends MapMenu {
         Matcher x2Matcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_SECOND_ROW);
         Matcher y2Matcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_SECOND_COLUMN);
         Matcher textureMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_TYPE);
-        String checkRegionCoordinates = Controller.checkRegionCoordinatesFormat(x1Matcher, y1Matcher, x2Matcher, y2Matcher);
+        String checkRegionCoordinates = Controller.checkRegionCoordinatesFormat(x1Matcher, y1Matcher, x2Matcher,
+                y2Matcher);
         String checkTexture = checkTypeFormat(textureMatcher);
         if (checkRegionCoordinates != null)
             return checkRegionCoordinates;
@@ -263,7 +264,6 @@ public class CreateMapMenu extends MapMenu {
         return null;
     }
 
-    
     private String checkTypeFormat(Matcher typeMatcher) {
         if (typeMatcher == null)
             return "Enter the type/texture you want to set!";
@@ -294,7 +294,8 @@ public class CreateMapMenu extends MapMenu {
         Matcher y1Matcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_FIRST_COLUMN);
         Matcher x2Matcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_SECOND_ROW);
         Matcher y2Matcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_SECOND_COLUMN);
-        String checkRegionCoordinates = Controller.checkRegionCoordinatesFormat(x1Matcher, y1Matcher, x2Matcher, y2Matcher);
+        String checkRegionCoordinates = Controller.checkRegionCoordinatesFormat(x1Matcher, y1Matcher, x2Matcher,
+                y2Matcher);
         if (checkRegionCoordinates != null)
             return checkRegionCoordinates;
         int x1 = Integer.parseInt(x1Matcher.group("frow"));
@@ -368,7 +369,7 @@ public class CreateMapMenu extends MapMenu {
         return null;
     }
 
-    private String dropUnit(String input){
+    private String dropUnit(String input) {
         Matcher rowMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_ROW);
         Matcher columnMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_COLUMN);
         Matcher typeMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_TYPE);
@@ -376,20 +377,20 @@ public class CreateMapMenu extends MapMenu {
         Matcher countMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_COUNT);
         String checkCoordinates = Controller.checkCoordinatesFormat(rowMatcher, columnMatcher);
         String checkType = checkTypeFormat(typeMatcher);
-        if(checkCoordinates != null)
+        if (checkCoordinates != null)
             return checkCoordinates;
-        if(checkType != null)
+        if (checkType != null)
             return checkType;
-        if(colorMatcher == null)
+        if (colorMatcher == null)
             return "Enter the lord color!";
-        if(countMatcher == null)
+        if (countMatcher == null)
             return "Enter the count of units!";
         int row = Integer.parseInt(rowMatcher.group("row")) - 1;
         int column = Integer.parseInt(columnMatcher.group("column")) - 1;
         int count = Integer.parseInt(countMatcher.group("count"));
         String type = typeMatcher.group("type").trim();
         String lordColor = colorMatcher.group("color");
-        switch(controller.dropUnit(row, column, count, type, lordColor, false)){
+        switch (controller.dropUnit(row, column, count, type, lordColor, false)) {
             case INVALID_COORDINATES:
                 return "Invalid coordinates!";
             case INVALID_UNIT_NAME:
@@ -407,21 +408,21 @@ public class CreateMapMenu extends MapMenu {
         return null;
     }
 
-    private String dropBuilding(String input){
+    private String dropBuilding(String input) {
         Matcher rowMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_ROW);
         Matcher columnMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_COLUMN);
         Matcher typeMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_TYPE);
         Matcher colorMatcher = CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.GET_COLOR);
         String checkCoordinates = Controller.checkCoordinatesFormat(rowMatcher, columnMatcher);
         String checkType = checkTypeFormat(typeMatcher);
-        if(checkCoordinates != null)
+        if (checkCoordinates != null)
             return checkCoordinates;
-        if(checkType != null)
+        if (checkType != null)
             return checkType;
-        if(colorMatcher == null)
+        if (colorMatcher == null)
             return "Enter the lord color!";
-        int row = Integer.parseInt(rowMatcher.group("row"))-1;
-        int column = Integer.parseInt(columnMatcher.group("column"))-1;
+        int row = Integer.parseInt(rowMatcher.group("row")) - 1;
+        int column = Integer.parseInt(columnMatcher.group("column")) - 1;
         String type = typeMatcher.group("type").trim();
         String lordColor = colorMatcher.group("color");
         switch (controller.dropBuilding(row, column, type, lordColor)) {
@@ -446,7 +447,5 @@ public class CreateMapMenu extends MapMenu {
         }
         return null;
     }
-
-    
 
 }

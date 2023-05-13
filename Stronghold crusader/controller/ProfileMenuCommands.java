@@ -1,4 +1,5 @@
 package controller;
+
 import java.util.regex.*;
 
 public enum ProfileMenuCommands {
@@ -12,13 +13,16 @@ public enum ProfileMenuCommands {
     SHOW_RANK("^\\s*profile\\s+display\\s+rank\\s*$"),
     SHOW_SLOGAN("^\\s*profile\\s+display\\s+slogan\\s*$"),
     SHOW_INFO("^\\s*profile\\s+display\\s*$");
+
     private String regex;
-    private ProfileMenuCommands(String regex){
+
+    private ProfileMenuCommands(String regex) {
         this.regex = regex;
     }
-    public static Matcher getMatcher(String input , ProfileMenuCommands command){
+
+    public static Matcher getMatcher(String input, ProfileMenuCommands command) {
         Matcher matcher = Pattern.compile(command.regex).matcher(input);
         return (matcher.find()) ? matcher : null;
     }
-    
+
 }

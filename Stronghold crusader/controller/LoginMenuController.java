@@ -3,6 +3,7 @@ package controller;
 import java.util.regex.Pattern;
 import com.google.gson.*;
 import model.User;
+import model.Slogan;
 import view.LoginMenu;
 import controller.Controller;
 import model.RecoveryQuestion;
@@ -108,6 +109,10 @@ public class LoginMenuController {
         if (!User.isEmailValid(email))
             return Messages.INVALID_EMAIL_FORMAT;
         else {
+            if (slogan.equals("random")) {
+                slogan = (Slogan.values()[Controller.randomNumber(Slogan.values().length)]).toString();
+                LoginMenu.showRandomSlogan(slogan);
+            }
             System.out.println("Pick your security question:" +
                     "\n1. " + RecoveryQuestion.FATHERNAME +
                     "\n2. " + RecoveryQuestion.MOTHERNAME +
@@ -121,7 +126,6 @@ public class LoginMenuController {
         password = Controller.toSHA256(password);
         User user = new User(username, password, email, nickname, slogan, recoveryQuestion, answer);
         User.addUser(user);
-        User.sortUsers();
         return Messages.SIGNUP_SUCCESSFUL;
     }
 

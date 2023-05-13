@@ -64,19 +64,21 @@ public class Person {
     }
 
     public void setMovePattern(ArrayList<int[]> movePattern) {
-        if (movePattern == null) return;
+        if (movePattern == null)
+            return;
         if (!movePattern.isEmpty())
             movePattern.remove(0);
         this.movePattern = movePattern;
     }
 
     public void move() {
-        if (movePattern == null) return;
+        if (movePattern == null)
+            return;
         int numberOfMoves = movesLeft;
         int size = movePattern.size();
         for (int i = 0; i < Math.min(numberOfMoves, size); i++) {
             if (i == Math.min(numberOfMoves, size) - 1)
-                currentLocation = new int[]{movePattern.get(0)[0], movePattern.get(0)[1]};
+                currentLocation = new int[] { movePattern.get(0)[0], movePattern.get(0)[1] };
             movePattern.remove(0);
             movesLeft--;
         }

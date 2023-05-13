@@ -109,13 +109,13 @@ public class GameMenu {
 
     private String setFearRate(Matcher matcher) {
         int rate;
-        try{
+        try {
             rate = Integer.parseInt(matcher.group("rate"));
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             return "Number is not valid.";
         }
-        switch (controller.setFearRate(rate)){
-            case INVALID_RATE :
+        switch (controller.setFearRate(rate)) {
+            case INVALID_RATE:
                 return "Rate is not in valid range.";
             case SET_FEAR_RATE_SUCCESSFUL:
                 return "Setting fear rate was successful.";
@@ -136,7 +136,7 @@ public class GameMenu {
     private String digTunnel(Matcher matcher) {
         int x = Integer.parseInt(matcher.group("x")),
                 y = Integer.parseInt(matcher.group("y"));
-        switch (controller.digTunnel(x-1, y-1)) {
+        switch (controller.digTunnel(x - 1, y - 1)) {
             case INVALID_COORDINATES:
                 return "Coordinates are invalid.";
             case NO_AVAILABLE_TUNNELER:
@@ -166,7 +166,8 @@ public class GameMenu {
     private String pourOil(Matcher matcher) {
         String directionString = matcher.group("direction");
         Directions direction = Directions.getByName(directionString);
-        if (direction == null) return "Invalid direction.";
+        if (direction == null)
+            return "Invalid direction.";
         switch (controller.pourOil(direction)) {
             case NO_ONE_HAS_OIL:
                 return "There is no engineer with oil in selected units.";
@@ -241,7 +242,7 @@ public class GameMenu {
         }
         return null;
     }
-    
+
     private String showFearRate() {
         return "Your fear rate: " + controller.showFearRate();
     }
@@ -250,7 +251,6 @@ public class GameMenu {
         return ("Your tax rate: " + controller.showTaxRate() + " coins\n" +
                 "Popularity effect: " + controller.getTaxEffectOnPopularity());
     }
-
 
     private String dropBuilding(String input) {
         Matcher rowMatcher = GameMenuCommands.getMatcher(input, GameMenuCommands.ROW);
@@ -482,8 +482,8 @@ public class GameMenu {
         String checkCoordinates = Controller.checkCoordinatesFormat(rowMatcher, columnMatcher);
         if (checkCoordinates != null)
             return checkCoordinates;
-        int row = Integer.parseInt(rowMatcher.group("row"))-1;
-        int column = Integer.parseInt(columnMatcher.group("column"))-1;
+        int row = Integer.parseInt(rowMatcher.group("row")) - 1;
+        int column = Integer.parseInt(columnMatcher.group("column")) - 1;
         switch (controller.selectUnit(row, column, row, column)) {
             case INVALID_COORDINATES:
                 return "Invalid Coordinates!";
@@ -506,10 +506,10 @@ public class GameMenu {
                 y2Matcher);
         if (checkRegionCoordinates != null)
             return checkRegionCoordinates;
-        int frow = Integer.parseInt(x1Matcher.group("frow"))-1;
-        int fcolumn = Integer.parseInt(y1Matcher.group("fcolumn"))-1;
-        int srow = Integer.parseInt(x2Matcher.group("srow"))-1;
-        int scolumn = Integer.parseInt(y2Matcher.group("scolumn"))-1;
+        int frow = Integer.parseInt(x1Matcher.group("frow")) - 1;
+        int fcolumn = Integer.parseInt(y1Matcher.group("fcolumn")) - 1;
+        int srow = Integer.parseInt(x2Matcher.group("srow")) - 1;
+        int scolumn = Integer.parseInt(y2Matcher.group("scolumn")) - 1;
         switch (controller.selectUnit(frow, fcolumn, srow, scolumn)) {
             case INVALID_COORDINATES:
                 return "Invalid Coordinates!";
@@ -591,8 +591,8 @@ public class GameMenu {
             return checkCoordinates;
         if (stanceMatcher == null)
             return "Please enter units stance!";
-        int row = Integer.parseInt(rowMatcher.group("row"))-1;
-        int column = Integer.parseInt(columnMatcher.group("column"))-1;
+        int row = Integer.parseInt(rowMatcher.group("row")) - 1;
+        int column = Integer.parseInt(columnMatcher.group("column")) - 1;
         String stance = stanceMatcher.group("stance");
         switch (controller.setStance(row, column, stance)) {
             case INVALID_STANCE:
@@ -611,7 +611,8 @@ public class GameMenu {
 
     private String attackEnemy(String input) {
         int row = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY).group("row")) - 1;
-        int column = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY).group("column")) - 1;
+        int column = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY).group("column"))
+                - 1;
         switch (controller.attackEnemy(row, column)) {
             case INVALID_COORDINATES:
                 return "Invalid coordinates!";
@@ -628,8 +629,10 @@ public class GameMenu {
     }
 
     private String attackBuilding(String input) {
-        int row = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_BUILDING).group("row")) - 1;
-        int column = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_BUILDING).group("column")) - 1;
+        int row = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_BUILDING).group("row"))
+                - 1;
+        int column = Integer
+                .parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_BUILDING).group("column")) - 1;
         switch (controller.attackBuilding(row, column)) {
             case INVALID_COORDINATES:
                 return "Invalid coordinates!";

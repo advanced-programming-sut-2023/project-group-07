@@ -27,7 +27,8 @@ public class Engineer extends Unit {
 
     @Override
     public void endTurn() {
-        //System.out.println("has oil : " + hasOil + " gonnabringOil " + gonnaBringOil +); // todo delete
+        // System.out.println("has oil : " + hasOil + " gonnabringOil " + gonnaBringOil
+        // +); // todo delete
         super.endTurn();
         if (gonnaBringOil) {
             if (movePattern == null) {
@@ -46,7 +47,8 @@ public class Engineer extends Unit {
                 Controller.sendToCoordinate(returningLocation[0], returningLocation[1], this);
             }
         }
-        if (!hasOil) return;
+        if (!hasOil)
+            return;
 
         int x = currentLocation[0], y = currentLocation[1];
         Government owner = government;
@@ -76,6 +78,5 @@ public class Engineer extends Unit {
         returningLocation = currentLocation;
         setMovePattern(path);
     }
-
 
 }

@@ -14,14 +14,17 @@ public class ProfileMenuController {
     }
 
     public Messages changeUsername(String username) throws IOException, NoSuchAlgorithmException {
-        if (!User.isUsernameValid(username)) return Messages.INVALID_USERNAME;
-        else if (User.getUserByUsername(username) != null) return Messages.USERNAME_EXISTS;
+        if (!User.isUsernameValid(username))
+            return Messages.INVALID_USERNAME;
+        else if (User.getUserByUsername(username) != null)
+            return Messages.USERNAME_EXISTS;
         this.currentUser.setNewUsername(Controller.trimmer(username));
         User.updateUsers();
         return Messages.CHANGE_USERNAME_SUCCESSFUL;
     }
 
-    public Messages changePassword(String oldPassword, String newPassword) throws IOException, NoSuchAlgorithmException {
+    public Messages changePassword(String oldPassword, String newPassword)
+            throws IOException, NoSuchAlgorithmException {
         if (!currentUser.checkPassword(oldPassword))
             return Messages.INCORRECT_PASSWORD;
         else if (!User.isPasswordStrong(newPassword).equals(Messages.STRONG_PASSWORD))
@@ -37,8 +40,10 @@ public class ProfileMenuController {
     }
 
     public Messages changeEmail(String email) throws IOException, NoSuchAlgorithmException {
-        if (User.getUserByEmail(email) != null) return Messages.EMAIL_EXISTS;
-        else if (!User.isEmailValid(email)) return Messages.INVALID_EMAIL_FORMAT;
+        if (User.getUserByEmail(email) != null)
+            return Messages.EMAIL_EXISTS;
+        else if (!User.isEmailValid(email))
+            return Messages.INVALID_EMAIL_FORMAT;
         this.currentUser.setNewEmail(email);
         User.updateUsers();
         return Messages.CHANGE_EMAIL_SUCCESSFUL;
@@ -67,8 +72,7 @@ public class ProfileMenuController {
     }
 
     public String[] getInfo() {
-        String[] info = new String[]
-                {
+        String[] info = new String[] {
                 this.currentUser.getUsername(),
                 this.currentUser.getNickname(),
                 this.currentUser.getEmail(),

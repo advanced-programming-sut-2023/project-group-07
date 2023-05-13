@@ -15,7 +15,7 @@ public class MainMenu {
         printMenuHeader();
         while (true) {
             String input = scanner.nextLine();
-            if(input.matches("\\s*5\\s*"))
+            if (input.matches("\\s*5\\s*"))
                 System.exit(0);
             if (input.matches("\\s*4\\s*")) {
                 FileWriter file = new FileWriter("Stronghold Crusader/DB/stayLoggedIn");
@@ -36,7 +36,7 @@ public class MainMenu {
         }
     }
 
-    private void printMenuHeader(){
+    private void printMenuHeader() {
         Controller.menuPrinter.print("MAIN MENU", Colors.PURPLE_BACKGROUND, 25, 1);
         Controller.menuPrinter.print("1.CRUSADER GAME", Colors.YELLOW_BACKGROUND, 25, 2);
         Controller.menuPrinter.print("2.CREATE MAP", Colors.GREEN_BACKGROUND, 25, 2);

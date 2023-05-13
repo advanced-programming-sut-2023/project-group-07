@@ -1,7 +1,6 @@
 package view;
 
 import controller.Controller;
-import controller.PreGameMenuController;
 import model.Game;
 import model.Map;
 import model.User;
@@ -17,24 +16,22 @@ import java.io.IOException;
 
 public class PreGameMenu {
     private Scanner scanner;
-    private final PreGameMenuController controller;
     private final GameMenu gameMenu = new GameMenu();
 
     public PreGameMenu() {
-        controller = new PreGameMenuController();
     }
 
-    public void run(Scanner scanner) throws IOException{
+    public void run(Scanner scanner) throws IOException {
         this.scanner = scanner;
         Integer numberOfPlayers = getNumberOfPlayers();
         if (numberOfPlayers == null)
             return;
         Map map = getChosenMap(numberOfPlayers);
         if (map == null)
-            return; 
+            return;
         ArrayList<Government> governments = getGovernments(numberOfPlayers, map);
         if (governments == null)
-            return; 
+            return;
         Integer earlyGameGolds = getGold();
         if (earlyGameGolds == null)
             return;
@@ -110,7 +107,8 @@ public class PreGameMenu {
     private ArrayList<Government> getGovernments(int numberOfPlayers, Map map) {
         ArrayList<Government> governments = new ArrayList<>();
         LordColor currentLordColor = LordColor.getLordColor(0);
-        governments.add(new Government(LordColor.getLordColor(0), Controller.currentUser, 0, map.getKeepPosition(currentLordColor)[0],
+        governments.add(new Government(LordColor.getLordColor(0), Controller.currentUser, 0,
+                map.getKeepPosition(currentLordColor)[0],
                 map.getKeepPosition(currentLordColor)[1]));
         for (int i = 1; i < numberOfPlayers; i++) {
             currentLordColor = LordColor.getLordColor(i);
@@ -119,8 +117,12 @@ public class PreGameMenu {
             if (input.matches("\\s*exit\\s*"))
                 return null;
             User user = User.getUserByUsername(input);
-            while (user == null) {
-                System.out.println("There is no user with this username! Enter another one:");
+            while (user == null || repeatedUsername(user, governments)) {
+                if (user == null)
+                    System.out.println("There is no user with this username! Enter another one:");
+
+                else
+                    System.out.println("This user is already chosen!");
                 input = scanner.nextLine();
                 if (input.matches("\\s*exit\\s*"))
                     return null;
@@ -130,5 +132,12 @@ public class PreGameMenu {
                     map.getKeepPosition(currentLordColor)[1]));
         }
         return governments;
+    }
+
+    private boolean repeatedUsername(User user, ArrayList<Government> governments) {
+        for (Government government : governments)
+            if (government.getUser().equals(user))
+                return true;
+        return false;
     }
 }

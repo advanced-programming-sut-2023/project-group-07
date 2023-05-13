@@ -174,9 +174,9 @@ public class Map {
                 && areTowerGateWall(mapPixel1.getBuildings()
                         .get(0), mapPixel2.getBuildings().get(0)))
             return true;
-        if (isAssassin && mapPixel1.getBuildings().isEmpty() && !mapPixel2.getBuildings().isEmpty()){
+        if (isAssassin && mapPixel1.getBuildings().isEmpty() && !mapPixel2.getBuildings().isEmpty()) {
             Building building = mapPixel2.getBuildings().get(0);
-            switch (building.getTypeOfBuilding()){
+            switch (building.getTypeOfBuilding()) {
                 case STONE_WALL:
                 case LOW_WALL:
                 case CRENELATED_WALL:
@@ -272,7 +272,8 @@ public class Map {
         findPath(path, parent, parent.get(X).get(Y).get(0));
     }
 
-    public ArrayList<int[]> getPathList(int firstRow, int firstColumn, int secondRow, int secondColumn, boolean isAssassin) {
+    public ArrayList<int[]> getPathList(int firstRow, int firstColumn, int secondRow, int secondColumn,
+            boolean isAssassin) {
         ArrayList<int[]> path = new ArrayList<>();
         ArrayList<ArrayList<ArrayList<int[]>>> parent = new ArrayList<ArrayList<ArrayList<int[]>>>();
         for (int k = 0; k < size; k++) {
@@ -321,8 +322,8 @@ public class Map {
             }
         }
         for (Government government : governments.values())
-            for(Person person : government.getPeople())
-                if(person instanceof Unit unit && unit.getType().equals(UnitTypes.LORD))
+            for (Person person : government.getPeople())
+                if (person instanceof Unit unit && unit.getType().equals(UnitTypes.LORD))
                     government.setLord(unit);
     }
 

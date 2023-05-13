@@ -24,7 +24,7 @@ public class TradeRequest {
     }
 
     private TradeRequest(int price, Resources resource, int amount,
-                         Government requester, Government receiver, String requesterMessage) {
+            Government requester, Government receiver, String requesterMessage) {
         this.price = price;
         this.resource = resource;
         this.amount = amount;
@@ -39,7 +39,7 @@ public class TradeRequest {
     }
 
     public static void makeATradeRequest(int price, Resources resource, int amount,
-                                         Government requester, Government receiver, String requesterMessage) {
+            Government requester, Government receiver, String requesterMessage) {
         TradeRequest tradeRequest = new TradeRequest(price, resource, amount, requester, receiver, requesterMessage);
         allTrades.add(tradeRequest);
     }
@@ -61,7 +61,6 @@ public class TradeRequest {
         }
         return availableTrades;
     }
-
 
     public static ArrayList<TradeRequest> getRelatedTradeHistory(Government government) {
         ArrayList<TradeRequest> tradeHistory = new ArrayList<>();
@@ -117,13 +116,15 @@ public class TradeRequest {
         String str = "ID." + this.getId() + " : " + this.requester().color() + " wants " +
                 this.amount() + " " + this.resource() + " for " + this.price() + " golds";
         if (!this.isAvailable) {
-            if (this.accepted) str += " : was accepted by "+this.receiver.color();
-            else if (this.rejected) str += " : was rejected by "+this.receiver.color();
+            if (this.accepted)
+                str += " : was accepted by " + this.receiver.color();
+            else if (this.rejected)
+                str += " : was rejected by " + this.receiver.color();
         }
         if (requesterMessage != null)
-            str += "\n\trequester message : "+requesterMessage;
+            str += "\n\trequester message : " + requesterMessage;
         if (receiverMessage != null)
-            str += "\n\treceiver message : "+receiverMessage;
+            str += "\n\treceiver message : " + receiverMessage;
         return str;
     }
 

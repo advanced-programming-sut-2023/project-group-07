@@ -31,7 +31,8 @@ public class Controller {
     }
 
     public static String trimmer(String string) {
-        if (string.length() == 0) return string;
+        if (string.length() == 0)
+            return string;
         if (string.charAt(0) == '\"')
             return string.substring(1, string.length() - 1);
         return string;
@@ -67,7 +68,7 @@ public class Controller {
     }
 
     public static String checkRegionCoordinatesFormat(Matcher x1Matcher, Matcher y1Matcher, Matcher x2Matcher,
-                                                      Matcher y2Matcher) {
+            Matcher y2Matcher) {
         if (x1Matcher == null)
             return "Enter first row number!";
         if (y1Matcher == null)
@@ -79,12 +80,12 @@ public class Controller {
         return null;
     }
 
-
     public static ArrayList<Unit> getNearOpponentsUnits(int x, int y, int range, Government owner) {
         ArrayList<Unit> opponentsUnits = new ArrayList<>();
         for (int i = -range; i <= range; i++) {
             for (int j = -range; j <= range; j++) {
-                if (i * i + j * j > range * range) continue;
+                if (i * i + j * j > range * range)
+                    continue;
                 int xi = x + i, yj = y + j;
                 for (Person person : currentGame.getPersonOfAPixel(xi, yj)) {
                     if (person instanceof Unit && !person.getGovernment().equals(owner)) {
@@ -148,7 +149,7 @@ public class Controller {
         }
     }
 
-    public static ArrayList<int[]> getPathForTunneler(int x, int y, Government owner) {//todo : test this
+    public static ArrayList<int[]> getPathForTunneler(int x, int y, Government owner) {// todo : test this
         Building targetBuilding = null;
 
         for (int range = 0; range < size(); range++) {
@@ -166,20 +167,26 @@ public class Controller {
     }
 
     private static Building getDefendingOpponentBuildingInRange(int x, int y, int range, Government owner) {
-        for (int targetX : new int[]{x - range, x + range}) {
-            if (targetX < 0 || targetX >= size()) continue;
+        for (int targetX : new int[] { x - range, x + range }) {
+            if (targetX < 0 || targetX >= size())
+                continue;
             for (int targetY = y - range; targetY <= y + range; targetY++) {
-                if (targetY < 0 || targetY >= size()) continue;
+                if (targetY < 0 || targetY >= size())
+                    continue;
                 Building building = getDefendingOpponentBuildingOnCoordinates(owner, targetX, targetY);
-                if (building != null) return building;
+                if (building != null)
+                    return building;
             }
         }
-        for (int targetY : new int[]{y - range, y + range}) {
-            if (targetY < 0 || targetY > size()) continue;
+        for (int targetY : new int[] { y - range, y + range }) {
+            if (targetY < 0 || targetY > size())
+                continue;
             for (int targetX = x - range + 1; targetX <= x + range - 1; targetX++) {
-                if (targetX < 0 || targetX >= size()) continue;
+                if (targetX < 0 || targetX >= size())
+                    continue;
                 Building building = getDefendingOpponentBuildingOnCoordinates(owner, targetX, targetY);
-                if (building != null) return building;
+                if (building != null)
+                    return building;
             }
         }
         return null;
@@ -206,7 +213,8 @@ public class Controller {
     }
 
     public static Random getRandom() {
-        if (random == null) random = new Random();
+        if (random == null)
+            random = new Random();
         return random;
     }
 

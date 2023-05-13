@@ -29,12 +29,13 @@ public class Tunneler extends Unit {
 
     @Override
     public void move() {
-        if (!isTunneling) super.move();
+        if (!isTunneling)
+            super.move();
         else {
             int numberOfMoves = movesLeft;
             for (int i = 0; i < Math.min(numberOfMoves, movePattern.size()); i++) {
                 int currentX = movePattern.get(0)[0], currentY = movePattern.get(0)[1];
-                currentLocation = new int[]{currentX, currentY};
+                currentLocation = new int[] { currentX, currentY };
                 movePattern.remove(0);
                 movesLeft--;
                 boolean gonnaDie = false;
@@ -46,7 +47,8 @@ public class Tunneler extends Unit {
                     Controller.damageOpponentTower(currentX, currentY, getGovernment(), hittingDamage);
                     gonnaDie = true;
                 }
-                if (gonnaDie) instantDie();
+                if (gonnaDie)
+                    instantDie();
 
             }
         }

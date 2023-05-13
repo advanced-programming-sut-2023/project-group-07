@@ -6,7 +6,6 @@ import model.Texture;
 public class MapPixel {
     private Texture texture;
     private ArrayList<Unit> units = new ArrayList<Unit>();
-    private ArrayList<Engineer> engineers = new ArrayList<Engineer>();
     private ArrayList<NonMilitary> nonMilitaries = new ArrayList<NonMilitary>();
     private ArrayList<Building> normalBuildings = new ArrayList<Building>();
     private ArrayList<GateHouse> gateHouses = new ArrayList<GateHouse>();
@@ -184,13 +183,13 @@ public class MapPixel {
         return false;
     }
 
-    private boolean doesHaveVisibleUnit(Government government){
-        if(government == null)
+    private boolean doesHaveVisibleUnit(Government government) {
+        if (government == null)
             return true;
-        for(Unit unit : units)
-            if(unit.getGovernment().equals(government))
+        for (Unit unit : units)
+            if (unit.getGovernment().equals(government))
                 return true;
-            else if(!unit.isInvisible())
+            else if (!unit.isInvisible())
                 return true;
         return false;
     }
@@ -202,7 +201,7 @@ public class MapPixel {
             return doesHaveLord() ? "L" : "S";
         if (getBuildings().size() != 0)
             return doesHaveWall() ? "W" : "B";
-        if(!nonMilitaries.isEmpty())
+        if (!nonMilitaries.isEmpty())
             return "P";
         if (this.tree != null)
             return "T";
@@ -215,6 +214,7 @@ public class MapPixel {
         String output = "";
         String buildingsStr = "";
         String unitsStr = "";
+        String nonMilitariesStr = "";
         output += "type/texture: " + texture.toString() + "\n";
         output += "does have oil? " + ((this.doesHaveOil) ? "yes" : "no");
         for (Building building : getBuildings())
@@ -232,7 +232,7 @@ public class MapPixel {
                         counter++;
                     }
                 if (counter > 0) {
-                    if (!unitType.equals(unitType.LORD))
+                    if (!unitType.equals(UnitTypes.LORD))
                         unitsStr += unitType.toString() + " (color: " + lordColor.toString() + ") (count: " + counter
                                 + ") (Average Hp: " + (int) (hpSum / counter) + ")\n";
                     else
@@ -240,9 +240,26 @@ public class MapPixel {
                                 + ")\n";
                 }
             }
+        for (LordColor lordColor : LordColor.values())
+            for (NonMilitaryTypes nonMilitaryType : NonMilitaryTypes.values()) {
+                int counter = 0;
+                int hpSum = 0;
+                for (NonMilitary nonMilitary : nonMilitaries)
+                    if (nonMilitary.getLordColor().equals(lordColor) && nonMilitary.getType().equals(nonMilitaryType)) {
+                        hpSum += nonMilitary.getHp();
+                        counter++;
+                    }
+                if (counter > 0) {
+                    nonMilitariesStr += nonMilitaryType.toString() + " (color: " + lordColor.toString() + ") (count: "
+                            + counter + ") (Average Hp: " + (int) (hpSum / counter) + ")\n";
+                }
+            }
         if (!unitsStr.equals(""))
             output += "\n<< UNITS >>\n" + unitsStr.trim();
+        if (!nonMilitariesStr.equals(""))
+            output += "\n<< NON-MILITARIES >>\n" + nonMilitariesStr.trim();
         return output;
+
     }
 
     public void pourOil() {

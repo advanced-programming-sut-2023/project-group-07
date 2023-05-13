@@ -11,6 +11,7 @@ import model.Government;
 
 public class MapMenuController {
     private Map map;
+
     public ArrayList<ArrayList<Colors>> getMapColorList(int x, int y) {
         ArrayList<ArrayList<Colors>> output = new ArrayList<ArrayList<Colors>>();
         int x1 = getCornersRow(x)[0], x2 = getCornersRow(x)[1];
@@ -94,7 +95,7 @@ public class MapMenuController {
 
     public String getDetails(int row, int column) {
         MapPixel pixel = map.getMapPixel(row, column);
-        return "Pixel cordinates: " + (row+ 1) + " , " + (column + 1) +"\n"+ pixel.details();
+        return "Pixel cordinates: " + (row + 1) + " , " + (column + 1) + "\n" + pixel.details();
     }
 
     public void refreshMap(Map map) {
