@@ -8,7 +8,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="view.LoginMenuGraphics"
+            fx:controller="view.SignUpGraphics"
             stylesheets="@../CSS/SignUp.css"
             prefHeight="400.0" prefWidth="600.0">
     <center>
@@ -19,6 +19,7 @@
             <TextField promptText="Email"/>
             <TextField promptText="Nickname"/>
             <TextField promptText="Slogan (Optional)"/>
+            <Button alignment="CENTER" text="Sign up" prefWidth="200" onMouseClicked="#signUp"/>
         </VBox>
     </center>
 </BorderPane>

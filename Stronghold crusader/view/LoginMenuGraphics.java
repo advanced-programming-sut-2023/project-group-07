@@ -33,14 +33,19 @@ public class LoginMenuGraphics extends Application {
     public void forgotMyPassword(MouseEvent mouseEvent) {
     }
 
-    public void loginMenu(MouseEvent mouseEvent) {
+    public void loginMenu(MouseEvent mouseEvent) throws Exception {
+        new LoginGraphics().start(Main.stage);
     }
 
     public void signUpMenu(MouseEvent mouseEvent) throws Exception {
         new SignUpGraphics().start(Main.stage);
     }
 
-    public void login(MouseEvent mouseEvent) {
+    public void login(MouseEvent mouseEvent) throws Exception {
+
+    }
+
+    public void back(MouseEvent mouseEvent) {
     }
 
 //    public void createWindow(BorderPane borderPane) {
