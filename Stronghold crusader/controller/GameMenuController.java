@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.mockito.internal.matchers.InstanceOf;
+//import org.mockito.internal.matchers.InstanceOf;
 
 import model.*;
 
@@ -362,8 +362,11 @@ public class GameMenuController {
             return Messages.INVALID_COORDINATES;
         boolean isUnit = false;
         for (Person person : game.getMap().getMapPixel(frow, scolumn).getPeople()) {
-            if (person instanceof Unit unit && unit.getGovernment().equals(game.getCurrentGovernment()))
-                isUnit = true;
+            if (person instanceof Unit){
+                Unit unit = (Unit) person;
+                if(unit.getGovernment().equals(game.getCurrentGovernment()))
+                    isUnit = true;
+            }
         }
         if (!isUnit)
             return Messages.NO_UNITS_HERE;
@@ -697,7 +700,8 @@ public class GameMenuController {
         for (Person person : selectedUnits) {
             if (!person.getGovernment().equals(owner))
                 continue;
-            if (person instanceof Tunneler tunneler) {
+            if (person instanceof Tunneler) {
+                Tunneler tunneler = (Tunneler) person;
                 if (tunneler.isAvailable())
                     tunnelers.add(tunneler);
             }
@@ -710,7 +714,8 @@ public class GameMenuController {
         if (selectedUnits.size() == 0)
             return Messages.NO_UNITS_SELECTED;
         for (Person person : selectedUnits) {
-            if (person instanceof Unit unit) {
+            if (person instanceof Unit) {
+                Unit unit = (Unit) person;
                 disbandAUnit(unit);
             }
         }

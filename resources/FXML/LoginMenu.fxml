@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="view.LoginMenuGraphics"
+            prefWidth="1280" prefHeight="720">
+    <center>
+        <VBox alignment="CENTER" spacing="20">
+            <Button alignment="CENTER" text="Sign up" onMouseClicked="#signUpMenu" prefWidth="200"/>
+            <Button alignment="CENTER" text="Login" onMouseClicked="#loginMenu" prefWidth="200"/>
+        </VBox>
+    </center>
+</BorderPane>

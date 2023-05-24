@@ -7,13 +7,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import static model.TypeOfBuilding.CAGED_WAR_DOGS;
-import static org.mockito.ArgumentMatchers.contains;
+//import static org.mockito.ArgumentMatchers.contains;
 
 import java.io.IOException;
 
 import controller.Controller;
 import controller.Messages;
-import net.bytebuddy.implementation.bytecode.ByteCodeAppender.Size;
+//import net.bytebuddy.implementation.bytecode.ByteCodeAppender.Size;
 
 public class Game {
     private final Map map;
@@ -93,12 +93,14 @@ public class Game {
         government.changePeasant(count);
         if (count < 0)
             for (int i = government.getPeople().size() - 1; i >= 0 && count < 0; i--) {
-                if (government.getPeople().get(i) instanceof NonMilitary nonMilitary
-                        && nonMilitary.getType().equals(NonMilitaryTypes.PEASANT)) {
-                    government.removePerson(nonMilitary);
-                    map.getMapPixel(nonMilitary.getCurrentLocation()[0], nonMilitary.getCurrentLocation()[1])
-                            .removePerson(nonMilitary);
-                    count++;
+                if (government.getPeople().get(i) instanceof NonMilitary) {
+                    NonMilitary nonMilitary = (NonMilitary)government.getPeople().get(i);
+                    if(nonMilitary.getType().equals(NonMilitaryTypes.PEASANT)){
+                        government.removePerson(nonMilitary);
+                        map.getMapPixel(nonMilitary.getCurrentLocation()[0], nonMilitary.getCurrentLocation()[1])
+                                .removePerson(nonMilitary);
+                        count++;
+                    }
                 }
             }
         else if (count > 0)
@@ -207,7 +209,8 @@ public class Game {
         for (int i = frow; i <= srow; i++)
             for (int j = fcolumn; j <= scolumn; j++)
                 for (Person person : map.getMapPixel(i, j).getPeople())
-                    if (person instanceof Unit unit) {
+                    if (person instanceof Unit) {
+                        Unit unit = (Unit) person;
                         if (unit.getType().equals(UnitTypes.WAR_DOG))
                             continue;
                         units.add(unit);
@@ -220,8 +223,11 @@ public class Game {
     public void moveUnit(int row, int column) {
         for (Person person : selectedUnit)
             if (person instanceof Unit) {
-                if (person instanceof SiegeWeapon siegeWeapon && siegeWeapon.getType().getSpeed() == 0)
-                    continue;
+                if (person instanceof SiegeWeapon){
+                    SiegeWeapon siegeWeapon = (SiegeWeapon)person;
+                    if(siegeWeapon.getType().getSpeed() == 0)
+                        continue;
+                }
                 Unit unit = (Unit) person;
                 if (unit.getGovernment().equals(currentGovernment)) {
                     unit.setMovePattern(
@@ -264,7 +270,8 @@ public class Game {
 
     public void patrolUnits(int frow, int fcolumn, int srow, int scolumn) {
         for (Person person : selectedUnit)
-            if (person instanceof Unit unit) {
+            if (person instanceof Unit) {
+                Unit unit = (Unit) person;
                 if (person.getGovernment().equals(currentGovernment)) {
                     person.setPatrolLocation(new int[] { frow, fcolumn, srow, scolumn });
                     person.setPatrolling(true);
@@ -287,13 +294,20 @@ public class Game {
     }
 
     public void applyPersonMove(Person person) {
-        if (person instanceof Unit unit && unit.isAttacking()) {
-            int range = (unit instanceof SiegeWeapon siegeWeapon) ? siegeWeapon.getType().getRange()
-                    : unit.getType().getRange();
-            if (Math.abs(unit.getCurrentLocation()[0] - unit.getPersonBeingAttacked().getCurrentLocation()[0])
-                    + Math.abs(unit.getCurrentLocation()[1]
-                            - unit.getPersonBeingAttacked().getCurrentLocation()[1]) <= range)
-                return;
+        if (person instanceof Unit) {
+            Unit unit = (Unit) person;
+            if(unit.isAttacking()){
+                int range=0;
+                if(unit instanceof  SiegeWeapon){
+                    SiegeWeapon siegeWeapon = (SiegeWeapon) unit;
+                    range = siegeWeapon.getType().getRange();
+                }
+                else unit.getType().getRange();
+                if (Math.abs(unit.getCurrentLocation()[0] - unit.getPersonBeingAttacked().getCurrentLocation()[0])
+                        + Math.abs(unit.getCurrentLocation()[1]
+                                - unit.getPersonBeingAttacked().getCurrentLocation()[1]) <= range)
+                    return;
+            }
         }
         int firstRow = person.currentLocation[0], firstColumn = person.currentLocation[1];
         person.move();
@@ -307,7 +321,8 @@ public class Game {
                 continue;
             if (!person.isPatrolling())
                 continue;
-            if (person instanceof Unit unit) {
+            if (person instanceof Unit) {
+                Unit unit = (Unit) person;
                 if (person.currentLocation[0] == person.patrolLocation[2]
                         && person.currentLocation[1] == person.patrolLocation[3])
                     person.setPatrolLocation(new int[] { person.patrolLocation[2], person.patrolLocation[3],
@@ -412,8 +427,12 @@ public class Game {
                     unit.getType().equals(UnitTypes.ASSASSIN)));
             unit.setPersonBeingAttacked(person);
             unit.setBuildingBeingAttacked(null);
-            int range = (unit instanceof SiegeWeapon siegeWeapon) ? siegeWeapon.getType().getRange()
-                    : unit.getType().getRange();
+            int range=0;
+            if(unit instanceof  SiegeWeapon){
+                SiegeWeapon siegeWeapon = (SiegeWeapon) unit;
+                range = siegeWeapon.getType().getRange();
+            }
+            else unit.getType().getRange();
             if (Math.abs(unit.getCurrentLocation()[0] - person.getCurrentLocation()[0])
                     + Math.abs(unit.getCurrentLocation()[1] - person.getCurrentLocation()[1]) > range)
                 applyPersonMove(unit);
@@ -537,7 +556,8 @@ public class Game {
 
     public void checkStance(Government government) {
         for (Person person : government.getPeople())
-            if (person instanceof Unit unit) {
+            if (person instanceof Unit) {
+                Unit unit = (Unit)person;
                 if (!unit.isAttacking() && !unit.isPatrolling() && unit.getMovePattern().isEmpty()) {
                     if (unit.getUnitStance().equals(UnitStance.DEFENSIVE)) {
                         if (nearestEnemy(unit, unit.getType().getRange()) != null)
@@ -569,20 +589,27 @@ public class Game {
         for (Person person : government.getPeople()) {
             if (person instanceof Unit) {
                 Unit unit = (Unit) person;
-                int range = (unit instanceof SiegeWeapon siegeWeapon) ? siegeWeapon.getSiegeWeaponType().getRange()
-                        : unit.getType().getRange();
+                int range=0;
+                if(unit instanceof  SiegeWeapon){
+                    SiegeWeapon siegeWeapon = (SiegeWeapon) unit;
+                    range = siegeWeapon.getSiegeWeaponType().getRange();
+                }
+                else unit.getType().getRange();
                 if (!(unit instanceof SiegeWeapon) && unit.getType().getRange() > 1
                         && !map.getMapPixel(unit.currentLocation[0], unit.currentLocation[1]).getBuildings().isEmpty())
                     range = unit.getType().getRange()
                             + map.getMapPixel(unit.currentLocation[0], unit.currentLocation[1]).getBuildings().get(0)
                                     .getTypeOfBuilding().getHeight();
-                if (unit instanceof SiegeWeapon siegeWeapon && siegeWeapon.isAttackingBuilding()) {
-                    Building building = unit.getBuildingBeingAttacked();
-                    int row = unit.getCurrentLocation()[0], column = unit.getCurrentLocation()[1];
-                    if (Math.abs(building.getRow() - row) + Math.abs(building.getColumn() - column) <= siegeWeapon
-                            .getSiegeWeaponType().getRange())
-                        building.changeHp(-(int) (unit.getDamage() * (1 + government.getFearRate() * 5.0 / 100)));
-                    continue;
+                if (unit instanceof SiegeWeapon) {
+                    SiegeWeapon siegeWeapon =(SiegeWeapon)unit;
+                    if(siegeWeapon.isAttackingBuilding()){
+                        Building building = unit.getBuildingBeingAttacked();
+                        int row = unit.getCurrentLocation()[0], column = unit.getCurrentLocation()[1];
+                        if (Math.abs(building.getRow() - row) + Math.abs(building.getColumn() - column) <= siegeWeapon
+                                .getSiegeWeaponType().getRange())
+                            building.changeHp(-(int) (unit.getDamage() * (1 + government.getFearRate() * 5.0 / 100)));
+                        continue;
+                    }
                 }
                 int enemyLocation[] = nearestEnemy(unit, range);
                 if (enemyLocation != null) {
@@ -686,8 +713,10 @@ public class Game {
             }
         }
         for (Building building : eliminatedBuildings) {
-            if (building instanceof CagedWarDogs cagedWarDogs)
+            if (building instanceof CagedWarDogs){
+                CagedWarDogs cagedWarDogs = (CagedWarDogs)building;
                 cagedWarDogs.releaseDogs();
+            }
             government.removeBuilding(building);
         }
 
@@ -818,8 +847,10 @@ public class Game {
             removeEliminatedBuildings(government);
             government.increasePercentOfBlessed();
             for (Person person : government.getPeople()) {
-                if (person instanceof Unit unit)
+                if (person instanceof Unit){
+                    Unit unit = (Unit)person;
                     unit.endTurn();
+                }
             }
         }
         return eliminateDefeatedLords();

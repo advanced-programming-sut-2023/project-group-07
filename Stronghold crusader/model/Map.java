@@ -323,8 +323,11 @@ public class Map {
         }
         for (Government government : governments.values())
             for (Person person : government.getPeople())
-                if (person instanceof Unit unit && unit.getType().equals(UnitTypes.LORD))
-                    government.setLord(unit);
+                if (person instanceof Unit){
+                    Unit unit = (Unit)person;
+                    if(unit.getType().equals(UnitTypes.LORD))
+                        government.setLord(unit);
+                }
     }
 
     public boolean isAdjacentToSameType(int row, int column, int size, TypeOfBuilding typeOfBuilding) {

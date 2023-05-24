@@ -23,7 +23,7 @@ public class Controller {
     }
 
     public static double randomDouble(double min, double max) {
-        return getRandom().nextDouble(min, max);
+        return getRandom().nextDouble()*(max - min)+min;
     }
 
     public static char getRandomChar(char c, int max) {

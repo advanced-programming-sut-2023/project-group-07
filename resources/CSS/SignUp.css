@@ -1,0 +1,6 @@
+TextField {
+    -fx-max-width: 200;
+}
+PasswordField {
+    -fx-max-width: 200;
+}
