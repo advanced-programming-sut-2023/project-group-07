@@ -12,7 +12,7 @@ import model.User;
 import static javafx.application.Application.launch;
 
 public class Main extends Application {
-    public static Stage stage;
+    static Stage stage;
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException{
 //        System.out.print(Colors.YELLOW_BOLD);
 //        System.out.print("Loading maps and users...");
