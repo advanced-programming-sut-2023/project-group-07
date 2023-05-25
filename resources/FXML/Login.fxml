@@ -12,12 +12,6 @@
             stylesheets="@../CSS/SignUp.css"
             prefHeight="400.0" prefWidth="600.0">
     <center>
-        <VBox alignment="CENTER" spacing="20" >
-            <TextField promptText="Username"/>
-            <PasswordField promptText="Password"/>
-            <Button alignment="CENTER" text="Login" onMouseClicked="#login" prefWidth="200"/>
-            <Button alignment="CENTER" text="Forgot my password" onMouseClicked="#forgotMyPassword" prefWidth="200"/>
-            <Button alignment="CENTER" text="Back" onMouseClicked="#back" prefWidth="200"/>
-        </VBox>
+
     </center>
 </BorderPane>

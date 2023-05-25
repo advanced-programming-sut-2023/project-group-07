@@ -22,4 +22,8 @@ public class SignUpGraphics extends Application {
 
     public void signUp(MouseEvent mouseEvent) {
     }
+
+    public void back(MouseEvent mouseEvent) throws Exception {
+        new LoginMenuGraphics().start(Main.stage);
+    }
 }

@@ -12,14 +12,6 @@
             stylesheets="@../CSS/SignUp.css"
             prefHeight="400.0" prefWidth="600.0">
     <center>
-        <VBox alignment="CENTER" spacing="40" prefWidth="200">
-            <TextField promptText="Username"/>
-            <PasswordField promptText="Password"/>
-            <PasswordField promptText="Confirm password"/>
-            <TextField promptText="Email"/>
-            <TextField promptText="Nickname"/>
-            <TextField promptText="Slogan (Optional)"/>
-            <Button alignment="CENTER" text="Sign up" prefWidth="200" onMouseClicked="#signUp"/>
-        </VBox>
+
     </center>
 </BorderPane>

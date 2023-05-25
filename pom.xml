@@ -41,18 +41,18 @@
             <version>5.9.3</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-inline</artifactId>
-            <version>5.2.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-junit-jupiter</artifactId>
-            <version>5.2.0</version>
-            <scope>compile</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.mockito</groupId>-->
+<!--            <artifactId>mockito-inline</artifactId>-->
+<!--            <version>5.2.0</version>-->
+<!--            <scope>compile</scope>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.mockito</groupId>-->
+<!--            <artifactId>mockito-junit-jupiter</artifactId>-->
+<!--            <version>5.2.0</version>-->
+<!--            <scope>compile</scope>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -63,7 +63,7 @@
             <artifactId>javafx-fxml</artifactId>
             <version>19.0.2.1</version>
         </dependency>
-        <dependency>
+                <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-media</artifactId>
             <version>19.0.2.1</version>
@@ -92,6 +92,16 @@
             <artifactId>jme3-core</artifactId>
             <version>3.6.0-stable</version>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.jmonkeyengine</groupId>-->
+<!--            <artifactId>jme3-desktop</artifactId>-->
+<!--            <version>3.5.2-stable</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.jmonkeyengine</groupId>-->
+<!--            <artifactId>jme3-lwjgl3</artifactId>-->
+<!--            <version>3.5.2-stable</version>-->
+<!--        </dependency>-->
 
     </dependencies>
 </project>
