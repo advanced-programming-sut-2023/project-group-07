@@ -56,7 +56,6 @@ public class LoginMenuGraphics extends Application {
     public HBox captchaBox;
 
     private Pane rootPane;
-    private LoginMenuController controller = new LoginMenuController();
 
     @Override
     public void start(Stage stage) throws Exception {

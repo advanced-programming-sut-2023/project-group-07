@@ -40,17 +40,17 @@
             <TextField visible="false" GridPane.rowIndex="2" promptText="Password" />
             <CheckBox text="Show/Hide password" GridPane.rowIndex="3" GridPane.columnIndex="0" fx:id="showHideLogin"/>
             <Text GridPane.rowIndex="2" GridPane.columnIndex="1" />
-            <VBox alignment="CENTER" spacing="10">
+            <VBox GridPane.rowIndex="3" alignment="CENTER" spacing="10">
                 <HBox alignment="CENTER" spacing="10" fx:id="captchaBox">
                     <ImageView fx:id="captchaImage"/>
                     <Rectangle fx:id="refreshImage" onMouseClicked="#resetCaptcha"/>
                 </HBox>
                 <TextField promptText="captcha" prefWidth="120"/>
             </VBox>
-            <CheckBox text="Stay logged in" GridPane.rowIndex="4" />
-            <Button GridPane.rowIndex="5" alignment="CENTER" text="Login" prefWidth="200"/>
-            <Button GridPane.rowIndex="6" alignment="CENTER" text="Forgot my password" onMouseClicked="#forgotMyPassword" prefWidth="200"/>
-            <Button GridPane.rowIndex="7" alignment="CENTER" text="Back" onMouseClicked="#loginBack" prefWidth="200"/>
+            <CheckBox text="Stay logged in" GridPane.rowIndex="5" />
+            <Button GridPane.rowIndex="6" alignment="CENTER" text="Login" prefWidth="200"/>
+            <Button GridPane.rowIndex="7" alignment="CENTER" text="Forgot my password" onMouseClicked="#forgotMyPassword" prefWidth="200"/>
+            <Button GridPane.rowIndex="8" alignment="CENTER" text="Back" onMouseClicked="#loginBack" prefWidth="200"/>
             <Text visible="false" GridPane.rowIndex="0" GridPane.columnIndex="0" fx:id="loginError"/>
         </GridPane>
         <GridPane alignment="CENTER_LEFT" vgap="40" prefWidth="350">
