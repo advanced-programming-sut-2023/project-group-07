@@ -22,7 +22,7 @@ public class LoginMenuController {
     String answer;
     RecoveryQuestion recoveryQuestion;
 
-    private String usernameExistenceCheck(String username) {
+    public String usernameExistenceCheck(String username) {
         if (User.getUserByUsername(username) == null)
             return null;
         int counter = 1;
@@ -31,7 +31,7 @@ public class LoginMenuController {
         return username + counter;
     }
 
-    private String randomPasswordGenerator() {
+    public String randomPasswordGenerator() {
         ArrayList<Character> passwordHolder = new ArrayList<Character>();
         String password = "", characters = "+=-_()\\*&^%$#@!`{}\"\'.,/:|~?><;";
         int length = Controller.randomNumber(7) + 3;

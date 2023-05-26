@@ -6,52 +6,72 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.scene.text.Text?>
 <Pane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="view.LoginMenuGraphics"
-            stylesheets="@../CSS/SignUp.css"
-            prefWidth="1280" prefHeight="720">
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="view.LoginMenuGraphics"
+      stylesheets="@../CSS/SignUp.css"
+      prefWidth="1280" prefHeight="720">
     <HBox fx:id="menuBox" alignment="CENTER" spacing="200">
-<!--        <VBox visible="false" alignment="CENTER" spacing="40" prefWidth="200">-->
-<!--            <Label text="Please enter new password"/>-->
-<!--            <PasswordField promptText="Password"/>-->
-<!--            <PasswordField promptText="Confirm password"/>-->
-<!--            <Button alignment="CENTER" text="Enter" prefWidth="200"/>-->
-<!--            <Button alignment="CENTER" text="Back" prefWidth="200"/>-->
-<!--        </VBox>-->
-<!--        <VBox visible="false" alignment="CENTER" spacing="40" prefWidth="200">-->
-<!--            <Label text="Enter your username"/>-->
-<!--            <TextField promptText="Username"/>-->
-<!--            <Button alignment="CENTER" text="Next" prefWidth="200"/>-->
-<!--            <Button alignment="CENTER" text="Back" prefWidth="200"/>-->
-<!--        </VBox>-->
-        <VBox visible="false" alignment="CENTER" spacing="20" prefWidth="200">
-            <TextField promptText="Username"/>
-            <PasswordField promptText="Password"/>
-            <Button alignment="CENTER" text="Login" prefWidth="200"/>
-            <Button alignment="CENTER" text="Forgot my password" onMouseClicked="#forgotMyPassword" prefWidth="200"/>
-            <Button alignment="CENTER" text="Back" onMouseClicked="#loginBack" prefWidth="200"/>
-        </VBox>
-        <VBox fx:id="loginSignUpBox" alignment="CENTER" spacing="20" prefWidth="200">
-            <Button alignment="CENTER" text="Sign up" fx:id="signUpButton" onMouseClicked="#signUpMenu" prefWidth="200"/>
-            <Button alignment="CENTER" text="Login" onMouseClicked="#loginMenu" prefWidth="200"/>
-        </VBox>
-        <VBox visible="false" alignment="CENTER" spacing="40" prefWidth="200">
-            <TextField promptText="Username"/>
-            <PasswordField promptText="Password"/>
-            <PasswordField promptText="Confirm password"/>
-            <TextField promptText="Email"/>
-            <TextField promptText="Nickname"/>
-            <TextField promptText="Slogan (Optional)"/>
-            <Button alignment="CENTER" text="Sign up" prefWidth="200"/>
-            <Button alignment="CENTER" text="Back" onMouseClicked="#signUpBack" prefWidth="200"/>
-        </VBox>
-<!--        <VBox visible="false" alignment="CENTER" spacing="40" prefWidth="200">-->
-<!--            <Label text="Choose your security question"/>-->
-<!--            <TextField text="Answer"/>-->
-<!--            <TextField text="Confirm answer"/>-->
-<!--            <Button text="Enter"/>-->
-<!--        </VBox>-->
+        <GridPane visible="false" alignment="CENTER_LEFT" vgap="40" prefWidth="350">
+            <Label GridPane.rowIndex="0" text="Please enter new password"/>
+            <PasswordField GridPane.rowIndex="1" promptText="Password"/>
+            <PasswordField GridPane.rowIndex="2" promptText="Confirm password"/>
+            <TextField visible="false" GridPane.rowIndex="1" promptText="Password"/>
+            <TextField visible="false" GridPane.rowIndex="2" promptText="Confirm password"/>
+            <Text text="FFF" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <CheckBox text="Show/Hide password" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+            <Button GridPane.rowIndex="4" alignment="CENTER" text="Enter" prefWidth="200"/>
+            <Button GridPane.rowIndex="5" alignment="CENTER" text="Back" prefWidth="200"/>
+        </GridPane>
+        <GridPane visible="false" alignment="CENTER_LEFT" vgap="40" prefWidth="350">
+            <Label GridPane.rowIndex="0" text="Enter your username"/>
+            <TextField GridPane.rowIndex="1" promptText="Username"/>
+            <Text text="FFF" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <Button GridPane.rowIndex="2" alignment="CENTER" text="Next" prefWidth="200"/>
+            <Button GridPane.rowIndex="3" alignment="CENTER" text="Back" prefWidth="200"/>
+        </GridPane>
+        <GridPane visible="false" alignment="CENTER_LEFT" vgap="40" hgap="10" prefWidth="350" fx:id="loginMenu">
+            <TextField GridPane.rowIndex="1" promptText="Username"/>
+            <Text fill="red" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <PasswordField GridPane.rowIndex="2" promptText="Password" />
+            <TextField visible="false" GridPane.rowIndex="2" promptText="Password" />
+            <CheckBox text="Show/Hide password" GridPane.rowIndex="3" GridPane.columnIndex="0" fx:id="showHideLogin"/>
+            <Text GridPane.rowIndex="2" GridPane.columnIndex="1" />
+            <CheckBox text="Stay logged in" GridPane.rowIndex="4" />
+            <Button GridPane.rowIndex="5" alignment="CENTER" text="Login" prefWidth="200"/>
+            <Button GridPane.rowIndex="6" alignment="CENTER" text="Forgot my password" onMouseClicked="#forgotMyPassword" prefWidth="200"/>
+            <Button GridPane.rowIndex="7" alignment="CENTER" text="Back" onMouseClicked="#loginBack" prefWidth="200"/>
+            <Text visible="false" GridPane.rowIndex="0" GridPane.columnIndex="0" fx:id="loginError"/>
+        </GridPane>
+        <GridPane alignment="CENTER_LEFT" vgap="40" prefWidth="350">
+            <Button GridPane.rowIndex="0" alignment="CENTER" text="Sign up"  fx:id="signUpButton" onMouseClicked="#signUpMenu" prefWidth="200"/>
+            <Button GridPane.rowIndex="1" alignment="CENTER" text="Login" onMouseClicked="#loginMenu" prefWidth="200"/>
+        </GridPane>
+        <GridPane visible="false" alignment="CENTER_LEFT" vgap="20" prefWidth="350" fx:id="signUpMenu">
+            <TextField GridPane.rowIndex="1" promptText="Username"/>
+            <Text fill="red" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <PasswordField GridPane.rowIndex="2" promptText="Password"/>
+            <PasswordField GridPane.rowIndex="3" promptText="Confirm password"/>
+            <TextField visible="false" GridPane.rowIndex="2" promptText="Password"/>
+            <TextField visible="false" GridPane.rowIndex="3" promptText="Confirm password"/>
+            <Text GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+            <Text fill="red" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+            <CheckBox text="Show/Hide password" GridPane.rowIndex="4" GridPane.columnIndex="0" fx:id="showHideSignUp"/>
+            <Button GridPane.rowIndex="5" alignment="CENTER" text="Random password" onMouseClicked="#randomPasswordButton" prefWidth="200" scaleX="0.7" scaleY="0.7"/>
+            <TextField GridPane.rowIndex="6" promptText="Email"/>
+            <TextField GridPane.rowIndex="7" promptText="Nickname"/>
+            <CheckBox GridPane.rowIndex="8" text="Slogan" onMouseClicked="#sloganCheckbox" fx:id="sloganBox"/>
+            <Button GridPane.rowIndex="9" alignment="CENTER" text="Sign up" prefWidth="200"/>
+            <Button GridPane.rowIndex="10" alignment="CENTER" text="Back" onMouseClicked="#signUpBack" prefWidth="200"/>
+            <Text visible="false" GridPane.rowIndex="0" GridPane.columnIndex="0" fx:id="signUpError"/>
+        </GridPane>
+        <GridPane visible="false" alignment="CENTER_LEFT" vgap="40" prefWidth="350">
+            <Label GridPane.rowIndex="0" text="Choose your security question"/>
+            <TextField GridPane.rowIndex="1" text="Answer"/>
+            <TextField GridPane.rowIndex="2" text="Confirm answer"/>
+            <Button GridPane.rowIndex="3" text="Enter"/>
+        </GridPane>
     </HBox>
 
 </Pane>

@@ -133,10 +133,10 @@ public class User {
         boolean containsCapitalLetter = Pattern.compile("[A-Z]").matcher(password).find();
         boolean containsDigit = Pattern.compile("\\d").matcher(password).find();
         boolean containsNonWord = Pattern.compile("[\\W_]").matcher(password).find();
-        if (password.length() < 6)
-            return Messages.WEAK_PASSWORD_LENGTH;
-        if (!containsSmallLetter || !containsCapitalLetter || !containsDigit || !containsNonWord)
-            return Messages.WEAK_PASSWORD_CHARACTERS;
+        if (password.length() < 6 && (!containsSmallLetter || !containsCapitalLetter || !containsDigit || !containsNonWord))
+            return Messages.WEAK_PASSWORD;
+        if(password.length() < 6 || (!containsSmallLetter || !containsCapitalLetter || !containsDigit || !containsNonWord))
+            return Messages.MODERATE_PASSWORD;
         return Messages.STRONG_PASSWORD;
     }
 

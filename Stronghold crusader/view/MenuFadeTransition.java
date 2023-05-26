@@ -37,13 +37,13 @@ public class MenuFadeTransition extends Transition {
         }
     }
     private void move() {
-        if(!rightDirection && node.getBoundsInParent().getCenterX()>= centerX-400)
+        if(!rightDirection && node.getBoundsInParent().getCenterX()>= centerX-550)
             node.setLayoutX(node.getLayoutX()-5);
-        if((!rightDirection && node.getBoundsInParent().getCenterX()< centerX-400) || (rightDirection && node.getBoundsInParent().getCenterX()> centerX+400)){
+        if((!rightDirection && node.getBoundsInParent().getCenterX()< centerX-550) || (rightDirection && node.getBoundsInParent().getCenterX()> centerX+550)){
             this.stop();
             ((HBox)node).getChildren().get(fadeOut).setVisible(false);
         }
-        if(rightDirection && node.getBoundsInParent().getCenterX()<= centerX+400) {
+        if(rightDirection && node.getBoundsInParent().getCenterX()<= centerX+550) {
             node.setLayoutX(node.getLayoutX()+5);
         }
     }

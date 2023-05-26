@@ -2,7 +2,7 @@ package model;
 
 public enum Slogan {
     ENTEZ("UNDER THE SAME FLAG, FOR A SINGLE ENTEZ"),
-    UNDEFEATABLE("UNDEFEATABLE LORD"),
+    UNBEATABLE("UNBEATABLE LORD"),
     GHOOZ("HARKI DAR DAD KHODESH KHABAR DAD");
 
     String string;
