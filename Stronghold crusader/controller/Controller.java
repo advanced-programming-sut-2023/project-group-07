@@ -9,7 +9,6 @@ import java.util.regex.Matcher;
 
 import model.*;
 import model.Map;
-import view.CaptchaPrinter;
 import view.MenuPrinter;
 
 public class Controller {
@@ -17,13 +16,22 @@ public class Controller {
     public static Game currentGame;
     public static final MenuPrinter menuPrinter = new MenuPrinter();
     private static Random random;
+    private static ArrayList<Integer> captchaNumbers;
+
+    static {
+        captchaNumbers = new ArrayList<>();
+        captchaNumbers.addAll(List.of(1181, 1381, 1491, 1722, 1959,
+                2163, 2177, 2723, 2785, 3541, 3847, 3855,
+                3876, 3967, 4185, 4310, 4487, 4578,
+                4602, 4681, 4924, 5326, 5463, 5771));
+    }
 
     public static int randomNumber(int max) {
         return getRandom().nextInt(max);
     }
 
     public static double randomDouble(double min, double max) {
-        return getRandom().nextDouble()*(max - min)+min;
+        return getRandom().nextDouble() * (max - min) + min;
     }
 
     public static char getRandomChar(char c, int max) {
@@ -38,17 +46,8 @@ public class Controller {
         return string;
     }
 
-    public static String generateCaptcha(CaptchaPrinter captchaPrinter) {
-        String captcha = "", captchaPrint = "";
-        int length = randomNumber(5) + 4;
-        for (int i = 0; i < length; i++) {
-            char toBeAdded = getRandomChar('A', 26);
-            captcha += toBeAdded;
-            captchaPrint += toBeAdded;
-            captchaPrint += ' ';
-        }
-        captchaPrinter.print(captchaPrint);
-        return captcha;
+    public static int getRandomCaptcha() {
+        return captchaNumbers.get(randomNumber(captchaNumbers.size()));
     }
 
     public static String toSHA256(String string) throws NoSuchAlgorithmException {
@@ -68,7 +67,7 @@ public class Controller {
     }
 
     public static String checkRegionCoordinatesFormat(Matcher x1Matcher, Matcher y1Matcher, Matcher x2Matcher,
-            Matcher y2Matcher) {
+                                                      Matcher y2Matcher) {
         if (x1Matcher == null)
             return "Enter first row number!";
         if (y1Matcher == null)
@@ -167,7 +166,7 @@ public class Controller {
     }
 
     private static Building getDefendingOpponentBuildingInRange(int x, int y, int range, Government owner) {
-        for (int targetX : new int[] { x - range, x + range }) {
+        for (int targetX : new int[]{x - range, x + range}) {
             if (targetX < 0 || targetX >= size())
                 continue;
             for (int targetY = y - range; targetY <= y + range; targetY++) {
@@ -178,7 +177,7 @@ public class Controller {
                     return building;
             }
         }
-        for (int targetY : new int[] { y - range, y + range }) {
+        for (int targetY : new int[]{y - range, y + range}) {
             if (targetY < 0 || targetY > size())
                 continue;
             for (int targetX = x - range + 1; targetX <= x + range - 1; targetX++) {

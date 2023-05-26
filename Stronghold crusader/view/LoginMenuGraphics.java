@@ -2,6 +2,8 @@ package view;
 
 import controller.LoginMenuController;
 import javafx.animation.*;
+import controller.Controller;
+import controller.LoginMenuController;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -16,9 +18,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Glow;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
 import javafx.stage.Modality;
@@ -43,7 +51,12 @@ public class LoginMenuGraphics extends Application {
     public Text loginError;
     public Text signUpError;
     public CheckBox sloganBox;
+    public ImageView captchaImage;
+    public Rectangle refreshImage;
+    public HBox captchaBox;
+
     private Pane rootPane;
+    private LoginMenuController controller = new LoginMenuController();
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -61,8 +74,13 @@ public class LoginMenuGraphics extends Application {
 //        Scale scale = new Scale(w,h,0,0);
 //        scene.getRoot().getTransforms().setAll(scale);
 //
+        Background background = new Background(new BackgroundImage((new Image(LoginMenuGraphics.class.getResource("/Images/Background/1.jpg").toString(), Main.screenWidth, Main.getScreenHeight, false, false)),
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.DEFAULT,
+                BackgroundSize.DEFAULT));
+        pane.setBackground(background);
         stage.setScene(scene);
-        stage.setFullScreen(true);
         stage.show();
         pane.setCenterShape(true);
         pane.getChildren().get(0).setLayoutX(Main.stage.getScene().getRoot().getBoundsInParent().getCenterX()-2450);
@@ -81,6 +99,8 @@ public class LoginMenuGraphics extends Application {
     public void loginMenu(MouseEvent mouseEvent) throws Exception {
         MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane)Main.stage.getScene().getRoot(),menuBox,true,menuBox.getBoundsInParent().getCenterX(), 2, 3);
         menuFadeTransition.play();
+        initializeCaptcha();
+//        setVisibility(menuBox,0);
     }
 
     public void signUpMenu(MouseEvent mouseEvent) throws Exception {
@@ -227,6 +247,26 @@ public class LoginMenuGraphics extends Application {
             GridPane.setRowIndex(signUpMenu.getChildren().get(14),10);
         }
     }
+    public void resetCaptcha() {
+        captchaImage.setImage(controller.generateCaptcha());
+    }
+
+    public void initializeCaptcha() {
+        DropShadow borderGlow = new DropShadow();
+        borderGlow.setColor(Color.LIGHTBLUE);
+        borderGlow.setOffsetX(0f);
+        borderGlow.setOffsetY(0f);
+        borderGlow.setHeight(30);
+        captchaBox.setStyle("-fx-background-color: white;");
+        captchaBox.setEffect(borderGlow);
+        ImagePattern imagePattern = new ImagePattern(new Image(LoginMenuGraphics.class.getResource("/Images/refresh.png").toString(), 40, 40, false, false));
+        refreshImage.setWidth(30);
+        refreshImage.setHeight(30);
+        refreshImage.setFill(imagePattern);
+        refreshImage.setStyle("-fx-background-color: white;");
+        resetCaptcha();
+    }
+
 
 //    public void createWindow(BorderPane borderPane) {
 //        Scene scene = new Scene(borderPane);
