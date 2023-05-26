@@ -9,7 +9,7 @@
         <sourceDirectory>Stronghold crusader</sourceDirectory>
         <resources>
             <resource>
-                <directory>Stronghold crusader</directory>
+                <directory>resources</directory>
                 <excludes>
                     <exclude>**/*.java</exclude>
                 </excludes>
@@ -28,14 +28,7 @@
 
 
     <dependencies>
-
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx</artifactId>
-            <version>21-ea+17</version>
-            <type>pom</type>
-        </dependency>
-
+        
 
         <dependency>
             <groupId>junit</groupId>
