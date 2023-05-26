@@ -237,9 +237,8 @@ public class LoginMenu {
     }
 
     public static boolean checkCaptcha() {
-        CaptchaPrinter captchaPrinter = new CaptchaPrinter();
         while (true) {
-            String captcha = Controller.generateCaptcha(captchaPrinter);
+            int captcha = Controller.getRandomCaptcha();
             System.out.println("enter the security code :");
             String input = LoginMenu.scanner.nextLine();
             if (input.equals("cancel"))

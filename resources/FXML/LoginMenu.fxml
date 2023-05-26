@@ -6,11 +6,13 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.shape.Rectangle?>
 <Pane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="view.LoginMenuGraphics"
-            stylesheets="@../CSS/SignUp.css"
-            prefWidth="1280" prefHeight="720">
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="view.LoginMenuGraphics"
+      stylesheets="@../CSS/SignUp.css"
+      prefWidth="1280" prefHeight="720">
     <HBox fx:id="menuBox" alignment="CENTER" spacing="200">
 <!--        <VBox visible="false" alignment="CENTER" spacing="40" prefWidth="200">-->
 <!--            <Label text="Please enter new password"/>-->
@@ -28,6 +30,13 @@
         <VBox visible="false" alignment="CENTER" spacing="20" prefWidth="200">
             <TextField promptText="Username"/>
             <PasswordField promptText="Password"/>
+            <VBox alignment="CENTER" spacing="10">
+                <HBox alignment="CENTER" spacing="10" fx:id="captchaBox">
+                    <ImageView fx:id="captchaImage"/>
+                    <Rectangle fx:id="refreshImage" onMouseClicked="#resetCaptcha"/>
+                </HBox>
+                <TextField promptText="captcha" prefWidth="120"/>
+            </VBox>
             <Button alignment="CENTER" text="Login" prefWidth="200"/>
             <Button alignment="CENTER" text="Forgot my password" onMouseClicked="#forgotMyPassword" prefWidth="200"/>
             <Button alignment="CENTER" text="Back" onMouseClicked="#loginBack" prefWidth="200"/>

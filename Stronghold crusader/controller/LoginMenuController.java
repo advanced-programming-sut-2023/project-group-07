@@ -2,6 +2,7 @@ package controller;
 
 import java.util.regex.Pattern;
 import com.google.gson.*;
+import javafx.scene.image.Image;
 import model.User;
 import model.Slogan;
 import view.LoginMenu;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 public class LoginMenuController {
     String answer;
     RecoveryQuestion recoveryQuestion;
+    private int currentCaptcha;
 
     private String usernameExistenceCheck(String username) {
         if (User.getUserByUsername(username) == null)
@@ -205,5 +207,12 @@ public class LoginMenuController {
         user.setNewPassword(password);
         User.updateUsers();
         return Messages.PASSWORD_CHANGED;
+    }
+
+    public Image generateCaptcha() {
+        int captcha = Controller.getRandomCaptcha();
+        Image image = new Image(LoginMenuController.class.getResource("/Images/Captcha/" + String.valueOf(captcha) + ".png").toString());
+        currentCaptcha = captcha;
+        return image;
     }
 }
