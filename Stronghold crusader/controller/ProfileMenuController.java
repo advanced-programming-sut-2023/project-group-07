@@ -14,7 +14,8 @@ public class ProfileMenuController {
     }
 
     public Messages changeUsername(String username) throws IOException, NoSuchAlgorithmException {
-        if (!User.isUsernameValid(username))
+        if (username.equals(currentUser.getUsername())) return Messages.NEW_USERNAME_IS_CURRNET_USERNAME;
+        else if (!User.isUsernameValid(username))
             return Messages.INVALID_USERNAME;
         else if (User.getUserByUsername(username) != null)
             return Messages.USERNAME_EXISTS;
@@ -71,8 +72,20 @@ public class ProfileMenuController {
         return this.currentUser.getSlogan();
     }
 
+    public String getUsername() {
+        return this.currentUser.getUsername();
+    }
+
+    public String getEmail() {
+        return this.currentUser.getEmail();
+    }
+
+    public String getNickname() {
+        return this.currentUser.getNickname();
+    }
+
     public String[] getInfo() {
-        String[] info = new String[] {
+        String[] info = new String[]{
                 this.currentUser.getUsername(),
                 this.currentUser.getNickname(),
                 this.currentUser.getEmail(),
@@ -83,4 +96,16 @@ public class ProfileMenuController {
         return info;
     }
 
+    public String getAvatarName() {
+        return currentUser.avatarName();
+    }
+
+    public boolean doesUsernameExist(String username) {
+        return !currentUser.getUsername().equals(username) && (User.getUserByUsername(username) != null) ;
+    }
+
+    public boolean doesEmailExist(String email) {
+        return !currentUser.getUsername().equals(email) && (User.getUserByUsername(email) != null) ;
+
+    }
 }

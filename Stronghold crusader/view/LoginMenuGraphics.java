@@ -127,7 +127,7 @@ public class LoginMenuGraphics extends Application {
         usernameSignUp.textProperty().addListener(((observableValue, s, t1) -> {
             if(!User.isUsernameValid(usernameSignUp.getText()) && !usernameSignUp.getText().isEmpty())
                 usernameSignUpCheck.setText("Invalid username format!");
-            else if(controller.usernameExistenceCheck(usernameSignUp.getText())!=null)
+                else if(controller.usernameExistenceCheck(usernameSignUp.getText())!=null)
                 usernameSignUpCheck.setText("Username exists!");
             else
                 usernameSignUpCheck.setText("");

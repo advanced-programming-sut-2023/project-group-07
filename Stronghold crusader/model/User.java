@@ -25,6 +25,7 @@ public class User {
     private int numberOfAttempts;
     private int highScore;
     private int rank;
+    private String avatarName;
 
     private static ArrayList<User> users = new ArrayList<User>();
     private static JsonArray usersArray = new JsonArray();
@@ -42,6 +43,7 @@ public class User {
         this.numberOfAttempts = 0;
         this.highScore = 0;
         this.rank = 0; // TODO : CHECK THIS SHIT :)
+        this.giveAAvatar();
     }
 
     public String getUsername() {
@@ -152,6 +154,18 @@ public class User {
         return rank;
     }
 
+    public String avatarName() {
+        if (avatarName == null) this.giveAAvatar();
+        return avatarName;
+    }
+
+    public void setAvatarName(String avatarName) {
+        this.avatarName = avatarName;
+    }
+    public void giveAAvatar(){
+        setAvatarName(Controller.giveARandomAvatar());
+    }
+
     public static ArrayList<User> getUsers() {
         return users;
     }
@@ -247,5 +261,6 @@ public class User {
             return true;
         return false;
     }
+
 
 }
