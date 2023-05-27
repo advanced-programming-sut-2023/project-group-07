@@ -41,7 +41,8 @@ public class ProfileMenuController {
     }
 
     public Messages changeEmail(String email) throws IOException, NoSuchAlgorithmException {
-        if (User.getUserByEmail(email) != null)
+        if (email.equals(currentUser.getEmail())) return Messages.NEW_EMAIL_IS_CURRENT_EMAIL;
+        else if (User.getUserByEmail(email) != null)
             return Messages.EMAIL_EXISTS;
         else if (!User.isEmailValid(email))
             return Messages.INVALID_EMAIL_FORMAT;

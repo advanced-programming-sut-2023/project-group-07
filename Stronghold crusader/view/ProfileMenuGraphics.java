@@ -120,8 +120,19 @@ public class ProfileMenuGraphics extends Application {
     private void addTextFieldsListeners() {
         addUsernameFieldListener();
         addEmailFieldListener();
+        addNicknameListener();
         addPasswordFieldsListener();
 
+    }
+
+    private void addNicknameListener() {
+        nicknameTextField.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String old, String newNickname) {
+                if (newNickname == null || newNickname.isEmpty()) nicknameWarningLabel.setText("enter nickname");
+                else nicknameWarningLabel.setText("");
+            }
+        });
     }
 
     private void addPasswordFieldsListener() {
@@ -307,18 +318,16 @@ public class ProfileMenuGraphics extends Application {
 
     public void submitUsername(MouseEvent  mouseEvent) throws IOException, NoSuchAlgorithmException {
         Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("changing username");
         switch (controller.changeUsername(usernameTextField.getText())){
             case CHANGE_USERNAME_SUCCESSFUL:
                 alert.setAlertType(Alert.AlertType.INFORMATION);
-                alert.setTitle("changing username");
                 alert.setHeaderText("changing was successful");
                 break;
             case USERNAME_EXISTS:
-                alert.setTitle("changing username");
                 alert.setHeaderText("username exists");
                 break;
             case INVALID_USERNAME:
-                alert.setTitle("changing username");
                 alert.setHeaderText("username format is invalid");
                 break;
             case NEW_USERNAME_IS_CURRNET_USERNAME:
@@ -329,20 +338,47 @@ public class ProfileMenuGraphics extends Application {
         resetFields();
     }
 
-    public void submitEmail(MouseEvent mouseEvent) {
+    @FXML
+    private void submitEmail(MouseEvent mouseEvent) throws IOException, NoSuchAlgorithmException {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("changing email");
+        switch (controller.changeEmail(emailTextField.getText())){
+            case CHANGE_EMAIL_SUCCESSFUL:
+                alert.setAlertType(Alert.AlertType.INFORMATION);
+                alert.setHeaderText("changing was successful");
+                break;
+            case EMAIL_EXISTS:
+                alert.setHeaderText("email exists");
+                break;
+            case INVALID_EMAIL_FORMAT:
+                alert.setHeaderText("email format is invalid");
+                break;
+            case NEW_EMAIL_IS_CURRENT_EMAIL:
+                resetFields();
+                return;
+        }
+        alert.showAndWait(); // todo change alert, it close game and reopen
+        resetFields();
 
     }
-    public void submitSlogan(MouseEvent mouseEvent) {
+    public void submitSlogan(MouseEvent mouseEvent) throws IOException, NoSuchAlgorithmException {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("changing slogan");
+        controller.changeSlogan(sloganTextField.getText());
+        alert.setHeaderText("changing was successful");
+        alert.showAndWait();
+        resetFields();
 
     }
 
     public void submitNickname(MouseEvent mouseEvent) {
-
+        // TODO: 5/28/2023
     }
 
 
     @FXML
     private void submitPassword(MouseEvent mouseEvent) {
+        // TODO: 5/28/2023
     }
 
 
@@ -362,5 +398,5 @@ public class ProfileMenuGraphics extends Application {
             confirmationTextField.setVisible(true);
         }
     }
-
+    // TODO: 5/28/2023 changing avatar is not handled
 }
