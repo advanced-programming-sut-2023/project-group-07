@@ -28,6 +28,8 @@ import model.User;
 import java.io.IOException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class LoginMenuGraphics extends Application {
 
@@ -45,6 +47,7 @@ public class LoginMenuGraphics extends Application {
     public Text sloganCheck;
     public Button randomSloganButton;
     public TextField sloganField;
+    public GridPane forgetPassword;
 
 
     private Pane rootPane;
@@ -90,6 +93,8 @@ public class LoginMenuGraphics extends Application {
 
 
     public void forgotMyPassword(MouseEvent mouseEvent) {
+        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, true, menuBox.getBoundsInParent().getCenterX(), 1, 2);
+        menuFadeTransition.play();
     }
 
     public void loginMenu(MouseEvent mouseEvent) throws Exception {
@@ -506,7 +511,26 @@ public class LoginMenuGraphics extends Application {
         return recoveryQuestionMenu.getChildren().get(index);
     }
 
+    public void backToLogin(MouseEvent mouseEvent) {
+        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, false, menuBox.getBoundsInParent().getCenterX(), 2, 1);
+        menuFadeTransition.play();
+        emptyFields(forgetPassword);
+    }
 
+    public void enteringNewPassword(MouseEvent mouseEvent) {
+        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, true, menuBox.getBoundsInParent().getCenterX(), 0, 1);
+        menuFadeTransition.play();
+    }
+
+    public void passwordChange(MouseEvent mouseEvent) {
+        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, false, menuBox.getBoundsInParent().getCenterX(), 1, 0);
+        menuFadeTransition.play();
+    }
+
+    public void backToForgetPassword(MouseEvent mouseEvent) {
+        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, false, menuBox.getBoundsInParent().getCenterX(), 1, 0);
+        menuFadeTransition.play();
+    }
 
 
 //    public void createWindow(BorderPane borderPane) {
