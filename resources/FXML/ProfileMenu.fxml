@@ -52,7 +52,7 @@
                 <Font size="30.0" />
             </font>
         </Label>
-        <Rectangle fx:id="avatar" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="226.0" layoutX="27.0" layoutY="505.0" stroke="BLACK" strokeType="INSIDE" width="234.0" />
+        <Rectangle fx:id="avatar" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="226.0" layoutX="27.0" layoutY="505.0" onMouseClicked="#enableChoosingAvatar" stroke="BLACK" strokeType="INSIDE" width="234.0" />
         <Button fx:id="changePassword" layoutX="438.0" layoutY="271.0" mnemonicParsing="false" onMouseClicked="#enablePasswordField" text="change password" />
         <Label layoutX="24.0" layoutY="261.0" styleClass="names_style" text="password">
             <font>
@@ -119,5 +119,7 @@
                 <Font size="14.0" />
             </font>
         </PasswordField>
+      <Button fx:id="chooseFromDeviceButton" layoutX="294.0" layoutY="505.0" mnemonicParsing="false" onMouseClicked="#chooseAvatarFromDevice" text="choose form device" />
+      <Button fx:id="chooseAnExistingAvatarButton" layoutX="279.0" layoutY="593.0" mnemonicParsing="false" onMouseClicked="#chooseAnExistingAvatar" text="choose an existing avatar" />
     </children>
 </AnchorPane>

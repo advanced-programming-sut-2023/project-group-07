@@ -1,5 +1,6 @@
 package view;
 
+import controller.Controller;
 import controller.ProfileMenuController;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -14,16 +15,19 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import model.User;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.security.NoSuchAlgorithmException;
 
 public class ProfileMenuGraphics extends Application {
     private final ProfileMenuController controller = new ProfileMenuController();
-    private Stage stage;
+    private static Stage stage;
     private Scene scene;
     private static Pane pane;
 
@@ -73,7 +77,6 @@ public class ProfileMenuGraphics extends Application {
     private Button submitSlogan;
     @FXML
     private Button submitPassword;
-
     @FXML
     private Button changeUsername;
     @FXML
@@ -84,6 +87,11 @@ public class ProfileMenuGraphics extends Application {
     private Button changeSlogan;
     @FXML
     private Button changePassword;
+    @FXML
+    private Button chooseFromDeviceButton;
+    @FXML
+    private Button chooseAnExistingAvatarButton;
+
 
     @FXML
     private Rectangle avatar;
@@ -94,7 +102,7 @@ public class ProfileMenuGraphics extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        this.stage = stage;
+        ProfileMenuGraphics.stage = stage;
         URL url = LoginMenuGraphics.class.getResource("/FXML/ProfileMenu.fxml");
         pane = FXMLLoader.load(url);
         Background background = new Background(new BackgroundImage(getBackGroundImage(),
@@ -174,8 +182,7 @@ public class ProfileMenuGraphics extends Application {
                 textFieldToShowConfirmation.setText(confirmation);
                 if (!confirmation.equals(passwordTextField.getText())) {
                     confirmationWarningLabel.setText("Passwords do not match!");
-                }
-                else {
+                } else {
                     confirmationWarningLabel.setText("");
                 }
             }
@@ -249,6 +256,8 @@ public class ProfileMenuGraphics extends Application {
         submitEmail.setVisible(false);
         submitSlogan.setVisible(false);
         submitPassword.setVisible(false);
+        chooseAnExistingAvatarButton.setVisible(false);
+        chooseFromDeviceButton.setVisible(false);
 
     }
 
@@ -312,6 +321,7 @@ public class ProfileMenuGraphics extends Application {
         nicknameTextField.setDisable(false);
         submitNickname.setVisible(true);
     }
+
     @FXML
     private void enableSloganField(MouseEvent mouseEvent) {
         resetFields();
@@ -335,10 +345,10 @@ public class ProfileMenuGraphics extends Application {
     }
 
 
-    public void submitUsername(MouseEvent  mouseEvent) throws IOException, NoSuchAlgorithmException {
+    public void submitUsername(MouseEvent mouseEvent) throws IOException, NoSuchAlgorithmException {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("changing username");
-        switch (controller.changeUsername(usernameTextField.getText())){
+        switch (controller.changeUsername(usernameTextField.getText())) {
             case CHANGE_USERNAME_SUCCESSFUL:
                 alert.setAlertType(Alert.AlertType.INFORMATION);
                 alert.setHeaderText("changing was successful");
@@ -353,7 +363,9 @@ public class ProfileMenuGraphics extends Application {
                 resetFields();
                 return;
         }
-        alert.showAndWait(); // todo change alert, it close game and reopen
+        stage.setFullScreen(false);
+        alert.showAndWait();
+        stage.setFullScreen(true);
         resetFields();
     }
 
@@ -361,7 +373,7 @@ public class ProfileMenuGraphics extends Application {
     private void submitEmail(MouseEvent mouseEvent) throws IOException, NoSuchAlgorithmException {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("changing email");
-        switch (controller.changeEmail(emailTextField.getText())){
+        switch (controller.changeEmail(emailTextField.getText())) {
             case CHANGE_EMAIL_SUCCESSFUL:
                 alert.setAlertType(Alert.AlertType.INFORMATION);
                 alert.setHeaderText("changing was successful");
@@ -376,16 +388,21 @@ public class ProfileMenuGraphics extends Application {
                 resetFields();
                 return;
         }
-        alert.showAndWait(); // todo change alert, it close game and reopen
+        stage.setFullScreen(false);
+        alert.showAndWait();
+        stage.setFullScreen(true);
         resetFields();
 
     }
+
     public void submitSlogan(MouseEvent mouseEvent) throws IOException, NoSuchAlgorithmException {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("changing slogan");
         controller.changeSlogan(sloganTextField.getText());
         alert.setHeaderText("changing was successful");
+        stage.setFullScreen(false);
         alert.showAndWait();
+        stage.setFullScreen(true);
         resetFields();
 
     }
@@ -393,7 +410,7 @@ public class ProfileMenuGraphics extends Application {
     public void submitNickname(MouseEvent mouseEvent) throws IOException, NoSuchAlgorithmException {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("changing nickname");
-        switch (controller.changeNickname(nicknameTextField.getText())){
+        switch (controller.changeNickname(nicknameTextField.getText())) {
             case EMPTY_FIELD:
                 alert.setHeaderText("enter nickname");
                 break;
@@ -402,7 +419,9 @@ public class ProfileMenuGraphics extends Application {
                 alert.setHeaderText("changing was successful");
                 break;
         }
+        stage.setFullScreen(false);
         alert.showAndWait();
+        stage.setFullScreen(true);
         resetFields();
     }
 
@@ -413,7 +432,7 @@ public class ProfileMenuGraphics extends Application {
         alert.setTitle("changing password");
         switch (controller.changePassword(oldPasswordTextField.getText(),
                 passwordTextField.getText(),
-                confirmationTextField.getText())){
+                confirmationTextField.getText())) {
             case INCORRECT_PASSWORD:
                 alert.setHeaderText("old password is wrong!");
                 break;
@@ -429,7 +448,9 @@ public class ProfileMenuGraphics extends Application {
                 alert.setHeaderText("password is not the strong!");
                 break;
         }
+        stage.setFullScreen(false);
         alert.showAndWait();
+        stage.setFullScreen(true);
         resetFields();
     }
 
@@ -452,6 +473,60 @@ public class ProfileMenuGraphics extends Application {
             oldPasswordTextField.setVisible(true);
         }
     }
-    // TODO: 5/28/2023 changing avatar is not handled
+
+    @FXML
+    private void enableChoosingAvatar() {
+        chooseAnExistingAvatarButton.setVisible(true);
+        chooseFromDeviceButton.setVisible(true);
+    }
+
+    public void chooseAvatarFromDevice(MouseEvent mouseEvent) {
+        FileChooser fileChooser = new FileChooser();
+        stage.setFullScreen(false);
+        File avatarFile = fileChooser.showOpenDialog(stage);
+        stage.setFullScreen(true);
+        if (avatarFile != null) {
+            avatarFile = saveChosenAvatarToImages(avatarFile);
+            controller.setAvatarName(avatarFile.getName());
+            setAvatar();
+        }
+        resetFields();
+    }
+
+    private File saveChosenAvatarToImages(File file) {
+        try{
+            File destination = new File(ProfileMenuGraphics.class.getResource
+                    ("/Images/Avatars").toString().substring("file:".length())
+                    + file.getName());
+            Integer numberToAdd = 2;
+            while (destination.exists() && !destination.equals(file)) {
+                destination = new File(ProfileMenuGraphics.class.getResource
+                        ("/Images/Avatars").toString().substring("file:".length())
+                        + numberToAdd + "_" + file.getName());
+                numberToAdd++;
+            }
+            Files.copy(file.toPath(), destination.toPath());
+            return destination;
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void chooseAnExistingAvatar(MouseEvent mouseEvent) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File(
+                ProfileMenuGraphics.class.getResource
+                        ("/Images/Avatars").toString().substring("file:/".length())));
+        stage.setFullScreen(false);
+        File avatarFile = fileChooser.showOpenDialog(stage);
+        stage.setFullScreen(true);
+        if (avatarFile != null) {
+            controller.setAvatarName(avatarFile.getName());
+            setAvatar();
+        }
+        resetFields();
+    }
     // TODO: 5/28/2023 captcha
+    // TODO: 5/28/2023 add score board
 }

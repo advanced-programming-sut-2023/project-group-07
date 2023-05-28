@@ -31,7 +31,7 @@ public class User {
     private static JsonArray usersArray = new JsonArray();
 
     public User(String username, String password, String email, String nickname, String slogan,
-            RecoveryQuestion passwordRecoveryQuestion, String passwordRecoveryAnswer) {
+                RecoveryQuestion passwordRecoveryQuestion, String passwordRecoveryAnswer) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -137,7 +137,7 @@ public class User {
         boolean containsNonWord = Pattern.compile("[\\W_]").matcher(password).find();
         if (password.length() < 6 && (!containsSmallLetter || !containsCapitalLetter || !containsDigit || !containsNonWord))
             return Messages.WEAK_PASSWORD;
-        if(password.length() < 6 || (!containsSmallLetter || !containsCapitalLetter || !containsDigit || !containsNonWord))
+        if (password.length() < 6 || (!containsSmallLetter || !containsCapitalLetter || !containsDigit || !containsNonWord))
             return Messages.MODERATE_PASSWORD;
         return Messages.STRONG_PASSWORD;
     }
@@ -162,7 +162,8 @@ public class User {
     public void setAvatarName(String avatarName) {
         this.avatarName = avatarName;
     }
-    public void giveAAvatar(){
+
+    public void giveAAvatar() {
         setAvatarName(Controller.giveARandomAvatar());
     }
 
@@ -196,15 +197,19 @@ public class User {
         usersArray = jsonArray;
     }
 
-    public static void updateUsers() throws IOException {
-        Gson gson = new Gson();
-        usersArray = new JsonArray();
-        for (User user : users) {
-            usersArray.add(gson.toJsonTree(user).getAsJsonObject());
+    public static void updateUsers() {
+        try {
+            Gson gson = new Gson();
+            usersArray = new JsonArray();
+            for (User user : users) {
+                usersArray.add(gson.toJsonTree(user).getAsJsonObject());
+            }
+            FileWriter file = new FileWriter("Stronghold crusader/DB/Users");
+            file.write(usersArray.toString());
+            file.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        FileWriter file = new FileWriter("Stronghold crusader/DB/Users");
-        file.write(usersArray.toString());
-        file.close();
     }
 
     public static User stayLoggedIn() throws IOException {

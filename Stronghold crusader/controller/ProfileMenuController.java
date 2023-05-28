@@ -73,6 +73,10 @@ public class ProfileMenuController {
         User.updateUsers();
     }
 
+    public void setAvatarName(String name){
+        currentUser.setAvatarName(name);
+        User.updateUsers();
+    }
     public int getHighScore() {
         return this.currentUser.getHighScore();
     }
@@ -121,4 +125,5 @@ public class ProfileMenuController {
         return !currentUser.getEmail().equals(email) && (User.getUserByEmail(email) != null) ;
 
     }
+
 }
