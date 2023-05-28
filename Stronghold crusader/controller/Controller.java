@@ -1,6 +1,7 @@
 package controller;
 
 import java.awt.*;
+import java.io.File;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
@@ -17,7 +18,7 @@ import model.Map;
 import view.MenuPrinter;
 
 public class Controller {
-    public static User currentUser;
+    public static User currentUser = User.getUsers().get(0); // TODO: 5/28/2023
     public static Game currentGame;
     public static final MenuPrinter menuPrinter = new MenuPrinter();
     private static Random random;
@@ -153,7 +154,7 @@ public class Controller {
         }
     }
 
-    public static ArrayList<int[]> getPathForTunneler(int x, int y, Government owner) {// todo : test this
+    public static ArrayList<int[]> getPathForTunneler(int x, int y, Government owner) {
         Building targetBuilding = null;
 
         for (int range = 0; range < size(); range++) {
@@ -194,7 +195,7 @@ public class Controller {
             }
         }
         return null;
-    }// todo : test the method
+    }
 
     private static Building getDefendingOpponentBuildingOnCoordinates(Government owner, int x, int y) {
         for (Building building : map().getMapPixel(x, y).getBuildings()) {
@@ -247,5 +248,22 @@ public class Controller {
         alert.setHeaderText(headerText);
         alert.setContentText(contentText);
         return alert;
+    }
+
+    public static String giveARandomAvatar() {
+        try {
+            String avatarFolderAddress =
+                    Objects.requireNonNull(Controller.class.getResource("/Images/Avatars")).getPath();
+            File avatarFolder = new File(avatarFolderAddress);
+            File[] files = avatarFolder.listFiles();
+            ArrayList<String> defaultAvatarsNames = new ArrayList<>();
+            for (File file : files) {
+                if (file.getName().matches("\\d+\\.[^.]+")) defaultAvatarsNames.add(file.getName()); //default avatars names contains just number
+            }
+            return defaultAvatarsNames.get(randomNumber(defaultAvatarsNames.size()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

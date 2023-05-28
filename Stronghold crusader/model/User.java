@@ -21,6 +21,7 @@ public class User {
     private RecoveryQuestion passwordRecoveryQuestion;
     private String slogan;
     private String passwordRecoveryAnswer;
+    private String avatarName;
     private long lastAttempt;
     private int numberOfAttempts;
     private int highScore;
@@ -41,6 +42,7 @@ public class User {
         this.numberOfAttempts = 0;
         this.highScore = 0;
         this.rank = 0; // TODO : CHECK THIS SHIT :)
+        this.giveAAvatar();
     }
 
     public String getUsername() {
