@@ -21,22 +21,21 @@ public class User {
     private RecoveryQuestion passwordRecoveryQuestion;
     private String slogan;
     private String passwordRecoveryAnswer;
+    private String avatarName;
     private long lastAttempt;
     private int numberOfAttempts;
     private int highScore;
     private int rank;
-    private String avatarName;
 
     private static ArrayList<User> users = new ArrayList<User>();
     private static JsonArray usersArray = new JsonArray();
 
-    public User(String username, String password, String email, String nickname, String slogan,
-                RecoveryQuestion passwordRecoveryQuestion, String passwordRecoveryAnswer) {
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.nickname = nickname;
-        this.slogan = slogan;
+    public User(Information information, RecoveryQuestion passwordRecoveryQuestion, String passwordRecoveryAnswer) {
+        this.username = information.getUsername();
+        this.password = information.getPassword();
+        this.email = information.getEmail();
+        this.nickname = information.getNickname();
+        this.slogan = information.getSlogan();
         this.passwordRecoveryQuestion = passwordRecoveryQuestion;
         this.passwordRecoveryAnswer = passwordRecoveryAnswer;
         this.lastAttempt = 0;
@@ -267,5 +266,39 @@ public class User {
         return false;
     }
 
+    public static class Information {
+        private String username;
+        private String password;
+        private String email;
+        private String nickname;
+        private String slogan;
 
+        public Information(String username, String password, String email, String nickname, String slogan) {
+            this.username = username;
+            this.password = password;
+            this.email = email;
+            this.nickname = nickname;
+            this.slogan = slogan;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public String getNickname() {
+            return nickname;
+        }
+
+        public String getSlogan() {
+            return slogan;
+        }
+    }
 }

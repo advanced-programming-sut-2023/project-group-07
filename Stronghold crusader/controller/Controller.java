@@ -1,19 +1,24 @@
 package controller;
 
+import java.awt.*;
 import java.io.File;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.*;
+import java.util.List;
 import java.util.regex.Matcher;
 
+import javafx.scene.control.Alert;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.paint.Color;
 import model.*;
 import model.Map;
 import view.MenuPrinter;
 
 public class Controller {
-    public static User currentUser = User.getUsers().get(0); // todo remove initializer
+    public static User currentUser = User.getUsers().get(0); // TODO: 5/28/2023
     public static Game currentGame;
     public static final MenuPrinter menuPrinter = new MenuPrinter();
     private static Random random;
@@ -149,7 +154,7 @@ public class Controller {
         }
     }
 
-    public static ArrayList<int[]> getPathForTunneler(int x, int y, Government owner) {// todo : test this
+    public static ArrayList<int[]> getPathForTunneler(int x, int y, Government owner) {
         Building targetBuilding = null;
 
         for (int range = 0; range < size(); range++) {
@@ -190,7 +195,7 @@ public class Controller {
             }
         }
         return null;
-    }// todo : test the method
+    }
 
     private static Building getDefendingOpponentBuildingOnCoordinates(Government owner, int x, int y) {
         for (Building building : map().getMapPixel(x, y).getBuildings()) {
@@ -222,6 +227,29 @@ public class Controller {
         currentGame.releaseDogs(numberOfDogs, x, y, currentGame.getCurrentGovernment());
     }
 
+    public static DropShadow getBorderGlow(Color color, double height) {
+        DropShadow borderGlow = new DropShadow();
+        borderGlow.setColor(color);
+        borderGlow.setOffsetX(0f);
+        borderGlow.setOffsetY(0f);
+        borderGlow.setHeight(30);
+        return borderGlow;
+    }
+
+    public static Alert information(String headerText, String contentText) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText(headerText);
+        alert.setContentText(contentText);
+        return alert;
+    }
+
+    public static Alert error(String headerText, String contentText){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setHeaderText(headerText);
+        alert.setContentText(contentText);
+        return alert;
+    }
+
     public static String giveARandomAvatar() {
         try {
             String avatarFolderAddress =
@@ -234,6 +262,7 @@ public class Controller {
             }
             return defaultAvatarsNames.get(randomNumber(defaultAvatarsNames.size()));
         } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }

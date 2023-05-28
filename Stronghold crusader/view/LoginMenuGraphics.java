@@ -1,25 +1,17 @@
 package view;
 
 import controller.LoginMenuController;
-import javafx.animation.*;
+import controller.Messages;
 import controller.Controller;
-import controller.LoginMenuController;
 import javafx.application.Application;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -28,16 +20,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import javafx.scene.transform.Scale;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.Duration;
+import model.RecoveryQuestion;
 import model.Slogan;
 import model.User;
 
-import java.awt.*;
+import java.io.IOException;
 import java.net.URL;
-import java.util.Random;
+import java.security.NoSuchAlgorithmException;
 
 public class LoginMenuGraphics extends Application {
 
@@ -46,14 +36,16 @@ public class LoginMenuGraphics extends Application {
     public HBox menuBox;
     public GridPane loginMenu;
     public GridPane signUpMenu;
+    public GridPane recoveryQuestionMenu;
     public CheckBox showHideSignUp;
     public CheckBox showHideLogin;
     public Text loginError;
     public Text signUpError;
     public CheckBox sloganBox;
-    public ImageView captchaImage;
-    public Rectangle refreshImage;
-    public HBox captchaBox;
+    public Text sloganCheck;
+    public Button randomSloganButton;
+    public TextField sloganField;
+
 
     private Pane rootPane;
 
@@ -82,70 +74,88 @@ public class LoginMenuGraphics extends Application {
         stage.setScene(scene);
         stage.show();
         pane.setCenterShape(true);
-        pane.getChildren().get(0).setLayoutX(Main.stage.getScene().getRoot().getBoundsInParent().getCenterX()-2450);
-        pane.getChildren().get(0).setLayoutY(Main.stage.getScene().getRoot().getBoundsInParent().getCenterY()-300);
+        pane.getChildren().get(0).setLayoutX(Main.stage.getScene().getRoot().getBoundsInParent().getCenterX() - 2450);
+        pane.getChildren().get(0).setLayoutY(Main.stage.getScene().getRoot().getBoundsInParent().getCenterY() - 300);
     }
 
     public void initialize() {
         addUsernameListener();
         passwordVisibilityToggle();
         addPasswordListener();
+        addEmailListener();
+        addNickNameListener();
+        initializeCaptcha();
     }
+
+
 
     public void forgotMyPassword(MouseEvent mouseEvent) {
     }
 
     public void loginMenu(MouseEvent mouseEvent) throws Exception {
-        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane)Main.stage.getScene().getRoot(),menuBox,true,menuBox.getBoundsInParent().getCenterX(), 2, 3);
+        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, true, menuBox.getBoundsInParent().getCenterX(), 2, 3);
         menuFadeTransition.play();
-        initializeCaptcha();
-//        setVisibility(menuBox,0);
+        resetLoginCaptcha();
     }
 
     public void signUpMenu(MouseEvent mouseEvent) throws Exception {
-        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane)Main.stage.getScene().getRoot(),menuBox,false,menuBox.getBoundsInParent().getCenterX(), 4, 3);
+        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, false, menuBox.getBoundsInParent().getCenterX(), 4, 3);
         menuFadeTransition.play();
+        resetSignupCaptcha();
     }
 
     public void signUpBack(MouseEvent mouseEvent) {
-        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane)Main.stage.getScene().getRoot(),menuBox,true,menuBox.getBoundsInParent().getCenterX(), 3, 4);
+        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, true, menuBox.getBoundsInParent().getCenterX(), 3, 4);
         menuFadeTransition.play();
         emptyFields(signUpMenu);
+        if (signUpMenu.getChildren().contains(sloganField))
+            hideSlogan();
     }
 
     public void loginBack(MouseEvent mouseEvent) {
-        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane)Main.stage.getScene().getRoot(),menuBox,false,menuBox.getBoundsInParent().getCenterX(), 3, 2);
+        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, false, menuBox.getBoundsInParent().getCenterX(), 3, 2);
         menuFadeTransition.play();
         emptyFields(loginMenu);
     }
 
     private void addUsernameListener() {
-        TextField usernameLogin = (TextField) loginMenu.getChildren().get(0);
-        Text usernameLoginCheck = (Text) loginMenu.getChildren().get(1);
-        TextField usernameSignUp = (TextField) signUpMenu.getChildren().get(0);
-        Text usernameSignUpCheck = (Text) signUpMenu.getChildren().get(1);
+        TextField usernameLogin = (TextField) getLoginChild(0);
+        Text usernameLoginCheck = (Text) getLoginChild(1);
+        TextField usernameSignUp = (TextField) getSignupChild(0);
+        Text usernameSignUpCheck = (Text) getSignupChild(1);
         usernameSignUp.textProperty().addListener(((observableValue, s, t1) -> {
-            if(!User.isUsernameValid(usernameSignUp.getText()) && !usernameSignUp.getText().isEmpty())
+            if (!User.isUsernameValid(usernameSignUp.getText()) && !usernameSignUp.getText().isEmpty()) {
                 usernameSignUpCheck.setText("Invalid username format!");
-                else if(controller.usernameExistenceCheck(usernameSignUp.getText())!=null)
+                usernameSignUp.setStyle("-fx-border-color: red");
+            }
+            else if (controller.usernameExistenceCheck(usernameSignUp.getText()) != null) {
                 usernameSignUpCheck.setText("Username exists!");
-            else
+                usernameSignUp.setStyle("-fx-border-color: red");
+            }
+            else {
                 usernameSignUpCheck.setText("");
+                usernameSignUp.setStyle("-fx-border-color: lightgray");
+            }
         }));
         usernameLogin.textProperty().addListener(((observableValue, s, t1) -> {
-            if(controller.usernameExistenceCheck(usernameLogin.getText())==null && !usernameLogin.getText().isEmpty())
+            if (controller.usernameExistenceCheck(usernameLogin.getText()) == null && !usernameLogin.getText().isEmpty()) {
                 usernameLoginCheck.setText("Username doesn't exists!");
-            else
+                usernameLogin.setStyle("-fx-border-color: red");
+            }
+            else {
                 usernameLoginCheck.setText("");
+                usernameLogin.setStyle("-fx-border-color: lightgray");
+            }
         }));
     }
 
     private void passwordVisibilityToggle() {
-        passwordFieldBinding((PasswordField) loginMenu.getChildren().get(2),(TextField) loginMenu.getChildren().get(3),showHideLogin);
-        passwordFieldBinding((PasswordField) signUpMenu.getChildren().get(2),(TextField) signUpMenu.getChildren().get(4),showHideSignUp);
-        passwordFieldBinding((PasswordField) signUpMenu.getChildren().get(3),(TextField) signUpMenu.getChildren().get(5),showHideSignUp);
+        passwordFieldBinding((PasswordField) getLoginChild(2), (TextField) getLoginChild(3), showHideLogin);
+        passwordFieldBinding((PasswordField) getSignupChild(2), (TextField) getSignupChild(4), showHideSignUp);
+        passwordFieldBinding((PasswordField) getSignupChild(3), (TextField) getSignupChild(5), showHideSignUp);
     }
-    private void passwordFieldBinding(PasswordField passwordField,TextField textField,CheckBox checkBox) {
+
+    private void passwordFieldBinding(PasswordField passwordField, TextField textField, CheckBox checkBox) {
         passwordField.managedProperty().bind(checkBox.selectedProperty().not());
         passwordField.visibleProperty().bind(checkBox.selectedProperty().not());
         textField.managedProperty().bind(checkBox.selectedProperty());
@@ -154,41 +164,94 @@ public class LoginMenuGraphics extends Application {
     }
 
     private void addPasswordListener() {
-        PasswordField passwordFieldLogin = (PasswordField) loginMenu.getChildren().get(2);
-        PasswordField passwordFieldSignUp = (PasswordField) signUpMenu.getChildren().get(2);
-        PasswordField passwordFieldConfirmSignUp = (PasswordField) signUpMenu.getChildren().get(3);
-        Text passwordSignUpCheck = (Text) signUpMenu.getChildren().get(6);
-        Text passwordConfirmSignUpCheck = (Text) signUpMenu.getChildren().get(7);
+        PasswordField passwordFieldSignUp = (PasswordField) getSignupChild(2);
+        PasswordField passwordConfirmFieldSignUp = (PasswordField) getSignupChild(3);
+        TextField passwordTextFieldSignup = (TextField) getSignupChild(4);
+        TextField passwordConfirmTextFieldSignup = (TextField) getSignupChild(5);
+        Text passwordSignUpCheck = (Text) getSignupChild(6);
+        Text passwordConfirmSignUpCheck = (Text) getSignupChild(7);
         passwordFieldSignUp.textProperty().addListener(((observableValue, s, t1) -> {
-            if(t1.isEmpty()){
+            if (t1.isEmpty()) {
                 passwordSignUpCheck.setText("");
-            }
-            else {
+                passwordFieldSignUp.setStyle("-fx-border-color: lightgray");
+                passwordTextFieldSignup.setStyle("-fx-border-color: lightgray");
+            } else {
                 switch (User.isPasswordStrong(t1)) {
                     case WEAK_PASSWORD:
                         passwordSignUpCheck.setText("Weak");
                         passwordSignUpCheck.setFill(Color.RED);
+                        passwordFieldSignUp.setStyle("-fx-border-color: red");
+                        passwordTextFieldSignup.setStyle("-fx-border-color: red");
                         break;
                     case MODERATE_PASSWORD:
                         passwordSignUpCheck.setText("Moderate");
                         passwordSignUpCheck.setFill(Color.ORANGE);
+                        passwordFieldSignUp.setStyle("-fx-border-color: orange");
+                        passwordTextFieldSignup.setStyle("-fx-border-color: orange");
                         break;
                     case STRONG_PASSWORD:
                         passwordSignUpCheck.setText("Strong");
                         passwordSignUpCheck.setFill(Color.GREEN);
+                        passwordFieldSignUp.setStyle("-fx-border-color: green");
+                        passwordTextFieldSignup.setStyle("-fx-border-color: green");
                         break;
                 }
             }
-            if(t1.equals(passwordFieldConfirmSignUp.getText()))
+            if (t1.equals(passwordConfirmFieldSignUp.getText())) {
                 passwordConfirmSignUpCheck.setText("");
-            else
+                passwordConfirmFieldSignUp.setStyle("-fx-border-color: lightgray");
+                passwordConfirmTextFieldSignup.setStyle("-fx-border-color: lightgray");
+            }
+            else {
                 passwordConfirmSignUpCheck.setText("Passwords do not match!");
+                passwordConfirmFieldSignUp.setStyle("-fx-border-color: red");
+                passwordConfirmTextFieldSignup.setStyle("-fx-border-color: red");
+            }
         }));
-        passwordFieldConfirmSignUp.textProperty().addListener(((observableValue, s, t1) -> {
-            if(t1.equals(passwordFieldSignUp.getText()))
-               passwordConfirmSignUpCheck.setText("");
-            else
+        passwordConfirmFieldSignUp.textProperty().addListener(((observableValue, s, t1) -> {
+            if (t1.equals(passwordFieldSignUp.getText())) {
+                passwordConfirmSignUpCheck.setText("");
+                passwordConfirmFieldSignUp.setStyle("-fx-border-color: lightgray");
+                passwordConfirmTextFieldSignup.setStyle("-fx-border-color: lightgray");
+            }
+            else {
                 passwordConfirmSignUpCheck.setText("Passwords do not match!");
+                passwordConfirmFieldSignUp.setStyle("-fx-border-color: red");
+                passwordConfirmTextFieldSignup.setStyle("-fx-border-color: red");
+            }
+        }));
+    }
+
+    private void addEmailListener() {
+        TextField emailField = (TextField) getSignupChild(10);
+        Text emailCheck = (Text) getSignupChild(11);
+        emailField.textProperty().addListener(((observableValue, s, t1) -> {
+            if (t1.isEmpty()) {
+                emailCheck.setText("");
+                emailField.setStyle("-fx-border-color: lightgray");
+            } else {
+                if(!User.isEmailValid(t1)) {
+                    emailCheck.setText("Invalid email format!");
+                    emailField.setStyle("-fx-border-color: red");
+                }
+                else if (User.getUserByEmail(t1) != null) {
+                    emailCheck.setText("Email exists!");
+                    emailField.setStyle("-fx-border-color: red");
+                }
+                else {
+                    emailCheck.setText("");
+                    emailField.setStyle("-fx-border-color: lightgray");
+                }
+            }
+        }));
+    }
+
+    private void addNickNameListener() {
+        TextField nickNameField = (TextField) getSignupChild(12);
+        Text nickNameCheck = (Text) getSignupChild(13);
+        nickNameField.textProperty().addListener(((observableValue, s, t1) -> {
+            nickNameCheck.setText("");
+            nickNameField.setStyle("-fx-border-color: lightgray");
         }));
     }
 
@@ -201,70 +264,249 @@ public class LoginMenuGraphics extends Application {
     }
 
     public void emptyFields(GridPane gridPane) {
-        for(Node node : gridPane.getChildren()){
-            if(node instanceof TextField){
-                TextField textField = (TextField)node;
+        for (Node node : gridPane.getChildren()) {
+            if (node instanceof TextField) {
+                TextField textField = (TextField) node;
                 textField.setText("");
+                textField.setStyle("-fx-border-color: lightgray");
             }
-            if(node instanceof CheckBox){
+            if (node instanceof PasswordField) {
+                PasswordField passwordField = (PasswordField) node;
+                passwordField.setText("");
+                passwordField.setStyle("-fx-border-color: lightgray");
+            }
+            if (node instanceof CheckBox) {
                 CheckBox checkBox = (CheckBox) node;
                 checkBox.setSelected(false);
+            }
+            if (node instanceof Text) {
+                Text text = (Text) node;
+                text.setText("");
             }
         }
     }
 
 
     public void sloganCheckbox(MouseEvent mouseEvent) {
-        if(sloganBox.isSelected()) {
-            TextField textField = new TextField();
-            textField.setPromptText("Slogan");
-            Button button = new Button("Random slogan");
-            button.setAlignment(Pos.CENTER);
-            button.setScaleX(0.7);
-            button.setScaleY(0.7);
-            button.setPrefWidth(200);
-            GridPane.setRowIndex(signUpMenu.getChildren().get(13),11);
-            GridPane.setRowIndex(signUpMenu.getChildren().get(14),12);
-            signUpMenu.add(textField,0,9);
-            signUpMenu.add(button,0,10);
-            button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        if (sloganBox.isSelected()) {
+            showSlogan();
+            randomSloganButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent mouseEvent) {
-                    int i = new Random().nextInt(3)+1;
-                    int counter=1;
-                    for(Slogan slogan : Slogan.values()){
-                        if(counter==i)
-                            textField.setText(slogan.toString());
-                        counter++;
+                    sloganField.setText(Slogan.getRandomSlogan().toString());
                 }
-            }});
-        }
-        else {
-            signUpMenu.getChildren().remove(signUpMenu.getChildren().size()-1);
-            signUpMenu.getChildren().remove(signUpMenu.getChildren().size()-1);
-            GridPane.setRowIndex(signUpMenu.getChildren().get(13),9);
-            GridPane.setRowIndex(signUpMenu.getChildren().get(14),10);
+            });
+        } else {
+            hideSlogan();
         }
     }
-    public void resetCaptcha() {
+
+    private void hideSlogan() {
+        signUpMenu.getChildren().remove(sloganField);
+        signUpMenu.getChildren().remove(sloganCheck);
+        signUpMenu.getChildren().remove(randomSloganButton);
+        GridPane.setRowIndex(signUpMenu.getChildren().get(15), 9);
+        GridPane.setRowIndex(signUpMenu.getChildren().get(16), 10);
+        sloganField = null;
+    }
+
+    private void showSlogan () {
+        sloganField = new TextField();
+        sloganField.setPromptText("Slogan");
+        sloganCheck = new Text();
+        sloganCheck.setFill(Color.RED);
+        randomSloganButton = new Button("Random slogan");
+        randomSloganButton.setAlignment(Pos.CENTER);
+        randomSloganButton.setScaleX(0.7);
+        randomSloganButton.setScaleY(0.7);
+        randomSloganButton.setPrefWidth(200);
+        addSloganListener();
+        GridPane.setRowIndex(signUpMenu.getChildren().get(15), 11);
+        GridPane.setRowIndex(signUpMenu.getChildren().get(16), 12);
+        signUpMenu.add(sloganField, 0, 9);
+        signUpMenu.add(sloganCheck, 1,9);
+        signUpMenu.add(randomSloganButton, 0, 10);
+    }
+
+    private void addSloganListener() {
+        sloganField.textProperty().addListener(((observableValue, s, t1) -> {
+            sloganCheck.setText("");
+            sloganField.setStyle("-fx-border-color: lightgray");
+        }));
+    }
+
+    public void resetLoginCaptcha() {
+        VBox captcha = (VBox) getLoginChild(6);
+        HBox captchaBox = (HBox) captcha.getChildren().get(0);
+        ImageView captchaImage = (ImageView) captchaBox.getChildren().get(0);
         captchaImage.setImage(controller.generateCaptcha());
     }
 
-    public void initializeCaptcha() {
-        DropShadow borderGlow = new DropShadow();
-        borderGlow.setColor(Color.LIGHTBLUE);
-        borderGlow.setOffsetX(0f);
-        borderGlow.setOffsetY(0f);
-        borderGlow.setHeight(30);
+    public void resetSignupCaptcha() {
+        VBox captcha = (VBox) getRecoveryQuestionChild(5);
+        HBox captchaBox = (HBox) captcha.getChildren().get(0);
+        ImageView captchaImage = (ImageView) captchaBox.getChildren().get(0);
+        captchaImage.setImage(controller.generateCaptcha());
+    }
+
+    private void initializeCaptcha() {
+        VBox loginCaptcha = (VBox) getLoginChild(6);
+        HBox loginCaptchaBox = (HBox) loginCaptcha.getChildren().get(0);
+        VBox signupCaptcha = (VBox) getRecoveryQuestionChild(5);
+        HBox signupCaptchaBox = (HBox) signupCaptcha.getChildren().get(0);
+        setCaptcha(loginCaptchaBox);
+        setCaptcha(signupCaptchaBox);
+        resetLoginCaptcha();
+    }
+
+    private void setCaptcha(HBox captchaBox) {
         captchaBox.setStyle("-fx-background-color: white;");
-        captchaBox.setEffect(borderGlow);
+        captchaBox.setEffect(Controller.getBorderGlow(Color.LIGHTBLUE, 30));
         ImagePattern imagePattern = new ImagePattern(new Image(LoginMenuGraphics.class.getResource("/Images/refresh.png").toString(), 40, 40, false, false));
+        Rectangle refreshImage = (Rectangle) captchaBox.getChildren().get(1);
         refreshImage.setWidth(30);
         refreshImage.setHeight(30);
         refreshImage.setFill(imagePattern);
         refreshImage.setStyle("-fx-background-color: white;");
-        resetCaptcha();
     }
+
+    public void getInformation(MouseEvent mouseEvent) throws IOException, NoSuchAlgorithmException {
+        String username = ((TextField) signUpMenu.getChildren().get(0)).getText();
+        String password = ((TextField) signUpMenu.getChildren().get(2)).getText();
+        String passwordConfirm = ((TextField) signUpMenu.getChildren().get(3)).getText();
+        String email = ((TextField) signUpMenu.getChildren().get(10)).getText();
+        String nickname = ((TextField) signUpMenu.getChildren().get(12)).getText();
+        String slogan = (sloganField == null) ? null : sloganField.getText();
+        signupCheckForEmptyFields(username, password, passwordConfirm, email, nickname, slogan);
+        //if(controller.getInformation(username, password, passwordConfirm, email, nickname, slogan).equals(Messages.SUCCESS))
+        pickRecoveryQuestion();
+    }
+
+    private void signupCheckForEmptyFields(String username, String password, String passwordConfirm, String email, String nickname, String slogan) {
+        if (username.isBlank()) {
+            ((Text) getSignupChild(1)).setText("this field is empty!");
+            ((TextField) getSignupChild(0)).setStyle("-fx-border-color: red");
+        }
+        if (password.isBlank()) {
+            ((Text) getSignupChild(6)).setText("this field is empty!");
+            ((Text) getSignupChild(6)).setFill(Color.RED);
+            ((PasswordField) getSignupChild(2)).setStyle("-fx-border-color: red;");
+            ((TextField) getSignupChild(4)).setStyle("-fx-border-color: red;");
+        }
+        if (passwordConfirm.isBlank()) {
+            ((Text) getSignupChild(7)).setText("this field is empty!");
+            ((PasswordField) getSignupChild(3)).setStyle("-fx-border-color: red");
+            ((TextField) getSignupChild(5)).setStyle("-fx-border-color: red");
+        }
+        if (email.isBlank()) {
+            ((Text) getSignupChild(11)).setText("this field is empty!");
+            ((TextField) getSignupChild(10)).setStyle("-fx-border-color: red");
+        }
+        if (nickname.isBlank()) {
+            ((Text) getSignupChild(13)).setText("this field is empty!");
+            ((TextField) getSignupChild(12)).setStyle("-fx-border-color: red");
+        }
+        if (sloganField != null && slogan.isBlank()) {
+            sloganCheck.setText("this field is empty!");
+            sloganField.setStyle("-fx-border-color: red");
+        }
+    }
+    public void pickRecoveryQuestion() {
+        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, false, menuBox.getBoundsInParent().getCenterX(), 5, 4);
+        menuFadeTransition.play(); RadioButton r1 = new RadioButton("male");
+        recoveryQuestionMenu.add(slogans(), 0, 1);
+        addRecoveryAnswerListener();
+        addCaptchaListener();
+    }
+
+    private void addCaptchaListener() {
+        TextField captchaField = (TextField) ((HBox) ((VBox) getRecoveryQuestionChild(5)).getChildren().get(1)).getChildren().get(0);
+        Text captchaCheck = (Text) ((HBox) ((VBox) getRecoveryQuestionChild(5)).getChildren().get(1)).getChildren().get(1);
+        captchaField.textProperty().addListener(((observableValue, s, t1) -> {
+            captchaCheck.setText("");
+            captchaField.setStyle("-fx-border-color: lightgray");
+        }));
+
+    }
+
+    public void signUp(MouseEvent mouseEvent) {
+        System.out.println(recoveryQuestionMenu.getChildren().size());
+        //String recoveryQuestion = ((ComboBox)getRecoveryQuestionChild(7)).getValue().toString();
+        String recoveryAnswer = ((TextField) getRecoveryQuestionChild(1)).getText();
+        String recoveryAnswerConfirm = ((TextField) getRecoveryQuestionChild(2)).getText();
+        String captcha = ((TextField) ((HBox) ((VBox) getRecoveryQuestionChild(5)).getChildren().get(1)).getChildren().get(0)).getText();
+        recoveryQuestioncheckForEmptyFields(recoveryAnswer, recoveryAnswerConfirm, captcha);
+    }
+
+    private void recoveryQuestioncheckForEmptyFields(String recoveryAnswer, String recoveryAnswerConfirm, String captcha) {
+        if (recoveryAnswer.isBlank()) {
+            ((Text) getRecoveryQuestionChild(3)).setText("this field is empty!");
+            ((TextField) getRecoveryQuestionChild(1)).setStyle("-fx-border-color: red");
+        }
+        if (recoveryAnswerConfirm.isBlank()) {
+            ((Text) getRecoveryQuestionChild(4)).setText("this field is empty!");
+            ((TextField) getRecoveryQuestionChild(2)).setStyle("-fx-border-color: red");
+        }
+        if (captcha.isBlank()) {
+            ((Text) ((HBox) ((VBox) getRecoveryQuestionChild(5)).getChildren().get(1)).getChildren().get(1)).setText("this field is empty!");
+            ((TextField) ((HBox) ((VBox) getRecoveryQuestionChild(5)).getChildren().get(1)).getChildren().get(0)).setStyle("-fx-border-color: red");
+        }
+    }
+
+    private void addRecoveryAnswerListener() {
+        TextField answerField = (TextField) getRecoveryQuestionChild(1);
+        TextField answerConfirmField = (TextField) getRecoveryQuestionChild(2);
+        Text answerCheck = (Text) getRecoveryQuestionChild(3);
+        Text answerConfirmCheck = (Text) getRecoveryQuestionChild(4);
+        answerField.textProperty().addListener(((observableValue, s, t1) -> {
+            answerCheck.setText("");
+            answerField.setStyle("-fx-border-color: lightgray");
+            if (!answerConfirmField.getText().equals(t1)) {
+                answerConfirmCheck.setText("answer do not match!");
+                answerConfirmField.setStyle("-fx-border-color: red");
+            }
+            else {
+                answerConfirmCheck.setText("");
+                answerConfirmField.setStyle("-fx-border-color: lightgray");
+            }
+
+        }));
+        answerConfirmField.textProperty().addListener(((observableValue, s, t1) -> {
+            if (!answerField.getText().equals(t1)) {
+                answerConfirmCheck.setText("answer do not match!");
+                answerConfirmField.setStyle("-fx-border-color: red");
+            }
+            else {
+                answerConfirmCheck.setText("");
+                answerConfirmField.setStyle("-fx-border-color: lightgray");
+            }
+
+        }));
+    }
+
+    private ComboBox slogans() {
+        ComboBox comboBox = new ComboBox<>();
+        comboBox.getItems().clear();
+        for (RecoveryQuestion recoveryQuestion : RecoveryQuestion.values())
+            comboBox.getItems().add(recoveryQuestion.toString());
+        comboBox.setPromptText(RecoveryQuestion.values()[0].toString());
+        return comboBox;
+    }
+
+
+    private Node getSignupChild(int index) {
+        return signUpMenu.getChildren().get(index);
+    }
+
+    private Node getLoginChild(int index) {
+        return loginMenu.getChildren().get(index);
+    }
+
+    private Node getRecoveryQuestionChild(int index) {
+        return recoveryQuestionMenu.getChildren().get(index);
+    }
+
+
 
 
 //    public void createWindow(BorderPane borderPane) {

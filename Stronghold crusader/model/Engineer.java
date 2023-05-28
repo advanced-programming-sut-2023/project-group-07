@@ -27,8 +27,6 @@ public class Engineer extends Unit {
 
     @Override
     public void endTurn() {
-        // System.out.println("has oil : " + hasOil + " gonnabringOil " + gonnaBringOil
-        // +); // todo delete
         super.endTurn();
         if (gonnaBringOil) {
             if (movePattern == null) {
@@ -55,7 +53,7 @@ public class Engineer extends Unit {
         ArrayList<Unit> opponentsUnits = Controller.getNearOpponentsUnits(x, y, range(), owner);
         if ((opponentsUnits.size() >= 3 && unitStance.equals(DEFENSIVE)) ||
                 (opponentsUnits.size() >= 1 && unitStance.equals(OFFENSIVE))) {
-            pourOil(Directions.NORTH); // todo: chose a better direction.
+            pourOil(Directions.NORTH); // todo: choose a better direction.
             Controller.sendToOilSmelter(this);
         }
     }
