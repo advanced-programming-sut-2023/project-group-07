@@ -25,9 +25,9 @@ public class LoginMenu {
         Controller.menuPrinter.print("LOGIN/REGISTER MENU", Colors.BLUE_BACKGROUND, 25, 1);
         while (true) {
             String input = scanner.nextLine();
-            if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.CREATE_USER) != null && createUserFormat(input))
-                System.out.println(createUser(input));
-            else if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.USER_LOGIN) != null) {
+//            if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.CREATE_USER) != null && createUserFormat(input))
+//                System.out.println(createUser(input));
+            if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.USER_LOGIN) != null) {
                 String login = userLogin(input);
                 System.out.println(login);
                 if (login.equals("Login successful!")) {
@@ -41,56 +41,56 @@ public class LoginMenu {
         }
     }
 
-    private String createUser(String input) throws IOException, NoSuchAlgorithmException {
-        String username = extractUsername(input);
-        String password = extractPassword(input);
-        String passwordConfirm = extractPasswordConfirm(input);
-        String nickname = extractNickname(input);
-        String email = extractEmail(input);
-        String slogan = extractSlogan(input);
-        if (slogan == null)
-            return "there's an empty field!";
-
-        switch (controller.signUp(username, password, passwordConfirm, email, slogan, nickname)) {
-            case EMPTY_FIELD:
-                return "There's is an empty field!";
-            case INVALID_USERNAME:
-                return "Invalid username format!";
-            case SIGNUP_FAILED:
-                return "Signup failed!";
-            case PASSWORD_NOT_CONFIRMED:
-                return "Passwords do not match!";
-            case WEAK_PASSWORD_LENGTH:
-                return "Password length must be at least 6 characters long!";
-            case WEAK_PASSWORD_CHARACTERS:
-                String upper = "1. At least one upper case letter.";
-                String lower = "2. At least one lower case letter.";
-                String digit = "3. At least one digit.";
-                String nonWord = "4. At least one non-letter and non-digit character.";
-                return "Your password must contain the following characters:\n"
-                        + upper + "\n"
-                        + lower + "\n"
-                        + digit + "\n"
-                        + nonWord;
-            case EMAIL_EXISTS:
-                return "There's already a user with this email address!";
-            case INVALID_EMAIL_FORMAT:
-                return "Incorrect email format!";
-            case INVALID_QUESTION_NUMBER:
-                return "Invalid question number!";
-            case ANSWER_NOT_CONFIRMED:
-                return "Answers do not match!";
-            case SIGNUP_SUCCESSFUL:
-                return "Signup successful!";
-            case EXIT_CAPTCHA:
-                return "Signup cancelled!";
-            case INVALID_COMMAND:
-                return "Invalid command!";
-            default:
-                break;
-        }
-        return null;
-    }
+//    private String createUser(String input) throws IOException, NoSuchAlgorithmException {
+//        String username = extractUsername(input);
+//        String password = extractPassword(input);
+//        String passwordConfirm = extractPasswordConfirm(input);
+//        String nickname = extractNickname(input);
+//        String email = extractEmail(input);
+//        String slogan = extractSlogan(input);
+//        if (slogan == null)
+//            return "there's an empty field!";
+//
+//        switch (controller.signUp(username, password, passwordConfirm, email, slogan, nickname)) {
+//            case EMPTY_FIELD:
+//                return "There's is an empty field!";
+//            case INVALID_USERNAME:
+//                return "Invalid username format!";
+//            case SIGNUP_FAILED:
+//                return "Signup failed!";
+//            case PASSWORD_NOT_CONFIRMED:
+//                return "Passwords do not match!";
+//            case WEAK_PASSWORD_LENGTH:
+//                return "Password length must be at least 6 characters long!";
+//            case WEAK_PASSWORD_CHARACTERS:
+//                String upper = "1. At least one upper case letter.";
+//                String lower = "2. At least one lower case letter.";
+//                String digit = "3. At least one digit.";
+//                String nonWord = "4. At least one non-letter and non-digit character.";
+//                return "Your password must contain the following characters:\n"
+//                        + upper + "\n"
+//                        + lower + "\n"
+//                        + digit + "\n"
+//                        + nonWord;
+//            case EMAIL_EXISTS:
+//                return "There's already a user with this email address!";
+//            case INVALID_EMAIL_FORMAT:
+//                return "Incorrect email format!";
+//            case INVALID_QUESTION_NUMBER:
+//                return "Invalid question number!";
+//            case ANSWER_NOT_CONFIRMED:
+//                return "Answers do not match!";
+//            case SIGNUP_SUCCESSFUL:
+//                return "Signup successful!";
+//            case EXIT_CAPTCHA:
+//                return "Signup cancelled!";
+//            case INVALID_COMMAND:
+//                return "Invalid command!";
+//            default:
+//                break;
+//        }
+//        return null;
+//    }
 
     private String extractUsername(String input) {
         Matcher usernameMatcher = LoginMenuCommands.getMatcher(input, LoginMenuCommands.USERNAME);

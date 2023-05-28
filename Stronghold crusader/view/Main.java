@@ -39,7 +39,6 @@ public class Main extends Application {
         stage.getIcons().add(img);
         stage.setFullScreen(true);
         Main.stage = stage;
-//        new LoginMenuGraphics().start(stage); // todo
-        new ProfileMenuGraphics().start(stage); //todo
+        new LoginMenuGraphics().start(stage);
     }
 }

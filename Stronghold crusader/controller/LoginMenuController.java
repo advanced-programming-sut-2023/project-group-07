@@ -4,24 +4,17 @@ import java.util.regex.Pattern;
 import com.google.gson.*;
 import javafx.scene.image.Image;
 import model.User;
-import model.Slogan;
 import view.LoginMenu;
-import controller.Controller;
 import model.RecoveryQuestion;
 
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Random;
-import java.util.Scanner;
 import java.util.Collections;
-import java.util.Arrays;
 import java.util.ArrayList;
 
 public class LoginMenuController {
-    String answer;
-    RecoveryQuestion recoveryQuestion;
+    private User.Information information;
     private int currentCaptcha;
 
     public String usernameExistenceCheck(String username) {
@@ -82,26 +75,14 @@ public class LoginMenuController {
         return false;
     }
 
-    public Messages signUp(String username, String password, String passwordConfirm, String email, String slogan,
-            String nickname) throws IOException, NoSuchAlgorithmException {
-        if (password.length() == 0 || nickname.length() == 0 || username.length() == 0 || email.length() == 0)
+    public Messages getInformation(String username, String password, String passwordConfirm, String email, String nickname,
+                                   String slogan) throws NoSuchAlgorithmException {
+        if (password.isBlank() || nickname.isBlank() || username.isBlank() || email.isBlank() || (slogan != null && slogan.isBlank()))
             return Messages.EMPTY_FIELD;
         else if (!User.isUsernameValid(username))
             return Messages.INVALID_USERNAME;
-        else if (usernameExistenceCheck(username) != null) {
-            if (LoginMenu.doYouWantSuggestedUsername(usernameExistenceCheck(username)))
-                username = usernameExistenceCheck(username);
-            else
-                return Messages.SIGNUP_FAILED;
-        } else if (password.equals("random")) {
-            String randomPassword = randomPasswordGenerator();
-            String newPassword = LoginMenu.confirmeRandomPassword(randomPassword);
-            if (newPassword.equals(randomPassword)) {
-                password = randomPassword;
-                passwordConfirm = randomPassword;
-            } else
-                return Messages.PASSWORD_NOT_CONFIRMED;
-        }
+        else if (usernameExistenceCheck(username) != null)
+            return Messages.USERNAME_EXISTS;
         if (!User.isPasswordStrong(password).equals(Messages.STRONG_PASSWORD))
             return User.isPasswordStrong(password);
         if (!password.equals(passwordConfirm))
@@ -110,61 +91,15 @@ public class LoginMenuController {
             return Messages.EMAIL_EXISTS;
         if (!User.isEmailValid(email))
             return Messages.INVALID_EMAIL_FORMAT;
-        else {
-            if (slogan.equals("random")) {
-                slogan = (Slogan.values()[Controller.randomNumber(Slogan.values().length)]).toString();
-                LoginMenu.showRandomSlogan(slogan);
-            }
-            System.out.println("Pick your security question:" +
-                    "\n1. " + RecoveryQuestion.FATHERNAME +
-                    "\n2. " + RecoveryQuestion.MOTHERNAME +
-                    "\n3. " + RecoveryQuestion.PETNAME);
-            Messages recoveryAnswer = recoveryQuestion();
-            if (!recoveryAnswer.equals(Messages.ANSWER_ACCEPTED))
-                return recoveryAnswer;
-        }
-        if (!LoginMenu.checkCaptcha())
-            return Messages.EXIT_CAPTCHA;
         password = Controller.toSHA256(password);
-        User user = new User(username, password, email, nickname, slogan, recoveryQuestion, answer);
-        User.addUser(user);
-        return Messages.SIGNUP_SUCCESSFUL;
+        information = new User.Information(username, password, email, nickname, slogan);
+        return Messages.SUCCESS;
     }
 
-    private Messages recoveryQuestion() {
-        String questionInput = LoginMenu.pickRecoveryQuestion();
-        if (LoginMenuCommands.getMatcher(questionInput, LoginMenuCommands.QUESTION_NUMBER)
-                .group("questionNumber") == null ||
-                LoginMenuCommands.getMatcher(questionInput, LoginMenuCommands.ANSWER).group("answer") == null ||
-                LoginMenuCommands.getMatcher(questionInput, LoginMenuCommands.ANSWER_CONFIRM)
-                        .group("answerConfirm") == null)
-            return Messages.INVALID_COMMAND;
-        int questionNumber = Integer.parseInt(
-                LoginMenuCommands.getMatcher(questionInput, LoginMenuCommands.QUESTION_NUMBER).group("questionNumber"));
-        String answer = LoginMenuCommands.getMatcher(questionInput, LoginMenuCommands.ANSWER).group("answer");
-        String answerConfirm = LoginMenuCommands.getMatcher(questionInput, LoginMenuCommands.ANSWER_CONFIRM)
-                .group("answerConfirm");
-        answer = Controller.trimmer(answer);
-        answerConfirm = Controller.trimmer(answerConfirm);
-        if (questionNumber > 3)
-            return Messages.INVALID_QUESTION_NUMBER;
-        else if (!answer.equals(answerConfirm))
-            return Messages.ANSWER_NOT_CONFIRMED;
-        else {
-            switch (questionNumber) {
-                case 1:
-                    recoveryQuestion = RecoveryQuestion.FATHERNAME;
-                    break;
-                case 2:
-                    recoveryQuestion = RecoveryQuestion.MOTHERNAME;
-                    break;
-                case 3:
-                    recoveryQuestion = RecoveryQuestion.PETNAME;
-                    break;
-            }
-            this.answer = answer;
-            return Messages.ANSWER_ACCEPTED;
-        }
+    public Messages signUp(RecoveryQuestion recoveryQuestion, String recoveryAnswer, String recoveryAnswerConfirm) throws IOException, NoSuchAlgorithmException {
+        User user = new User(information, recoveryQuestion, recoveryAnswer);
+        User.addUser(user);
+        return Messages.SUCCESS;
     }
 
     public Messages login(String username, String password, boolean stayLoggedIn)
@@ -214,5 +149,9 @@ public class LoginMenuController {
         Image image = new Image(LoginMenuController.class.getResource("/Images/Captcha/" + String.valueOf(captcha) + ".png").toString());
         currentCaptcha = captcha;
         return image;
+    }
+
+    public int getCurrentCaptcha() {
+        return currentCaptcha;
     }
 }
