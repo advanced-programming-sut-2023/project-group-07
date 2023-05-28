@@ -1,19 +1,23 @@
 package controller;
 
-import java.io.File;
+import java.awt.*;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.*;
+import java.util.List;
 import java.util.regex.Matcher;
 
+import javafx.scene.control.Alert;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.paint.Color;
 import model.*;
 import model.Map;
 import view.MenuPrinter;
 
 public class Controller {
-    public static User currentUser = User.getUsers().get(0); // todo remove initializer
+    public static User currentUser;
     public static Game currentGame;
     public static final MenuPrinter menuPrinter = new MenuPrinter();
     private static Random random;
@@ -222,19 +226,26 @@ public class Controller {
         currentGame.releaseDogs(numberOfDogs, x, y, currentGame.getCurrentGovernment());
     }
 
-    public static String giveARandomAvatar() {
-        try {
-            String avatarFolderAddress =
-                    Objects.requireNonNull(Controller.class.getResource("/Images/Avatars")).getPath();
-            File avatarFolder = new File(avatarFolderAddress);
-            File[] files = avatarFolder.listFiles();
-            ArrayList<String> defaultAvatarsNames = new ArrayList<>();
-            for (File file : files) {
-                if (file.getName().matches("\\d+\\.[^.]+")) defaultAvatarsNames.add(file.getName()); //default avatars names contains just number
-            }
-            return defaultAvatarsNames.get(randomNumber(defaultAvatarsNames.size()));
-        } catch (Exception e) {
-            return null;
-        }
+    public static DropShadow getBorderGlow(Color color, double height) {
+        DropShadow borderGlow = new DropShadow();
+        borderGlow.setColor(color);
+        borderGlow.setOffsetX(0f);
+        borderGlow.setOffsetY(0f);
+        borderGlow.setHeight(30);
+        return borderGlow;
+    }
+
+    public static Alert information(String headerText, String contentText) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText(headerText);
+        alert.setContentText(contentText);
+        return alert;
+    }
+
+    public static Alert error(String headerText, String contentText){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setHeaderText(headerText);
+        alert.setContentText(contentText);
+        return alert;
     }
 }

@@ -14,8 +14,7 @@ public class ProfileMenuController {
     }
 
     public Messages changeUsername(String username) throws IOException, NoSuchAlgorithmException {
-        if (username.equals(currentUser.getUsername())) return Messages.NEW_USERNAME_IS_CURRNET_USERNAME;
-        else if (!User.isUsernameValid(username))
+        if (!User.isUsernameValid(username))
             return Messages.INVALID_USERNAME;
         else if (User.getUserByUsername(username) != null)
             return Messages.USERNAME_EXISTS;
@@ -41,8 +40,7 @@ public class ProfileMenuController {
     }
 
     public Messages changeEmail(String email) throws IOException, NoSuchAlgorithmException {
-        if (email.equals(currentUser.getEmail())) return Messages.NEW_EMAIL_IS_CURRENT_EMAIL;
-        else if (User.getUserByEmail(email) != null)
+        if (User.getUserByEmail(email) != null)
             return Messages.EMAIL_EXISTS;
         else if (!User.isEmailValid(email))
             return Messages.INVALID_EMAIL_FORMAT;
@@ -73,20 +71,8 @@ public class ProfileMenuController {
         return this.currentUser.getSlogan();
     }
 
-    public String getUsername() {
-        return this.currentUser.getUsername();
-    }
-
-    public String getEmail() {
-        return this.currentUser.getEmail();
-    }
-
-    public String getNickname() {
-        return this.currentUser.getNickname();
-    }
-
     public String[] getInfo() {
-        String[] info = new String[]{
+        String[] info = new String[] {
                 this.currentUser.getUsername(),
                 this.currentUser.getNickname(),
                 this.currentUser.getEmail(),
@@ -97,16 +83,4 @@ public class ProfileMenuController {
         return info;
     }
 
-    public String getAvatarName() {
-        return currentUser.avatarName();
-    }
-
-    public boolean doesUsernameExist(String username) {
-        return !currentUser.getUsername().equals(username) && (User.getUserByUsername(username) != null) ;
-    }
-
-    public boolean doesEmailExist(String email) {
-        return !currentUser.getUsername().equals(email) && (User.getUserByUsername(email) != null) ;
-
-    }
 }
