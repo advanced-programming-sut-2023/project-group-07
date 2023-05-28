@@ -8,8 +8,6 @@ import java.util.regex.Matcher;
 
 import controller.*;
 
-import model.Government;
-import model.Map;
 import model.Resources;
 
 public class GameMenu {
@@ -155,7 +153,7 @@ public class GameMenu {
                 return "You don't have oil smelter.";
             case NO_ONE_TO_GIVE_OIL_TO:
                 return "None of selected units can get oil.";
-            case GIVING_OIL_SUCESSFUL:
+            case GIVING_OIL_SUCCESSFUL:
                 return "Engineers will get oil";
             default:
                 break;

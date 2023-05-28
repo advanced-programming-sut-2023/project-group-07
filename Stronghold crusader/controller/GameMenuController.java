@@ -671,7 +671,7 @@ public class GameMenuController {
         for (Engineer engineer : getterEngineers) {
             sendToOilSmelter(engineer);
         }
-        return Messages.GIVING_OIL_SUCESSFUL;
+        return Messages.GIVING_OIL_SUCCESSFUL;
     }
 
     public Messages digTunnel(int x, int y) {

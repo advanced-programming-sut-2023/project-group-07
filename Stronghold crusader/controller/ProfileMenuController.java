@@ -1,6 +1,5 @@
 package controller;
 
-import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
@@ -14,7 +13,7 @@ public class ProfileMenuController {
     }
 
     public Messages changeUsername(String username) throws IOException, NoSuchAlgorithmException {
-        if (username.equals(currentUser.getUsername())) return Messages.NEW_USERNAME_IS_CURRNET_USERNAME;
+        if (username.equals(currentUser.getUsername())) return Messages.NEW_USERNAME_IS_CURRENT_USERNAME;
         else if (!User.isUsernameValid(username))
             return Messages.INVALID_USERNAME;
         else if (User.getUserByUsername(username) != null)
@@ -34,10 +33,23 @@ public class ProfileMenuController {
         User.updateUsers();
         return Messages.CHANGE_PASSWORD_SUCCESSFUL;
     }
+    public Messages changePassword(String oldPassword, String newPassword ,String confirmation)
+            throws IOException, NoSuchAlgorithmException {
+        if (!newPassword.equals(confirmation)) return Messages.PASSWORD_NOT_CONFIRMED;
+        else if (!currentUser.checkPassword(oldPassword))
+            return Messages.INCORRECT_PASSWORD;
+        else if (!User.isPasswordStrong(newPassword).equals(Messages.STRONG_PASSWORD))
+            return User.isPasswordStrong(newPassword);
+        this.currentUser.setNewPassword(newPassword);
+        User.updateUsers();
+        return Messages.CHANGE_PASSWORD_SUCCESSFUL;
+    }
 
-    public void changeNickname(String nickName) throws IOException, NoSuchAlgorithmException {
+    public Messages changeNickname(String nickName) throws IOException, NoSuchAlgorithmException {
+        if (nickName.isEmpty()) return Messages.EMPTY_FIELD;
         this.currentUser.setNewNickname(Controller.trimmer(nickName));
         User.updateUsers();
+        return Messages.CHANGE_NICKNAME_SUCCESSFUL;
     }
 
     public Messages changeEmail(String email) throws IOException, NoSuchAlgorithmException {
@@ -106,7 +118,7 @@ public class ProfileMenuController {
     }
 
     public boolean doesEmailExist(String email) {
-        return !currentUser.getUsername().equals(email) && (User.getUserByUsername(email) != null) ;
+        return !currentUser.getEmail().equals(email) && (User.getUserByEmail(email) != null) ;
 
     }
 }

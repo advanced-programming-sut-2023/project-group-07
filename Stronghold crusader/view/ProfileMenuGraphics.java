@@ -1,6 +1,5 @@
 package view;
 
-import controller.LoginMenuController;
 import controller.ProfileMenuController;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -13,7 +12,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
@@ -22,9 +20,6 @@ import model.User;
 import java.io.IOException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
-import java.util.Objects;
-
-import static controller.Messages.CHANGE_USERNAME_SUCCESSFUL;
 
 public class ProfileMenuGraphics extends Application {
     private final ProfileMenuController controller = new ProfileMenuController();
@@ -45,12 +40,18 @@ public class ProfileMenuGraphics extends Application {
     @FXML
     private TextField confirmationTextField;
     @FXML
+    private TextField oldPasswordTextField;
+    @FXML
     private TextField textFieldToShowPassword;
     @FXML
     private TextField textFieldToShowConfirmation;
+    @FXML
+    private TextField textFieldToShowOldPassword;
 
     @FXML
     private Label confirmationText;
+    @FXML
+    private Label oldPasswordText;
     @FXML
     private Label usernameWarningLabel;
     @FXML
@@ -161,6 +162,12 @@ public class ProfileMenuGraphics extends Application {
                 }
             }
         });
+        textFieldToShowPassword.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String old, String newPassword) {
+                passwordTextField.setText(newPassword);
+            }
+        });
         confirmationTextField.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observableValue, String old, String confirmation) {
@@ -179,10 +186,16 @@ public class ProfileMenuGraphics extends Application {
                 confirmationTextField.setText(confirmation);
             }
         });
-        textFieldToShowPassword.textProperty().addListener(new ChangeListener<String>() {
+        textFieldToShowOldPassword.textProperty().addListener(new ChangeListener<String>() {
             @Override
-            public void changed(ObservableValue<? extends String> observableValue, String old, String newPassword) {
-                passwordTextField.setText(newPassword);
+            public void changed(ObservableValue<? extends String> observableValue, String oldText, String oldPassword) {
+                oldPasswordTextField.setText(oldPassword);
+            }
+        });
+        oldPasswordTextField.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String oldText, String oldPassword) {
+                textFieldToShowOldPassword.setText(oldPassword);
             }
         });
     }
@@ -252,8 +265,11 @@ public class ProfileMenuGraphics extends Application {
         passwordTextField.setDisable(true);
         confirmationTextField.setText("");
         confirmationTextField.setVisible(false);
+        oldPasswordTextField.setText("");
+        oldPasswordTextField.setVisible(false);
         textFieldToShowPassword.setVisible(false);
         textFieldToShowConfirmation.setVisible(false);
+        textFieldToShowOldPassword.setVisible(false);
     }
 
     private void resetCheckBoxes() {
@@ -262,6 +278,7 @@ public class ProfileMenuGraphics extends Application {
 
     private void resetLabels() {
         confirmationText.setVisible(false);
+        oldPasswordText.setVisible(false);
         nicknameWarningLabel.setText("");
         passwordWarningLabel.setText("");
         confirmationWarningLabel.setText("");
@@ -309,10 +326,12 @@ public class ProfileMenuGraphics extends Application {
         passwordTextField.setVisible(true);
         submitPassword.setVisible(true);
         confirmationTextField.setVisible(true);
+        oldPasswordTextField.setVisible(true);
         showPasswordCheckBox.setVisible(true);
         showPasswordCheckBox.setSelected(false);
         confirmationText.setVisible(true);
         confirmationWarningLabel.setVisible(true);
+        oldPasswordText.setVisible(true);
     }
 
 
@@ -330,7 +349,7 @@ public class ProfileMenuGraphics extends Application {
             case INVALID_USERNAME:
                 alert.setHeaderText("username format is invalid");
                 break;
-            case NEW_USERNAME_IS_CURRNET_USERNAME:
+            case NEW_USERNAME_IS_CURRENT_USERNAME:
                 resetFields();
                 return;
         }
@@ -371,14 +390,47 @@ public class ProfileMenuGraphics extends Application {
 
     }
 
-    public void submitNickname(MouseEvent mouseEvent) {
-        // TODO: 5/28/2023
+    public void submitNickname(MouseEvent mouseEvent) throws IOException, NoSuchAlgorithmException {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("changing nickname");
+        switch (controller.changeNickname(nicknameTextField.getText())){
+            case EMPTY_FIELD:
+                alert.setHeaderText("enter nickname");
+                break;
+            case CHANGE_NICKNAME_SUCCESSFUL:
+                alert.setAlertType(Alert.AlertType.INFORMATION);
+                alert.setHeaderText("changing was successful");
+                break;
+        }
+        alert.showAndWait();
+        resetFields();
     }
 
 
     @FXML
-    private void submitPassword(MouseEvent mouseEvent) {
-        // TODO: 5/28/2023
+    private void submitPassword(MouseEvent mouseEvent) throws IOException, NoSuchAlgorithmException {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("changing password");
+        switch (controller.changePassword(oldPasswordTextField.getText(),
+                passwordTextField.getText(),
+                confirmationTextField.getText())){
+            case INCORRECT_PASSWORD:
+                alert.setHeaderText("old password is wrong!");
+                break;
+            case PASSWORD_NOT_CONFIRMED:
+                alert.setHeaderText("passwords are not the same!");
+                break;
+            case CHANGE_PASSWORD_SUCCESSFUL:
+                alert.setAlertType(Alert.AlertType.INFORMATION);
+                alert.setHeaderText("changing was successful!");
+                break;
+            case MODERATE_PASSWORD:
+            case WEAK_PASSWORD:
+                alert.setHeaderText("password is not the strong!");
+                break;
+        }
+        alert.showAndWait();
+        resetFields();
     }
 
 
@@ -387,16 +439,19 @@ public class ProfileMenuGraphics extends Application {
         if (showPasswordCheckBox.isSelected()) {
             textFieldToShowPassword.setVisible(true);
             passwordTextField.setVisible(false);
-
             textFieldToShowConfirmation.setVisible(true);
             confirmationTextField.setVisible(false);
+            textFieldToShowOldPassword.setVisible(true);
+            oldPasswordTextField.setVisible(false);
         } else {
             textFieldToShowPassword.setVisible(false);
             passwordTextField.setVisible(true);
-
             textFieldToShowConfirmation.setVisible(false);
             confirmationTextField.setVisible(true);
+            textFieldToShowOldPassword.setVisible(false);
+            oldPasswordTextField.setVisible(true);
         }
     }
     // TODO: 5/28/2023 changing avatar is not handled
+    // TODO: 5/28/2023 captcha
 }
