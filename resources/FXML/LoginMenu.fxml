@@ -15,21 +15,22 @@
       stylesheets="@../CSS/SignUp.css"
       prefWidth="1280" prefHeight="720">
     <HBox fx:id="menuBox" alignment="CENTER" spacing="200">
-        <GridPane visible="false" alignment="CENTER_LEFT" vgap="40" prefWidth="350">
+        <GridPane visible="false" alignment="CENTER_LEFT" vgap="40" prefWidth="350" fx:id="enteringNewPassword">
             <Label GridPane.rowIndex="0" text="Please enter new password"/>
             <PasswordField GridPane.rowIndex="1" promptText="Password"/>
             <PasswordField GridPane.rowIndex="2" promptText="Confirm password"/>
             <TextField visible="false" GridPane.rowIndex="1" promptText="Password"/>
             <TextField visible="false" GridPane.rowIndex="2" promptText="Confirm password"/>
-            <Text text="FFF" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-            <CheckBox text="Show/Hide password" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+            <Text fill="red" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <Text fill="red" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+            <CheckBox text="Show/Hide password" GridPane.rowIndex="3" GridPane.columnIndex="0" fx:id="showHideNewPassword"/>
             <Button GridPane.rowIndex="4" alignment="CENTER" text="Submit" prefWidth="200" onMouseClicked="#passwordChange"/>
             <Button GridPane.rowIndex="5" alignment="CENTER" text="Back" prefWidth="200" onMouseClicked="#backToForgetPassword"/>
         </GridPane>
         <GridPane visible="false" alignment="CENTER_LEFT" vgap="40" prefWidth="350" fx:id="forgetPassword">
             <Label GridPane.rowIndex="0" text="Enter your username"/>
             <TextField GridPane.rowIndex="1" promptText="Username"/>
-            <Text text="FFF" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <Text fill="red" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
             <Button GridPane.rowIndex="2" alignment="CENTER" text="Next" prefWidth="200" onMouseClicked="#enteringNewPassword"/>
             <Button GridPane.rowIndex="3" alignment="CENTER" text="Back" prefWidth="200" onMouseClicked="#backToLogin"/>
         </GridPane>
@@ -48,7 +49,7 @@
                 <TextField promptText="captcha" prefWidth="120"/>
             </VBox>
             <CheckBox text="Stay logged in" GridPane.rowIndex="5" />
-            <Button GridPane.rowIndex="6" alignment="CENTER" text="Login" prefWidth="200"/>
+            <Button GridPane.rowIndex="6" alignment="CENTER" text="Login" prefWidth="200" onMouseClicked="#login"/>
             <Button GridPane.rowIndex="7" alignment="CENTER" text="Forgot my password" onMouseClicked="#forgotMyPassword" prefWidth="200"/>
             <Button GridPane.rowIndex="8" alignment="CENTER" text="Back" onMouseClicked="#loginBack" prefWidth="200"/>
             <Text visible="false" GridPane.rowIndex="0" GridPane.columnIndex="0" fx:id="loginError"/>

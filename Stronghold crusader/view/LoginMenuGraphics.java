@@ -1,8 +1,8 @@
 package view;
 
 import controller.LoginMenuController;
-import controller.Messages;
 import controller.Controller;
+import controller.Messages;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -28,8 +28,6 @@ import model.User;
 import java.io.IOException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class LoginMenuGraphics extends Application {
 
@@ -39,6 +37,8 @@ public class LoginMenuGraphics extends Application {
     public GridPane loginMenu;
     public GridPane signUpMenu;
     public GridPane recoveryQuestionMenu;
+    public GridPane forgetPassword;
+    public GridPane enteringNewPassword;
     public CheckBox showHideSignUp;
     public CheckBox showHideLogin;
     public Text loginError;
@@ -47,7 +47,7 @@ public class LoginMenuGraphics extends Application {
     public Text sloganCheck;
     public Button randomSloganButton;
     public TextField sloganField;
-    public GridPane forgetPassword;
+    public CheckBox showHideNewPassword;
 
 
     private Pane rootPane;
@@ -84,33 +84,35 @@ public class LoginMenuGraphics extends Application {
     public void initialize() {
         addUsernameListener();
         passwordVisibilityToggle();
-        addPasswordListener();
+        addSignUpPasswordListener();
+        addNewPasswordListener();
         addEmailListener();
         addNickNameListener();
         initializeCaptcha();
+        addForgetPasswordUsernameListener();
     }
 
 
 
     public void forgotMyPassword(MouseEvent mouseEvent) {
-        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, true, menuBox.getBoundsInParent().getCenterX(), 1, 2);
+        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, true, menuBox.getBoundsInParent().getCenterX(), 1, 2, 1);
         menuFadeTransition.play();
     }
 
     public void loginMenu(MouseEvent mouseEvent) throws Exception {
-        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, true, menuBox.getBoundsInParent().getCenterX(), 2, 3);
+        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, true, menuBox.getBoundsInParent().getCenterX(), 2, 3, 1);
         menuFadeTransition.play();
         resetLoginCaptcha();
     }
 
     public void signUpMenu(MouseEvent mouseEvent) throws Exception {
-        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, false, menuBox.getBoundsInParent().getCenterX(), 4, 3);
+        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, false, menuBox.getBoundsInParent().getCenterX(), 4, 3, 1);
         menuFadeTransition.play();
         resetSignupCaptcha();
     }
 
     public void signUpBack(MouseEvent mouseEvent) {
-        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, true, menuBox.getBoundsInParent().getCenterX(), 3, 4);
+        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, true, menuBox.getBoundsInParent().getCenterX(), 3, 4, 1);
         menuFadeTransition.play();
         emptyFields(signUpMenu);
         if (signUpMenu.getChildren().contains(sloganField))
@@ -118,7 +120,7 @@ public class LoginMenuGraphics extends Application {
     }
 
     public void loginBack(MouseEvent mouseEvent) {
-        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, false, menuBox.getBoundsInParent().getCenterX(), 3, 2);
+        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, false, menuBox.getBoundsInParent().getCenterX(), 3, 2, 1);
         menuFadeTransition.play();
         emptyFields(loginMenu);
     }
@@ -158,6 +160,8 @@ public class LoginMenuGraphics extends Application {
         passwordFieldBinding((PasswordField) getLoginChild(2), (TextField) getLoginChild(3), showHideLogin);
         passwordFieldBinding((PasswordField) getSignupChild(2), (TextField) getSignupChild(4), showHideSignUp);
         passwordFieldBinding((PasswordField) getSignupChild(3), (TextField) getSignupChild(5), showHideSignUp);
+        passwordFieldBinding((PasswordField)getEnteringNewPasswordChild(1),(TextField)getEnteringNewPasswordChild(3),showHideNewPassword);
+        passwordFieldBinding((PasswordField)getEnteringNewPasswordChild(2),(TextField)getEnteringNewPasswordChild(4),showHideNewPassword);
     }
 
     private void passwordFieldBinding(PasswordField passwordField, TextField textField, CheckBox checkBox) {
@@ -168,13 +172,8 @@ public class LoginMenuGraphics extends Application {
         textField.textProperty().bindBidirectional(passwordField.textProperty());
     }
 
-    private void addPasswordListener() {
-        PasswordField passwordFieldSignUp = (PasswordField) getSignupChild(2);
-        PasswordField passwordConfirmFieldSignUp = (PasswordField) getSignupChild(3);
-        TextField passwordTextFieldSignup = (TextField) getSignupChild(4);
-        TextField passwordConfirmTextFieldSignup = (TextField) getSignupChild(5);
-        Text passwordSignUpCheck = (Text) getSignupChild(6);
-        Text passwordConfirmSignUpCheck = (Text) getSignupChild(7);
+    private void addPasswordListener(PasswordField passwordFieldSignUp,PasswordField passwordConfirmFieldSignUp,TextField passwordTextFieldSignup,
+                                     TextField passwordConfirmTextFieldSignup,Text passwordSignUpCheck,Text passwordConfirmSignUpCheck) {
         passwordFieldSignUp.textProperty().addListener(((observableValue, s, t1) -> {
             if (t1.isEmpty()) {
                 passwordSignUpCheck.setText("");
@@ -227,6 +226,25 @@ public class LoginMenuGraphics extends Application {
         }));
     }
 
+    private void addSignUpPasswordListener() {
+        PasswordField passwordFieldSignUp = (PasswordField) getSignupChild(2);
+        PasswordField passwordConfirmFieldSignUp = (PasswordField) getSignupChild(3);
+        TextField passwordTextFieldSignup = (TextField) getSignupChild(4);
+        TextField passwordConfirmTextFieldSignup = (TextField) getSignupChild(5);
+        Text passwordSignUpCheck = (Text) getSignupChild(6);
+        Text passwordConfirmSignUpCheck = (Text) getSignupChild(7);
+        addPasswordListener(passwordFieldSignUp,passwordConfirmFieldSignUp,passwordTextFieldSignup,passwordConfirmTextFieldSignup,passwordSignUpCheck,passwordConfirmSignUpCheck);
+    }
+
+    private void addNewPasswordListener() {
+        PasswordField passwordField = (PasswordField) getEnteringNewPasswordChild(1);
+        PasswordField passwordConfirmField = (PasswordField) getEnteringNewPasswordChild(2);
+        TextField passwordTextField = (TextField) getEnteringNewPasswordChild(3);
+        TextField passwordConfirmTextField = (TextField) getEnteringNewPasswordChild(4);
+        Text passwordCheck = (Text) getEnteringNewPasswordChild(5);
+        Text passwordConfirmCheck = (Text) getEnteringNewPasswordChild(6);
+        addPasswordListener(passwordField,passwordConfirmField,passwordTextField,passwordConfirmTextField,passwordCheck,passwordConfirmCheck);
+    }
     private void addEmailListener() {
         TextField emailField = (TextField) getSignupChild(10);
         Text emailCheck = (Text) getSignupChild(11);
@@ -417,7 +435,7 @@ public class LoginMenuGraphics extends Application {
         }
     }
     public void pickRecoveryQuestion() {
-        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, false, menuBox.getBoundsInParent().getCenterX(), 5, 4);
+        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, false, menuBox.getBoundsInParent().getCenterX(), 5, 4, 1);
         menuFadeTransition.play(); RadioButton r1 = new RadioButton("male");
         recoveryQuestionMenu.add(slogans(), 0, 1);
         addRecoveryAnswerListener();
@@ -456,6 +474,38 @@ public class LoginMenuGraphics extends Application {
             ((Text) ((HBox) ((VBox) getRecoveryQuestionChild(5)).getChildren().get(1)).getChildren().get(1)).setText("this field is empty!");
             ((TextField) ((HBox) ((VBox) getRecoveryQuestionChild(5)).getChildren().get(1)).getChildren().get(0)).setStyle("-fx-border-color: red");
         }
+    }
+
+    private boolean checkForgetPasswordUsernameField(TextField usernameField,Text text) {
+        String username = usernameField.getText();
+        if(username.isBlank()) {
+            text.setText("this field is empty!");
+            usernameField.setStyle("-fx-border-color: red");
+            return false;
+        }
+        else if(User.getUserByUsername(username)==null){
+            text.setText("Username not found!");
+            usernameField.setStyle("-fx-border-color: red");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkNewPasswordField(PasswordField passwordField,PasswordField passwordField1) {
+        if(!passwordField.getText().equals(passwordField1.getText()))
+            return false;
+        if(!User.isPasswordStrong(passwordField.getText()).equals(Messages.STRONG_PASSWORD))
+            return false;
+        return true;
+    }
+
+    private void addForgetPasswordUsernameListener() {
+        TextField textField = (TextField) (forgetPassword.getChildren().get(1));
+        Text text = (Text)(forgetPassword.getChildren().get(2));
+        textField.textProperty().addListener((observableValue, s, t1) -> {
+            textField.setStyle("-fx-border-color: lightgray");
+            text.setText("");
+        });
     }
 
     private void addRecoveryAnswerListener() {
@@ -511,25 +561,40 @@ public class LoginMenuGraphics extends Application {
         return recoveryQuestionMenu.getChildren().get(index);
     }
 
+    private Node getEnteringNewPasswordChild(int index) {
+        return  enteringNewPassword.getChildren().get(index);
+    }
+
     public void backToLogin(MouseEvent mouseEvent) {
-        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, false, menuBox.getBoundsInParent().getCenterX(), 2, 1);
+        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, false, menuBox.getBoundsInParent().getCenterX(), 2, 1, 1);
         menuFadeTransition.play();
         emptyFields(forgetPassword);
     }
 
     public void enteringNewPassword(MouseEvent mouseEvent) {
-        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, true, menuBox.getBoundsInParent().getCenterX(), 0, 1);
-        menuFadeTransition.play();
+        if(checkForgetPasswordUsernameField((TextField)forgetPassword.getChildren().get(1),(Text)forgetPassword.getChildren().get(2))){
+            MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, true, menuBox.getBoundsInParent().getCenterX(), 0, 1, 1);
+            menuFadeTransition.play();
+        }
     }
 
     public void passwordChange(MouseEvent mouseEvent) {
-        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, false, menuBox.getBoundsInParent().getCenterX(), 1, 0);
-        menuFadeTransition.play();
+        if(checkNewPasswordField((PasswordField)getEnteringNewPasswordChild(1),(PasswordField)getEnteringNewPasswordChild(2))){
+            MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, false, menuBox.getBoundsInParent().getCenterX(), 2, 0, 2);
+            menuFadeTransition.play();
+            emptyFields(enteringNewPassword);
+            emptyFields(forgetPassword);
+        }
     }
 
     public void backToForgetPassword(MouseEvent mouseEvent) {
-        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, false, menuBox.getBoundsInParent().getCenterX(), 1, 0);
+        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, false, menuBox.getBoundsInParent().getCenterX(), 1, 0, 1);
         menuFadeTransition.play();
+        emptyFields(enteringNewPassword);
+    }
+
+    public void login(MouseEvent mouseEvent) {
+
     }
 
 

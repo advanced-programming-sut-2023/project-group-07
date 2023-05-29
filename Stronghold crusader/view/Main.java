@@ -40,6 +40,6 @@ public class Main extends Application {
         stage.setFullScreen(true);
         Main.stage = stage;
 //        new LoginMenuGraphics().start(stage); // TODO: 5/28/2023
-        new ProfileMenuGraphics().start(stage);
+        new LoginMenuGraphics().start(stage);
     }
 }

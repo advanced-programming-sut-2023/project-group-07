@@ -237,9 +237,9 @@ public class ProfileMenuGraphics extends Application {
     }
 
     private void setAvatar() {
-        Image image = new Image(ProfileMenuGraphics.class.getResource("/Images/Avatars/" + controller.getAvatarName()).toString(),
-                Main.screenWidth, Main.getScreenHeight, false, false);
-        avatar.setFill(new ImagePattern(image));
+//        Image image = new Image(ProfileMenuGraphics.class.getResource("/Images/Avatars/" + controller.getAvatarName()).toString(),
+//                Main.screenWidth, Main.getScreenHeight, false, false);
+//        avatar.setFill(new ImagePattern(image));
     }
 
     @FXML

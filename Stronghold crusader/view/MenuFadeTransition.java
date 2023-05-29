@@ -15,14 +15,15 @@ public class MenuFadeTransition extends Transition {
     private boolean isFading=false;
     private int fadeIn;
     private int fadeOut;
-
-    public MenuFadeTransition(Pane pane, Node node, boolean rightDirection, double centerX, int fadeIn, int fadeOut){
+    private int speed;
+    public MenuFadeTransition(Pane pane, Node node, boolean rightDirection, double centerX, int fadeIn, int fadeOut, int speed){
         this.node=node;
         this.pane = pane;
         this.rightDirection = rightDirection;
         this.centerX = centerX;
         this.fadeIn = fadeIn;
         this.fadeOut = fadeOut;
+        this.speed = speed;
         setCycleDuration(Duration.INDEFINITE);
         setCycleCount(-1);
     }
@@ -37,14 +38,14 @@ public class MenuFadeTransition extends Transition {
         }
     }
     private void move() {
-        if(!rightDirection && node.getBoundsInParent().getCenterX()>= centerX-550)
-            node.setLayoutX(node.getLayoutX()-5);
-        if((!rightDirection && node.getBoundsInParent().getCenterX()< centerX-550) || (rightDirection && node.getBoundsInParent().getCenterX()> centerX+550)){
+        if(!rightDirection && node.getBoundsInParent().getCenterX()>= centerX-550*speed)
+            node.setLayoutX(node.getLayoutX()-5*speed);
+        if((!rightDirection && node.getBoundsInParent().getCenterX()< centerX-550*speed) || (rightDirection && node.getBoundsInParent().getCenterX()> centerX+550*speed)){
             this.stop();
             ((HBox)node).getChildren().get(fadeOut).setVisible(false);
         }
-        if(rightDirection && node.getBoundsInParent().getCenterX()<= centerX+550) {
-            node.setLayoutX(node.getLayoutX()+5);
+        if(rightDirection && node.getBoundsInParent().getCenterX()<= centerX+550*speed) {
+            node.setLayoutX(node.getLayoutX()+5*speed);
         }
     }
 
