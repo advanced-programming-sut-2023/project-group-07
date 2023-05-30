@@ -3,8 +3,10 @@ package view;
 
 import javafx.animation.Interpolator;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.geometry.Dimension2D;
+import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -19,11 +21,16 @@ import javafx.stage.Stage;
 import model.Game;
 import model.Map;
 
+import java.io.File;
+import java.util.ArrayList;
+
 
 public class GameGraphics extends Application {
     public static int SIZEFACTOR = 100;
     private Pane rootPane;
     private StackPane statusPane;
+    private ArrayList<HBox> createBuilding = new ArrayList<>();
+    private String buildingToBeBuilt;
     private Map map;
     private Game game;
     @Override
@@ -71,11 +78,67 @@ public class GameGraphics extends Application {
         imageView.setScaleY(1.4);
         stackPane.getChildren().add(imageView);
         rootPane.getChildren().add(stackPane);
+        setCreateBuilding();
+        statusBarButtons();
     }
 
     private void statusBarButtons() {
-        HBox hBox = new HBox();
-        
+        HBox hBox = new HBox(10);
+        statusPane.getChildren().add(hBox);
+        hBox.setTranslateY(-40);
+        hBox.setTranslateX(-20);
+        hBox.setAlignment(Pos.CENTER);
+        for(int i =1;i<7;i++){
+            ImageView imageView = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Menu/button"+i+".png").toExternalForm()));
+            imageView.hoverProperty().addListener((observable -> {
+                imageView.setOpacity(0.8);
+                if(!imageView.isHover())
+                    imageView.setOpacity(1);
+            }));
+
+            imageView.setFitHeight(75);
+            imageView.setFitWidth(75);
+            int j=i;
+            imageView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent mouseEvent) {
+                    for(HBox hBox1: createBuilding)
+                        hBox1.setVisible(false);
+                    createBuilding.get(j-1).setVisible(true);
+                }
+            });
+            hBox.getChildren().add(imageView);
+        }
+    }
+
+    private void setCreateBuilding() {
+        for(int i=1;i<7;i++){
+            HBox hBox = new HBox(20);
+            hBox.setTranslateX(260);
+            hBox.setTranslateY(80);
+            statusPane.getChildren().add(hBox);
+            createBuilding.add(hBox);
+            File file = new File("C:\\Users\\Haj Ali\\Desktop\\project\\project-group-07\\resources\\Images\\Game\\Menu\\button"+i);
+//            String directory = "";
+//            directory = directory.replaceAll("%20"," ");
+//            directory = directory.replaceAll("/","\\\\\\\\");
+//            directory = directory.substring(5,directory.length()-2);
+            File[] files = file.listFiles();
+            for(File file1 : files){
+                ImageView imageView = new ImageView(new Image(file1.getPath()));
+                imageView.setFitWidth(120);
+                imageView.setPreserveRatio(true);
+                hBox.getChildren().add(imageView);
+                imageView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent mouseEvent) {
+                        
+                    }
+                });
+            }
+            hBox.setVisible(false);
+
+        }
     }
 
 //    private Group createEnvironment(){
