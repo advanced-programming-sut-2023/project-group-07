@@ -29,6 +29,7 @@ public class GameGraphics extends Application {
     public static int SIZEFACTOR = 100;
     private Pane rootPane;
     private StackPane statusPane;
+    private Pane mapPane;
     private ArrayList<HBox> createBuilding = new ArrayList<>();
     private String buildingToBeBuilt;
     private Map map;
@@ -37,10 +38,12 @@ public class GameGraphics extends Application {
     public void start(Stage stage) throws Exception {
         rootPane = new Pane();
         Pane pane = new Pane();
+        mapPane = pane;
         ImageView image =new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Tiles/Desert/map.png").toExternalForm()));
         Scene scene = new Scene(rootPane);
         pane.getChildren().add(image);
         rootPane.getChildren().add(pane);
+        pane.setMaxHeight(Main.screenHeight-215);
         System.out.println(pane.getWidth());
         System.out.println(image.getBoundsInParent());
         initStatusBar();
@@ -49,22 +52,20 @@ public class GameGraphics extends Application {
         stage.setScene(scene);
         stage.setFullScreen(true);
         stage.show();
-
+        mapPaneEvent();
         stage.addEventHandler(MouseEvent.MOUSE_MOVED,mouseEvent -> {
             if(mouseEvent.getSceneX()>scene.getWidth()-100 && pane.getLayoutX()>/*map.getSize()*10*/ -400*10)
                 pane.setLayoutX(pane.getLayoutX()-10);
             if(mouseEvent.getSceneX()<100 && pane.getLayoutX()<0)
                 pane.setLayoutX(pane.getLayoutX()+10);
-            if(mouseEvent.getSceneY()> scene.getHeight()-100 && pane.getLayoutY()>/*map.getSize()*10*/ -400*10)
+            if(mouseEvent.getSceneY()> scene.getHeight()-270 && mouseEvent.getSceneY()< scene.getHeight()-215 && pane.getLayoutY()>/*map.getSize()*10*/ -400*10)
                 pane.setLayoutY(pane.getLayoutY()-10);
             if(mouseEvent.getSceneY()<100 && pane.getLayoutY()<0)
                 pane.setLayoutY(pane.getLayoutY()+10);
         });
         stage.addEventHandler(MouseEvent.MOUSE_PRESSED,mouseEvent -> {
-            System.out.println(mouseEvent.getSceneX());
         });
         stage.addEventHandler(MouseEvent.MOUSE_RELEASED,mouseEvent -> {
-            System.out.println(mouseEvent.getSceneX());
         });
     }
 
@@ -129,16 +130,38 @@ public class GameGraphics extends Application {
                 imageView.setFitWidth(120);
                 imageView.setPreserveRatio(true);
                 hBox.getChildren().add(imageView);
+                imageView.hoverProperty().addListener((observable -> {
+                    imageView.setOpacity(0.7);
+                    if(!imageView.isHover())
+                        imageView.setOpacity(1);
+                }));
                 imageView.setOnMouseClicked(new EventHandler<MouseEvent>() {
                     @Override
                     public void handle(MouseEvent mouseEvent) {
-                        
+                        System.out.println("KEE");
+                        buildingToBeBuilt = file1.getPath();
                     }
                 });
             }
             hBox.setVisible(false);
 
         }
+    }
+
+    private void mapPaneEvent() {
+        mapPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if(buildingToBeBuilt!=null) {
+                    ImageView imageView = new ImageView(buildingToBeBuilt);
+                    mapPane.getChildren().add(imageView);
+                    imageView.setLayoutX(mouseEvent.getX());
+                    imageView.setLayoutY(mouseEvent.getY());
+                    System.out.println((mouseEvent.getX()+Math.abs(mapPane.getLayoutX())+"  "+(mouseEvent.getY()+Math.abs(mapPane.getLayoutY()))+"  "+mouseEvent.getScreenX()));
+
+                }
+            }
+        });
     }
 
 //    private Group createEnvironment(){
