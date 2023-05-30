@@ -297,7 +297,7 @@ public class ProfileMenuGraphics extends Application {
 
     private Image getBackGroundImage() {
         Image image = new Image(LoginMenuGraphics.class.getResource("/Images/Background/09.jpg").toString(),
-                Main.screenWidth, Main.getScreenHeight, false, false);
+                Main.screenWidth, Main.screenHeight, false, false);
         return image;
     }
 

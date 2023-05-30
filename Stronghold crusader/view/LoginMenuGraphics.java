@@ -68,7 +68,7 @@ public class LoginMenuGraphics extends Application {
 //        Scale scale = new Scale(w,h,0,0);
 //        scene.getRoot().getTransforms().setAll(scale);
 //
-        Background background = new Background(new BackgroundImage((new Image(LoginMenuGraphics.class.getResource("/Images/Background/1.jpg").toString(), Main.screenWidth, Main.getScreenHeight, false, false)),
+        Background background = new Background(new BackgroundImage((new Image(LoginMenuGraphics.class.getResource("/Images/Background/1.jpg").toString(), Main.screenWidth, Main.screenHeight, false, false)),
                 BackgroundRepeat.NO_REPEAT,
                 BackgroundRepeat.NO_REPEAT,
                 BackgroundPosition.DEFAULT,

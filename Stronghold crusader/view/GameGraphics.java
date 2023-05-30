@@ -1,99 +1,137 @@
 package view;
 
 
+import javafx.animation.Interpolator;
 import javafx.application.Application;
-import javafx.scene.Camera;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
+import javafx.event.EventType;
+import javafx.geometry.Dimension2D;
+import javafx.scene.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.*;
 import javafx.scene.shape.Box;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
+import model.Game;
+import model.Map;
 
 
 public class GameGraphics extends Application {
     public static int SIZEFACTOR = 100;
-
+    private Pane rootPane;
+    private StackPane statusPane;
+    private Map map;
+    private Game game;
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        Group world = createEnvironment();
+    public void start(Stage stage) throws Exception {
+        rootPane = new Pane();
+        Pane pane = new Pane();
+        ImageView image =new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Tiles/Desert/map.png").toExternalForm()));
+        Scene scene = new Scene(rootPane);
+        pane.getChildren().add(image);
+        rootPane.getChildren().add(pane);
+        System.out.println(pane.getWidth());
+        System.out.println(image.getBoundsInParent());
+        initStatusBar();
+        Image image1 = new Image(GameGraphics.class.getResource("/Images/Game/Cursors/fook.png").toExternalForm());
+        scene.setCursor(new ImageCursor(image1));
+        stage.setScene(scene);
+        stage.setFullScreen(true);
+        stage.show();
 
-        Scene scene = new Scene(world);
-        primaryStage.setScene(scene);
-        primaryStage.setWidth(16 * SIZEFACTOR);
-        primaryStage.setHeight(9 * SIZEFACTOR);
-
-        Camera camera = new PerspectiveCamera();
-        camera.setFarClip(2000);
-        camera.setNearClip(1);
-
-        scene.setCamera(camera);
-
-        Rotate worldRotX = new Rotate(0, Rotate.X_AXIS);
-        Rotate worldRotY = new Rotate(0, Rotate.Y_AXIS);
-
-        Translate  worldTransX = new Translate();
-
-        world.getTransforms().addAll(worldRotY, worldRotX);
-
-        primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            switch(event.getCode()){
-                case LEFT:
-                    worldRotY.setAngle(worldRotY.getAngle() + 10);
-                    break;
-                case RIGHT:
-                    worldRotY.setAngle(worldRotY.getAngle() - 10);
-                    break;
-                case UP:
-                    worldRotX.setAngle(worldRotX.getAngle() + 10);
-                    break;
-                case DOWN:
-                    worldRotX.setAngle(worldRotX.getAngle() - 10);
-                case W: //w/s is for z
-                    world.setTranslateZ(world.getTranslateZ() + 10);
-                    break;
-                case S:
-                    world.setTranslateZ(world.getTranslateZ() - 10);
-                    break;
-                case A:// a/d is x axis
-                    world.setTranslateX(world.getTranslateX() + 10);
-                    break;
-                case D:
-                    world.setTranslateX(world.getTranslateX() - 10);
-                    break;
-                case SHIFT:// shift/contr is for y axis
-                    world.setTranslateY(world.getTranslateY() + 10);
-                    break;
-                case CONTROL:
-                    world.setTranslateY(world.getTranslateY() - 10);
-                    break;
-
-            }
+        stage.addEventHandler(MouseEvent.MOUSE_MOVED,mouseEvent -> {
+            if(mouseEvent.getSceneX()>scene.getWidth()-100 && pane.getLayoutX()>/*map.getSize()*10*/ -400*10)
+                pane.setLayoutX(pane.getLayoutX()-10);
+            if(mouseEvent.getSceneX()<100 && pane.getLayoutX()<0)
+                pane.setLayoutX(pane.getLayoutX()+10);
+            if(mouseEvent.getSceneY()> scene.getHeight()-100 && pane.getLayoutY()>/*map.getSize()*10*/ -400*10)
+                pane.setLayoutY(pane.getLayoutY()-10);
+            if(mouseEvent.getSceneY()<100 && pane.getLayoutY()<0)
+                pane.setLayoutY(pane.getLayoutY()+10);
         });
-
-        primaryStage.show();
+        stage.addEventHandler(MouseEvent.MOUSE_PRESSED,mouseEvent -> {
+            System.out.println(mouseEvent.getSceneX());
+        });
+        stage.addEventHandler(MouseEvent.MOUSE_RELEASED,mouseEvent -> {
+            System.out.println(mouseEvent.getSceneX());
+        });
     }
 
-    private Group createEnvironment(){
-        Group group = new Group();
-
-        Box ground = new Box();
-        ground.setHeight(10);
-        ground.setWidth(1000);
-        ground.setDepth(1000);
-
-        ground.setTranslateX(700);
-        ground.setTranslateZ(500);
-
-        Box box = new Box(100,100,100);
-        box.setTranslateX(800);
-        box.setTranslateZ(600);
-        new Rotate(200,Rotate.X_AXIS);
-
-        group.getChildren().addAll(ground, box);
-
-        return group;
+    private void initStatusBar() {
+        StackPane stackPane = new StackPane();
+        statusPane = stackPane;
+        stackPane.setLayoutY(Main.screenHeight-215);
+        stackPane.setLayoutX(100);
+        ImageView imageView = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Menu/menu.png").toExternalForm()));
+        imageView.setScaleX(1.4);
+        imageView.setScaleY(1.4);
+        stackPane.getChildren().add(imageView);
+        rootPane.getChildren().add(stackPane);
     }
+
+    private void statusBarButtons() {
+        HBox hBox = new HBox();
+        
+    }
+
+//    private Group createEnvironment(){
+//        Group group = new Group();
+//        Box ground = new Box();
+//        ground.setHeight(1);
+//        ground.setWidth(1000);
+//        ground.setDepth(1000);
+//        ground.setTranslateX(700);
+//        ground.setTranslateY(1000);
+//
+//
+//        Box box = new Box(100,100,100);
+//        box.setTranslateX(900);
+//        box.setTranslateZ(1000);
+//        box.setTranslateY(1200);
+//        ImageView image =new ImageView(new Image(GameGraphics.class.getResource("/Images/sc_gameinfo_buildings_22a.png").toExternalForm()));
+////        for(int i=0;i<200;i++) {
+////            for(int j=0;j<200;j++){
+////                ImageView tile;
+////                if((i+j)%2==0)
+////                    tile = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Tiles/Desert/desert1.png").toExternalForm()));
+////                else
+////                    tile = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Tiles/Desert/desert2.png").toExternalForm()));
+////                group.getChildren().add(tile);
+////                if(i%2==0){
+////                    tile.setTranslateY(20*i+500);
+////                    tile.setTranslateX(10*j+500);
+////                }
+////                else {
+////                    tile.setTranslateY(20*i+510);
+////                    tile.setTranslateX(10*j+500);
+////                }
+////            }
+////
+////        }
+////        group.getChildren().addAll(box);
+//        group.getChildren().add(image);
+//        image.setTranslateX(700);
+//        image.setTranslateY(00);
+//        Pane pane = new Pane();
+//        pane.setTranslateX(500);
+//        pane.setTranslateY(1000);
+//        pane.setTranslateZ(1000);
+//        pane.setLayoutX(500);
+//        pane.setLayoutY(500);
+//        pane.setPrefWidth(200);
+//        pane.setPrefHeight(200);
+//        pane.setScaleX(5);
+//        pane.setScaleY(5);
+//        group.getChildren().add(pane);
+//        PersonAnimation personAnimation = new PersonAnimation("/Images/Game/Soldiers/ArabianSwordsman/left",pane);
+//        personAnimation.setInterpolator(Interpolator.LINEAR);
+//        personAnimation.play();
+//
+//
+//        return group;
+//    }
 }

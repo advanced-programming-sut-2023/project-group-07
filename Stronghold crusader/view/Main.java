@@ -16,7 +16,7 @@ import static javafx.application.Application.launch;
 
 public class Main extends Application {
     static double screenWidth;
-    static double getScreenHeight;
+    static double screenHeight;
     static Stage stage;
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException{
 //        System.out.print(Colors.YELLOW_BOLD);
@@ -34,12 +34,13 @@ public class Main extends Application {
     public void start(Stage stage) throws Exception {
         Rectangle2D screenBounds = Screen.getPrimary().getBounds();
         screenWidth = screenBounds.getWidth();
-        getScreenHeight = screenBounds.getHeight();
+        screenHeight = screenBounds.getHeight();
         Image img = new Image(LoginMenu.class.getResource("/Images/Icon/icon.png").toExternalForm());
         stage.getIcons().add(img);
         stage.setFullScreen(true);
         Main.stage = stage;
+            new GameGraphics().start(stage);
 //        new LoginMenuGraphics().start(stage); // TODO: 5/28/2023
-        new LoginMenuGraphics().start(stage);
+//        new LoginMenuGraphics().start(stage);
     }
 }
