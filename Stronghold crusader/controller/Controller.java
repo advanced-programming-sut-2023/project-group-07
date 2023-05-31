@@ -256,6 +256,7 @@ public class Controller {
                     Objects.requireNonNull(Controller.class.getResource("/Images/Avatars")).getPath();
             File avatarFolder = new File(avatarFolderAddress);
             File[] files = avatarFolder.listFiles();
+            System.out.println(files);
             ArrayList<String> defaultAvatarsNames = new ArrayList<>();
             for (File file : files) {
                 if (file.getName().matches("\\d+\\.[^.]+")) defaultAvatarsNames.add(file.getName()); //default avatars names contains just number

@@ -1,6 +1,7 @@
 package view;
 
 
+import controller.Controller;
 import javafx.animation.Interpolator;
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -20,9 +21,11 @@ import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import model.Game;
 import model.Map;
+import model.User;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class GameGraphics extends Application {
@@ -35,7 +38,7 @@ public class GameGraphics extends Application {
     private Map map;
     private Game game;
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         rootPane = new Pane();
         Pane pane = new Pane();
         mapPane = pane;
@@ -112,18 +115,17 @@ public class GameGraphics extends Application {
         }
     }
 
-    private void setCreateBuilding() {
+    private void setCreateBuilding() throws SecurityException {
         for(int i=1;i<7;i++){
             HBox hBox = new HBox(20);
             hBox.setTranslateX(260);
             hBox.setTranslateY(80);
             statusPane.getChildren().add(hBox);
             createBuilding.add(hBox);
-            File file = new File("C:\\Users\\Haj Ali\\Desktop\\project\\project-group-07\\resources\\Images\\Game\\Menu\\button"+i);
-//            String directory = "";
-//            directory = directory.replaceAll("%20"," ");
-//            directory = directory.replaceAll("/","\\\\\\\\");
-//            directory = directory.substring(5,directory.length()-2);
+            String path = GameGraphics.class.getResource("/Images/Game/Menu/button"+i).toString();
+            path = path.replaceAll("%20"," ");
+            path = path.substring(5);
+            File file = new File(path);
             File[] files = file.listFiles();
             for(File file1 : files){
                 ImageView imageView = new ImageView(new Image(file1.getPath()));
