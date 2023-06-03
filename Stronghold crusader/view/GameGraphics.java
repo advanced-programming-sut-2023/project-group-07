@@ -2,30 +2,24 @@ package view;
 
 
 import controller.Controller;
-import javafx.animation.Interpolator;
+import controller.GameMenuController;
+import controller.Messages;
 import javafx.application.Application;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
-import javafx.geometry.Dimension2D;
 import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
-import javafx.scene.shape.Box;
-import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import model.Game;
 import model.Map;
-import model.User;
+import model.TypeOfBuilding;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Objects;
 
 
 public class GameGraphics extends Application {
@@ -35,8 +29,9 @@ public class GameGraphics extends Application {
     private Pane mapPane;
     private ArrayList<HBox> createBuilding = new ArrayList<>();
     private String buildingToBeBuilt;
+    private StackPane selectBuildingToBeBuilt;
     private Map map;
-    private Game game;
+    private GameMenuController gameMenuController;
     @Override
     public void start(Stage stage) {
         rootPane = new Pane();
@@ -57,6 +52,11 @@ public class GameGraphics extends Application {
         stage.show();
         mapPaneEvent();
         stage.addEventHandler(MouseEvent.MOUSE_MOVED,mouseEvent -> {
+            if(buildingToBeBuilt!=null) {
+                selectBuildingToBeBuilt.setLayoutX(40*((int)((mouseEvent.getX()+Math.abs(mapPane.getLayoutX())-selectBuildingToBeBuilt.getWidth()/2)/40)));
+                selectBuildingToBeBuilt.setLayoutY(40*((int)((mouseEvent.getY()+Math.abs(mapPane.getLayoutY())-selectBuildingToBeBuilt.getWidth()/2)/40)));
+                selectBuildingToBeBuilt.setVisible(true);
+            }
             if(mouseEvent.getSceneX()>scene.getWidth()-100 && pane.getLayoutX()>/*map.getSize()*10*/ -400*10)
                 pane.setLayoutX(pane.getLayoutX()-10);
             if(mouseEvent.getSceneX()<100 && pane.getLayoutX()<0)
@@ -124,24 +124,34 @@ public class GameGraphics extends Application {
             createBuilding.add(hBox);
             String path = GameGraphics.class.getResource("/Images/Game/Menu/button"+i).toString();
             path = path.replaceAll("%20"," ");
-            path = path.substring(5);
+            path = path.substring("file:".length());
             File file = new File(path);
             File[] files = file.listFiles();
             for(File file1 : files){
                 ImageView imageView = new ImageView(new Image(file1.getPath()));
-                imageView.setFitWidth(120);
+                StackPane stackPane = new StackPane(imageView);
                 imageView.setPreserveRatio(true);
-                hBox.getChildren().add(imageView);
-                imageView.hoverProperty().addListener((observable -> {
+                imageView.setFitWidth(120);
+                hBox.getChildren().add(stackPane);
+                stackPane.hoverProperty().addListener((observable -> {
                     imageView.setOpacity(0.7);
-                    if(!imageView.isHover())
+                    if(!stackPane.isHover())
                         imageView.setOpacity(1);
                 }));
-                imageView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                stackPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
                     @Override
                     public void handle(MouseEvent mouseEvent) {
-                        System.out.println("KEE");
+                        if(selectBuildingToBeBuilt!=null){
+                            selectBuildingToBeBuilt.setVisible(false);
+                            mapPane.getChildren().remove(selectBuildingToBeBuilt);
+                        }
                         buildingToBeBuilt = file1.getPath();
+                        ImageView imageView1 =  new ImageView(new Image(file1.getPath()));
+                        imageView1.setFitWidth(40*TypeOfBuilding.getBuilding(getPhotoName(file1.getPath())).getWidth());
+                        imageView1.setPreserveRatio(true);
+                        selectBuildingToBeBuilt = new StackPane(imageView1);
+                        mapPane.getChildren().add(selectBuildingToBeBuilt);
+                        selectBuildingToBeBuilt.setVisible(false);
                     }
                 });
             }
@@ -154,19 +164,67 @@ public class GameGraphics extends Application {
         mapPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
+                if(mouseEvent.getButton() == MouseButton.SECONDARY) {
+                    emptySelection();
+                }
                 if(buildingToBeBuilt!=null) {
-                    ImageView imageView = new ImageView(buildingToBeBuilt);
-                    mapPane.getChildren().add(imageView);
-                    imageView.setLayoutX(mouseEvent.getX());
-                    imageView.setLayoutY(mouseEvent.getY());
-                    System.out.println((mouseEvent.getX()+Math.abs(mapPane.getLayoutX())+"  "+(mouseEvent.getY()+Math.abs(mapPane.getLayoutY()))+"  "+mouseEvent.getScreenX()));
-
+//                    if(selectBuildingToBeBuilt.getLayoutX())
+                    dropBuilding(mouseEvent);
                 }
             }
         });
     }
 
-//    private Group createEnvironment(){
+    private void emptySelection() {
+        buildingToBeBuilt=null;
+    }
+
+    private void dropBuilding(MouseEvent mouseEvent) {
+        ImageView imageView = new ImageView(buildingToBeBuilt);
+        mapPane.getChildren().add(imageView);
+        imageView.setLayoutX(selectBuildingToBeBuilt.getLayoutX());
+        imageView.setLayoutY(selectBuildingToBeBuilt.getLayoutY());
+        String string = getPhotoName(buildingToBeBuilt);
+        buildingToBeBuilt = null;
+        selectBuildingToBeBuilt.setVisible(false);
+        imageView.setFitWidth(40* TypeOfBuilding.getBuilding(string).getWidth());
+        imageView.setPreserveRatio(true);
+        Messages message =  gameMenuController.dropBuilding((int)(mouseEvent.getSceneY()+Math.abs(mapPane.getLayoutY())),
+                (int)(mouseEvent.getSceneX()+Math.abs(mapPane.getLayoutX())),
+                string);
+        switch (message) {
+            case THERES_ALREADY_BUILDING:
+                break;
+            case THERES_ALREADY_UNIT:
+                break;
+            case CANT_PLACE_THIS:
+                break;
+            case NOT_ENOUGH_GOLD:
+                break;
+            case NOT_ENOUGH_RESOURCES:
+                break;
+            case THERES_AN_ENEMY_CLOSE_BY:
+                break;
+            case MUST_BE_ADJACENT_TO_BUILDINGS_OF_THE_SAME_TYPE:
+                break;
+            case DEPLOYMENT_SUCCESSFUL:
+
+        }
+
+    }
+    public void setGameMenuController(GameMenuController gameMenuController) {
+        this.gameMenuController = gameMenuController;
+    }
+
+    private String getPhotoName(String path) {
+        File file = new File(path);
+        String string = file.getName();
+        string = string.substring(0,string.length()-".png".length());
+        return string;
+    }
+
+
+    //    private Group createEnvironment(){
 //        Group group = new Group();
 //        Box ground = new Box();
 //        ground.setHeight(1);
