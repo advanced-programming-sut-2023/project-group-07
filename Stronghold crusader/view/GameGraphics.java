@@ -4,6 +4,8 @@ package view;
 import controller.Controller;
 import controller.GameMenuController;
 import controller.Messages;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -13,13 +15,18 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import model.Game;
 import model.Map;
 import model.TypeOfBuilding;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class GameGraphics extends Application {
@@ -28,10 +35,12 @@ public class GameGraphics extends Application {
     private StackPane statusPane;
     private Pane mapPane;
     private ArrayList<HBox> createBuilding = new ArrayList<>();
+    private ArrayList<StackPane> buildings = new ArrayList<>();
     private String buildingToBeBuilt;
     private StackPane selectBuildingToBeBuilt;
     private Map map;
     private GameMenuController gameMenuController;
+    private VBox messageBar = new VBox(20);
     @Override
     public void start(Stage stage) {
         rootPane = new Pane();
@@ -47,21 +56,42 @@ public class GameGraphics extends Application {
         initStatusBar();
         Image image1 = new Image(GameGraphics.class.getResource("/Images/Game/Cursors/fook.png").toExternalForm());
         scene.setCursor(new ImageCursor(image1));
+        rootPane.getChildren().add(messageBar);
+        messageBar.setLayoutX(20);
+        messageBar.setLayoutY(300);
         stage.setScene(scene);
         stage.setFullScreen(true);
         stage.show();
         mapPaneEvent();
+
         stage.addEventHandler(MouseEvent.MOUSE_MOVED,mouseEvent -> {
             if(buildingToBeBuilt!=null) {
                 selectBuildingToBeBuilt.setLayoutX(40*((int)((mouseEvent.getX()+Math.abs(mapPane.getLayoutX())-selectBuildingToBeBuilt.getWidth()/2)/40)));
                 selectBuildingToBeBuilt.setLayoutY(40*((int)((mouseEvent.getY()+Math.abs(mapPane.getLayoutY())-selectBuildingToBeBuilt.getWidth()/2)/40)));
                 selectBuildingToBeBuilt.setVisible(true);
+                boolean intersects = false;
+                for(StackPane stackPane : buildings)
+                    if(customIntersection(selectBuildingToBeBuilt,stackPane)){
+                        if(selectBuildingToBeBuilt.getChildren().size()==1){
+                            ImageView imageView = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Buildings/error.png").toExternalForm()));
+                            imageView.setOpacity(0.4);
+                            imageView.setFitWidth(selectBuildingToBeBuilt.getWidth());
+                            imageView.setPreserveRatio(true);
+                            selectBuildingToBeBuilt.getChildren().add(imageView);
+                        }
+                        intersects = true;
+                        break;
+                    }
+                if(!intersects) {
+                    if(selectBuildingToBeBuilt.getChildren().size()>1)
+                        selectBuildingToBeBuilt.getChildren().remove(1);
+                }
             }
-            if(mouseEvent.getSceneX()>scene.getWidth()-100 && pane.getLayoutX()>/*map.getSize()*10*/ -400*10)
+            if(mouseEvent.getSceneX()>scene.getWidth()-100 && pane.getLayoutX()>/*map.getSize()*10*/ -400*40)
                 pane.setLayoutX(pane.getLayoutX()-10);
             if(mouseEvent.getSceneX()<100 && pane.getLayoutX()<0)
                 pane.setLayoutX(pane.getLayoutX()+10);
-            if(mouseEvent.getSceneY()> scene.getHeight()-270 && mouseEvent.getSceneY()< scene.getHeight()-215 && pane.getLayoutY()>/*map.getSize()*10*/ -400*10)
+            if(mouseEvent.getSceneY()> scene.getHeight()-270 && mouseEvent.getSceneY()< scene.getHeight()-215 && pane.getLayoutY()>/*map.getSize()*10*/ -400*40)
                 pane.setLayoutY(pane.getLayoutY()-10);
             if(mouseEvent.getSceneY()<100 && pane.getLayoutY()<0)
                 pane.setLayoutY(pane.getLayoutY()+10);
@@ -119,7 +149,7 @@ public class GameGraphics extends Application {
         for(int i=1;i<7;i++){
             HBox hBox = new HBox(20);
             hBox.setTranslateX(260);
-            hBox.setTranslateY(80);
+            hBox.setTranslateY(60);
             statusPane.getChildren().add(hBox);
             createBuilding.add(hBox);
             String path = GameGraphics.class.getResource("/Images/Game/Menu/button"+i).toString();
@@ -180,34 +210,45 @@ public class GameGraphics extends Application {
     }
 
     private void dropBuilding(MouseEvent mouseEvent) {
-        ImageView imageView = new ImageView(buildingToBeBuilt);
-        mapPane.getChildren().add(imageView);
-        imageView.setLayoutX(selectBuildingToBeBuilt.getLayoutX());
-        imageView.setLayoutY(selectBuildingToBeBuilt.getLayoutY());
         String string = getPhotoName(buildingToBeBuilt);
-        buildingToBeBuilt = null;
-        selectBuildingToBeBuilt.setVisible(false);
-        imageView.setFitWidth(40* TypeOfBuilding.getBuilding(string).getWidth());
-        imageView.setPreserveRatio(true);
-        Messages message =  gameMenuController.dropBuilding((int)(mouseEvent.getSceneY()+Math.abs(mapPane.getLayoutY())),
-                (int)(mouseEvent.getSceneX()+Math.abs(mapPane.getLayoutX())),
+        Messages message =  gameMenuController.dropBuilding((int)(((mouseEvent.getSceneY()+Math.abs(mapPane.getLayoutY())))/40),
+                (int)((mouseEvent.getSceneX()+Math.abs(mapPane.getLayoutX()))/40),
                 string);
         switch (message) {
             case THERES_ALREADY_BUILDING:
+                addToMessageBar("There's already a building here!");
                 break;
             case THERES_ALREADY_UNIT:
+                addToMessageBar("There's already a unit here!");
                 break;
             case CANT_PLACE_THIS:
+                addToMessageBar("Can't place this here!");
                 break;
             case NOT_ENOUGH_GOLD:
+                addToMessageBar("Not enough gold!");
                 break;
             case NOT_ENOUGH_RESOURCES:
+                addToMessageBar("Not enough resources!");
                 break;
             case THERES_AN_ENEMY_CLOSE_BY:
+                addToMessageBar("There's an enemy close by!");
                 break;
             case MUST_BE_ADJACENT_TO_BUILDINGS_OF_THE_SAME_TYPE:
+                addToMessageBar("Must be adjacent to buildings of the same type!");
                 break;
             case DEPLOYMENT_SUCCESSFUL:
+                ImageView imageView = new ImageView(buildingToBeBuilt);
+                StackPane stackPane = new StackPane(imageView);
+                mapPane.getChildren().add(stackPane);
+                stackPane.setLayoutX(selectBuildingToBeBuilt.getLayoutX());
+                stackPane.setLayoutY(selectBuildingToBeBuilt.getLayoutY());
+                buildingToBeBuilt = null;
+                selectBuildingToBeBuilt.setVisible(false);
+                buildings.add(stackPane);
+                imageView.setFitWidth(40* TypeOfBuilding.getBuilding(string).getWidth());
+                imageView.setPreserveRatio(true);
+                break;
+
 
         }
 
@@ -221,6 +262,34 @@ public class GameGraphics extends Application {
         String string = file.getName();
         string = string.substring(0,string.length()-".png".length());
         return string;
+    }
+
+    private void addToMessageBar(String message) {
+        Text text = new Text(message);
+        text.setStyle("-fx-font-weight: bold; -fx-font-size: 14;");
+        text.setFill(Color.RED);
+        messageBar.getChildren().add(text);
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(5000),actionEvent -> {
+            if(messageBar.getChildren().contains(text))
+                messageBar.getChildren().remove(text);
+        }));
+        timeline.setCycleCount(1);
+        timeline.play();
+        if(messageBar.getChildren().size()==6)
+            messageBar.getChildren().remove(0);
+    }
+
+    private boolean customIntersection(Node node1,Node node2) {
+        if(intervalsIntersect(node1.getBoundsInParent().getMinX(),node1.getBoundsInParent().getMaxX(),
+                node2.getBoundsInParent().getMinX(),node2.getBoundsInParent().getMaxX()) &&
+            intervalsIntersect(node1.getBoundsInParent().getMinY(),node1.getBoundsInParent().getMaxY(),
+                    node2.getBoundsInParent().getMinY(),node2.getBoundsInParent().getMaxY()))
+            return true;
+        return false;
+    }
+
+    private boolean intervalsIntersect(double a1,double b1, double a2,double b2) {
+        return a1<b2 && b1>a2;
     }
 
 
