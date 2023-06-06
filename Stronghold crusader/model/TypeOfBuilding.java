@@ -17,7 +17,7 @@ public enum TypeOfBuilding {
     ARMOURY(500, 4, 4, 0, "armoury", null, 0, Resources.WOOD, 5, "building", null, 5),
     MERCENARY_POST(400, 10, 10, 0, "mercenary post", null, 0, Resources.WOOD, 10, "military camp", null, 3),
     BARRACKS(500, 10, 10, 0, "barracks", null, 0, Resources.STONE, 15, "military camp", null, 6),
-    ENGINEERS_GUILD(400, 5, 10, 0, "engineer guild", null, 100, Resources.WOOD, 10, "military camp", null, 5),
+    ENGINEERS_GUILD(400, 5, 10, 0, "engineers guild", null, 100, Resources.WOOD, 10, "military camp", null, 5),
     KILLING_PIT(-1, 1, 1, 0, "killing pit", null, 0, Resources.WOOD, 6, "building", null, 0),
     INN(400, 6, 6, 1, "inn", null, 100, Resources.WOOD, 20, "converting resources", NonMilitaryTypes.INNKEEPER, 6),
     MILL(200, 3, 3, 3, "mill", null, 0, Resources.WOOD, 20, "converting resources", NonMilitaryTypes.MILL_BOY, 8),
