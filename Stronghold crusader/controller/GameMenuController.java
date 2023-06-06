@@ -363,13 +363,15 @@ public class GameMenuController {
         if (frow > srow || fcolumn > scolumn)
             return Messages.INVALID_COORDINATES;
         boolean isUnit = false;
-        for (Person person : game.getMap().getMapPixel(frow, scolumn).getPeople()) {
-            if (person instanceof Unit){
-                Unit unit = (Unit) person;
-                if(unit.getGovernment().equals(game.getCurrentGovernment()))
-                    isUnit = true;
-            }
-        }
+        for(int i=frow;i<=srow;i++)
+            for(int j=fcolumn;j<scolumn;j++)
+                for (Person person : game.getMap().getMapPixel(i, j).getPeople()) {
+                    if (person instanceof Unit){
+                        Unit unit = (Unit) person;
+                        if(unit.getGovernment().equals(game.getCurrentGovernment()))
+                            isUnit = true;
+                    }
+                }
         if (!isUnit)
             return Messages.NO_UNITS_HERE;
         game.selectUnit(frow, fcolumn, srow, scolumn);

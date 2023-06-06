@@ -1,13 +1,11 @@
 package view;
 
 
-import controller.Controller;
 import controller.GameMenuController;
 import controller.Messages;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.*;
@@ -19,7 +17,6 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.robot.Robot;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -27,9 +24,6 @@ import model.*;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Timer;
-import java.util.TimerTask;
 
 
 public class GameGraphics extends Application {
@@ -55,8 +49,6 @@ public class GameGraphics extends Application {
         rootPane = new Pane();
         Pane pane = new Pane();
         mapPane = pane;
-        mapPane.getChildren().add(selectedUnitBar);
-        selectedUnitBar.setVisible(false);
         ImageView image =new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Tiles/Desert/map.png").toExternalForm()));
         Scene scene = new Scene(rootPane);
         pane.getChildren().add(image);
@@ -109,6 +101,17 @@ public class GameGraphics extends Application {
                     if(selectBuildingToBeBuilt.getChildren().size()>1)
                         selectBuildingToBeBuilt.getChildren().remove(1);
                 }
+//                System.out.println(gameMenuController.getSelectedUnit().isEmpty()); //TODO should not be here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//                if(!gameMenuController.getSelectedUnit().isEmpty()){
+//                    boolean isCursorOnGround = true;
+//                    for(StackPane stackPane:buildings)
+//                        if(stackPane.isHover())
+//                            isCursorOnGround = false;
+//                    if(statusPane.isHover())
+//                        isCursorOnGround=false;
+//                    CursorAnimation cursorAnimation = new CursorAnimation("",scene);
+//                    cursorAnimation.play();
+//                }
             }
         });
         stage.addEventHandler(MouseEvent.MOUSE_DRAGGED,mouseEvent -> {
@@ -119,6 +122,7 @@ public class GameGraphics extends Application {
             selectionArea.setHeight(Math.abs(mouseEvent.getY()+Math.abs(mapPane.getLayoutY())-oldMouseY));
         });
         stage.addEventHandler(MouseEvent.MOUSE_PRESSED,mouseEvent -> {
+            resetSelectionArea();
             oldMouseX = mouseEvent.getX()+Math.abs(mapPane.getLayoutX());
             oldMouseY = mouseEvent.getY()+Math.abs(mapPane.getLayoutY());
         });
@@ -127,12 +131,12 @@ public class GameGraphics extends Application {
             int y2=(int)Math.floor(selectionArea.getY()/40+selectionArea.getHeight()/40);
             int x1=(int)Math.ceil(selectionArea.getX()/40);
             int x2=(int)Math.floor(selectionArea.getX()/40+selectionArea.getWidth()/40);
-            System.out.println(y1+"  "+y2+"  "+x1+"  "+x2);
             gameMenuController.selectUnit(y1,x1,y2,x2);
-            System.out.println(gameMenuController.getSelectedUnit());
-            unitSelectionBar();
-            selectedUnitBar.setVisible(true);
-            clearStatusBar();
+            if(!gameMenuController.getSelectedUnit().isEmpty()){
+                unitSelectionBar();
+                clearStatusBar();
+                selectedUnitBar.setVisible(true);
+            }
             selectionArea.setVisible(false);
         });
     }
@@ -141,6 +145,13 @@ public class GameGraphics extends Application {
         selectionArea.setFill(Color.BLUE);
         selectionArea.setOpacity(0.2);
         mapPane.getChildren().add(selectionArea);
+    }
+
+    private void resetSelectionArea() {
+        selectionArea.setLayoutX(-1);
+        selectionArea.setLayoutY(-1);
+        selectionArea.setWidth(0);
+        selectionArea.setHeight(0);
     }
 
     private void initStatusBar() {
@@ -155,6 +166,8 @@ public class GameGraphics extends Application {
         rootPane.getChildren().add(stackPane);
         setCreateBuilding();
         statusBarButtons();
+        statusPane.getChildren().add(selectedUnitBar);
+        selectedUnitBar.setVisible(false);
     }
 
     private void statusBarButtons() {
@@ -293,31 +306,38 @@ public class GameGraphics extends Application {
     }
 
     private void unitSelectionBar() {
-        HBox hBox = selectedUnitBar;
         selectedUnitBar.getChildren().clear();
-        hBox.setTranslateX(260);
-        hBox.setTranslateY(60);
+        selectedUnitBar.setTranslateX(260);
+        selectedUnitBar.setTranslateY(50);
         for(UnitTypes unitTypes: UnitTypes.values()){
             int counter=0;
             for(Person person:gameMenuController.getSelectedUnit())
                 if(person instanceof Unit unit && unit.getType().equals(unitTypes))
                     counter++;
-            if(counter>0) {
+            if(counter>0 && unitTypes.getMilitaryCampType()!=null) {
                 ImageView imageView = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Menu/"+unitTypes.getMilitaryCampType().getName()+"/"+unitTypes.getType()+".png").toExternalForm()));
-                HBox hbox = new HBox(20);
-                hbox.getChildren().add(imageView);
-                imageView.setFitWidth(100);
+                ImageView archway = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Menu/archway.png").toExternalForm()));
+                archway.setPreserveRatio(true);
+                archway.setFitWidth(90);
+                VBox vBox = new VBox();
+                StackPane stackPane = new StackPane(archway,vBox);
+                vBox.getChildren().add(imageView);
+                imageView.setFitWidth(80);
                 imageView.setPreserveRatio(true);
-                hbox.hoverProperty().addListener((observable -> {
+                vBox.hoverProperty().addListener((observable -> {
                     imageView.setOpacity(0.7);
-                    if(!hbox.isHover())
+                    if(!vBox.isHover())
                         imageView.setOpacity(1);
                 }));
                 Text text = new Text(counter+"");
-                hbox.getChildren().add(text);
+                text.setStyle("-fx-font-size: 20;-fx-font-weight: bold;");
+                vBox.getChildren().add(text);
+                vBox.setAlignment(Pos.CENTER);
+                archway.setTranslateY(-20);
+                selectedUnitBar.getChildren().add(stackPane);
             }
         }
-        hBox.setVisible(false);
+        selectedUnitBar.setVisible(false);
     }
 
     private File[] filesListMaker(String resource) {
@@ -334,6 +354,7 @@ public class GameGraphics extends Application {
             public void handle(MouseEvent mouseEvent) {
                 if(mouseEvent.getButton() == MouseButton.SECONDARY) {
                     emptySelection();
+                    selectedUnitBar.setVisible(false);
                 }
                 if(buildingToBeBuilt!=null) {
 //                    if(selectBuildingToBeBuilt.getLayoutX())
@@ -394,8 +415,11 @@ public class GameGraphics extends Application {
     }
 
     private void clearStatusBar() {
-        for(Node node: statusPane.getChildren())
-            node.setVisible(false);
+        for(HBox hBox:buildingMenus)
+            hBox.setVisible(false);
+        for(HBox hBox:createBuilding)
+            hBox.setVisible(false);
+        selectedUnitBar.setVisible(false);
     }
 
     public void setGameMenuController(GameMenuController gameMenuController) {
