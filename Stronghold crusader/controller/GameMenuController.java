@@ -22,6 +22,10 @@ public class GameMenuController {
         return Messages.RATE_CHANGE_SUCCESSFUL;
     }
 
+    public ArrayList<Person> getSelectedUnit() {
+        return game.getSelectedUnit();
+    }
+
     public ArrayList<Government> getGovernments() {
         return game.getGovernments();
     }
@@ -278,8 +282,6 @@ public class GameMenuController {
             return Messages.INVALID_NUMBER;
         if (count > game.getCurrentGovernment().getPeasant())
             return Messages.NOT_ENOUGH_PEASANTS;
-        if (!game.getCurrentMilitaryCamp().equals(unitType.getMilitaryCampType()))
-            return Messages.CANT_CREATE_THIS_UNIT_HERE;
         if (unitType.getGoldNeeded() * count > game.getCurrentGovernment().getGold())
             return Messages.NOT_ENOUGH_GOLD;
         for (Resources resource : unitType.getResourcesNeeded())
@@ -319,7 +321,7 @@ public class GameMenuController {
                         && unitType.getMilitaryCampType().equals(MilitaryCampType.MERCENARY_POST))
                     output += unitType.getType() + "    " + unitType.getGoldNeeded() + " gold\n";
             }
-        } else if (militaryCamp.equals("engineer guild")) {
+        } else if (militaryCamp.equals("engineers guild")) {
             for (UnitTypes unitType : UnitTypes.values()) {
                 if (unitType.getMilitaryCampType() != null
                         && unitType.getMilitaryCampType().equals(MilitaryCampType.ENGINEERS_GUILD))

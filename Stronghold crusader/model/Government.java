@@ -38,7 +38,7 @@ public class Government {
         popularity = 100;
         this.user = user;
         this.gold = gold;
-        peasant = 0;
+        peasant = 10;
         this.row = row;
         this.column = column;
         this.color = color;
