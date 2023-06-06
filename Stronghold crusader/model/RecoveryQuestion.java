@@ -13,8 +13,11 @@ public enum RecoveryQuestion {
         this.question = question;
     }
 
-    public static String getQuestion(RecoveryQuestion recoveryQuestion) {
-        return recoveryQuestion.question;
+    public static RecoveryQuestion getRecoveryQuestion(String question) {
+        for (RecoveryQuestion recoveryQuestion : RecoveryQuestion.values())
+            if (recoveryQuestion.question.equals(question))
+                return recoveryQuestion;
+        return null;
     }
 
     @Override

@@ -1,10 +1,11 @@
 package controller;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import com.google.gson.*;
+import javafx.application.Platform;
 import javafx.scene.image.Image;
 import model.User;
-import view.LoginMenu;
 import model.RecoveryQuestion;
 
 import java.io.FileWriter;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 public class LoginMenuController {
     private User.Information information;
     private int currentCaptcha;
+    private int timerCount = -1;
 
     public String usernameExistenceCheck(String username) {
         if (User.getUserByUsername(username) == null)
@@ -24,6 +26,14 @@ public class LoginMenuController {
         while (User.getUserByUsername(username + counter) != null)
             counter++;
         return username + counter;
+    }
+
+    public int getTimerCount() {
+        return timerCount;
+    }
+
+    public void setTimerCount(int newValue) {
+        timerCount = newValue;
     }
 
     public String randomPasswordGenerator() {
@@ -78,44 +88,49 @@ public class LoginMenuController {
     public Messages getInformation(String username, String password, String passwordConfirm, String email, String nickname,
                                    String slogan) throws NoSuchAlgorithmException {
         if (password.isBlank() || nickname.isBlank() || username.isBlank() || email.isBlank() || (slogan != null && slogan.isBlank()))
-            return Messages.EMPTY_FIELD;
+            return Messages.FAIL;
         else if (!User.isUsernameValid(username))
-            return Messages.INVALID_USERNAME;
+            return Messages.FAIL;
         else if (usernameExistenceCheck(username) != null)
-            return Messages.USERNAME_EXISTS;
+            return Messages.FAIL;
         if (!User.isPasswordStrong(password).equals(Messages.STRONG_PASSWORD))
             return User.isPasswordStrong(password);
         if (!password.equals(passwordConfirm))
-            return Messages.PASSWORD_NOT_CONFIRMED;
+            return Messages.FAIL;
         if (emailExistenceCheck(email))
-            return Messages.EMAIL_EXISTS;
+            return Messages.FAIL;
         if (!User.isEmailValid(email))
-            return Messages.INVALID_EMAIL_FORMAT;
+            return Messages.FAIL;
         password = Controller.toSHA256(password);
         information = new User.Information(username, password, email, nickname, slogan);
         return Messages.SUCCESS;
     }
 
-    public Messages signUp(RecoveryQuestion recoveryQuestion, String recoveryAnswer, String recoveryAnswerConfirm) throws IOException, NoSuchAlgorithmException {
-        User user = new User(information, recoveryQuestion, recoveryAnswer);
+    public Messages signUp(String recoveryQuestion, String recoveryAnswer, String recoveryAnswerConfirm, String captcha) throws IOException, NoSuchAlgorithmException {
+        if (!recoveryAnswer.equals(recoveryAnswerConfirm))
+            return Messages.FAIL;
+        if (!captcha.equals(String.valueOf(currentCaptcha)))
+            return Messages.FAIL;
+        User user = new User(information, RecoveryQuestion.getRecoveryQuestion(recoveryQuestion), recoveryAnswer);
         User.addUser(user);
         return Messages.SUCCESS;
     }
 
-    public Messages login(String username, String password, boolean stayLoggedIn)
+    public Messages login(String username, String password, boolean stayLoggedIn, String captcha)
             throws IOException, NoSuchAlgorithmException {
         User user = User.getUserByUsername(username);
         if (user == null)
-            return Messages.USERNAME_NOT_FOUND;
-        else if (user != null && user.getLastAttempt() + 1000 * user.getAttempt() * 5 > System.currentTimeMillis()) {
-            return Messages.WAIT_FOR_LOGIN;
+            return Messages.FAIL;
+        else if (user != null && timerCount >= 0) {
+            return Messages.FAIL;
         } else if (user != null && !user.checkPassword(password)) {
             user.setLastAttempt();
             user.addAttempt();
-            return Messages.INCORRECT_PASSWORD;
+            timerCount = (int) Math.floor(user.getAttempt() * 5 + (user.getLastAttempt() - System.currentTimeMillis())/1000);
+            return Messages.WAIT_FOR_LOGIN;
         }
-        if (!LoginMenu.checkCaptcha())
-            return Messages.EXIT_CAPTCHA;
+        if (!captcha.equals(String.valueOf(currentCaptcha)))
+            return Messages.FAIL;
         user.setLastAttempt();
         user.resetAttempt();
         Controller.currentUser = user;
@@ -126,17 +141,28 @@ public class LoginMenuController {
             file.write(userString);
             file.close();
         }
-        return Messages.LOGIN_SUCCESSFUL;
+        return Messages.SUCCESS;
+    }
+
+    public boolean doeHaveTimer(String username) {
+        User user = User.getUserByUsername(username);
+        int time;
+        if (user != null && (time = (int) Math.floor(user.getAttempt() * 5 + (user.getLastAttempt() - System.currentTimeMillis())/1000)) >= 0){
+            timerCount = time;
+            return true;
+        }
+        return false;
+
     }
 
     public Messages forgotPassword(String username, String password) throws IOException, NoSuchAlgorithmException {
         User user = User.getUserByUsername(username);
         if (user == null)
             return Messages.USERNAME_NOT_FOUND;
-        String recoveryQuestion = RecoveryQuestion.getQuestion(user.getPasswordRecoveryQuestion());
-        String answer = LoginMenu.getPasswordRecoveryAnswer(recoveryQuestion);
-        if (!answer.equals(user.getPasswordRecoveryAnswer()))
-            return Messages.INCORRECT_ANSWER;
+        String recoveryQuestion = user.getPasswordRecoveryQuestion().toString();
+        //String answer = LoginMenu.getPasswordRecoveryAnswer(recoveryQuestion);
+        //if (!answer.equals(user.getPasswordRecoveryAnswer()))
+            //return Messages.INCORRECT_ANSWER;
         if (!User.isPasswordStrong(password).equals(Messages.STRONG_PASSWORD))
             return User.isPasswordStrong(password);
         user.setNewPassword(password);
