@@ -37,7 +37,7 @@ public class Main extends Application {
         Rectangle2D screenBounds = Screen.getPrimary().getBounds();
         screenWidth = screenBounds.getWidth();
         screenHeight = screenBounds.getHeight();
-        Image img = new Image(LoginMenu.class.getResource("/Images/Icon/icon.png").toExternalForm());
+        Image img = new Image(Main.class.getResource("/Images/Icon/icon.png").toExternalForm());
         stage.getIcons().add(img);
         stage.setFullScreen(true);
         Main.stage = stage;

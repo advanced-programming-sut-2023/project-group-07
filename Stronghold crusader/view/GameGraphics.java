@@ -16,6 +16,8 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -25,6 +27,7 @@ import model.TypeOfBuilding;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -41,6 +44,11 @@ public class GameGraphics extends Application {
     private Map map;
     private GameMenuController gameMenuController;
     private VBox messageBar = new VBox(20);
+    private double oldMouseX;
+    private double oldMouseY;
+    private Rectangle selectionArea = new Rectangle();
+    private ArrayList<HBox> buildingMenus = new ArrayList<>();
+
     @Override
     public void start(Stage stage) {
         rootPane = new Pane();
@@ -51,19 +59,18 @@ public class GameGraphics extends Application {
         pane.getChildren().add(image);
         rootPane.getChildren().add(pane);
         pane.setMaxHeight(Main.screenHeight-215);
-        System.out.println(pane.getWidth());
-        System.out.println(image.getBoundsInParent());
         initStatusBar();
         Image image1 = new Image(GameGraphics.class.getResource("/Images/Game/Cursors/fook.png").toExternalForm());
         scene.setCursor(new ImageCursor(image1));
         rootPane.getChildren().add(messageBar);
         messageBar.setLayoutX(20);
         messageBar.setLayoutY(300);
+        createSelectionArea();
         stage.setScene(scene);
         stage.setFullScreen(true);
         stage.show();
         mapPaneEvent();
-
+        buildingMenu();
         stage.addEventHandler(MouseEvent.MOUSE_MOVED,mouseEvent -> {
             if(buildingToBeBuilt!=null) {
                 selectBuildingToBeBuilt.setLayoutX(40*((int)((mouseEvent.getX()+Math.abs(mapPane.getLayoutX())-selectBuildingToBeBuilt.getWidth()/2)/40)));
@@ -96,10 +103,26 @@ public class GameGraphics extends Application {
             if(mouseEvent.getSceneY()<100 && pane.getLayoutY()<0)
                 pane.setLayoutY(pane.getLayoutY()+10);
         });
+        stage.addEventHandler(MouseEvent.MOUSE_DRAGGED,mouseEvent -> {
+            selectionArea.setVisible(true);
+            selectionArea.setLayoutX(Math.min(mouseEvent.getX(),oldMouseX)+Math.abs(mapPane.getLayoutX()));
+            selectionArea.setLayoutY(Math.min(mouseEvent.getY(),oldMouseY)+Math.abs(mapPane.getLayoutY()));
+            selectionArea.setWidth(Math.abs(mouseEvent.getX()-oldMouseX));
+            selectionArea.setHeight(Math.abs(mouseEvent.getY()-oldMouseY));
+        });
         stage.addEventHandler(MouseEvent.MOUSE_PRESSED,mouseEvent -> {
+            oldMouseX = mouseEvent.getX();
+            oldMouseY = mouseEvent.getY();
         });
         stage.addEventHandler(MouseEvent.MOUSE_RELEASED,mouseEvent -> {
+            selectionArea.setVisible(false);
         });
+    }
+
+    private void createSelectionArea() {
+        selectionArea.setFill(Color.BLUE);
+        selectionArea.setOpacity(0.2);
+        mapPane.getChildren().add(selectionArea);
     }
 
     private void initStatusBar() {
@@ -136,8 +159,7 @@ public class GameGraphics extends Application {
             imageView.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent mouseEvent) {
-                    for(HBox hBox1: createBuilding)
-                        hBox1.setVisible(false);
+                    clearStatusBar();
                     createBuilding.get(j-1).setVisible(true);
                 }
             });
@@ -152,11 +174,7 @@ public class GameGraphics extends Application {
             hBox.setTranslateY(60);
             statusPane.getChildren().add(hBox);
             createBuilding.add(hBox);
-            String path = GameGraphics.class.getResource("/Images/Game/Menu/button"+i).toString();
-            path = path.replaceAll("%20"," ");
-            path = path.substring("file:".length());
-            File file = new File(path);
-            File[] files = file.listFiles();
+            File[] files = filesListMaker("/Images/Game/Menu/button"+i);
             for(File file1 : files){
                 ImageView imageView = new ImageView(new Image(file1.getPath()));
                 StackPane stackPane = new StackPane(imageView);
@@ -188,6 +206,33 @@ public class GameGraphics extends Application {
             hBox.setVisible(false);
 
         }
+    }
+
+    private void buildingMenu() {
+        for(int i=1;i<7;i++) {
+            File[] files = filesListMaker("/Images/Game/Menu/button" + i);
+            for(File file: files) {
+                HBox hBox = new HBox(20);
+                hBox.setTranslateX(260);
+                hBox.setTranslateY(60);
+                statusPane.getChildren().add(hBox);
+                buildingMenus.add(hBox);
+                Text text = new Text(getPhotoName(file.getPath()));
+                hBox.getChildren().add(text);
+                text.setStyle("-fx-font-family: GothicE; -fx-font-size: 40; -fx-font-weight: bold");
+                text.setTranslateY(10);
+                hBox.setVisible(false);
+            }
+        }
+
+    }
+
+    private File[] filesListMaker(String resource) {
+        String path = GameGraphics.class.getResource(resource).toString();
+        path = path.replaceAll("%20"," ");
+        path = path.substring("file:".length());
+        File file = new File(path);
+        return file.listFiles();
     }
 
     private void mapPaneEvent() {
@@ -239,6 +284,7 @@ public class GameGraphics extends Application {
             case DEPLOYMENT_SUCCESSFUL:
                 ImageView imageView = new ImageView(buildingToBeBuilt);
                 StackPane stackPane = new StackPane(imageView);
+                addEventHandlerForBuilding(stackPane);
                 mapPane.getChildren().add(stackPane);
                 stackPane.setLayoutX(selectBuildingToBeBuilt.getLayoutX());
                 stackPane.setLayoutY(selectBuildingToBeBuilt.getLayoutY());
@@ -251,8 +297,29 @@ public class GameGraphics extends Application {
 
 
         }
-
     }
+
+    private void addEventHandlerForBuilding(StackPane stackPane) {
+        stackPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                ImageView imageView = (ImageView) stackPane.getChildren().get(0);
+                String buildingName = getPhotoName(imageView.getImage().getUrl());
+                clearStatusBar();
+                for(HBox hBox : buildingMenus)
+                    if(((Text)hBox.getChildren().get(0)).getText().equals(buildingName))
+                        hBox.setVisible(true);
+            }
+        });
+    }
+
+    private void clearStatusBar() {
+        for(HBox hBox: createBuilding)
+            hBox.setVisible(false);
+        for (HBox hBox: buildingMenus)
+            hBox.setVisible(false);
+    }
+
     public void setGameMenuController(GameMenuController gameMenuController) {
         this.gameMenuController = gameMenuController;
     }
@@ -267,6 +334,8 @@ public class GameGraphics extends Application {
     private void addToMessageBar(String message) {
         Text text = new Text(message);
         text.setStyle("-fx-font-weight: bold; -fx-font-size: 14;");
+        text.setStroke(Color.BLACK);
+        text.setStrokeWidth(0.4);
         text.setFill(Color.RED);
         messageBar.getChildren().add(text);
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(5000),actionEvent -> {
