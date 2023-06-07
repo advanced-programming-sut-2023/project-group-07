@@ -155,19 +155,15 @@ public class LoginMenuController {
 
     }
 
-    public Messages forgotPassword(String username, String password) throws IOException, NoSuchAlgorithmException {
+    public Messages forgotPassword(String username, String password, String passwordConfirm) throws IOException, NoSuchAlgorithmException {
         User user = User.getUserByUsername(username);
-        if (user == null)
-            return Messages.USERNAME_NOT_FOUND;
-        String recoveryQuestion = user.getPasswordRecoveryQuestion().toString();
-        //String answer = LoginMenu.getPasswordRecoveryAnswer(recoveryQuestion);
-        //if (!answer.equals(user.getPasswordRecoveryAnswer()))
-            //return Messages.INCORRECT_ANSWER;
+        if (!password.equals(passwordConfirm))
+            return Messages.FAIL;
         if (!User.isPasswordStrong(password).equals(Messages.STRONG_PASSWORD))
-            return User.isPasswordStrong(password);
+            return Messages.FAIL;
         user.setNewPassword(password);
         User.updateUsers();
-        return Messages.PASSWORD_CHANGED;
+        return Messages.SUCCESS;
     }
 
     public Image generateCaptcha() {
