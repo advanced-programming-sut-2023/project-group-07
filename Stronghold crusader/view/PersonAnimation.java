@@ -1,5 +1,6 @@
 package view;
 
+import javafx.animation.Interpolator;
 import javafx.animation.Transition;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
@@ -21,12 +22,12 @@ public class PersonAnimation extends Transition {
             frameCount++;
         setCycleDuration(Duration.millis(1000));
         setCycleCount(-1);
+        setInterpolator(Interpolator.LINEAR);
     }
 
     @Override
     protected void interpolate(double frac) {
         for(int i=0;i<frameCount;i++) {
-            System.out.println(frac);
             if((double)i/frameCount<frac && frac<=((double)i+1)/frameCount)
                 pane.setBackground(new Background(new BackgroundImage(new Image(PersonAnimation.class.getResource(directory+"/anim"+i+".png").toExternalForm()),
                         BackgroundRepeat.NO_REPEAT,

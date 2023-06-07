@@ -6,7 +6,12 @@ import java.util.HashMap;
 
 //import org.mockito.internal.matchers.InstanceOf;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.scene.control.ProgressBar;
+import javafx.util.Duration;
 import model.*;
+import view.PersonPane;
 
 public class GameMenuController {
     private static Game game = Controller.currentGame;
@@ -29,6 +34,7 @@ public class GameMenuController {
     public ArrayList<Government> getGovernments() {
         return game.getGovernments();
     }
+    public ArrayList<Unit> createdUnit = new ArrayList<>();
 
     public Messages dropBuilding(int row, int column, String name) {
         Map map = game.getMap();
@@ -287,7 +293,7 @@ public class GameMenuController {
         for (Resources resource : unitType.getResourcesNeeded())
             if (game.getCurrentGovernment().getResources().get(resource) < count)
                 return Messages.NOT_ENOUGH_RESOURCES;
-        game.createTroop(unitType, count);
+        createdUnit=game.createTroop(unitType, count);
         return Messages.UNIT_CREATED_SUCCESSFULLY;
     }
 
@@ -778,4 +784,22 @@ public class GameMenuController {
     public int getFearRate() {
         return game.getCurrentGovernment().getFearRate();
     }
+
+    public void addHealthBarListener(ProgressBar healthBar,Unit unit) {
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(100),actionEvent -> {
+            System.out.println((double)unit.getHp()/unit.getType().getHp());
+            healthBar.setProgress((double)unit.getHp()/unit.getType().getHp());
+            if(healthBar.progressProperty().get()<0.33)
+                healthBar.setStyle("-fx-accent: red");
+            else if(healthBar.progressProperty().get()<0.66)
+                healthBar.setStyle("-fx-accent: yellow");
+            else
+                healthBar.setStyle("-fx-accent: green");
+            healthBar.setVisible(!getSelectedUnit().isEmpty());
+        }));
+        timeline.setCycleCount(-1);
+        timeline.play();
+    }
+
+
 }

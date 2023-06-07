@@ -6,9 +6,13 @@ import controller.Messages;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.beans.value.ObservableDoubleValue;
+import javafx.beans.value.ObservableIntegerValue;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.*;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -24,6 +28,7 @@ import model.*;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Stack;
 
 
 public class GameGraphics extends Application {
@@ -43,6 +48,7 @@ public class GameGraphics extends Application {
     private Rectangle selectionArea = new Rectangle();
     private ArrayList<HBox> buildingMenus = new ArrayList<>();
     private HBox selectedUnitBar= new HBox(20);
+    private CursorAnimation cursorAnimation;
 
     @Override
     public void start(Stage stage) {
@@ -61,6 +67,7 @@ public class GameGraphics extends Application {
         messageBar.setLayoutX(20);
         messageBar.setLayoutY(300);
         createSelectionArea();
+        cursorAnimation = new CursorAnimation(GameGraphics.class.getResource("/Images/Game/Cursors/moveUnit/").toExternalForm(),scene);
         stage.setScene(scene);
         stage.setFullScreen(true);
         stage.show();
@@ -101,44 +108,64 @@ public class GameGraphics extends Application {
                     if(selectBuildingToBeBuilt.getChildren().size()>1)
                         selectBuildingToBeBuilt.getChildren().remove(1);
                 }
-//                System.out.println(gameMenuController.getSelectedUnit().isEmpty()); //TODO should not be here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//                if(!gameMenuController.getSelectedUnit().isEmpty()){
-//                    boolean isCursorOnGround = true;
-//                    for(StackPane stackPane:buildings)
-//                        if(stackPane.isHover())
-//                            isCursorOnGround = false;
-//                    if(statusPane.isHover())
-//                        isCursorOnGround=false;
-//                    CursorAnimation cursorAnimation = new CursorAnimation("",scene);
-//                    cursorAnimation.play();
-//                }
             }
+            if(!gameMenuController.getSelectedUnit().isEmpty()){
+                boolean isCursorOnGround = true;
+                for(StackPane stackPane:buildings)
+                    if(stackPane.isHover())
+                        isCursorOnGround = false;
+                if(statusPane.isHover())
+                    isCursorOnGround=false;
+                if(isCursorOnGround && !cursorAnimation.isPlaying){
+                    cursorAnimation.play();
+                    cursorAnimation.isPlaying=true;
+                }
+                else if(!isCursorOnGround)
+                    resetCursor();
+            }
+            else
+                resetCursor();
         });
         stage.addEventHandler(MouseEvent.MOUSE_DRAGGED,mouseEvent -> {
-            selectionArea.setVisible(true);
-            selectionArea.setLayoutX(Math.min(mouseEvent.getX()+Math.abs(mapPane.getLayoutX()),oldMouseX));
-            selectionArea.setLayoutY(Math.min(mouseEvent.getY()+Math.abs(mapPane.getLayoutY()),oldMouseY));
-            selectionArea.setWidth(Math.abs(mouseEvent.getX()+Math.abs(mapPane.getLayoutX())-oldMouseX));
-            selectionArea.setHeight(Math.abs(mouseEvent.getY()+Math.abs(mapPane.getLayoutY())-oldMouseY));
+            if(mouseEvent.getButton()==MouseButton.PRIMARY){
+                selectionArea.setVisible(true);
+                selectionArea.setLayoutX(Math.min(mouseEvent.getX()+Math.abs(mapPane.getLayoutX()),oldMouseX));
+                selectionArea.setLayoutY(Math.min(mouseEvent.getY()+Math.abs(mapPane.getLayoutY()),oldMouseY));
+                selectionArea.setWidth(Math.abs(mouseEvent.getX()+Math.abs(mapPane.getLayoutX())-oldMouseX));
+                selectionArea.setHeight(Math.abs(mouseEvent.getY()+Math.abs(mapPane.getLayoutY())-oldMouseY));
+            }
         });
         stage.addEventHandler(MouseEvent.MOUSE_PRESSED,mouseEvent -> {
-            resetSelectionArea();
-            oldMouseX = mouseEvent.getX()+Math.abs(mapPane.getLayoutX());
-            oldMouseY = mouseEvent.getY()+Math.abs(mapPane.getLayoutY());
+            if(mouseEvent.getButton()==MouseButton.PRIMARY){
+                resetSelectionArea();
+                oldMouseX = mouseEvent.getX()+Math.abs(mapPane.getLayoutX());
+                oldMouseY = mouseEvent.getY()+Math.abs(mapPane.getLayoutY());
+            }
         });
         stage.addEventHandler(MouseEvent.MOUSE_RELEASED,mouseEvent -> {
-            int y1=(int)Math.ceil(selectionArea.getY()/40);
-            int y2=(int)Math.floor(selectionArea.getY()/40+selectionArea.getHeight()/40);
-            int x1=(int)Math.ceil(selectionArea.getX()/40);
-            int x2=(int)Math.floor(selectionArea.getX()/40+selectionArea.getWidth()/40);
-            gameMenuController.selectUnit(y1,x1,y2,x2);
-            if(!gameMenuController.getSelectedUnit().isEmpty()){
-                unitSelectionBar();
-                clearStatusBar();
-                selectedUnitBar.setVisible(true);
+            if(mouseEvent.getButton()==MouseButton.PRIMARY && selectionArea.getWidth()>1){
+                int y1=(int)Math.ceil(selectionArea.getY()/40);
+                int y2=(int)Math.floor(selectionArea.getY()/40+selectionArea.getHeight()/40);
+                int x1=(int)Math.ceil(selectionArea.getX()/40);
+                int x2=(int)Math.floor(selectionArea.getX()/40+selectionArea.getWidth()/40);
+                gameMenuController.selectUnit(y1,x1,y2,x2);
+                if(!gameMenuController.getSelectedUnit().isEmpty()){
+                    unitSelectionBar();
+                    clearStatusBar();
+                    selectedUnitBar.setVisible(true);
+                }
+                selectionArea.setVisible(false);
             }
-            selectionArea.setVisible(false);
         });
+    }
+
+    private void resetCursor() {
+        cursorAnimation.stop();
+        cursorAnimation.isPlaying=false;
+        Scene scene = rootPane.getScene();
+        Image image1 = new Image(GameGraphics.class.getResource("/Images/Game/Cursors/fook.png").toExternalForm());
+        scene.setCursor(new ImageCursor(image1));
+
     }
 
     private void createSelectionArea() {
@@ -148,8 +175,8 @@ public class GameGraphics extends Application {
     }
 
     private void resetSelectionArea() {
-        selectionArea.setLayoutX(-1);
-        selectionArea.setLayoutY(-1);
+        selectionArea.setLayoutX(50000);
+        selectionArea.setLayoutY(50000);
         selectionArea.setWidth(0);
         selectionArea.setHeight(0);
     }
@@ -191,6 +218,8 @@ public class GameGraphics extends Application {
                 @Override
                 public void handle(MouseEvent mouseEvent) {
                     if(mouseEvent.getButton() == MouseButton.PRIMARY){
+                        resetSelectionArea();
+                        gameMenuController.getSelectedUnit().clear();
                         clearStatusBar();
                         createBuilding.get(j-1).setVisible(true);
                     }
@@ -234,6 +263,8 @@ public class GameGraphics extends Application {
                             selectBuildingToBeBuilt = new StackPane(imageView1);
                             mapPane.getChildren().add(selectBuildingToBeBuilt);
                             selectBuildingToBeBuilt.setVisible(false);
+                            resetSelectionArea();
+                            gameMenuController.getSelectedUnit().clear();
                         }
                     }
                 });
@@ -295,12 +326,12 @@ public class GameGraphics extends Application {
             case NOT_ENOUGH_GOLD -> addToMessageBar("Not enough gold!");
             case NOT_ENOUGH_RESOURCES -> addToMessageBar("Not enough resources!");
             case UNIT_CREATED_SUCCESSFULLY -> {
-                ImageView imageView = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Soldiers/"+name+"/down/anim1.png").toExternalForm()));
-                mapPane.getChildren().add(imageView);
-                imageView.setLayoutX(50);
-                imageView.setLayoutY(50);
-                imageView.setFitWidth(20);
-                imageView.setPreserveRatio(true);
+                for(Unit unit :gameMenuController.createdUnit){
+                    PersonPane personPane = new PersonPane(name,unit);
+                    mapPane.getChildren().add(personPane);
+                    gameMenuController.addHealthBarListener(personPane.getHealthBar(),unit);
+                }
+                gameMenuController.createdUnit.clear();
             }
         }
     }
@@ -353,12 +384,17 @@ public class GameGraphics extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if(mouseEvent.getButton() == MouseButton.SECONDARY) {
+                    resetCursor();
+                    resetSelectionArea();
+                    gameMenuController.getSelectedUnit().clear();
                     emptySelection();
                     selectedUnitBar.setVisible(false);
                 }
-                if(buildingToBeBuilt!=null) {
+                if(mouseEvent.getButton() == MouseButton.PRIMARY) {
+                    if(buildingToBeBuilt!=null) {
 //                    if(selectBuildingToBeBuilt.getLayoutX())
-                    dropBuilding(mouseEvent);
+                        dropBuilding(mouseEvent);
+                    }
                 }
             }
         });
@@ -403,6 +439,8 @@ public class GameGraphics extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if(mouseEvent.getButton()==MouseButton.PRIMARY){
+                    resetSelectionArea();
+                    gameMenuController.getSelectedUnit().clear();
                     ImageView imageView = (ImageView) stackPane.getChildren().get(0);
                     String buildingName = getPhotoName(imageView.getImage().getUrl());
                     clearStatusBar();

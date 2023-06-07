@@ -13,6 +13,7 @@ import java.io.IOException;
 
 import controller.Controller;
 import controller.Messages;
+import view.PersonPane;
 //import net.bytebuddy.implementation.bytecode.ByteCodeAppender.Size;
 
 public class Game {
@@ -67,8 +68,9 @@ public class Game {
         return false;
     }
 
-    public void createTroop(UnitTypes unitType, int count) {
+    public ArrayList<Unit> createTroop(UnitTypes unitType, int count) {
         currentGovernment.changeGold(-count * unitType.getGoldNeeded());
+        ArrayList<Unit> units = new ArrayList<>();
         for (Resources resource : unitType.getResourcesNeeded())
             currentGovernment.changeResources(resource, -count);
         for (int i = 0; i < count; i++) {
@@ -86,9 +88,13 @@ public class Game {
                 unit = new Unit(unitType, location, currentGovernment);
             map.getMapPixel(location[0], location[1]).addPerson(unit);
             currentGovernment.addPerson(unit);
+            units.add(unit);
         }
         changePeasant(-count, currentGovernment);
+        return units;
     }
+
+
 
     private void changePeasant(int count, Government government) {
         government.changePeasant(count);
