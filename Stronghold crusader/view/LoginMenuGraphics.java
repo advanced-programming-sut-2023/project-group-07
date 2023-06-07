@@ -65,6 +65,9 @@ public class LoginMenuGraphics extends Application {
     private Text sloganCheck;
     private Button randomSloganButton;
     private TextField sloganField;
+    private Label recoveryQuestion;
+    private TextField recoveryAnswerField;
+    private Text recoveryAnswerCheck;
     @FXML
     private CheckBox showHideNewPassword;
     private Pane rootPane;
@@ -98,7 +101,7 @@ public class LoginMenuGraphics extends Application {
         addEmailListener();
         addNickNameListener();
         initializeCaptcha();
-        addRecoveryAnswerListener();
+        addSignupRecoveryAnswerListener();
         addSignupCaptchaListener();
         addLoginCaptchaListener();
         addForgetPasswordUsernameListener();
@@ -217,7 +220,7 @@ public class LoginMenuGraphics extends Application {
             passwordField.setStyle("-fx-border-color: lightgray");
             passwordTextField.setStyle("-fx-border-color: lightgray");
             if (controller.usernameExistenceCheck(usernameLogin.getText()) == null && !usernameLogin.getText().isEmpty()) {
-                usernameLoginCheck.setText("Username doesn't exists!");
+                usernameLoginCheck.setText("Username not found!");
                 usernameLogin.setStyle("-fx-border-color: red");
             } else {
                 usernameLoginCheck.setText("");
@@ -542,7 +545,7 @@ public class LoginMenuGraphics extends Application {
     }
 
     private void recoveryQuestionCheckCaptcha(String captcha) {
-        if (!captcha.isBlank() && !captcha.equals(String.valueOf(controller.getCurrentCaptcha()))) {
+        if (!captcha.equals(String.valueOf(controller.getCurrentCaptcha()))) {
             ((Text) ((HBox) ((VBox) getRecoveryQuestionChild(5)).getChildren().get(1)).getChildren().get(1)).setText("incorrect captcha!");
             ((TextField) ((HBox) ((VBox) getRecoveryQuestionChild(5)).getChildren().get(1)).getChildren().get(0)).setStyle("-fx-border-color: red");
         }
@@ -561,44 +564,90 @@ public class LoginMenuGraphics extends Application {
             ((Text) getRecoveryQuestionChild(4)).setText("this field is empty!");
             ((TextField) getRecoveryQuestionChild(2)).setStyle("-fx-border-color: red");
         }
-        if (captcha.isBlank()) {
-            ((Text) ((HBox) ((VBox) getRecoveryQuestionChild(5)).getChildren().get(1)).getChildren().get(1)).setText("this field is empty!");
-            ((TextField) ((HBox) ((VBox) getRecoveryQuestionChild(5)).getChildren().get(1)).getChildren().get(0)).setStyle("-fx-border-color: red");
-        }
     }
 
-    private boolean checkForgetPasswordUsernameField(TextField usernameField, Text text) {
-        String username = usernameField.getText();
-        if (username.isBlank()) {
-            text.setText("this field is empty!");
-            usernameField.setStyle("-fx-border-color: red");
+    private boolean checkRecoveryAnswer() {
+        if (recoveryQuestion == null)
             return false;
-        } else if (User.getUserByUsername(username) == null) {
-            text.setText("Username not found!");
-            usernameField.setStyle("-fx-border-color: red");
+        User user = User.getUserByUsername(((TextField) getForgetPasswordChild(1)).getText());
+        String recoveryAnswer = recoveryAnswerField.getText();
+        if (recoveryAnswer.equals(user.getPasswordRecoveryAnswer()))
+            return true;
+        else {
+            recoveryAnswerCheck.setText("incorrect answer!");
+            recoveryAnswerField.setStyle("-fx-border-color: red");
             return false;
         }
-        return true;
     }
 
     private boolean checkNewPasswordField(PasswordField passwordField, PasswordField passwordField1) {
-        if (!passwordField.getText().equals(passwordField1.getText()))
-            return false;
-        if (!User.isPasswordStrong(passwordField.getText()).equals(Messages.STRONG_PASSWORD))
-            return false;
-        return true;
+        try {
+            return
+                    controller.forgotPassword(((TextField) getForgetPasswordChild(1)).getText(), passwordField.getText(), passwordField1.getText()).equals(Messages.SUCCESS);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void addForgetPasswordUsernameListener() {
-        TextField textField = (TextField) (forgetPassword.getChildren().get(1));
-        Text text = (Text) (forgetPassword.getChildren().get(2));
-        textField.textProperty().addListener((observableValue, s, t1) -> {
-            textField.setStyle("-fx-border-color: lightgray");
-            text.setText("");
+        TextField usernameField = (TextField) getForgetPasswordChild(1);
+        Text usernameCheck = (Text) getForgetPasswordChild(2);
+        usernameField.textProperty().addListener((observableValue, s, t1) -> {
+            if (t1.isBlank()) {
+                usernameField.setStyle("-fx-border-color: lightgray");
+                usernameCheck.setText("");
+                setRecoveryQuestion(null);
+                return;
+            }
+            User user = User.getUserByUsername(t1);
+            if (user == null) {
+                usernameField.setStyle("-fx-border-color: red");
+                usernameCheck.setText("username not found!");
+            } else {
+                usernameField.setStyle("-fx-border-color: lightgray");
+                usernameCheck.setText("");
+            }
+            setRecoveryQuestion(user);
         });
     }
 
+    private void setRecoveryQuestion(User user) {
+        if (user != null) {
+            recoveryQuestion = new Label(user.getPasswordRecoveryQuestion().toString());
+            recoveryQuestion.setTextFill(Color.DARKORANGE);
+            recoveryQuestion.setStyle("-fx-font-size: 15");
+            recoveryAnswerCheck = new Text();
+            recoveryAnswerCheck.setFill(Color.RED);
+            recoveryAnswerField = new TextField();
+            recoveryAnswerField.setPromptText("answer");
+            recoveryAnswerField.setPrefWidth(120);
+            addRecoveryAnswerListener();
+            forgetPassword.add(recoveryQuestion, 0, 2);
+            forgetPassword.add(recoveryAnswerField, 0, 3);
+            forgetPassword.add(recoveryAnswerCheck, 1, 3);
+            GridPane.setRowIndex(forgetPassword.getChildren().get(3), 4);
+            GridPane.setRowIndex(forgetPassword.getChildren().get(4), 5);
+        } else if (recoveryQuestion != null){
+            forgetPassword.getChildren().remove(recoveryQuestion);
+            forgetPassword.getChildren().remove(recoveryAnswerField);
+            forgetPassword.getChildren().remove(recoveryAnswerCheck);
+            GridPane.setRowIndex(forgetPassword.getChildren().get(3), 2);
+            GridPane.setRowIndex(forgetPassword.getChildren().get(4), 3);
+            recoveryQuestion = null;
+            recoveryAnswerField = null;
+        }
+    }
+
     private void addRecoveryAnswerListener() {
+        recoveryAnswerField.textProperty().addListener(((observableValue, s, t1) -> {
+            recoveryAnswerCheck.setText("");
+            recoveryAnswerField.setStyle("-fx-border-color: lightgray");
+        }));
+    }
+
+    private void addSignupRecoveryAnswerListener() {
         TextField answerField = (TextField) getRecoveryQuestionChild(1);
         TextField answerConfirmField = (TextField) getRecoveryQuestionChild(2);
         Text answerCheck = (Text) getRecoveryQuestionChild(3);
@@ -649,6 +698,10 @@ public class LoginMenuGraphics extends Application {
         return recoveryQuestionMenu.getChildren().get(index);
     }
 
+    private Node getForgetPasswordChild(int index) {
+        return forgetPassword.getChildren().get(index);
+    }
+
     private Node getEnteringNewPasswordChild(int index) {
         return enteringNewPassword.getChildren().get(index);
     }
@@ -657,22 +710,51 @@ public class LoginMenuGraphics extends Application {
         MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, false, menuBox.getBoundsInParent().getCenterX(), 2, 1, 1);
         menuFadeTransition.play();
         emptyFields(forgetPassword);
+        setRecoveryQuestion(null);
     }
 
     public void enteringNewPassword(MouseEvent mouseEvent) {
-        if (checkForgetPasswordUsernameField((TextField) forgetPassword.getChildren().get(1), (Text) forgetPassword.getChildren().get(2))) {
+        forgetPasswordCheckForEmptyFields();
+        if (checkRecoveryAnswer()) {
             MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, true, menuBox.getBoundsInParent().getCenterX(), 0, 1, 1);
             menuFadeTransition.play();
         }
     }
 
+    private void forgetPasswordCheckForEmptyFields() {
+        TextField usernameFiled = (TextField) getForgetPasswordChild(1);
+        Text usernameCheck = (Text) getForgetPasswordChild(2);
+        if (usernameFiled.getText().isBlank()) {
+            usernameFiled.setStyle("-fx-border-color: red");
+            usernameCheck.setText("this field is empty!");
+        }
+    }
+
     public void passwordChange(MouseEvent mouseEvent) {
-        if (checkNewPasswordField((PasswordField) getEnteringNewPasswordChild(1), (PasswordField) getEnteringNewPasswordChild(2))) {
+        PasswordField passwordField = (PasswordField) getEnteringNewPasswordChild(1);
+        PasswordField passwordConfirmField = (PasswordField) getEnteringNewPasswordChild(2);
+        enteringNewPasswordCheckForEmptyFields(passwordField.getText(), passwordConfirmField.getText());
+        if (checkNewPasswordField(passwordField, passwordConfirmField)) {
             MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, false, menuBox.getBoundsInParent().getCenterX(), 2, 0, 2);
             menuFadeTransition.play();
             emptyFields(enteringNewPassword);
             emptyFields(forgetPassword);
+            setRecoveryQuestion(null);
         }
+    }
+
+    private void enteringNewPasswordCheckForEmptyFields(String password, String passwordConfirm) {
+        if (password.isBlank()) {
+            ((Text) getEnteringNewPasswordChild(5)).setText("this field is empty!");
+            ((PasswordField) getEnteringNewPasswordChild(1)).setStyle("-fx-border-color: red");
+            ((TextField) getEnteringNewPasswordChild(3)).setStyle("-fx-border-color: red");
+        }
+        if (passwordConfirm.isBlank()) {
+            ((Text) getEnteringNewPasswordChild(6)).setText("this field is empty!");
+            ((PasswordField) getEnteringNewPasswordChild(2)).setStyle("-fx-border-color: red");
+            ((TextField) getEnteringNewPasswordChild(4)).setStyle("-fx-border-color: red");
+        }
+
     }
 
     public void backToForgetPassword(MouseEvent mouseEvent) {
@@ -709,8 +791,8 @@ public class LoginMenuGraphics extends Application {
     }
 
     private void loginCheckCaptcha(String captcha) {
-        if (!captcha.isBlank() && !captcha.equals(String.valueOf(controller.getCurrentCaptcha()))) {
-            ((Text) ((HBox) ((VBox) getLoginChild(7)).getChildren().get(1)).getChildren().get(1)).setText("captcha is incorrect!");
+        if (!captcha.equals(String.valueOf(controller.getCurrentCaptcha()))) {
+            ((Text) ((HBox) ((VBox) getLoginChild(7)).getChildren().get(1)).getChildren().get(1)).setText("incorrect captcha!");
             ((TextField) ((HBox) ((VBox) getLoginChild(7)).getChildren().get(1)).getChildren().get(0)).setStyle("-fx-border-color: red");
         }
         else {
@@ -728,10 +810,6 @@ public class LoginMenuGraphics extends Application {
             ((Text) getLoginChild(4)).setText("this field is empty!");
             ((PasswordField) getLoginChild(2)).setStyle("-fx-border-color: red");
             ((TextField) getLoginChild(3)).setStyle("-fx-border-color: red");
-        }
-        if (captcha.isBlank()) {
-            ((Text) ((HBox) ((VBox) getLoginChild(7)).getChildren().get(1)).getChildren().get(1)).setText("this field is empty!");
-            ((TextField) ((HBox) ((VBox) getLoginChild(7)).getChildren().get(1)).getChildren().get(0)).setStyle("-fx-border-color: red");
         }
     }
 

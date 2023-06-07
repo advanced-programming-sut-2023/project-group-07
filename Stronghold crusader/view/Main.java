@@ -44,17 +44,17 @@ public class Main extends Application {
         stage.getIcons().add(img);
         stage.setFullScreen(true);
         Main.stage = stage;
-        ArrayList<Government> governments = new ArrayList<>();
-        LordColor currentLordColor = LordColor.getLordColor(0);
-        governments.add(new Government(LordColor.getLordColor(0), Controller.currentUser, 0,
-                Map.getMaps().get(0).getKeepPosition(currentLordColor)[0],
-                Map.getMaps().get(0).getKeepPosition(currentLordColor)[1]));
-        Controller.currentGame = new Game(Map.getMaps().get(0),governments,2000);
-        GameGraphics gameGraphics = new GameGraphics();
-        GameMenuController gameMenuController= new GameMenuController();
-        gameGraphics.setGameMenuController(gameMenuController);
-        gameGraphics.start(stage);
-//        new LoginMenuGraphics().start(stage);
-//        new LoginMenuGraphics().start(stage);
+//        ArrayList<Government> governments = new ArrayList<>();
+//        LordColor currentLordColor = LordColor.getLordColor(0);
+//        governments.add(new Government(LordColor.getLordColor(0), Controller.currentUser, 0,
+//                Map.getMaps().get(0).getKeepPosition(currentLordColor)[0],
+//                Map.getMaps().get(0).getKeepPosition(currentLordColor)[1]));
+//        Controller.currentGame = new Game(Map.getMaps().get(0),governments,2000);
+//        GameGraphics gameGraphics = new GameGraphics();
+//        GameMenuController gameMenuController= new GameMenuController();
+//        gameGraphics.setGameMenuController(gameMenuController);
+//        gameGraphics.start(stage);
+        new LoginMenuGraphics().start(stage);
+        new LoginMenuGraphics().start(stage);
     }
 }
