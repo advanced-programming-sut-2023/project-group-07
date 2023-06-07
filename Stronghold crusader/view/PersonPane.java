@@ -19,7 +19,23 @@ public class PersonPane extends StackPane {
     private ProgressBar healthBar;
     private Person person;
 
-    public PersonPane(String name,Person person) {
+    public PersonDirection getPersonDirection() {
+        return personDirection;
+    }
+
+    private PersonDirection personDirection;
+
+    public PersonMove getPersonMove() {
+        return personMove;
+    }
+
+    private PersonMove personMove;
+    private GameMenuController gameMenuController;
+
+    public PersonPane(String name,Person person,GameMenuController gameMenuController) {
+        this.gameMenuController = gameMenuController;
+        personDirection = new PersonDirection(GameGraphics.class.getResource("/Images/Game/Soldiers/"+name+"/").toExternalForm(),this,"left");
+        personMove = new PersonMove(this,gameMenuController);
         this.person = person;
         personImage = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Soldiers/"+name+"/down/anim1.png").toExternalForm()));
         VBox vBox = new VBox(5);
@@ -36,8 +52,8 @@ public class PersonPane extends StackPane {
             vBox.getChildren().add(personImage);
         }
         this.getChildren().add(vBox);
-        this.setLayoutX(person.getCurrentLocation()[0]*40);
-        this.setLayoutY(person.getCurrentLocation()[1]*40);
+        this.setLayoutX(person.getCurrentLocation()[1]*40);
+        this.setLayoutY(person.getCurrentLocation()[0]*40);
         personImage.setFitWidth(25);
         personImage.setPreserveRatio(true);
     }
@@ -45,7 +61,15 @@ public class PersonPane extends StackPane {
         this.person = person;
     }
 
+    public Person getPerson() {
+        return person;
+    }
+
     public ProgressBar getHealthBar() {
         return healthBar;
+    }
+
+    public ImageView getPersonImage() {
+        return personImage;
     }
 }

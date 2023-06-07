@@ -364,22 +364,6 @@ public class GameMenuController {
     }
 
     public Messages selectUnit(int frow, int fcolumn, int srow, int scolumn) {
-        if (!areCoordinatesValid(frow, fcolumn) || !areCoordinatesValid(srow, scolumn))
-            return Messages.INVALID_COORDINATES;
-        if (frow > srow || fcolumn > scolumn)
-            return Messages.INVALID_COORDINATES;
-        boolean isUnit = false;
-        for(int i=frow;i<=srow;i++)
-            for(int j=fcolumn;j<scolumn;j++)
-                for (Person person : game.getMap().getMapPixel(i, j).getPeople()) {
-                    if (person instanceof Unit){
-                        Unit unit = (Unit) person;
-                        if(unit.getGovernment().equals(game.getCurrentGovernment()))
-                            isUnit = true;
-                    }
-                }
-        if (!isUnit)
-            return Messages.NO_UNITS_HERE;
         game.selectUnit(frow, fcolumn, srow, scolumn);
         return Messages.UNIT_SELECTED_SUCCESSFULLY;
     }
@@ -393,7 +377,7 @@ public class GameMenuController {
         if (!map.getMapPixel(row, column).getTexture().canDropBuilding()) {
             return Messages.CANT_MOVE_UNITS_TO_THIS_LOCATION;
         }
-        game.moveUnit(row - 1, column - 1);
+        game.moveUnit(row, column);
         return Messages.UNIT_MOVED_SUCCESSFULLY;
     }
 
@@ -787,7 +771,6 @@ public class GameMenuController {
 
     public void addHealthBarListener(ProgressBar healthBar,Unit unit) {
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(100),actionEvent -> {
-            System.out.println((double)unit.getHp()/unit.getType().getHp());
             healthBar.setProgress((double)unit.getHp()/unit.getType().getHp());
             if(healthBar.progressProperty().get()<0.33)
                 healthBar.setStyle("-fx-accent: red");
@@ -795,10 +778,14 @@ public class GameMenuController {
                 healthBar.setStyle("-fx-accent: yellow");
             else
                 healthBar.setStyle("-fx-accent: green");
-            healthBar.setVisible(!getSelectedUnit().isEmpty());
+            healthBar.setVisible(getSelectedUnit().contains(unit));
         }));
         timeline.setCycleCount(-1);
         timeline.play();
+    }
+
+    public void applyPersonMove(Person person) {
+        game.applyPersonMove(person);
     }
 
 

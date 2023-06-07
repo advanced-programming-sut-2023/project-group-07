@@ -5,6 +5,7 @@ import controller.GameMenuController;
 import controller.Messages;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.animation.Transition;
 import javafx.application.Application;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableIntegerValue;
@@ -38,6 +39,8 @@ public class GameGraphics extends Application {
     private Pane mapPane;
     private ArrayList<HBox> createBuilding = new ArrayList<>();
     private ArrayList<StackPane> buildings = new ArrayList<>();
+    private ArrayList<PersonPane> people = new ArrayList<>();
+    private ArrayList<PersonPane> selectedUnits = new ArrayList<>();
     private String buildingToBeBuilt;
     private StackPane selectBuildingToBeBuilt;
     private Map map;
@@ -110,12 +113,7 @@ public class GameGraphics extends Application {
                 }
             }
             if(!gameMenuController.getSelectedUnit().isEmpty()){
-                boolean isCursorOnGround = true;
-                for(StackPane stackPane:buildings)
-                    if(stackPane.isHover())
-                        isCursorOnGround = false;
-                if(statusPane.isHover())
-                    isCursorOnGround=false;
+                boolean isCursorOnGround = isCursorOnGround();
                 if(isCursorOnGround && !cursorAnimation.isPlaying){
                     cursorAnimation.play();
                     cursorAnimation.isPlaying=true;
@@ -144,11 +142,21 @@ public class GameGraphics extends Application {
         });
         stage.addEventHandler(MouseEvent.MOUSE_RELEASED,mouseEvent -> {
             if(mouseEvent.getButton()==MouseButton.PRIMARY && selectionArea.getWidth()>1){
-                int y1=(int)Math.ceil(selectionArea.getY()/40);
-                int y2=(int)Math.floor(selectionArea.getY()/40+selectionArea.getHeight()/40);
-                int x1=(int)Math.ceil(selectionArea.getX()/40);
-                int x2=(int)Math.floor(selectionArea.getX()/40+selectionArea.getWidth()/40);
+                int y1=(int)Math.floor(selectionArea.getLayoutY()/40);
+                int y2=(int)Math.floor(selectionArea.getLayoutY()/40+selectionArea.getHeight()/40);
+                int x1=(int)Math.floor(selectionArea.getLayoutX()/40);
+                int x2=(int)Math.floor(selectionArea.getLayoutX()/40+selectionArea.getWidth()/40);
+                gameMenuController.getSelectedUnit().clear();
+                selectedUnits.clear();
                 gameMenuController.selectUnit(y1,x1,y2,x2);
+                for(Person person: gameMenuController.getSelectedUnit()) {
+                    for(PersonPane personPane : people){
+                        if(personPane.getPerson().equals(person)){
+                            selectedUnits.add(personPane);
+                            break;
+                        }
+                    }
+                }
                 if(!gameMenuController.getSelectedUnit().isEmpty()){
                     unitSelectionBar();
                     clearStatusBar();
@@ -157,6 +165,16 @@ public class GameGraphics extends Application {
                 selectionArea.setVisible(false);
             }
         });
+    }
+
+    private boolean isCursorOnGround() {
+        boolean isCursorOnGround = true;
+        for(StackPane stackPane:buildings)
+            if(stackPane.isHover())
+                isCursorOnGround = false;
+        if(statusPane.isHover())
+            isCursorOnGround=false;
+        return isCursorOnGround;
     }
 
     private void resetCursor() {
@@ -220,6 +238,7 @@ public class GameGraphics extends Application {
                     if(mouseEvent.getButton() == MouseButton.PRIMARY){
                         resetSelectionArea();
                         gameMenuController.getSelectedUnit().clear();
+                        selectedUnits.clear();
                         clearStatusBar();
                         createBuilding.get(j-1).setVisible(true);
                     }
@@ -265,6 +284,7 @@ public class GameGraphics extends Application {
                             selectBuildingToBeBuilt.setVisible(false);
                             resetSelectionArea();
                             gameMenuController.getSelectedUnit().clear();
+                            selectedUnits.clear();
                         }
                     }
                 });
@@ -311,7 +331,7 @@ public class GameGraphics extends Application {
                         stackPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
                             @Override
                             public void handle(MouseEvent mouseEvent) {
-                                createUnit("arabian swordsman");
+                                createUnit(file.getName().substring(0,file.getName().length()-".png".length()));
                             }
                         });
                     }
@@ -320,14 +340,15 @@ public class GameGraphics extends Application {
     }
 
     private void createUnit(String name) {
-        Messages message = gameMenuController.createUnit("arabian swordsman",4);
+        Messages message = gameMenuController.createUnit(name,1);
         switch (message) {
             case NOT_ENOUGH_PEASANTS -> addToMessageBar("Not enough peasants!");
             case NOT_ENOUGH_GOLD -> addToMessageBar("Not enough gold!");
             case NOT_ENOUGH_RESOURCES -> addToMessageBar("Not enough resources!");
             case UNIT_CREATED_SUCCESSFULLY -> {
                 for(Unit unit :gameMenuController.createdUnit){
-                    PersonPane personPane = new PersonPane(name,unit);
+                    PersonPane personPane = new PersonPane(name,unit,gameMenuController);
+                    people.add(personPane);
                     mapPane.getChildren().add(personPane);
                     gameMenuController.addHealthBarListener(personPane.getHealthBar(),unit);
                 }
@@ -387,6 +408,7 @@ public class GameGraphics extends Application {
                     resetCursor();
                     resetSelectionArea();
                     gameMenuController.getSelectedUnit().clear();
+                    selectedUnits.clear();
                     emptySelection();
                     selectedUnitBar.setVisible(false);
                 }
@@ -398,7 +420,28 @@ public class GameGraphics extends Application {
                 }
             }
         });
+        mapPane.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if(mouseEvent.getButton() == MouseButton.PRIMARY) {
+                    if(!gameMenuController.getSelectedUnit().isEmpty() && isCursorOnGround()) {
+                        for(PersonPane personPane: selectedUnits){
+                            Unit unit = (Unit)(personPane.getPerson());
+                            gameMenuController.moveUnit((int)((mouseEvent.getY()+Math.abs(mapPane.getLayoutY()))/40),(int)((mouseEvent.getX()+Math.abs(mapPane.getLayoutX()))/40));
+                            for(int[] a:unit.getMovePattern())
+                                System.out.println(a[0]+"  "+a[1]);
+                            if(unit.getMovePattern()!=null && !unit.getMovePattern().isEmpty()){
+                                personPane.getPersonDirection().play();
+                                personPane.getPersonMove().play();
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
+
+
 
     private void emptySelection() {
         buildingToBeBuilt=null;
@@ -441,6 +484,7 @@ public class GameGraphics extends Application {
                 if(mouseEvent.getButton()==MouseButton.PRIMARY){
                     resetSelectionArea();
                     gameMenuController.getSelectedUnit().clear();
+                    selectedUnits.clear();
                     ImageView imageView = (ImageView) stackPane.getChildren().get(0);
                     String buildingName = getPhotoName(imageView.getImage().getUrl());
                     clearStatusBar();

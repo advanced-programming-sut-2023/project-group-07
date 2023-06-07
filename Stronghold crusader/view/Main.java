@@ -49,7 +49,7 @@ public class Main extends Application {
         governments.add(new Government(LordColor.getLordColor(0), Controller.currentUser, 0,
                 Map.getMaps().get(0).getKeepPosition(currentLordColor)[0],
                 Map.getMaps().get(0).getKeepPosition(currentLordColor)[1]));
-        Controller.currentGame = new Game(Map.getMaps().get(0),governments,2000);
+        Controller.currentGame = new Game(Map.getMaps().get(1),governments,2000);
         GameGraphics gameGraphics = new GameGraphics();
         GameMenuController gameMenuController= new GameMenuController();
         gameGraphics.setGameMenuController(gameMenuController);
