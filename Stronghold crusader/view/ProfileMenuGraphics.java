@@ -27,7 +27,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class ProfileMenuGraphics extends Application {
     private final ProfileMenuController controller = new ProfileMenuController();
-    private static Stage stage;
+    private static Stage stage = null;
     private Scene scene;
     private static Pane pane;
 
@@ -91,6 +91,8 @@ public class ProfileMenuGraphics extends Application {
     private Button chooseFromDeviceButton;
     @FXML
     private Button chooseAnExistingAvatarButton;
+    @FXML
+    private Button enterScoreBoardButton;
 
 
     @FXML
@@ -238,7 +240,7 @@ public class ProfileMenuGraphics extends Application {
 
     private void setAvatar() {
 //        Image image = new Image(ProfileMenuGraphics.class.getResource("/Images/Avatars/" + controller.getAvatarName()).toString(),
-//                Main.screenWidth, Main.getScreenHeight, false, false);
+//                Main.screenWidth, Main.screenHeight, false, false);
 //        avatar.setFill(new ImagePattern(image));
     }
 
@@ -480,7 +482,8 @@ public class ProfileMenuGraphics extends Application {
         chooseFromDeviceButton.setVisible(true);
     }
 
-    public void chooseAvatarFromDevice(MouseEvent mouseEvent) {
+    @FXML
+    private void chooseAvatarFromDevice(MouseEvent mouseEvent) {
         FileChooser fileChooser = new FileChooser();
         stage.setFullScreen(false);
         File avatarFile = fileChooser.showOpenDialog(stage);
@@ -513,7 +516,8 @@ public class ProfileMenuGraphics extends Application {
         return null;
     }
 
-    public void chooseAnExistingAvatar(MouseEvent mouseEvent) {
+    @FXML
+    private void chooseAnExistingAvatar(MouseEvent mouseEvent) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(
                 ProfileMenuGraphics.class.getResource
@@ -527,6 +531,16 @@ public class ProfileMenuGraphics extends Application {
         }
         resetFields();
     }
+    @FXML
+    private void enterScoreBoard(){
+        //stage.close();
+        new ScoreBoardGraphics().start(new Stage());
+    }
+
     // TODO: 5/28/2023 captcha
     // TODO: 5/28/2023 add score board
+    public static Stage stage(){
+        if (stage == null) return new Stage();
+        return stage;
+    }
 }

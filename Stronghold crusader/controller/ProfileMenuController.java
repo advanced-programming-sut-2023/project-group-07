@@ -4,9 +4,20 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
 import model.*;
+import view.ProfileMenuGraphics;
 
 public class ProfileMenuController {
     private User currentUser = Controller.currentUser;
+    private static ProfileMenuGraphics profileMenuGraphics = null;
+
+    public static ProfileMenuGraphics profileMenuGraphics() {
+        if (profileMenuGraphics == null) profileMenuGraphics = new ProfileMenuGraphics();
+        return profileMenuGraphics;
+    }
+
+    public static void setProfileMenuGraphics(ProfileMenuGraphics profileMenuGraphics) {
+        ProfileMenuController.profileMenuGraphics = profileMenuGraphics;
+    } // TODO: 6/7/2023 is there any better way to have access to profileMenuGraphics?
 
     public void refreshProfile() {
         this.currentUser = Controller.currentUser;

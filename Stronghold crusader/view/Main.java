@@ -53,5 +53,6 @@ public class Main extends Application {
         gameGraphics.start(stage);
 //        new LoginMenuGraphics().start(stage); // TODO: 5/28/2023
 //        new LoginMenuGraphics().start(stage);
+
     }
 }

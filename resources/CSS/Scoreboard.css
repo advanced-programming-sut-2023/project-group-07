@@ -1,0 +1,4 @@
+.label-style{
+    -fx-text-fill:
+            linear-gradient(#ffd65b, #e68400);
+}

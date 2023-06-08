@@ -121,5 +121,6 @@
         </PasswordField>
       <Button fx:id="chooseFromDeviceButton" layoutX="294.0" layoutY="505.0" mnemonicParsing="false" onMouseClicked="#chooseAvatarFromDevice" text="choose form device" />
       <Button fx:id="chooseAnExistingAvatarButton" layoutX="279.0" layoutY="593.0" mnemonicParsing="false" onMouseClicked="#chooseAnExistingAvatar" text="choose an existing avatar" />
+      <Button fx:id="enterScoreBoardButton" layoutX="502.0" layoutY="505.0" mnemonicParsing="false" onMouseClicked="#enterScoreBoard" prefHeight="226.0" prefWidth="234.0" text="enter scoreboard" />
     </children>
 </AnchorPane>
