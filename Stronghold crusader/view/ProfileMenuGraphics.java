@@ -104,6 +104,7 @@ public class ProfileMenuGraphics extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        stage.setFullScreen(true);
         ProfileMenuGraphics.stage = stage;
         URL url = LoginMenuGraphics.class.getResource("/FXML/ProfileMenu.fxml");
         pane = FXMLLoader.load(url);
@@ -239,9 +240,11 @@ public class ProfileMenuGraphics extends Application {
     }
 
     private void setAvatar() {
-//        Image image = new Image(ProfileMenuGraphics.class.getResource("/Images/Avatars/" + controller.getAvatarName()).toString(),
-//                Main.screenWidth, Main.screenHeight, false, false);
-//        avatar.setFill(new ImagePattern(image));
+        String address = ProfileMenuGraphics.class.getResource("/Images/Avatars/" + controller.getAvatarName())
+                .toExternalForm();
+        Image image = new Image(address,
+                Main.screenWidth, Main.screenHeight, false, false);
+        avatar.setFill(new ImagePattern(image));
     }
 
     @FXML
@@ -533,12 +536,11 @@ public class ProfileMenuGraphics extends Application {
     }
     @FXML
     private void enterScoreBoard(){
-        //stage.close();
+        stage.setFullScreen(false);
         new ScoreBoardGraphics().start(new Stage());
     }
 
     // TODO: 5/28/2023 captcha
-    // TODO: 5/28/2023 add score board
     public static Stage stage(){
         if (stage == null) return new Stage();
         return stage;

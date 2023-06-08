@@ -18,7 +18,7 @@ import model.Map;
 import view.MenuPrinter;
 
 public class Controller {
-    public static User currentUser; // TODO: 5/28/2023
+    public static User currentUser = User.getUsers().get(0); // TODO: 6/8/2023
     public static Game currentGame;
     public static final MenuPrinter menuPrinter = new MenuPrinter();
     private static Random random;

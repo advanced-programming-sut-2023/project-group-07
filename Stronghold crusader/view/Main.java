@@ -53,9 +53,10 @@ public class Main extends Application {
         GameGraphics gameGraphics = new GameGraphics();
         GameMenuController gameMenuController= new GameMenuController();
         gameGraphics.setGameMenuController(gameMenuController);
-        gameGraphics.start(stage);
+//        gameGraphics.start(stage);
 //        new LoginMenuGraphics().start(stage);
 //        new LoginMenuGraphics().start(stage);
+        new ProfileMenuGraphics().start(stage);
 
     }
 }
