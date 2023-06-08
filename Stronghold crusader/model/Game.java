@@ -13,6 +13,7 @@ import java.io.IOException;
 
 import controller.Controller;
 import controller.Messages;
+import view.PersonPane;
 //import net.bytebuddy.implementation.bytecode.ByteCodeAppender.Size;
 
 public class Game {
@@ -67,14 +68,14 @@ public class Game {
         return false;
     }
 
-    public void createTroop(UnitTypes unitType, int count) {
+    public ArrayList<Unit> createTroop(UnitTypes unitType, int count) {
         currentGovernment.changeGold(-count * unitType.getGoldNeeded());
+        ArrayList<Unit> units = new ArrayList<>();
         for (Resources resource : unitType.getResourcesNeeded())
             currentGovernment.changeResources(resource, -count);
         for (int i = 0; i < count; i++) {
-            int[] location = new int[] {5,5}; //TODO change this fooking shit you fookingfook
-//            int[] location = new int[] { map.getKeepPosition(currentGovernment.getColor())[0] + 7,
-//                    map.getKeepPosition(currentGovernment.getColor())[1] + 3 };
+            int[] location = new int[] { map.getKeepPosition(currentGovernment.getColor())[0] + 7,
+                    map.getKeepPosition(currentGovernment.getColor())[1] + 3 };
             Unit unit;
             if (unitType.equals(UnitTypes.TUNNELER)) {
                 Tunneler tunneler = new Tunneler(unitType, new int[] { location[0], location[1] }, currentGovernment);
@@ -86,9 +87,13 @@ public class Game {
                 unit = new Unit(unitType, location, currentGovernment);
             map.getMapPixel(location[0], location[1]).addPerson(unit);
             currentGovernment.addPerson(unit);
+            units.add(unit);
         }
         changePeasant(-count, currentGovernment);
+        return units;
     }
+
+
 
     private void changePeasant(int count, Government government) {
         government.changePeasant(count);
@@ -235,14 +240,12 @@ public class Game {
                             map.getPathList(person.currentLocation[0], person.currentLocation[1], row, column,
                                     unit.getType().equals(UnitTypes.ASSASSIN)));
                     unit.setPatrolling(false);
-                    applyPersonMove(person);
                     unit.setAttacking(false);
                     unit.setPatrolling(false);
                     unit.setAreaAttacking(false);
                     unit.setAttackingBuilding(false);
                 }
             }
-        selectedUnit.clear();
     }
 
     public void updateMovePatterns(Government government) { // vaghti ke pattern dakhelesh divar bashe chi mishe?

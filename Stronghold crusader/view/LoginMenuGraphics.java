@@ -4,7 +4,11 @@ import controller.LoginMenuController;
 import controller.Controller;
 import controller.Messages;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -28,29 +32,46 @@ import model.User;
 import java.io.IOException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class LoginMenuGraphics extends Application {
 
     private final LoginMenuController controller = new LoginMenuController();
-    public Button signUpButton;
-    public HBox menuBox;
-    public GridPane loginMenu;
-    public GridPane signUpMenu;
-    public GridPane recoveryQuestionMenu;
-    public GridPane forgetPassword;
-    public GridPane enteringNewPassword;
-    public CheckBox showHideSignUp;
-    public CheckBox showHideLogin;
-    public Text loginError;
-    public Text signUpError;
-    public CheckBox sloganBox;
-    public Text sloganCheck;
-    public Button randomSloganButton;
-    public TextField sloganField;
-    public CheckBox showHideNewPassword;
-
-
+    @FXML
+    private Button signUpButton;
+    @FXML
+    private HBox menuBox;
+    @FXML
+    private GridPane loginMenu;
+    @FXML
+    private GridPane signUpMenu;
+    @FXML
+    private GridPane recoveryQuestionMenu;
+    @FXML
+    private GridPane forgetPassword;
+    @FXML
+    private GridPane enteringNewPassword;
+    @FXML
+    private CheckBox showHideSignUp;
+    @FXML
+    private CheckBox showHideLogin;
+    @FXML
+    private Text loginError;
+    @FXML
+    private Text signUpError;
+    @FXML
+    private CheckBox sloganBox;
+    private Text sloganCheck;
+    private Button randomSloganButton;
+    private TextField sloganField;
+    private Label recoveryQuestion;
+    private TextField recoveryAnswerField;
+    private Text recoveryAnswerCheck;
+    @FXML
+    private CheckBox showHideNewPassword;
     private Pane rootPane;
+    private Timer loginPasswordTimer;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -58,16 +79,6 @@ public class LoginMenuGraphics extends Application {
         Pane pane = FXMLLoader.load(url);
         rootPane = pane;
         Scene scene = new Scene(pane);
-
-
-//        Dimension resolution = Toolkit.getDefaultToolkit().getScreenSize();
-//        double width = resolution.getWidth();
-//        double height = resolution.getHeight();
-//        double w = width/1280;
-//        double h = height/720;
-//        Scale scale = new Scale(w,h,0,0);
-//        scene.getRoot().getTransforms().setAll(scale);
-//
         Background background = new Background(new BackgroundImage((new Image(LoginMenuGraphics.class.getResource("/Images/Background/1.jpg").toString(), Main.screenWidth, Main.screenHeight, false, false)),
                 BackgroundRepeat.NO_REPEAT,
                 BackgroundRepeat.NO_REPEAT,
@@ -85,13 +96,37 @@ public class LoginMenuGraphics extends Application {
         addUsernameListener();
         passwordVisibilityToggle();
         addSignUpPasswordListener();
+        addLoginPasswordListener();
         addNewPasswordListener();
         addEmailListener();
         addNickNameListener();
         initializeCaptcha();
+        addSignupRecoveryAnswerListener();
+        addSignupCaptchaListener();
+        addLoginCaptchaListener();
         addForgetPasswordUsernameListener();
+        ((Label) getLoginChild(9)).setStyle("-fx-font-size: 15");
     }
 
+    private void addLoginCaptchaListener() {
+        TextField captchaField = (TextField) ((HBox) ((VBox) getLoginChild(7)).getChildren().get(1)).getChildren().get(0);
+        Text captchaCheck = (Text) ((HBox) ((VBox) getLoginChild(7)).getChildren().get(1)).getChildren().get(1);
+        captchaField.textProperty().addListener(((observableValue, s, t1) -> {
+            captchaCheck.setText("");
+            captchaField.setStyle("-fx-border-color: lightgray");
+        }));
+    }
+
+    private void addLoginPasswordListener() {
+        PasswordField passwordField = (PasswordField) getLoginChild(2);
+        TextField passwordTextField = (TextField) getLoginChild(3);
+        Text passwordLoginCheck = (Text) getLoginChild(4);
+        passwordField.textProperty().addListener(((observableValue, s, t1) -> {
+            passwordLoginCheck.setText("");
+            passwordField.setStyle("-fx-border-color: lightgray");
+            passwordTextField.setStyle("-fx-border-color: lightgray");
+        }));
+    }
 
 
     public void forgotMyPassword(MouseEvent mouseEvent) {
@@ -103,6 +138,35 @@ public class LoginMenuGraphics extends Application {
         MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, true, menuBox.getBoundsInParent().getCenterX(), 2, 3, 1);
         menuFadeTransition.play();
         resetLoginCaptcha();
+    }
+
+    private void setTimer() {
+        if (loginPasswordTimer != null)
+            loginPasswordTimer.cancel();
+        loginPasswordTimer = new Timer();
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (controller.getTimerCount() > 0) {
+                            ((Label) getLoginChild(9)).setText("please try " + controller.getTimerCount() + " seconds later!");
+                            controller.setTimerCount(controller.getTimerCount() - 1);
+                        }
+                        else if (controller.getTimerCount() == 0) {
+                            ((Label) getLoginChild(9)).setText("");
+                            controller.setTimerCount(-1);
+                        }
+                    }
+                });
+            }
+        };
+        loginPasswordTimer.schedule(timerTask, 0, 1000);
+    }
+
+    public void setLoginPasswordTimer(Timer loginPasswordTimer) {
+        this.loginPasswordTimer = loginPasswordTimer;
     }
 
     public void signUpMenu(MouseEvent mouseEvent) throws Exception {
@@ -130,26 +194,35 @@ public class LoginMenuGraphics extends Application {
         Text usernameLoginCheck = (Text) getLoginChild(1);
         TextField usernameSignUp = (TextField) getSignupChild(0);
         Text usernameSignUpCheck = (Text) getSignupChild(1);
+        PasswordField passwordField = (PasswordField) getLoginChild(2);
+        TextField passwordTextField = (TextField) getLoginChild(3);
+        Text passwordLoginCheck = (Text) getLoginChild(4);
         usernameSignUp.textProperty().addListener(((observableValue, s, t1) -> {
             if (!User.isUsernameValid(usernameSignUp.getText()) && !usernameSignUp.getText().isEmpty()) {
                 usernameSignUpCheck.setText("Invalid username format!");
                 usernameSignUp.setStyle("-fx-border-color: red");
-            }
-            else if (controller.usernameExistenceCheck(usernameSignUp.getText()) != null) {
+            } else if (controller.usernameExistenceCheck(usernameSignUp.getText()) != null) {
                 usernameSignUpCheck.setText("Username exists!");
                 usernameSignUp.setStyle("-fx-border-color: red");
-            }
-            else {
+            } else {
                 usernameSignUpCheck.setText("");
                 usernameSignUp.setStyle("-fx-border-color: lightgray");
             }
         }));
         usernameLogin.textProperty().addListener(((observableValue, s, t1) -> {
+            ((Label) getLoginChild(9)).setText("");
+            controller.setTimerCount(-1);
+            if (controller.doeHaveTimer(t1))
+                setTimer();
+            else if (loginPasswordTimer != null)
+                loginPasswordTimer.cancel();
+            passwordLoginCheck.setText("");
+            passwordField.setStyle("-fx-border-color: lightgray");
+            passwordTextField.setStyle("-fx-border-color: lightgray");
             if (controller.usernameExistenceCheck(usernameLogin.getText()) == null && !usernameLogin.getText().isEmpty()) {
-                usernameLoginCheck.setText("Username doesn't exists!");
+                usernameLoginCheck.setText("Username not found!");
                 usernameLogin.setStyle("-fx-border-color: red");
-            }
-            else {
+            } else {
                 usernameLoginCheck.setText("");
                 usernameLogin.setStyle("-fx-border-color: lightgray");
             }
@@ -160,8 +233,8 @@ public class LoginMenuGraphics extends Application {
         passwordFieldBinding((PasswordField) getLoginChild(2), (TextField) getLoginChild(3), showHideLogin);
         passwordFieldBinding((PasswordField) getSignupChild(2), (TextField) getSignupChild(4), showHideSignUp);
         passwordFieldBinding((PasswordField) getSignupChild(3), (TextField) getSignupChild(5), showHideSignUp);
-        passwordFieldBinding((PasswordField)getEnteringNewPasswordChild(1),(TextField)getEnteringNewPasswordChild(3),showHideNewPassword);
-        passwordFieldBinding((PasswordField)getEnteringNewPasswordChild(2),(TextField)getEnteringNewPasswordChild(4),showHideNewPassword);
+        passwordFieldBinding((PasswordField) getEnteringNewPasswordChild(1), (TextField) getEnteringNewPasswordChild(3), showHideNewPassword);
+        passwordFieldBinding((PasswordField) getEnteringNewPasswordChild(2), (TextField) getEnteringNewPasswordChild(4), showHideNewPassword);
     }
 
     private void passwordFieldBinding(PasswordField passwordField, TextField textField, CheckBox checkBox) {
@@ -172,8 +245,8 @@ public class LoginMenuGraphics extends Application {
         textField.textProperty().bindBidirectional(passwordField.textProperty());
     }
 
-    private void addPasswordListener(PasswordField passwordFieldSignUp,PasswordField passwordConfirmFieldSignUp,TextField passwordTextFieldSignup,
-                                     TextField passwordConfirmTextFieldSignup,Text passwordSignUpCheck,Text passwordConfirmSignUpCheck) {
+    private void addPasswordListener(PasswordField passwordFieldSignUp, PasswordField passwordConfirmFieldSignUp, TextField passwordTextFieldSignup,
+                                     TextField passwordConfirmTextFieldSignup, Text passwordSignUpCheck, Text passwordConfirmSignUpCheck) {
         passwordFieldSignUp.textProperty().addListener(((observableValue, s, t1) -> {
             if (t1.isEmpty()) {
                 passwordSignUpCheck.setText("");
@@ -205,8 +278,7 @@ public class LoginMenuGraphics extends Application {
                 passwordConfirmSignUpCheck.setText("");
                 passwordConfirmFieldSignUp.setStyle("-fx-border-color: lightgray");
                 passwordConfirmTextFieldSignup.setStyle("-fx-border-color: lightgray");
-            }
-            else {
+            } else {
                 passwordConfirmSignUpCheck.setText("Passwords do not match!");
                 passwordConfirmFieldSignUp.setStyle("-fx-border-color: red");
                 passwordConfirmTextFieldSignup.setStyle("-fx-border-color: red");
@@ -217,8 +289,7 @@ public class LoginMenuGraphics extends Application {
                 passwordConfirmSignUpCheck.setText("");
                 passwordConfirmFieldSignUp.setStyle("-fx-border-color: lightgray");
                 passwordConfirmTextFieldSignup.setStyle("-fx-border-color: lightgray");
-            }
-            else {
+            } else {
                 passwordConfirmSignUpCheck.setText("Passwords do not match!");
                 passwordConfirmFieldSignUp.setStyle("-fx-border-color: red");
                 passwordConfirmTextFieldSignup.setStyle("-fx-border-color: red");
@@ -233,7 +304,7 @@ public class LoginMenuGraphics extends Application {
         TextField passwordConfirmTextFieldSignup = (TextField) getSignupChild(5);
         Text passwordSignUpCheck = (Text) getSignupChild(6);
         Text passwordConfirmSignUpCheck = (Text) getSignupChild(7);
-        addPasswordListener(passwordFieldSignUp,passwordConfirmFieldSignUp,passwordTextFieldSignup,passwordConfirmTextFieldSignup,passwordSignUpCheck,passwordConfirmSignUpCheck);
+        addPasswordListener(passwordFieldSignUp, passwordConfirmFieldSignUp, passwordTextFieldSignup, passwordConfirmTextFieldSignup, passwordSignUpCheck, passwordConfirmSignUpCheck);
     }
 
     private void addNewPasswordListener() {
@@ -243,8 +314,9 @@ public class LoginMenuGraphics extends Application {
         TextField passwordConfirmTextField = (TextField) getEnteringNewPasswordChild(4);
         Text passwordCheck = (Text) getEnteringNewPasswordChild(5);
         Text passwordConfirmCheck = (Text) getEnteringNewPasswordChild(6);
-        addPasswordListener(passwordField,passwordConfirmField,passwordTextField,passwordConfirmTextField,passwordCheck,passwordConfirmCheck);
+        addPasswordListener(passwordField, passwordConfirmField, passwordTextField, passwordConfirmTextField, passwordCheck, passwordConfirmCheck);
     }
+
     private void addEmailListener() {
         TextField emailField = (TextField) getSignupChild(10);
         Text emailCheck = (Text) getSignupChild(11);
@@ -253,15 +325,13 @@ public class LoginMenuGraphics extends Application {
                 emailCheck.setText("");
                 emailField.setStyle("-fx-border-color: lightgray");
             } else {
-                if(!User.isEmailValid(t1)) {
+                if (!User.isEmailValid(t1)) {
                     emailCheck.setText("Invalid email format!");
                     emailField.setStyle("-fx-border-color: red");
-                }
-                else if (User.getUserByEmail(t1) != null) {
+                } else if (User.getUserByEmail(t1) != null) {
                     emailCheck.setText("Email exists!");
                     emailField.setStyle("-fx-border-color: red");
-                }
-                else {
+                } else {
                     emailCheck.setText("");
                     emailField.setStyle("-fx-border-color: lightgray");
                 }
@@ -306,6 +376,12 @@ public class LoginMenuGraphics extends Application {
                 Text text = (Text) node;
                 text.setText("");
             }
+            if (node instanceof VBox vBox) {
+                HBox hBox = (HBox) vBox.getChildren().get(1);
+                ((TextField) hBox.getChildren().get(0)).setText("");
+                ((TextField) hBox.getChildren().get(0)).setStyle("-fx-border-color: lightgray");
+                ((Text) hBox.getChildren().get(1)).setText("");
+            }
         }
     }
 
@@ -333,7 +409,7 @@ public class LoginMenuGraphics extends Application {
         sloganField = null;
     }
 
-    private void showSlogan () {
+    private void showSlogan() {
         sloganField = new TextField();
         sloganField.setPromptText("Slogan");
         sloganCheck = new Text();
@@ -347,7 +423,7 @@ public class LoginMenuGraphics extends Application {
         GridPane.setRowIndex(signUpMenu.getChildren().get(15), 11);
         GridPane.setRowIndex(signUpMenu.getChildren().get(16), 12);
         signUpMenu.add(sloganField, 0, 9);
-        signUpMenu.add(sloganCheck, 1,9);
+        signUpMenu.add(sloganCheck, 1, 9);
         signUpMenu.add(randomSloganButton, 0, 10);
     }
 
@@ -359,7 +435,7 @@ public class LoginMenuGraphics extends Application {
     }
 
     public void resetLoginCaptcha() {
-        VBox captcha = (VBox) getLoginChild(6);
+        VBox captcha = (VBox) getLoginChild(7);
         HBox captchaBox = (HBox) captcha.getChildren().get(0);
         ImageView captchaImage = (ImageView) captchaBox.getChildren().get(0);
         captchaImage.setImage(controller.generateCaptcha());
@@ -373,7 +449,7 @@ public class LoginMenuGraphics extends Application {
     }
 
     private void initializeCaptcha() {
-        VBox loginCaptcha = (VBox) getLoginChild(6);
+        VBox loginCaptcha = (VBox) getLoginChild(7);
         HBox loginCaptchaBox = (HBox) loginCaptcha.getChildren().get(0);
         VBox signupCaptcha = (VBox) getRecoveryQuestionChild(5);
         HBox signupCaptchaBox = (HBox) signupCaptcha.getChildren().get(0);
@@ -401,8 +477,8 @@ public class LoginMenuGraphics extends Application {
         String nickname = ((TextField) signUpMenu.getChildren().get(12)).getText();
         String slogan = (sloganField == null) ? null : sloganField.getText();
         signupCheckForEmptyFields(username, password, passwordConfirm, email, nickname, slogan);
-        //if(controller.getInformation(username, password, passwordConfirm, email, nickname, slogan).equals(Messages.SUCCESS))
-        pickRecoveryQuestion();
+        if (controller.getInformation(username, password, passwordConfirm, email, nickname, slogan).equals(Messages.SUCCESS))
+            pickRecoveryQuestion();
     }
 
     private void signupCheckForEmptyFields(String username, String password, String passwordConfirm, String email, String nickname, String slogan) {
@@ -434,15 +510,14 @@ public class LoginMenuGraphics extends Application {
             sloganField.setStyle("-fx-border-color: red");
         }
     }
+
     public void pickRecoveryQuestion() {
         MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, false, menuBox.getBoundsInParent().getCenterX(), 5, 4, 1);
-        menuFadeTransition.play(); RadioButton r1 = new RadioButton("male");
+        menuFadeTransition.play();
         recoveryQuestionMenu.add(slogans(), 0, 1);
-        addRecoveryAnswerListener();
-        addCaptchaListener();
     }
 
-    private void addCaptchaListener() {
+    private void addSignupCaptchaListener() {
         TextField captchaField = (TextField) ((HBox) ((VBox) getRecoveryQuestionChild(5)).getChildren().get(1)).getChildren().get(0);
         Text captchaCheck = (Text) ((HBox) ((VBox) getRecoveryQuestionChild(5)).getChildren().get(1)).getChildren().get(1);
         captchaField.textProperty().addListener(((observableValue, s, t1) -> {
@@ -452,16 +527,35 @@ public class LoginMenuGraphics extends Application {
 
     }
 
-    public void signUp(MouseEvent mouseEvent) {
-        System.out.println(recoveryQuestionMenu.getChildren().size());
-        //String recoveryQuestion = ((ComboBox)getRecoveryQuestionChild(7)).getValue().toString();
+    public void signUp(MouseEvent mouseEvent) throws IOException, NoSuchAlgorithmException {
+        String recoveryQuestion = ((ComboBox) getRecoveryQuestionChild(8)).getValue().toString();
         String recoveryAnswer = ((TextField) getRecoveryQuestionChild(1)).getText();
         String recoveryAnswerConfirm = ((TextField) getRecoveryQuestionChild(2)).getText();
         String captcha = ((TextField) ((HBox) ((VBox) getRecoveryQuestionChild(5)).getChildren().get(1)).getChildren().get(0)).getText();
-        recoveryQuestioncheckForEmptyFields(recoveryAnswer, recoveryAnswerConfirm, captcha);
+        recoveryQuestionCheckForEmptyFields(recoveryAnswer, recoveryAnswerConfirm, captcha);
+        recoveryQuestionCheckCaptcha(captcha);
+        if (controller.signUp(recoveryQuestion, recoveryAnswer, recoveryAnswerConfirm, captcha).equals(Messages.SUCCESS)) {
+            emptyFields(signUpMenu);
+            MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, true, menuBox.getBoundsInParent().getCenterX(), 3, 5, 2);
+            menuFadeTransition.play();
+        }
+        else
+            resetSignupCaptcha();
+
     }
 
-    private void recoveryQuestioncheckForEmptyFields(String recoveryAnswer, String recoveryAnswerConfirm, String captcha) {
+    private void recoveryQuestionCheckCaptcha(String captcha) {
+        if (!captcha.equals(String.valueOf(controller.getCurrentCaptcha()))) {
+            ((Text) ((HBox) ((VBox) getRecoveryQuestionChild(5)).getChildren().get(1)).getChildren().get(1)).setText("incorrect captcha!");
+            ((TextField) ((HBox) ((VBox) getRecoveryQuestionChild(5)).getChildren().get(1)).getChildren().get(0)).setStyle("-fx-border-color: red");
+        }
+        else {
+            ((Text) ((HBox) ((VBox) getRecoveryQuestionChild(5)).getChildren().get(1)).getChildren().get(1)).setText("");
+            ((TextField) ((HBox) ((VBox) getRecoveryQuestionChild(5)).getChildren().get(1)).getChildren().get(0)).setStyle("-fx-border-color: lightgray");
+        }
+    }
+
+    private void recoveryQuestionCheckForEmptyFields(String recoveryAnswer, String recoveryAnswerConfirm, String captcha) {
         if (recoveryAnswer.isBlank()) {
             ((Text) getRecoveryQuestionChild(3)).setText("this field is empty!");
             ((TextField) getRecoveryQuestionChild(1)).setStyle("-fx-border-color: red");
@@ -470,45 +564,90 @@ public class LoginMenuGraphics extends Application {
             ((Text) getRecoveryQuestionChild(4)).setText("this field is empty!");
             ((TextField) getRecoveryQuestionChild(2)).setStyle("-fx-border-color: red");
         }
-        if (captcha.isBlank()) {
-            ((Text) ((HBox) ((VBox) getRecoveryQuestionChild(5)).getChildren().get(1)).getChildren().get(1)).setText("this field is empty!");
-            ((TextField) ((HBox) ((VBox) getRecoveryQuestionChild(5)).getChildren().get(1)).getChildren().get(0)).setStyle("-fx-border-color: red");
+    }
+
+    private boolean checkRecoveryAnswer() {
+        if (recoveryQuestion == null)
+            return false;
+        User user = User.getUserByUsername(((TextField) getForgetPasswordChild(1)).getText());
+        String recoveryAnswer = recoveryAnswerField.getText();
+        if (recoveryAnswer.equals(user.getPasswordRecoveryAnswer()))
+            return true;
+        else {
+            recoveryAnswerCheck.setText("incorrect answer!");
+            recoveryAnswerField.setStyle("-fx-border-color: red");
+            return false;
         }
     }
 
-    private boolean checkForgetPasswordUsernameField(TextField usernameField,Text text) {
-        String username = usernameField.getText();
-        if(username.isBlank()) {
-            text.setText("this field is empty!");
-            usernameField.setStyle("-fx-border-color: red");
-            return false;
+    private boolean checkNewPasswordField(PasswordField passwordField, PasswordField passwordField1) {
+        try {
+            return
+                    controller.forgotPassword(((TextField) getForgetPasswordChild(1)).getText(), passwordField.getText(), passwordField1.getText()).equals(Messages.SUCCESS);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
         }
-        else if(User.getUserByUsername(username)==null){
-            text.setText("Username not found!");
-            usernameField.setStyle("-fx-border-color: red");
-            return false;
-        }
-        return true;
-    }
-
-    private boolean checkNewPasswordField(PasswordField passwordField,PasswordField passwordField1) {
-        if(!passwordField.getText().equals(passwordField1.getText()))
-            return false;
-        if(!User.isPasswordStrong(passwordField.getText()).equals(Messages.STRONG_PASSWORD))
-            return false;
-        return true;
     }
 
     private void addForgetPasswordUsernameListener() {
-        TextField textField = (TextField) (forgetPassword.getChildren().get(1));
-        Text text = (Text)(forgetPassword.getChildren().get(2));
-        textField.textProperty().addListener((observableValue, s, t1) -> {
-            textField.setStyle("-fx-border-color: lightgray");
-            text.setText("");
+        TextField usernameField = (TextField) getForgetPasswordChild(1);
+        Text usernameCheck = (Text) getForgetPasswordChild(2);
+        usernameField.textProperty().addListener((observableValue, s, t1) -> {
+            if (t1.isBlank()) {
+                usernameField.setStyle("-fx-border-color: lightgray");
+                usernameCheck.setText("");
+                setRecoveryQuestion(null);
+                return;
+            }
+            User user = User.getUserByUsername(t1);
+            if (user == null) {
+                usernameField.setStyle("-fx-border-color: red");
+                usernameCheck.setText("username not found!");
+            } else {
+                usernameField.setStyle("-fx-border-color: lightgray");
+                usernameCheck.setText("");
+            }
+            setRecoveryQuestion(user);
         });
     }
 
+    private void setRecoveryQuestion(User user) {
+        if (user != null) {
+            recoveryQuestion = new Label(user.getPasswordRecoveryQuestion().toString());
+            recoveryQuestion.setTextFill(Color.DARKORANGE);
+            recoveryQuestion.setStyle("-fx-font-size: 15");
+            recoveryAnswerCheck = new Text();
+            recoveryAnswerCheck.setFill(Color.RED);
+            recoveryAnswerField = new TextField();
+            recoveryAnswerField.setPromptText("answer");
+            recoveryAnswerField.setPrefWidth(120);
+            addRecoveryAnswerListener();
+            forgetPassword.add(recoveryQuestion, 0, 2);
+            forgetPassword.add(recoveryAnswerField, 0, 3);
+            forgetPassword.add(recoveryAnswerCheck, 1, 3);
+            GridPane.setRowIndex(forgetPassword.getChildren().get(3), 4);
+            GridPane.setRowIndex(forgetPassword.getChildren().get(4), 5);
+        } else if (recoveryQuestion != null){
+            forgetPassword.getChildren().remove(recoveryQuestion);
+            forgetPassword.getChildren().remove(recoveryAnswerField);
+            forgetPassword.getChildren().remove(recoveryAnswerCheck);
+            GridPane.setRowIndex(forgetPassword.getChildren().get(3), 2);
+            GridPane.setRowIndex(forgetPassword.getChildren().get(4), 3);
+            recoveryQuestion = null;
+            recoveryAnswerField = null;
+        }
+    }
+
     private void addRecoveryAnswerListener() {
+        recoveryAnswerField.textProperty().addListener(((observableValue, s, t1) -> {
+            recoveryAnswerCheck.setText("");
+            recoveryAnswerField.setStyle("-fx-border-color: lightgray");
+        }));
+    }
+
+    private void addSignupRecoveryAnswerListener() {
         TextField answerField = (TextField) getRecoveryQuestionChild(1);
         TextField answerConfirmField = (TextField) getRecoveryQuestionChild(2);
         Text answerCheck = (Text) getRecoveryQuestionChild(3);
@@ -519,8 +658,7 @@ public class LoginMenuGraphics extends Application {
             if (!answerConfirmField.getText().equals(t1)) {
                 answerConfirmCheck.setText("answer do not match!");
                 answerConfirmField.setStyle("-fx-border-color: red");
-            }
-            else {
+            } else {
                 answerConfirmCheck.setText("");
                 answerConfirmField.setStyle("-fx-border-color: lightgray");
             }
@@ -530,8 +668,7 @@ public class LoginMenuGraphics extends Application {
             if (!answerField.getText().equals(t1)) {
                 answerConfirmCheck.setText("answer do not match!");
                 answerConfirmField.setStyle("-fx-border-color: red");
-            }
-            else {
+            } else {
                 answerConfirmCheck.setText("");
                 answerConfirmField.setStyle("-fx-border-color: lightgray");
             }
@@ -544,7 +681,7 @@ public class LoginMenuGraphics extends Application {
         comboBox.getItems().clear();
         for (RecoveryQuestion recoveryQuestion : RecoveryQuestion.values())
             comboBox.getItems().add(recoveryQuestion.toString());
-        comboBox.setPromptText(RecoveryQuestion.values()[0].toString());
+        comboBox.setValue(RecoveryQuestion.values()[0].toString());
         return comboBox;
     }
 
@@ -561,30 +698,63 @@ public class LoginMenuGraphics extends Application {
         return recoveryQuestionMenu.getChildren().get(index);
     }
 
+    private Node getForgetPasswordChild(int index) {
+        return forgetPassword.getChildren().get(index);
+    }
+
     private Node getEnteringNewPasswordChild(int index) {
-        return  enteringNewPassword.getChildren().get(index);
+        return enteringNewPassword.getChildren().get(index);
     }
 
     public void backToLogin(MouseEvent mouseEvent) {
         MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, false, menuBox.getBoundsInParent().getCenterX(), 2, 1, 1);
         menuFadeTransition.play();
         emptyFields(forgetPassword);
+        setRecoveryQuestion(null);
     }
 
     public void enteringNewPassword(MouseEvent mouseEvent) {
-        if(checkForgetPasswordUsernameField((TextField)forgetPassword.getChildren().get(1),(Text)forgetPassword.getChildren().get(2))){
+        forgetPasswordCheckForEmptyFields();
+        if (checkRecoveryAnswer()) {
             MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, true, menuBox.getBoundsInParent().getCenterX(), 0, 1, 1);
             menuFadeTransition.play();
         }
     }
 
+    private void forgetPasswordCheckForEmptyFields() {
+        TextField usernameFiled = (TextField) getForgetPasswordChild(1);
+        Text usernameCheck = (Text) getForgetPasswordChild(2);
+        if (usernameFiled.getText().isBlank()) {
+            usernameFiled.setStyle("-fx-border-color: red");
+            usernameCheck.setText("this field is empty!");
+        }
+    }
+
     public void passwordChange(MouseEvent mouseEvent) {
-        if(checkNewPasswordField((PasswordField)getEnteringNewPasswordChild(1),(PasswordField)getEnteringNewPasswordChild(2))){
+        PasswordField passwordField = (PasswordField) getEnteringNewPasswordChild(1);
+        PasswordField passwordConfirmField = (PasswordField) getEnteringNewPasswordChild(2);
+        enteringNewPasswordCheckForEmptyFields(passwordField.getText(), passwordConfirmField.getText());
+        if (checkNewPasswordField(passwordField, passwordConfirmField)) {
             MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, false, menuBox.getBoundsInParent().getCenterX(), 2, 0, 2);
             menuFadeTransition.play();
             emptyFields(enteringNewPassword);
             emptyFields(forgetPassword);
+            setRecoveryQuestion(null);
         }
+    }
+
+    private void enteringNewPasswordCheckForEmptyFields(String password, String passwordConfirm) {
+        if (password.isBlank()) {
+            ((Text) getEnteringNewPasswordChild(5)).setText("this field is empty!");
+            ((PasswordField) getEnteringNewPasswordChild(1)).setStyle("-fx-border-color: red");
+            ((TextField) getEnteringNewPasswordChild(3)).setStyle("-fx-border-color: red");
+        }
+        if (passwordConfirm.isBlank()) {
+            ((Text) getEnteringNewPasswordChild(6)).setText("this field is empty!");
+            ((PasswordField) getEnteringNewPasswordChild(2)).setStyle("-fx-border-color: red");
+            ((TextField) getEnteringNewPasswordChild(4)).setStyle("-fx-border-color: red");
+        }
+
     }
 
     public void backToForgetPassword(MouseEvent mouseEvent) {
@@ -593,32 +763,58 @@ public class LoginMenuGraphics extends Application {
         emptyFields(enteringNewPassword);
     }
 
-    public void login(MouseEvent mouseEvent) {
-
+    public void login(MouseEvent mouseEvent) throws IOException, NoSuchAlgorithmException {
+        String username = ((TextField) getLoginChild(0)).getText();
+        String password = ((PasswordField) getLoginChild(2)).getText();
+        String captcha = ((TextField) ((HBox) ((VBox) getLoginChild(7)).getChildren().get(1)).getChildren().get(0)).getText();
+        boolean stayLoggedIn = ((CheckBox) getLoginChild(8)).isSelected();
+        loginCheckForEmptyFields(username, password, captcha, stayLoggedIn);
+        checkPassword(username, password);
+        loginCheckCaptcha(captcha);
+        switch (controller.login(username, password, stayLoggedIn, captcha)) {
+            case WAIT_FOR_LOGIN -> {
+                setTimer();
+                resetLoginCaptcha();
+            }
+            case SUCCESS -> System.out.println("salam");
+            default -> resetLoginCaptcha();
+        }
     }
 
+    private void checkPassword(String username, String password) throws NoSuchAlgorithmException {
+        User user = User.getUserByUsername(username);
+        if (user != null && !user.checkPassword(password)) {
+            ((Text) getLoginChild(4)).setText("incorrect password!");
+            ((PasswordField) getLoginChild(2)).setStyle("-fx-border-color: red");
+            ((TextField) getLoginChild(3)).setStyle("-fx-border-color: red");
+        }
+    }
 
-//    public void createWindow(BorderPane borderPane) {
-//        Scene scene = new Scene(borderPane);
-//        Stage stage = Main.stage;
-//        stage.setScene(scene);
-//        stage.show();
-//    }
+    private void loginCheckCaptcha(String captcha) {
+        if (!captcha.equals(String.valueOf(controller.getCurrentCaptcha()))) {
+            ((Text) ((HBox) ((VBox) getLoginChild(7)).getChildren().get(1)).getChildren().get(1)).setText("incorrect captcha!");
+            ((TextField) ((HBox) ((VBox) getLoginChild(7)).getChildren().get(1)).getChildren().get(0)).setStyle("-fx-border-color: red");
+        }
+        else {
+            ((Text) ((HBox) ((VBox) getLoginChild(7)).getChildren().get(1)).getChildren().get(1)).setText("");
+            ((TextField) ((HBox) ((VBox) getLoginChild(7)).getChildren().get(1)).getChildren().get(0)).setStyle("-fx-border-color: lightgray");
+        }
+    }
 
-//    public void forgotMyPassword(MouseEvent mouseEvent) {
-//        BorderPane borderPane = new BorderPane();
-//        TextField textField = new TextField();
-//        Button button = new Button();
-//        VBox vBox = new VBox();
-//        Text text = new Text("Title");
-//        Text text = new Text(Controller.currentUser.getPasswordRecoveryQuestion().toString());
-//        textField.setPromptText("Answer");
-//        button.setText("Next");
-//        vBox.getChildren().addAll(text,textField,button);
-//        vBox.setSpacing(20);
-//        vBox.setAlignment(Pos.CENTER);
-//        borderPane.setCenter(vBox);
-//        Stage stage = createStage(borderPane);
-//        stage.show();
-//    }
+    private void loginCheckForEmptyFields(String username, String password, String captcha, boolean stayLoggedIn) {
+        if (username.isBlank()) {
+            ((Text) getLoginChild(1)).setText("this field is empty!");
+            ((TextField) getLoginChild(0)).setStyle("-fx-border-color: red");
+        }
+        if (password.isBlank()) {
+            ((Text) getLoginChild(4)).setText("this field is empty!");
+            ((PasswordField) getLoginChild(2)).setStyle("-fx-border-color: red");
+            ((TextField) getLoginChild(3)).setStyle("-fx-border-color: red");
+        }
+    }
+
+    public void backToSignUp(MouseEvent mouseEvent) {
+        MenuFadeTransition menuFadeTransition = new MenuFadeTransition((Pane) Main.stage.getScene().getRoot(), menuBox, true, menuBox.getBoundsInParent().getCenterX(), 4, 5, 1);
+        menuFadeTransition.play();
+    }
 }

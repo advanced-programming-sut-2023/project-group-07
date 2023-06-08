@@ -9,7 +9,10 @@ import controller.Controller;
 import controller.GameMenuController;
 import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Scene;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import model.*;
@@ -46,12 +49,12 @@ public class Main extends Application {
         governments.add(new Government(LordColor.getLordColor(0), Controller.currentUser, 0,
                 Map.getMaps().get(0).getKeepPosition(currentLordColor)[0],
                 Map.getMaps().get(0).getKeepPosition(currentLordColor)[1]));
-        Controller.currentGame = new Game(Map.getMaps().get(0),governments,2000);
+        Controller.currentGame = new Game(Map.getMaps().get(1),governments,2000);
         GameGraphics gameGraphics = new GameGraphics();
         GameMenuController gameMenuController= new GameMenuController();
         gameGraphics.setGameMenuController(gameMenuController);
         gameGraphics.start(stage);
-//        new LoginMenuGraphics().start(stage); // TODO: 5/28/2023
+//        new LoginMenuGraphics().start(stage);
 //        new LoginMenuGraphics().start(stage);
 
     }

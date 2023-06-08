@@ -72,16 +72,10 @@ public class Person {
     }
 
     public void move() {
-        if (movePattern == null)
+        if (movePattern == null || movePattern.isEmpty())
             return;
-        int numberOfMoves = movesLeft;
-        int size = movePattern.size();
-        for (int i = 0; i < Math.min(numberOfMoves, size); i++) {
-            if (i == Math.min(numberOfMoves, size) - 1)
-                currentLocation = new int[] { movePattern.get(0)[0], movePattern.get(0)[1] };
-            movePattern.remove(0);
-            movesLeft--;
-        }
+        currentLocation = new int[] { movePattern.get(0)[0], movePattern.get(0)[1] };
+        movePattern.remove(0);
     }
 
     public Government getGovernment() {
