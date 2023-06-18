@@ -5,15 +5,12 @@ import controller.GameMenuController;
 import controller.Messages;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.animation.Transition;
 import javafx.application.Application;
-import javafx.beans.value.ObservableDoubleValue;
-import javafx.beans.value.ObservableIntegerValue;
-import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.*;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -29,7 +26,6 @@ import model.*;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Stack;
 
 
 public class GameGraphics extends Application {
@@ -218,15 +214,35 @@ public class GameGraphics extends Application {
         selectedUnitBar.setVisible(false);
     }
 
+    private void updateGovernmentInto(){
+        updateGoldText();
+        updatePopularityText();
+    }
     private void setGovernmentInfo() {
         setPopularityText();
         setGoldText();
+        updateGovernmentInto();
+        setEnterGovernmentActionButton();
+    }
+
+    private void setEnterGovernmentActionButton() {
+        Button governmentActionButton = new Button();
+        governmentActionButton.setPrefSize(162,173);
+        governmentActionButton.setTranslateY(45);
+        governmentActionButton.setTranslateX(312);
+        statusPane.getChildren().add(governmentActionButton);
+        governmentActionButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                System.out.println(12);
+            }
+        });
+        governmentActionButton.setOpacity(0);
     }
 
     private void setGoldText() {
         goldText = new Text("100");
         goldText.setStyle("-fx-font-size: 16px;");
-        updateGoldText();
         goldText.setTranslateY(50);
         goldText.setTranslateX(270);
         statusPane.getChildren().add(goldText);
@@ -240,7 +256,6 @@ public class GameGraphics extends Application {
     private void setPopularityText() {
         popularityText = new Text("100");
         popularityText.setStyle("-fx-font-size: 17px;");
-        updatePopularityText();
         popularityText.setTranslateY(23);
         popularityText.setTranslateX(285);
         statusPane.getChildren().add(popularityText);
@@ -249,7 +264,6 @@ public class GameGraphics extends Application {
         Integer popularity = gameMenuController.getPopularity();
         popularityText.setText(popularity.toString());
         // TODO: 6/18/2023 change color base on populalrity
-
     }
 
     private void statusBarButtons() {
