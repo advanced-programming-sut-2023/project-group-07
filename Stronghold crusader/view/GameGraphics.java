@@ -52,6 +52,7 @@ public class GameGraphics extends Application {
     private ArrayList<HBox> buildingMenus = new ArrayList<>();
     private HBox selectedUnitBar= new HBox(20);
     private Text popularityText = null;
+    private Text goldText = null;
     private CursorAnimation cursorAnimation;
 
     @Override
@@ -212,22 +213,42 @@ public class GameGraphics extends Application {
         rootPane.getChildren().add(stackPane);
         setCreateBuilding();
         statusBarButtons();
-        setPopularityText();
+        setGovernmentInfo();
         statusPane.getChildren().add(selectedUnitBar);
         selectedUnitBar.setVisible(false);
     }
 
+    private void setGovernmentInfo() {
+        setPopularityText();
+        setGoldText();
+    }
+
+    private void setGoldText() {
+        goldText = new Text("100");
+        goldText.setStyle("-fx-font-size: 16px;");
+        updateGoldText();
+        goldText.setTranslateY(50);
+        goldText.setTranslateX(270);
+        statusPane.getChildren().add(goldText);
+    }
+
+    private void updateGoldText() {
+        Integer gold = gameMenuController.getGold();
+        goldText.setText(gold.toString());
+    }
+
     private void setPopularityText() {
         popularityText = new Text("100");
-        popularityText.setStyle("-fx-font-size: 10px;");
+        popularityText.setStyle("-fx-font-size: 17px;");
         updatePopularityText();
-        popularityText.setTranslateY(50);
-        popularityText.setTranslateX(280);
+        popularityText.setTranslateY(23);
+        popularityText.setTranslateX(285);
         statusPane.getChildren().add(popularityText);
     }
     private void updatePopularityText(){
         Integer popularity = gameMenuController.getPopularity();
         popularityText.setText(popularity.toString());
+        // TODO: 6/18/2023 change color base on populalrity
 
     }
 
