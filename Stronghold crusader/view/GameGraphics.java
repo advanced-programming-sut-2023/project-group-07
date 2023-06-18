@@ -27,7 +27,6 @@ import model.*;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Objects;
 
 
@@ -166,6 +165,7 @@ public class GameGraphics extends Application {
                 selectionArea.setVisible(false);
             }
         });
+        scene.getStylesheets().add(GameGraphics.class.getResource("/CSS/slideBar.css").toExternalForm());
     }
 
     private boolean isCursorOnGround() {
@@ -233,40 +233,64 @@ public class GameGraphics extends Application {
     }
 
     private void setGovernmentActionButton() {
-        governmentActionsButtons = new HBox();
-        statusPane.getChildren().add(governmentActionsButtons);
-        governmentActionsButtons.setTranslateY(60);
-        governmentActionsButtons.setTranslateX(-500);
-        governmentActionsButtons.setAlignment(Pos.CENTER);
-        Button foodRateButton = new Button();
+        governmentActionsButtons = makeAHBoxMenu();
+
         HBox foodRateHBox = getFoodRateHBox();
+        governmentActionsMenus.add(foodRateHBox);
+        Button foodRateButton = new Button();
         foodRateButton.setText("set food rate");
         foodRateButton.setOnMouseClicked(mouseEvent -> {
             clearStatusBar();
             foodRateHBox.setVisible(true);
         });
-        governmentActionsMenus.add(foodRateHBox);
         governmentActionsButtons.getChildren().add(foodRateButton);
 
-        governmentActionsButtons.getChildren().add(new Button());
-        governmentActionsButtons.getChildren().add(new Button());
+        HBox taxRateHBox = getTaxRateHBox();
+        governmentActionsMenus.add(taxRateHBox);
+        Button taxRateButton = new Button();
+        taxRateButton.setText("set tax rate");
+        taxRateButton.setOnMouseClicked(mouseEvent -> {
+            clearStatusBar();
+            taxRateHBox.setVisible(true);
+        });
+        governmentActionsButtons.getChildren().add(taxRateButton);
+
+
         governmentActionsButtons.setVisible(false);
     }
 
-    private HBox getFoodRateHBox() {
-        HBox foodRateHBox = new HBox();
-        statusPane.getChildren().add(foodRateHBox);
-        foodRateHBox.setTranslateY(60);
-        foodRateHBox.setTranslateX(-500);
-        foodRateHBox.setAlignment(Pos.CENTER);
+    private HBox getTaxRateHBox() {
+        HBox taxRateHBox = makeAHBoxMenu();
 
-        Slider slider = new Slider(-2, 2, 5);
-        slider.setPrefWidth(175);
-        slider.setShowTickLabels(true);
-        slider.setShowTickMarks(true);
-        slider.setMajorTickUnit(1);
-        slider.setMinorTickCount(0);
-        slider.setBlockIncrement(1);
+        Slider slider = makeSlider(-3,8);
+        slider.setValue(gameMenuController.showTaxRate());
+        slider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            int roundedValue = (int) Math.round(newValue.doubleValue());
+            slider.setValue(roundedValue);
+            gameMenuController.setTax(roundedValue);
+        });
+
+        taxRateHBox.getChildren().add(new Text("tax rate\t"));
+        taxRateHBox.getChildren().add(slider);
+        taxRateHBox.setVisible(false);
+
+        return taxRateHBox;
+    }
+
+    private HBox makeAHBoxMenu() {
+        HBox hBox = new HBox();
+        statusPane.getChildren().add(hBox);
+        hBox.setTranslateY(60);
+        hBox.setTranslateX(-500);
+        hBox.setSpacing(10);
+        hBox.setAlignment(Pos.CENTER);
+        return hBox;
+    }
+
+    private HBox getFoodRateHBox() {
+        HBox foodRateHBox = makeAHBoxMenu();
+
+        Slider slider = makeSlider(-2,2);
         slider.setValue(gameMenuController.getFoodRate());
         slider.valueProperty().addListener((observable, oldValue, newValue) -> {
             int roundedValue = (int) Math.round(newValue.doubleValue());
@@ -279,6 +303,18 @@ public class GameGraphics extends Application {
         foodRateHBox.setVisible(false);
 
         return foodRateHBox;
+    }
+
+    private static Slider makeSlider(int minValue, int maxValue ) {
+        int numberOfValues = maxValue - minValue +1;
+        Slider slider = new Slider(minValue, maxValue, numberOfValues);
+        slider.setPrefWidth(175);
+        slider.setShowTickLabels(true);
+        slider.setShowTickMarks(true);
+        slider.setMajorTickUnit(1);
+        slider.setMinorTickCount(0);
+        slider.setBlockIncrement(1);
+        return slider;
     }
 
     private void setGovernmentInfo() {
