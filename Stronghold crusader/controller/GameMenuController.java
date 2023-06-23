@@ -15,7 +15,7 @@ import view.PersonPane;
 
 public class GameMenuController {
     private static Game game = Controller.currentGame;
-
+    private ArrayList<ArrayList<Boolean>> isDestinationOfUnit;
     public void refreshGame() {
         this.game = Controller.currentGame;
     }
@@ -782,6 +782,41 @@ public class GameMenuController {
         }));
         timeline.setCycleCount(-1);
         timeline.play();
+    }
+
+    public void addUnitListener(Unit unit) {
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500),actionEvent -> {
+            if(unit.getMovePattern().isEmpty()); //TODO FUCkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+        }));
+    }
+
+    private int[] getNearestEmptyCell(Unit unit){
+        for (int i = 0; i <= 50; i++) {
+            int row = unit.getCurrentLocation()[0], column = unit.getCurrentLocation()[1];
+            if(!unit.getMovePattern().isEmpty()) {
+                row = unit.getMovePattern().get(unit.getMovePattern().size()-1)[0];
+                column = unit.getMovePattern().get(unit.getMovePattern().size()-1)[1];
+            }
+            for (int j = -i; j <= i; j++) {
+                int y = column + i - Math.abs(j);
+                if (row + j < 0 || row + j >= game.getMap().getSize() || y < 0
+                        || y >= game.getMap().getSize() || !game.getMap().getMapPixel(row + j, y).getBuildings().isEmpty()
+                        || !game.getMap().getMapPixel(row + j, y).getTexture().canDropUnit() || isDestinationOfUnit.get(row + j).get(y).equals(true))
+                    continue;
+                else
+                    return new int[]{row + j, y};
+            }
+            for (int j = i; j >= -i; j--) {
+                int x = column - i + Math.abs(j);
+                if (row + j < 0 || row + j >= game.getMap().getSize() || x < 0
+                        || x >= game.getMap().getSize() || !game.getMap().getMapPixel(row + j, x).getBuildings().isEmpty()
+                        || !game.getMap().getMapPixel(row + j, x).getTexture().canDropUnit() || isDestinationOfUnit.get(row + j).get(x).equals(true))
+                    continue;
+                else
+                    return new int[]{row + j, x};
+            }
+        }
+        return null;
     }
 
     public void applyPersonMove(Person person) {

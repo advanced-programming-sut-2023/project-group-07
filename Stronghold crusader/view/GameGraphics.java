@@ -583,8 +583,6 @@ public class GameGraphics extends Application {
                         for (PersonPane personPane : selectedUnits) {
                             Unit unit = (Unit) (personPane.getPerson());
                             gameMenuController.moveUnit((int) ((mouseEvent.getY() + Math.abs(mapPane.getLayoutY())) / 40), (int) ((mouseEvent.getX() + Math.abs(mapPane.getLayoutX())) / 40));
-                            for (int[] a : unit.getMovePattern())
-                                System.out.println(a[0] + "  " + a[1]);
                             if (unit.getMovePattern() != null && !unit.getMovePattern().isEmpty()) {
                                 personPane.getPersonDirection().play();
                                 personPane.getPersonMove().play();
@@ -595,7 +593,6 @@ public class GameGraphics extends Application {
             }
         });
     }
-
 
     private void emptySelection() {
         buildingToBeBuilt = null;
