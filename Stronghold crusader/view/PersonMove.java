@@ -54,6 +54,9 @@ public class PersonMove extends Transition {
                 }
             }
         }
-        else this.stop();
+        else{
+            personPane.setMoving(false);
+            this.stop();
+        }
     }
 }

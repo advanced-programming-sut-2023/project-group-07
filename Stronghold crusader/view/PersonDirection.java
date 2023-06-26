@@ -28,7 +28,10 @@ public class PersonDirection extends Transition {
 
     @Override
     protected void interpolate(double frac) {
-        if(personPane.getPerson().getMovePattern().isEmpty()) this.stop();
+        if(personPane.getPerson().getMovePattern().isEmpty()){
+            this.stop();
+            personPane.setMoving(false);
+        }
         else{
             for(int i=0;i<frameCount;i++) {
                 if((double)i/frameCount<frac && frac<=((double)i+1)/frameCount){

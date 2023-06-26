@@ -15,7 +15,7 @@ import view.PersonPane;
 
 public class GameMenuController {
     private static Game game = Controller.currentGame;
-    private ArrayList<ArrayList<Boolean>> isDestinationOfUnit;
+    private boolean[][] isDestinationOfUnit = new boolean[game.getMap().getSize()][game.getMap().getSize()];
     public void refreshGame() {
         this.game = Controller.currentGame;
     }
@@ -294,6 +294,7 @@ public class GameMenuController {
             if (game.getCurrentGovernment().getResources().get(resource) < count)
                 return Messages.NOT_ENOUGH_RESOURCES;
         createdUnit=game.createTroop(unitType, count);
+        isDestinationOfUnit[game.getMap().getKeepPosition(game.getCurrentGovernment().getColor())[0] + 7][game.getMap().getKeepPosition(game.getCurrentGovernment().getColor())[1] + 3] = true;
         return Messages.UNIT_CREATED_SUCCESSFULLY;
     }
 
@@ -376,6 +377,13 @@ public class GameMenuController {
             return Messages.NO_UNITS_SELECTED;
         if (!map.getMapPixel(row, column).getTexture().canDropBuilding()) {
             return Messages.CANT_MOVE_UNITS_TO_THIS_LOCATION;
+        }
+        isDestinationOfUnit[row][column]=true;
+        for(Person person :game.getSelectedUnit()){
+            if(person.getMovePattern().isEmpty())
+                isDestinationOfUnit[person.getCurrentLocation()[0]][person.getCurrentLocation()[1]]=false;
+            else
+                isDestinationOfUnit[person.getMovePattern().get(person.getMovePattern().size()-1)[0]][person.getMovePattern().get(person.getMovePattern().size()-1)[1]]=false;
         }
         game.moveUnit(row, column);
         return Messages.UNIT_MOVED_SUCCESSFULLY;
@@ -785,9 +793,26 @@ public class GameMenuController {
     }
 
     public void addUnitListener(Unit unit) {
-        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500),actionEvent -> {
-            if(unit.getMovePattern().isEmpty()); //TODO FUCkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(300),actionEvent -> {
+            if(unit.getMovePattern().isEmpty() && game.getMap().getMapPixel(unit.getCurrentLocation()[0],unit.getCurrentLocation()[1]).getUnits().size()>1){
+                isDestinationOfUnit[unit.getCurrentLocation()[0]][unit.getCurrentLocation()[1]]=true;
+                int[] destination = getNearestEmptyCell(unit);
+                unit.setMovePattern(
+                        game.getMap().getPathList(unit.getCurrentLocation()[0], unit.getCurrentLocation()[1], destination[0], destination[1],
+                                unit.getType().equals(UnitTypes.ASSASSIN)));
+                isDestinationOfUnit[destination[0]][destination[1]]=true;
+            }
+            if(!unit.getMovePattern().isEmpty() && isDestinationOfUnit[unit.getMovePattern().get(unit.getMovePattern().size()-1)[0]][unit.getMovePattern().get(unit.getMovePattern().size()-1)[1]]
+            && game.getMap().getMapPixel(unit.getMovePattern().get(unit.getMovePattern().size()-1)[0],unit.getMovePattern().get(unit.getMovePattern().size()-1)[1]).getUnits().size()>1){
+                int[] destination = getNearestEmptyCell(unit);
+                unit.setMovePattern(
+                        game.getMap().getPathList(unit.getCurrentLocation()[0], unit.getCurrentLocation()[1], destination[0], destination[1],
+                                unit.getType().equals(UnitTypes.ASSASSIN)));
+                isDestinationOfUnit[destination[0]][destination[1]]=true;
+            }
         }));
+        timeline.setCycleCount(-1);
+        timeline.play();
     }
 
     private int[] getNearestEmptyCell(Unit unit){
@@ -801,7 +826,7 @@ public class GameMenuController {
                 int y = column + i - Math.abs(j);
                 if (row + j < 0 || row + j >= game.getMap().getSize() || y < 0
                         || y >= game.getMap().getSize() || !game.getMap().getMapPixel(row + j, y).getBuildings().isEmpty()
-                        || !game.getMap().getMapPixel(row + j, y).getTexture().canDropUnit() || isDestinationOfUnit.get(row + j).get(y).equals(true))
+                        || !game.getMap().getMapPixel(row + j, y).getTexture().canDropUnit() || isDestinationOfUnit[row + j][y])
                     continue;
                 else
                     return new int[]{row + j, y};
@@ -810,7 +835,7 @@ public class GameMenuController {
                 int x = column - i + Math.abs(j);
                 if (row + j < 0 || row + j >= game.getMap().getSize() || x < 0
                         || x >= game.getMap().getSize() || !game.getMap().getMapPixel(row + j, x).getBuildings().isEmpty()
-                        || !game.getMap().getMapPixel(row + j, x).getTexture().canDropUnit() || isDestinationOfUnit.get(row + j).get(x).equals(true))
+                        || !game.getMap().getMapPixel(row + j, x).getTexture().canDropUnit() || isDestinationOfUnit[row + j][x])
                     continue;
                 else
                     return new int[]{row + j, x};

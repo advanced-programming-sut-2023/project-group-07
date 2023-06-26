@@ -81,13 +81,14 @@ public class GameGraphics extends Application {
         stage.show();
         mapPaneEvent();
         buildingMenu();
+        setUnitTimeline();
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(5), actionEvent -> {
             Robot robot = new Robot();
-            if (robot.getMouseX() > scene.getWidth() - 50 && pane.getLayoutX() >/*map.getSize()*10*/ -400 * 40)
+            if (robot.getMouseX() > scene.getWidth() - 50 && pane.getLayoutX() >/*-map.getSize()*40*/ -400*40) //TODO map is null
                 pane.setLayoutX(pane.getLayoutX() - 10);
             if (robot.getMouseX() < 50 && pane.getLayoutX() < 0)
                 pane.setLayoutX(pane.getLayoutX() + 10);
-            if (robot.getMouseY() > scene.getHeight() - 10 && pane.getLayoutY() >/*map.getSize()*10*/ -400 * 40)
+            if (robot.getMouseY() > scene.getHeight() - 10 && pane.getLayoutY() >/*-map.getSize()*40*/ -400*40)
                 pane.setLayoutY(pane.getLayoutY() - 10);
             if (robot.getMouseY() < 50 && pane.getLayoutY() < 0)
                 pane.setLayoutY(pane.getLayoutY() + 10);
@@ -579,6 +580,7 @@ public class GameGraphics extends Application {
                     people.add(personPane);
                     mapPane.getChildren().add(personPane);
                     gameMenuController.addHealthBarListener(personPane.getHealthBar(), unit);
+                    gameMenuController.addUnitListener(unit);
                 }
                 gameMenuController.createdUnit.clear();
             }
@@ -659,6 +661,7 @@ public class GameGraphics extends Application {
                             if (unit.getMovePattern() != null && !unit.getMovePattern().isEmpty()) {
                                 personPane.getPersonDirection().play();
                                 personPane.getPersonMove().play();
+                                personPane.setMoving(true);
                             }
                         }
                     }
@@ -771,6 +774,19 @@ public class GameGraphics extends Application {
 
     private boolean intervalsIntersect(double a1, double b1, double a2, double b2) {
         return a1 < b2 && b1 > a2;
+    }
+
+    private void setUnitTimeline() {
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500),actionEvent -> {
+            for(PersonPane personPane:people)
+                if(!personPane.getPerson().getMovePattern().isEmpty() && !personPane.isMoving()) {
+                    personPane.getPersonMove().play();
+                    personPane.getPersonDirection().play();
+                    personPane.setMoving(true);
+                }
+        }));
+        timeline.setCycleCount(-1);
+        timeline.play();
     }
 
 

@@ -18,6 +18,7 @@ public class PersonPane extends StackPane {
     private ImageView personImage;
     private ProgressBar healthBar;
     private Person person;
+    private boolean isMoving =false;
 
     public PersonDirection getPersonDirection() {
         return personDirection;
@@ -71,5 +72,13 @@ public class PersonPane extends StackPane {
 
     public ImageView getPersonImage() {
         return personImage;
+    }
+
+    public boolean isMoving() {
+        return isMoving;
+    }
+
+    public void setMoving(boolean moving) {
+        isMoving = moving;
     }
 }
