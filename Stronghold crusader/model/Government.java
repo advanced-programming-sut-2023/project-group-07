@@ -346,7 +346,7 @@ public class Government {
     }
 
     public int getFoodEffectOnPopularity() {
-        return (int) (foodPerPerson() - 1) * 8;
+        return foodRate * 4;
     }
 
     public void increasePercentOfBlessed() {

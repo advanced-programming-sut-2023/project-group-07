@@ -11,7 +11,6 @@ import javafx.animation.Timeline;
 import javafx.scene.control.ProgressBar;
 import javafx.util.Duration;
 import model.*;
-import view.PersonPane;
 
 public class GameMenuController {
     private static Game game = Controller.currentGame;

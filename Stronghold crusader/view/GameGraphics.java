@@ -27,7 +27,6 @@ import model.*;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Objects;
 
 
@@ -241,8 +240,38 @@ public class GameGraphics extends Application {
         governmentActionsButtons = makeAHBoxMenu();
         setFoodRateActions();
         setTaxActions();
+        setFearRateActions();
         setPopularityActions();
         governmentActionsButtons.setVisible(false);
+    }
+
+    private void setFearRateActions() {
+        HBox fearRateHBox = getFearRateHBox();
+        governmentActionsMenus.add(fearRateHBox);
+        Button fearRateButton = new Button();
+        fearRateButton.setText("set fear rate");
+        fearRateButton.setOnMouseClicked(mouseEvent -> {
+            clearStatusBar();
+            fearRateHBox.setVisible(true);
+        });
+        governmentActionsButtons.getChildren().add(fearRateButton);
+    }
+
+    private HBox getFearRateHBox() {
+        HBox fearRateHBox = makeAHBoxMenu();
+
+        Slider slider = makeSlider(-5,5);
+        slider.setValue(gameMenuController.getFearRate());
+        slider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            int roundedValue = (int) Math.round(newValue.doubleValue());
+            slider.setValue(roundedValue);
+            gameMenuController.setFearRate(roundedValue);
+        });
+        fearRateHBox.getChildren().add(new Text("fear rate\t"));
+        fearRateHBox.getChildren().add(slider);
+        fearRateHBox.setVisible(false);
+
+        return fearRateHBox;
     }
 
     private void setPopularityActions() {
@@ -282,6 +311,10 @@ public class GameGraphics extends Application {
         PopularityFactor aleFactor = new PopularityFactor("ale coverage",0);
         secondColumn.getChildren().add(aleFactor.getHBox());
         popularityFactors.add(aleFactor);
+        PopularityFactor allFactors = new PopularityFactor("in coming change in popularity",0);
+        secondColumn.getChildren().add(allFactors.getHBox());
+        popularityFactors.add(allFactors);
+
         popularityHBox.getChildren().add(firstColumn);
         popularityHBox.getChildren().add(secondColumn);
         popularityHBox.setVisible(false);
@@ -290,9 +323,13 @@ public class GameGraphics extends Application {
 
     private void updatePopularityFactorsMenu() {
         ArrayList<Integer> popularityFactorsAmounts = gameMenuController.getPopularityFactors();
+        int popularitySum = 0;
         for (int i=0; i<popularityFactorsAmounts.size(); i++){
+            popularitySum += popularityFactorsAmounts.get(i);
             popularityFactors.get(i).setAmount(popularityFactorsAmounts.get(i));
         }
+        popularityFactors.get(popularityFactors.size()-1).setAmount(popularitySum);
+
     }
 
     private void setTaxActions() {
@@ -341,7 +378,7 @@ public class GameGraphics extends Application {
         HBox hBox = new HBox();
         statusPane.getChildren().add(hBox);
         hBox.setTranslateY(60);
-        hBox.setTranslateX(-500);
+        hBox.setTranslateX(-400);
         hBox.setSpacing(10);
         hBox.setAlignment(Pos.CENTER);
         return hBox;
@@ -354,10 +391,10 @@ public class GameGraphics extends Application {
         slider.setValue(gameMenuController.getFoodRate());
         slider.valueProperty().addListener((observable, oldValue, newValue) -> {
             int roundedValue = (int) Math.round(newValue.doubleValue());
-            slider.setValue(roundedValue);
-            gameMenuController.setFoodList(roundedValue);
+            if (gameMenuController.setFoodList(roundedValue) == Messages.NOT_ENOUGH_FOOD)
+                addToMessageBar("not enough food");
+            slider.setValue(gameMenuController.getFoodRate());
         });
-
         foodRateHBox.getChildren().add(new Text("food rate\t"));
         foodRateHBox.getChildren().add(slider);
         foodRateHBox.setVisible(false);
