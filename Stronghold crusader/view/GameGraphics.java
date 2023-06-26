@@ -27,7 +27,6 @@ import model.*;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Objects;
 
 
@@ -240,8 +239,38 @@ public class GameGraphics extends Application {
         governmentActionsButtons = makeAHBoxMenu();
         setFoodRateActions();
         setTaxActions();
+        setFearRateActions();
         setPopularityActions();
         governmentActionsButtons.setVisible(false);
+    }
+
+    private void setFearRateActions() {
+        HBox fearRateHBox = getFearRateHBox();
+        governmentActionsMenus.add(fearRateHBox);
+        Button fearRateButton = new Button();
+        fearRateButton.setText("set fear rate");
+        fearRateButton.setOnMouseClicked(mouseEvent -> {
+            clearStatusBar();
+            fearRateHBox.setVisible(true);
+        });
+        governmentActionsButtons.getChildren().add(fearRateButton);
+    }
+
+    private HBox getFearRateHBox() {
+        HBox fearRateHBox = makeAHBoxMenu();
+
+        Slider slider = makeSlider(-5,5);
+        slider.setValue(gameMenuController.getFearRate());
+        slider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            int roundedValue = (int) Math.round(newValue.doubleValue());
+            slider.setValue(roundedValue);
+            gameMenuController.setFearRate(roundedValue);
+        });
+        fearRateHBox.getChildren().add(new Text("fear rate\t"));
+        fearRateHBox.getChildren().add(slider);
+        fearRateHBox.setVisible(false);
+
+        return fearRateHBox;
     }
 
     private void setPopularityActions() {
@@ -361,11 +390,10 @@ public class GameGraphics extends Application {
         slider.setValue(gameMenuController.getFoodRate());
         slider.valueProperty().addListener((observable, oldValue, newValue) -> {
             int roundedValue = (int) Math.round(newValue.doubleValue());
-            slider.setValue(roundedValue);
-            gameMenuController.setFoodList(roundedValue);
-            System.out.println(gameMenuController.getGovernments().get(0).foodPerPerson());
+            if (gameMenuController.setFoodList(roundedValue) == Messages.NOT_ENOUGH_FOOD)
+                addToMessageBar("not enough food");
+            slider.setValue(gameMenuController.getFoodRate());
         });
-
         foodRateHBox.getChildren().add(new Text("food rate\t"));
         foodRateHBox.getChildren().add(slider);
         foodRateHBox.setVisible(false);
