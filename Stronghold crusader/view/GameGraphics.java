@@ -55,7 +55,8 @@ public class GameGraphics extends Application {
     private Text PopulationText = null;
     private HBox governmentActionsButtons = null;
     private ArrayList<HBox> governmentActionsMenus = new ArrayList<>();
-    ArrayList<PopularityFactor> popularityFactors = new ArrayList<>();
+    private HBox marketMenu = null;
+    private ArrayList<PopularityFactor> popularityFactors = new ArrayList<>();
     private CursorAnimation cursorAnimation;
     private StackPane miniMapPane;
 
@@ -223,6 +224,7 @@ public class GameGraphics extends Application {
         setCreateBuilding();
         statusBarButtons();
         setGovernmentDetails();
+        setMarketMenu();
         statusPane.getChildren().add(selectedUnitBar);
         selectedUnitBar.setVisible(false);
     }
@@ -233,6 +235,11 @@ public class GameGraphics extends Application {
         updatePopulationText();
     }
 
+    private void setMarketMenu(){
+        // TODO: 6/26/2023 set items
+        // TODO: 6/26/2023 set enter trade menu
+
+    }
     private void setGovernmentDetails() {
         setGovernmentInfo();
         setEnterGovernmentActionButton();
@@ -243,7 +250,7 @@ public class GameGraphics extends Application {
         setGovernmentActionButton();
     }
 
-    private void setGovernmentActionButton() {
+    private void setGovernmentActionButton() { // TODO: 6/26/2023 these menus have no back button
         governmentActionsButtons = makeAHBoxMenu();
         setFoodRateActions();
         setTaxActions();
