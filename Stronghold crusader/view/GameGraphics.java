@@ -16,6 +16,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.robot.Robot;
@@ -56,6 +57,7 @@ public class GameGraphics extends Application {
     private ArrayList<HBox> governmentActionsMenus = new ArrayList<>();
     ArrayList<PopularityFactor> popularityFactors = new ArrayList<>();
     private CursorAnimation cursorAnimation;
+    private StackPane miniMapPane;
 
     @Override
     public void start(Stage stage) {
@@ -81,6 +83,8 @@ public class GameGraphics extends Application {
         mapPaneEvent();
         buildingMenu();
         setUnitTimeline();
+        createMiniMap();
+//        setZoomOut(mapPane);
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(5), actionEvent -> {
             Robot robot = new Robot();
             if (robot.getMouseX() > scene.getWidth() - 50 && pane.getLayoutX() >/*-map.getSize()*40*/ -400*40) //TODO map is null
@@ -91,6 +95,9 @@ public class GameGraphics extends Application {
                 pane.setLayoutY(pane.getLayoutY() - 10);
             if (robot.getMouseY() < 50 && pane.getLayoutY() < 0)
                 pane.setLayoutY(pane.getLayoutY() + 10);
+            Rectangle miniMapRectangle = (Rectangle) miniMapPane.getChildren().get(miniMapPane.getChildren().size()-1);
+            miniMapRectangle.setTranslateY(16+225*Math.abs(pane.getLayoutY())/(40*400)); //TODO change 400
+            miniMapRectangle.setTranslateX(12.5+225*Math.abs(pane.getLayoutX())/(40*400));
         }));
         timeline.setCycleCount(-1);
         timeline.play();
@@ -206,7 +213,7 @@ public class GameGraphics extends Application {
     private void initStatusBar() {
         StackPane stackPane = new StackPane();
         statusPane = stackPane;
-        stackPane.setLayoutY(Main.screenHeight - 215);
+        stackPane.setLayoutY(Main.screenHeight - 250);
         stackPane.setLayoutX(100);
         ImageView imageView = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Menu/menu.png").toExternalForm()));
         imageView.setScaleX(1.4);
@@ -619,6 +626,8 @@ public class GameGraphics extends Application {
                     gameMenuController.addHealthBarListener(personPane.getHealthBar(), unit);
                     gameMenuController.addUnitListener(unit);
                 }
+                updateGoldText();
+
                 gameMenuController.createdUnit.clear();
             }
         }
@@ -737,8 +746,19 @@ public class GameGraphics extends Application {
                 buildings.add(stackPane);
                 imageView.setFitWidth(40 * TypeOfBuilding.getBuilding(string).getWidth());
                 imageView.setPreserveRatio(true);
+                addImageToMiniMap(stackPane.getLayoutX(),stackPane.getLayoutY(),TypeOfBuilding.getBuilding(string).getWidth());
+                updateGoldText();
             }
         }
+    }
+
+    private void addImageToMiniMap(double layoutX, double layoutY, int size) {
+        //TODO should be replaced with size of map
+        Rectangle rectangle = new Rectangle(((double)size/400)*225,((double)size/400)*225);
+        rectangle.setFill(Color.RED);
+        rectangle.setTranslateX((layoutX/(40*400))*225+12.5);
+        rectangle.setTranslateY((layoutY/(40*400))*225+16);
+        miniMapPane.getChildren().add(2,rectangle);
     }
 
     private void addEventHandlerForBuilding(StackPane stackPane) {
@@ -825,6 +845,42 @@ public class GameGraphics extends Application {
         timeline.setCycleCount(-1);
         timeline.play();
     }
+
+    private void createMiniMap() {
+        Rectangle rectangle = new Rectangle(225*Main.screenWidth/(40*400),225*Main.screenHeight/(40*400)); //TODO change 400 with map size
+        rectangle.setFill(Color.TRANSPARENT);
+        rectangle.setStroke(Color.BLACK);
+        rectangle.setTranslateX(12.5);
+        rectangle.setTranslateY(16);
+        ImageView miniMap = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/miniMap.png").toExternalForm()));
+        ImageView miniMapBorder = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/miniMapBorder.png").toExternalForm()));
+        miniMap.setPreserveRatio(true);
+        miniMap.setFitWidth(225);
+        miniMap.setTranslateX(12.5);
+        miniMap.setTranslateY(16);
+        miniMapBorder.setPreserveRatio(true);
+        miniMapBorder.setFitWidth(250);
+        miniMapPane = new StackPane(miniMap,miniMapBorder,rectangle);
+        statusPane.getChildren().add(miniMapPane);
+        miniMapPane.setAlignment(Pos.TOP_LEFT);
+        miniMapPane.setTranslateX(1300);
+    }
+
+//    private void setZoomOut(Pane pane) {     //TODO just zooooooooooooooooooooooooooom
+//        pane.setOnScroll(new EventHandler<ScrollEvent>() {
+//            @Override
+//            public void handle(ScrollEvent scrollEvent) {
+//                if(scrollEvent.getDeltaY()>0 && pane.getScaleX()<2){
+//                    pane.setScaleX(pane.getScaleX()+0.01);
+//                    pane.setScaleY(pane.getScaleY()+0.01);
+//                }
+//                if(scrollEvent.getDeltaY()<0 && pane.getScaleX()>0.5){
+//                    pane.setScaleX(pane.getScaleX()-0.01);
+//                    pane.setScaleY(pane.getScaleY()-0.01);
+//                }
+//            }
+//        });
+//    }
 
 
     //    private Group createEnvironment(){

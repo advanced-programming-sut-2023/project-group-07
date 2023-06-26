@@ -16,7 +16,9 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import model.User;
 
 import java.io.File;
@@ -114,10 +116,10 @@ public class ProfileMenuGraphics extends Application {
                 BackgroundPosition.DEFAULT,
                 BackgroundSize.DEFAULT));
         pane.setBackground(background);
-
         scene = new Scene(pane);
         scene.getStylesheets().add(ProfileMenuGraphics.class.getResource("/CSS/ProfileMenu.css").toExternalForm());
         stage.setScene(scene);
+        stage.setFullScreen(true);
         stage.show();
     }
 
@@ -536,8 +538,10 @@ public class ProfileMenuGraphics extends Application {
     }
     @FXML
     private void enterScoreBoard(){
-        stage.setFullScreen(false);
-        new ScoreBoardGraphics().start(new Stage());
+        Stage popup = new Stage();
+        popup.initOwner(Main.stage);
+        popup.initModality(Modality.APPLICATION_MODAL);
+        new ScoreBoardGraphics().start(popup);
     }
 
     // TODO: 5/28/2023 captcha

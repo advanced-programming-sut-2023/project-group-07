@@ -54,9 +54,11 @@ public class Main extends Application {
         GameMenuController gameMenuController= new GameMenuController();
         gameGraphics.setGameMenuController(gameMenuController);
         gameGraphics.start(stage);
-//        new LoginMenuGraphics().start(stage);
-//        new LoginMenuGraphics().start(stage);
-//        new ProfileMenuGraphics().start(stage);
-
+//        if(User.stayLoggedIn()!=null) {
+//            Controller.currentUser=User.stayLoggedIn();
+//            new MainMenuGraphics().start(stage);
+//        }
+//        else
+//            new LoginMenuGraphics().start(stage);
     }
 }

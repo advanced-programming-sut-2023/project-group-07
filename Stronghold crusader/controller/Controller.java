@@ -15,6 +15,7 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import model.*;
 import model.Map;
+import view.GameGraphics;
 import view.MenuPrinter;
 
 public class Controller {
@@ -252,10 +253,11 @@ public class Controller {
 
     public static String giveARandomAvatar() {
         try {
-            String avatarFolderAddress =
-                    Objects.requireNonNull(Controller.class.getResource("/Images/Avatars")).getPath();
-            File avatarFolder = new File(avatarFolderAddress);
-            File[] files = avatarFolder.listFiles();
+            String path = GameGraphics.class.getResource("/Images/Avatars").toString();
+            path = path.replaceAll("%20", " ");
+            path = path.substring("file:".length());
+            File file2 = new File(path);
+            File[] files = file2.listFiles();
             System.out.println(files);
             ArrayList<String> defaultAvatarsNames = new ArrayList<>();
             for (File file : files) {
