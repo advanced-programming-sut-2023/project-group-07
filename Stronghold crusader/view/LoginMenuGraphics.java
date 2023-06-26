@@ -86,6 +86,7 @@ public class LoginMenuGraphics extends Application {
                 BackgroundSize.DEFAULT));
         pane.setBackground(background);
         stage.setScene(scene);
+        stage.setFullScreen(true);
         stage.show();
         pane.setCenterShape(true);
         pane.getChildren().get(0).setLayoutX(Main.stage.getScene().getRoot().getBoundsInParent().getCenterX() - 2450);
@@ -763,7 +764,7 @@ public class LoginMenuGraphics extends Application {
         emptyFields(enteringNewPassword);
     }
 
-    public void login(MouseEvent mouseEvent) throws IOException, NoSuchAlgorithmException {
+    public void login(MouseEvent mouseEvent) throws Exception {
         String username = ((TextField) getLoginChild(0)).getText();
         String password = ((PasswordField) getLoginChild(2)).getText();
         String captcha = ((TextField) ((HBox) ((VBox) getLoginChild(7)).getChildren().get(1)).getChildren().get(0)).getText();
@@ -776,7 +777,9 @@ public class LoginMenuGraphics extends Application {
                 setTimer();
                 resetLoginCaptcha();
             }
-            case SUCCESS -> System.out.println("salam");
+            case SUCCESS -> {
+                new MainMenuGraphics().start(Main.stage);
+            }
             default -> resetLoginCaptcha();
         }
     }

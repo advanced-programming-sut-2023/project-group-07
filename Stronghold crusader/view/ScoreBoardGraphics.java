@@ -138,13 +138,7 @@ public class ScoreBoardGraphics extends Application {
     }
 
 
-    private void back(){
+    private void back() {
         stage.close();
-        try {
-            ProfileMenuController.profileMenuGraphics().start(ProfileMenuGraphics.stage());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
-
 }

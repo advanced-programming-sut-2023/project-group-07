@@ -12,7 +12,13 @@
             stylesheets="@../CSS/SignUp.css"
             prefWidth="1280" prefHeight="720">
     <center>
-        <VBox>
+        <VBox fx:id="menuVBox" alignment="CENTER" spacing="20">
+            <Button GridPane.rowIndex="4" alignment="CENTER" text="New Game" prefWidth="200" onMouseClicked="#newGame"/>
+            <Button GridPane.rowIndex="5" alignment="CENTER" text="Create Map" prefWidth="200" onMouseClicked="#createMap"/>
+            <Button GridPane.rowIndex="5" alignment="CENTER" text="Profile Menu" prefWidth="200" onMouseClicked="#profileMenu"/>
+            <Button GridPane.rowIndex="5" alignment="CENTER" text="Settings" prefWidth="200" onMouseClicked="#settings"/>
+            <Button GridPane.rowIndex="5" alignment="CENTER" text="Log Out" prefWidth="200" onMouseClicked="#logOut"/>
+            <Button GridPane.rowIndex="5" alignment="CENTER" text="Exit" prefWidth="200" onMouseClicked="#exit"/>
         </VBox>
     </center>
 </BorderPane>
