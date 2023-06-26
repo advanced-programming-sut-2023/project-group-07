@@ -281,6 +281,10 @@ public class GameGraphics extends Application {
         PopularityFactor aleFactor = new PopularityFactor("ale coverage",0);
         secondColumn.getChildren().add(aleFactor.getHBox());
         popularityFactors.add(aleFactor);
+        PopularityFactor allFactors = new PopularityFactor("in coming change in popularity",0);
+        secondColumn.getChildren().add(allFactors.getHBox());
+        popularityFactors.add(allFactors);
+
         popularityHBox.getChildren().add(firstColumn);
         popularityHBox.getChildren().add(secondColumn);
         popularityHBox.setVisible(false);
@@ -289,9 +293,13 @@ public class GameGraphics extends Application {
 
     private void updatePopularityFactorsMenu() {
         ArrayList<Integer> popularityFactorsAmounts = gameMenuController.getPopularityFactors();
+        int popularitySum = 0;
         for (int i=0; i<popularityFactorsAmounts.size(); i++){
+            popularitySum += popularityFactorsAmounts.get(i);
             popularityFactors.get(i).setAmount(popularityFactorsAmounts.get(i));
         }
+        popularityFactors.get(popularityFactors.size()-1).setAmount(popularitySum);
+
     }
 
     private void setTaxActions() {
@@ -340,7 +348,7 @@ public class GameGraphics extends Application {
         HBox hBox = new HBox();
         statusPane.getChildren().add(hBox);
         hBox.setTranslateY(60);
-        hBox.setTranslateX(-500);
+        hBox.setTranslateX(-400);
         hBox.setSpacing(10);
         hBox.setAlignment(Pos.CENTER);
         return hBox;
@@ -355,6 +363,7 @@ public class GameGraphics extends Application {
             int roundedValue = (int) Math.round(newValue.doubleValue());
             slider.setValue(roundedValue);
             gameMenuController.setFoodList(roundedValue);
+            System.out.println(gameMenuController.getGovernments().get(0).foodPerPerson());
         });
 
         foodRateHBox.getChildren().add(new Text("food rate\t"));
