@@ -18,6 +18,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.robot.Robot;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -229,10 +230,30 @@ public class GameGraphics extends Application {
     }
 
     private void setMarketMenu(){
+        marketMenu = makeAHBoxMenu();
+        File[] itemsList = filesListMaker("/Images/Game/market/items");
+        for( File image : itemsList){
+            Rectangle itemImage = new Rectangle(50,50);
+            itemImage.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent mouseEvent) {
+                    String name = image.getName();
+                    name = name.substring(0,name.indexOf("."));
+                    enterShoppingAnItemMenu(name);
+                }
+            });
+            itemImage.setFill(new ImagePattern(new Image(image.getAbsolutePath())));
+            marketMenu.getChildren().add(itemImage);
+        }
+
         // TODO: 6/26/2023 set items
         // TODO: 6/26/2023 set enter trade menu
-
+        marketMenu.setVisible(false);
     }
+
+    private void enterShoppingAnItemMenu(String resource) {// TODO: 6/27/2023 complete this
+    }
+
     private void setGovernmentDetails() {
         setGovernmentInfo();
         setEnterGovernmentActionButton();
@@ -776,6 +797,7 @@ public class GameGraphics extends Application {
         governmentActionsButtons.setVisible(false);
         for (HBox menu : governmentActionsMenus)
             menu.setVisible(false);
+        marketMenu.setVisible(false);
 
     }
 
