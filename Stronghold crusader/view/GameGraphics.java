@@ -27,6 +27,7 @@ import model.*;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
 
@@ -51,8 +52,10 @@ public class GameGraphics extends Application {
     private HBox selectedUnitBar = new HBox(20);
     private Text popularityText = null;
     private Text goldText = null;
+    private Text PopulationText = null;
     private HBox governmentActionsButtons = null;
     private ArrayList<HBox> governmentActionsMenus = new ArrayList<>();
+    ArrayList<PopularityFactor> popularityFactors = new ArrayList<>();
     private CursorAnimation cursorAnimation;
 
     @Override
@@ -220,6 +223,7 @@ public class GameGraphics extends Application {
     private void updateGovernmentInto() {
         updateGoldText();
         updatePopularityText();
+        updatePopulationText();
     }
 
     private void setGovernmentDetails() {
@@ -234,17 +238,63 @@ public class GameGraphics extends Application {
 
     private void setGovernmentActionButton() {
         governmentActionsButtons = makeAHBoxMenu();
+        setFoodRateActions();
+        setTaxActions();
+        setPopularityActions();
+        governmentActionsButtons.setVisible(false);
+    }
 
-        HBox foodRateHBox = getFoodRateHBox();
-        governmentActionsMenus.add(foodRateHBox);
-        Button foodRateButton = new Button();
-        foodRateButton.setText("set food rate");
-        foodRateButton.setOnMouseClicked(mouseEvent -> {
+    private void setPopularityActions() {
+        HBox popularityFactorsHBox = getPopularityFactorsHBox();
+        governmentActionsMenus.add(popularityFactorsHBox);
+        Button popularityFactorsButton = new Button();
+        popularityFactorsButton.setText("show popularity factors");
+        popularityFactorsButton.setOnMouseClicked(mouseEvent -> {
             clearStatusBar();
-            foodRateHBox.setVisible(true);
+            updatePopularityFactorsMenu();
+            popularityFactorsHBox.setVisible(true);
         });
-        governmentActionsButtons.getChildren().add(foodRateButton);
+        governmentActionsButtons.getChildren().add(popularityFactorsButton);
+    }
 
+    private HBox getPopularityFactorsHBox() {
+        HBox popularityHBox = makeAHBoxMenu();
+        popularityHBox.setSpacing(20);
+        VBox firstColumn = new VBox();
+        VBox secondColumn = new VBox();
+        firstColumn.setSpacing(20);
+        secondColumn.setSpacing(20);
+        firstColumn.getChildren().add(new Text());
+        PopularityFactor foodFactor = new PopularityFactor("food",0);
+        firstColumn.getChildren().add(foodFactor.getHBox());
+        popularityFactors.add(foodFactor);
+        PopularityFactor taxFactor = new PopularityFactor("tax",0);
+        firstColumn.getChildren().add(taxFactor.getHBox());
+        popularityFactors.add(taxFactor);
+        PopularityFactor religionFactor = new PopularityFactor("religion",0);
+        firstColumn.getChildren().add(religionFactor.getHBox());
+        popularityFactors.add(religionFactor);
+        secondColumn.getChildren().add(new Text());
+        PopularityFactor fearFactor = new PopularityFactor("fear factor",0);
+        secondColumn.getChildren().add(fearFactor.getHBox());
+        popularityFactors.add(fearFactor);
+        PopularityFactor aleFactor = new PopularityFactor("ale coverage",0);
+        secondColumn.getChildren().add(aleFactor.getHBox());
+        popularityFactors.add(aleFactor);
+        popularityHBox.getChildren().add(firstColumn);
+        popularityHBox.getChildren().add(secondColumn);
+        popularityHBox.setVisible(false);
+        return popularityHBox;
+    }
+
+    private void updatePopularityFactorsMenu() {
+        ArrayList<Integer> popularityFactorsAmounts = gameMenuController.getPopularityFactors();
+        for (int i=0; i<popularityFactorsAmounts.size(); i++){
+            popularityFactors.get(i).setAmount(popularityFactorsAmounts.get(i));
+        }
+    }
+
+    private void setTaxActions() {
         HBox taxRateHBox = getTaxRateHBox();
         governmentActionsMenus.add(taxRateHBox);
         Button taxRateButton = new Button();
@@ -254,9 +304,18 @@ public class GameGraphics extends Application {
             taxRateHBox.setVisible(true);
         });
         governmentActionsButtons.getChildren().add(taxRateButton);
+    }
 
-
-        governmentActionsButtons.setVisible(false);
+    private void setFoodRateActions() {
+        HBox foodRateHBox = getFoodRateHBox();
+        governmentActionsMenus.add(foodRateHBox);
+        Button foodRateButton = new Button();
+        foodRateButton.setText("set food rate");
+        foodRateButton.setOnMouseClicked(mouseEvent -> {
+            clearStatusBar();
+            foodRateHBox.setVisible(true);
+        });
+        governmentActionsButtons.getChildren().add(foodRateButton);
     }
 
     private HBox getTaxRateHBox() {
@@ -320,8 +379,10 @@ public class GameGraphics extends Application {
     private void setGovernmentInfo() {
         setPopularityText();
         setGoldText();
+        setPopulationText();
         updateGovernmentInto();
     }
+
 
     private void setEnterGovernmentActionButton() {
         Button governmentActionButton = new Button();
@@ -341,6 +402,18 @@ public class GameGraphics extends Application {
     private void enterGovernmentActionButtonsMenu() {
         clearStatusBar();
         governmentActionsButtons.setVisible(true);
+    }
+
+    private void setPopulationText() {
+        PopulationText = new Text("1/10");
+        PopulationText.setStyle("-fx-font-size: 16px;");
+        PopulationText.setTranslateY(75);
+        PopulationText.setTranslateX(265);
+        statusPane.getChildren().add(PopulationText);
+    }
+    private void updatePopulationText() {
+        Integer population = gameMenuController.getPopulation();
+        PopulationText.setText(population.toString());
     }
 
     private void setGoldText() {
@@ -367,7 +440,7 @@ public class GameGraphics extends Application {
     private void updatePopularityText() {
         Integer popularity = gameMenuController.getPopularity();
         popularityText.setText(popularity.toString());
-        // TODO: 6/18/2023 change color base on populalrity
+        // TODO: 6/18/2023 change color base on popularity
     }
 
     private void statusBarButtons() {
@@ -656,6 +729,7 @@ public class GameGraphics extends Application {
         governmentActionsButtons.setVisible(false);
         for (HBox menu : governmentActionsMenus)
             menu.setVisible(false);
+
     }
 
     public void setGameMenuController(GameMenuController gameMenuController) {

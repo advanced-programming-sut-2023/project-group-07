@@ -587,7 +587,7 @@ public class GameMenuController {
         factorsInOrder.add(government.getTaxEffectOnPopularity());
         factorsInOrder.add(government.getReligionEffectOnPopularity());
         factorsInOrder.add(government.getFearRate());
-        factorsInOrder.add(government.getBuildingsEffectOnPopularity());
+        factorsInOrder.add(government.getBuildingsEffectOnPopularity()); // don't change this order;
         return factorsInOrder;
     }
 
