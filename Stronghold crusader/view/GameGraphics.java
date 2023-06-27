@@ -7,6 +7,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.*;
@@ -92,17 +93,17 @@ public class GameGraphics extends Application {
 //        setZoomOut(mapPane);
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(5), actionEvent -> {
             Robot robot = new Robot();
-            if (robot.getMouseX() > scene.getWidth() - 50 && pane.getLayoutX() >/*-map.getSize()*40*/ -400*40) //TODO map is null
+            if (robot.getMouseX() > scene.getWidth() - 50 && pane.getLayoutX() >/*-map.getSize()*40*/ -400 * 40) //TODO map is null
                 pane.setLayoutX(pane.getLayoutX() - 10);
             if (robot.getMouseX() < 50 && pane.getLayoutX() < 0)
                 pane.setLayoutX(pane.getLayoutX() + 10);
-            if (robot.getMouseY() > scene.getHeight() - 10 && pane.getLayoutY() >/*-map.getSize()*40*/ -400*40)
+            if (robot.getMouseY() > scene.getHeight() - 10 && pane.getLayoutY() >/*-map.getSize()*40*/ -400 * 40)
                 pane.setLayoutY(pane.getLayoutY() - 10);
             if (robot.getMouseY() < 50 && pane.getLayoutY() < 0)
                 pane.setLayoutY(pane.getLayoutY() + 10);
-            Rectangle miniMapRectangle = (Rectangle) miniMapPane.getChildren().get(miniMapPane.getChildren().size()-1);
-            miniMapRectangle.setTranslateY(16+225*Math.abs(pane.getLayoutY())/(40*400)); //TODO change 400
-            miniMapRectangle.setTranslateX(12.5+225*Math.abs(pane.getLayoutX())/(40*400));
+            Rectangle miniMapRectangle = (Rectangle) miniMapPane.getChildren().get(miniMapPane.getChildren().size() - 1);
+            miniMapRectangle.setTranslateY(16 + 225 * Math.abs(pane.getLayoutY()) / (40 * 400)); //TODO change 400
+            miniMapRectangle.setTranslateX(12.5 + 225 * Math.abs(pane.getLayoutX()) / (40 * 400));
         }));
         timeline.setCycleCount(-1);
         timeline.play();
@@ -250,8 +251,8 @@ public class GameGraphics extends Application {
         updatePopulationText();
     }
 
-    private void setMarketMenu(){
-        if (marketMenu == null){
+    private void setMarketMenu() {
+        if (marketMenu == null) {
             marketMenu = new HBox();
             marketMenu.setTranslateY(40);
         }
@@ -262,9 +263,38 @@ public class GameGraphics extends Application {
 
     private void setShoppingMenu() {
         shoppingPage = new ShoppingPage(Resources.IRON);
+        addClickActionsForShoppingMenu();
         shoppingPageMenu = makeAHBoxMenu();
         shoppingPageMenu.getChildren().add(shoppingPage.menu());
         shoppingPageMenu.setVisible(false);
+    }
+
+    private void addClickActionsForShoppingMenu() {
+        shoppingPage.buyingButton().setOnMouseClicked(new EventHandler() {
+            @Override
+            public void handle(Event event) {
+                if (gameMenuController.buyCommodity(shoppingPage.resource().getName(), 1)
+                        == Messages.NOT_ENOUGH_GOLD)
+                    addToMessageBar("not enough gold");
+                else {
+                    updateGoldText();
+                    shoppingPage.setItemAmount(gameMenuController.getResourceAmount(shoppingPage.resource()));
+                }
+            }
+        });
+        shoppingPage.sellingButton().setOnMouseClicked(new EventHandler() {
+            @Override
+            public void handle(Event event) {
+                if (gameMenuController.sellCommodity(shoppingPage.resource().getName(), 1)
+                        == Messages.NOT_ENOUGH_RESOURCES)
+                    addToMessageBar("not enough resources");
+                else {
+                    updateGoldText();
+                    shoppingPage.setItemAmount(gameMenuController.getResourceAmount(shoppingPage.resource()));
+                }
+
+            }
+        });
     }
 
     private void setMarketItems() {
@@ -278,7 +308,7 @@ public class GameGraphics extends Application {
         rowsPane.setSpacing(20);
         marketMenu.getChildren().add(rowsPane);
         ArrayList<HBox> rowsHBox = new ArrayList<>();
-        for (int i = 0; i< numberOfRows; i++){
+        for (int i = 0; i < numberOfRows; i++) {
             HBox hBox = new HBox();
             hBox.setSpacing(20);
             rowsHBox.add(hBox);
@@ -289,21 +319,21 @@ public class GameGraphics extends Application {
 
     private void addItemsToMarketMenu(ArrayList<HBox> rowsHBox, int numberOfRows) {
         File[] itemsList = filesListMaker("/Images/Game/market/items");
-        int i=0;
-        for( File image : itemsList){
-            Rectangle itemImage = new Rectangle(35,35);
+        int i = 0;
+        for (File image : itemsList) {
+            Rectangle itemImage = new Rectangle(35, 35);
             itemImage.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent mouseEvent) {
                     String name = image.getName();
-                    name = name.substring(0,name.indexOf("."));
+                    name = name.substring(0, name.indexOf("."));
                     System.out.println(name);
                     enterShoppingAnItemMenu(name);
                 }
             });
             itemImage.setFill(new ImagePattern(new Image(image.getAbsolutePath())));
             rowsHBox.get(i).getChildren().add(itemImage);
-            i = (i+1)% numberOfRows;
+            i = (i + 1) % numberOfRows;
         }
     }
 
@@ -311,6 +341,7 @@ public class GameGraphics extends Application {
         clearStatusBar();
         Resources resource = Resources.getResource(resourceName);
         shoppingPage.setResource(resource);
+        shoppingPage.setItemAmount(gameMenuController.getResourceAmount(resource));
         shoppingPageMenu.setVisible(true);
     }
 
@@ -347,7 +378,7 @@ public class GameGraphics extends Application {
 
     private HBox getFearRateHBox() {
         HBox fearRateHBox = makeAHBoxMenu();
-        Slider slider = makeSlider(-5,5);
+        Slider slider = makeSlider(-5, 5);
         slider.setValue(gameMenuController.getFearRate());
         slider.valueProperty().addListener((observable, oldValue, newValue) -> {
             int roundedValue = (int) Math.round(newValue.doubleValue());
@@ -382,23 +413,23 @@ public class GameGraphics extends Application {
         firstColumn.setSpacing(20);
         secondColumn.setSpacing(20);
         firstColumn.getChildren().add(new Text());
-        PopularityFactor foodFactor = new PopularityFactor("food",0);
+        PopularityFactor foodFactor = new PopularityFactor("food", 0);
         firstColumn.getChildren().add(foodFactor.getHBox());
         popularityFactors.add(foodFactor);
-        PopularityFactor taxFactor = new PopularityFactor("tax",0);
+        PopularityFactor taxFactor = new PopularityFactor("tax", 0);
         firstColumn.getChildren().add(taxFactor.getHBox());
         popularityFactors.add(taxFactor);
-        PopularityFactor religionFactor = new PopularityFactor("religion",0);
+        PopularityFactor religionFactor = new PopularityFactor("religion", 0);
         firstColumn.getChildren().add(religionFactor.getHBox());
         popularityFactors.add(religionFactor);
         secondColumn.getChildren().add(new Text());
-        PopularityFactor fearFactor = new PopularityFactor("fear factor",0);
+        PopularityFactor fearFactor = new PopularityFactor("fear factor", 0);
         secondColumn.getChildren().add(fearFactor.getHBox());
         popularityFactors.add(fearFactor);
-        PopularityFactor aleFactor = new PopularityFactor("ale coverage",0);
+        PopularityFactor aleFactor = new PopularityFactor("ale coverage", 0);
         secondColumn.getChildren().add(aleFactor.getHBox());
         popularityFactors.add(aleFactor);
-        PopularityFactor allFactors = new PopularityFactor("in coming change in popularity",0);
+        PopularityFactor allFactors = new PopularityFactor("in coming change in popularity", 0);
         secondColumn.getChildren().add(allFactors.getHBox());
         popularityFactors.add(allFactors);
 
@@ -411,11 +442,11 @@ public class GameGraphics extends Application {
     private void updatePopularityFactorsMenu() {
         ArrayList<Integer> popularityFactorsAmounts = gameMenuController.getPopularityFactors();
         int popularitySum = 0;
-        for (int i=0; i<popularityFactorsAmounts.size(); i++){
+        for (int i = 0; i < popularityFactorsAmounts.size(); i++) {
             popularitySum += popularityFactorsAmounts.get(i);
             popularityFactors.get(i).setAmount(popularityFactorsAmounts.get(i));
         }
-        popularityFactors.get(popularityFactors.size()-1).setAmount(popularitySum);
+        popularityFactors.get(popularityFactors.size() - 1).setAmount(popularitySum);
 
     }
 
@@ -446,7 +477,7 @@ public class GameGraphics extends Application {
     private HBox getTaxRateHBox() {
         HBox taxRateHBox = makeAHBoxMenu();
 
-        Slider slider = makeSlider(-3,8);
+        Slider slider = makeSlider(-3, 8);
         slider.setValue(gameMenuController.showTaxRate());
         slider.valueProperty().addListener((observable, oldValue, newValue) -> {
             int roundedValue = (int) Math.round(newValue.doubleValue());
@@ -474,7 +505,7 @@ public class GameGraphics extends Application {
     private HBox getFoodRateHBox() {
         HBox foodRateHBox = makeAHBoxMenu();
 
-        Slider slider = makeSlider(-2,2);
+        Slider slider = makeSlider(-2, 2);
         slider.setValue(gameMenuController.getFoodRate());
         slider.valueProperty().addListener((observable, oldValue, newValue) -> {
             int roundedValue = (int) Math.round(newValue.doubleValue());
@@ -489,8 +520,8 @@ public class GameGraphics extends Application {
         return foodRateHBox;
     }
 
-    private static Slider makeSlider(int minValue, int maxValue ) {
-        int numberOfValues = maxValue - minValue +1;
+    private static Slider makeSlider(int minValue, int maxValue) {
+        int numberOfValues = maxValue - minValue + 1;
         Slider slider = new Slider(minValue, maxValue, numberOfValues);
         slider.setPrefWidth(175);
         slider.setShowTickLabels(true);
@@ -537,6 +568,7 @@ public class GameGraphics extends Application {
         PopulationText.setTranslateX(265);
         statusPane.getChildren().add(PopulationText);
     }
+
     private void updatePopulationText() {
         Integer population = gameMenuController.getPopulation();
         PopulationText.setText(population.toString());
@@ -661,7 +693,7 @@ public class GameGraphics extends Application {
                 hBox.getChildren().add(text);
                 text.setStyle("-fx-font-family: GothicE; -fx-font-size: 40; -fx-font-weight: bold");
                 text.setTranslateY(10);
-                if (getPhotoName(file.getPath()).equals("market")){
+                if (getPhotoName(file.getPath()).equals("market")) {
                     if (marketMenu == null) marketMenu = hBox;
                     else
                         hBox.getChildren().add(marketMenu);
@@ -833,7 +865,7 @@ public class GameGraphics extends Application {
                 buildings.add(stackPane);
                 imageView.setFitWidth(40 * TypeOfBuilding.getBuilding(string).getWidth());
                 imageView.setPreserveRatio(true);
-                addImageToMiniMap(stackPane.getLayoutX(),stackPane.getLayoutY(),TypeOfBuilding.getBuilding(string).getWidth());
+                addImageToMiniMap(stackPane.getLayoutX(), stackPane.getLayoutY(), TypeOfBuilding.getBuilding(string).getWidth());
                 updateGoldText();
             }
         }
@@ -841,11 +873,11 @@ public class GameGraphics extends Application {
 
     private void addImageToMiniMap(double layoutX, double layoutY, int size) {
         //TODO should be replaced with size of map
-        Rectangle rectangle = new Rectangle(((double)size/400)*225,((double)size/400)*225);
+        Rectangle rectangle = new Rectangle(((double) size / 400) * 225, ((double) size / 400) * 225);
         rectangle.setFill(Color.RED);
-        rectangle.setTranslateX((layoutX/(40*400))*225+12.5);
-        rectangle.setTranslateY((layoutY/(40*400))*225+16);
-        miniMapPane.getChildren().add(2,rectangle);
+        rectangle.setTranslateX((layoutX / (40 * 400)) * 225 + 12.5);
+        rectangle.setTranslateY((layoutY / (40 * 400)) * 225 + 16);
+        miniMapPane.getChildren().add(2, rectangle);
     }
 
     private void addEventHandlerForBuilding(StackPane stackPane) {
@@ -923,9 +955,9 @@ public class GameGraphics extends Application {
     }
 
     private void setUnitTimeline() {
-        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500),actionEvent -> {
-            for(PersonPane personPane:people)
-                if(!personPane.getPerson().getMovePattern().isEmpty() && !personPane.isMoving()) {
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500), actionEvent -> {
+            for (PersonPane personPane : people)
+                if (!personPane.getPerson().getMovePattern().isEmpty() && !personPane.isMoving()) {
                     personPane.getPersonMove().play();
                     personPane.getPersonDirection().play();
                     personPane.setMoving(true);
@@ -936,7 +968,7 @@ public class GameGraphics extends Application {
     }
 
     private void createMiniMap() {
-        Rectangle rectangle = new Rectangle(225*Main.screenWidth/(40*400),225*Main.screenHeight/(40*400)); //TODO change 400 with map size
+        Rectangle rectangle = new Rectangle(225 * Main.screenWidth / (40 * 400), 225 * Main.screenHeight / (40 * 400)); //TODO change 400 with map size
         rectangle.setFill(Color.TRANSPARENT);
         rectangle.setStroke(Color.BLACK);
         rectangle.setTranslateX(12.5);
@@ -949,11 +981,11 @@ public class GameGraphics extends Application {
         miniMap.setTranslateY(16);
         miniMapBorder.setPreserveRatio(true);
         miniMapBorder.setFitWidth(250);
-        miniMapPane = new StackPane(miniMap,miniMapBorder,rectangle);
+        miniMapPane = new StackPane(miniMap, miniMapBorder, rectangle);
         rootPane.getChildren().add(miniMapPane);
         miniMapPane.setAlignment(Pos.TOP_LEFT);
         miniMapPane.setLayoutX(1400);
-        miniMapPane.setLayoutY(Main.screenHeight-250);
+        miniMapPane.setLayoutY(Main.screenHeight - 250);
     }
 
 //    private void setZoomOut(Pane pane) {     //TODO just zooooooooooooooooooooooooooom

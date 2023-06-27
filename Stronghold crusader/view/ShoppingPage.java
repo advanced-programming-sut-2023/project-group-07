@@ -19,6 +19,9 @@ public class ShoppingPage {
     private Text buyingPriceNumber;
     private HBox sellingPrice;
     private Text sellingPriceNumber;
+    private Button buyingButton;
+    private Button sellingButton;
+    private Text itemAmountText ;
 
     public ShoppingPage(Resources resource) {
         this.resource = resource;
@@ -27,20 +30,20 @@ public class ShoppingPage {
         setImage(resource);
         settingPrices(resource);
         setButtons();
+        setItemAmounts();
+    }
+
+    private void setItemAmounts() {
+        itemAmountText = new Text("0");
+        menu.getChildren().add(itemAmountText);
     }
 
     private void setButtons() {
         VBox buttonsVBox = new VBox();
         buttonsVBox.setSpacing(20);
-        Button buyingButton = new Button();
+        buyingButton = new Button();
         buyingButton.setText("buy");
-        buyingButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-
-            }
-        });
-        Button sellingButton = new Button();
+        sellingButton = new Button();
         sellingButton.setText("sell");
         buttonsVBox.getChildren().add(buyingButton);
         buttonsVBox.getChildren().add(sellingButton);
@@ -75,11 +78,13 @@ public class ShoppingPage {
         pricesVBox.getChildren().add(sellingPrice);
         menu.getChildren().add(pricesVBox);
     }
-    private void updatePrices(){
+
+    private void updatePrices() {
         buyingPriceNumber.setText(resource.getBuyingPrice() + "");
         sellingPriceNumber.setText(resource.getSellingPrice() + "");
     }
-    private void updateImage(){
+
+    private void updateImage() {
         image.setFill(new ImagePattern(new Image(ShoppingPage.class.getResource(
                 "/Images/Game/market/items/" + resource.toString() + ".png").toExternalForm())));
     }
@@ -92,5 +97,21 @@ public class ShoppingPage {
 
     public HBox menu() {
         return menu;
+    }
+
+    public Resources resource() {
+        return resource;
+    }
+
+    public Button buyingButton() {
+        return buyingButton;
+    }
+
+    public Button sellingButton() {
+        return sellingButton;
+    }
+
+    public void setItemAmount(Integer amount){
+        itemAmountText.setText(amount.toString());
     }
 }

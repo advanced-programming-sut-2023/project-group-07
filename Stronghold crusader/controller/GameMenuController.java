@@ -560,6 +560,9 @@ public class GameMenuController {
         game.getCurrentGovernment().changeResources(resource, -amount);
         return Messages.SHOP_SUCCESSFUL;
     }
+    public int getResourceAmount(Resources resource){
+        return game.getCurrentGovernment().getResourceAmount(resource);
+    }
 
     public String showGold() {
         return "Your gold: " + game.getCurrentGovernment().getGold();
