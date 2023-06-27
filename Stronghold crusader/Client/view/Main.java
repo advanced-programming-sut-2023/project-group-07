@@ -1,22 +1,17 @@
-package view;
+package Client.view;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import Client.controller.Controller;
 import Client.controller.GameMenuController;
-import Client.model.*;
-import Client.view.GameGraphics;
 import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Scene;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import Client.model.*;
 
 import static javafx.application.Application.launch;
 
@@ -55,7 +50,19 @@ public class Main extends Application {
         GameMenuController gameMenuController= new GameMenuController();
         gameGraphics.setGameMenuController(gameMenuController);
         gameGraphics.start(stage);
-//        new LoginMenuGraphics().start(stage);
-//        new LoginMenuGraphics().start(stage);
+//        if(User.stayLoggedIn()!=null) {
+//            Controller.currentUser=User.stayLoggedIn();
+//            new MainMenuGraphics().start(stage);
+//        }
+//        else
+//            new LoginMenuGraphics().start(stage);
+    }
+
+    public static double getScreenHeight() {
+        return screenHeight;
+    }
+
+    public static double getScreenWidth() {
+        return screenWidth;
     }
 }
