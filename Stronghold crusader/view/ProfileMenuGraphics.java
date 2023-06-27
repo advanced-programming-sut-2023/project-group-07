@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -99,6 +100,8 @@ public class ProfileMenuGraphics extends Application {
 
     @FXML
     private Rectangle avatar;
+    @FXML
+    private Rectangle backImage;
 
     @FXML
     private CheckBox showPasswordCheckBox;
@@ -129,6 +132,25 @@ public class ProfileMenuGraphics extends Application {
         resetFields();
         setAvatar();
         addTextFieldsListeners();
+        addBackButton();
+    }
+
+    private void addBackButton() {
+        backImage.setFill(new ImagePattern(new Image(ProfileMenuGraphics.class.getResource("/Images/Icon/hand pointing left.png").toExternalForm())));
+        backImage.setOnMousePressed(new EventHandler<>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                back();
+            }
+        });
+    }
+
+    private void back() {
+        try {
+            new MainMenuGraphics().start(Main.stage);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void addTextFieldsListeners() {
