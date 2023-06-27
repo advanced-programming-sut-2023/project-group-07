@@ -58,6 +58,8 @@ public class GameGraphics extends Application {
     private HBox governmentActionsButtons = null;
     private ArrayList<HBox> governmentActionsMenus = new ArrayList<>();
     private HBox marketMenu = null;
+    private ShoppingPage shoppingPage = null;
+    private HBox shoppingPageMenu = null;
     private ArrayList<PopularityFactor> popularityFactors = new ArrayList<>();
     private CursorAnimation cursorAnimation;
     private StackPane miniMapPane;
@@ -249,10 +251,20 @@ public class GameGraphics extends Application {
     }
 
     private void setMarketMenu(){
-        marketMenu = makeAHBoxMenu();
+        if (marketMenu == null){
+            marketMenu = new HBox();
+            marketMenu.setTranslateY(40);
+        }
         setMarketItems();
+        setShoppingMenu();
         // TODO: 6/26/2023 set enter trade menu
-        marketMenu.setVisible(false);
+    }
+
+    private void setShoppingMenu() {
+        shoppingPage = new ShoppingPage(Resources.IRON);
+        shoppingPageMenu = makeAHBoxMenu();
+        shoppingPageMenu.getChildren().add(shoppingPage.menu());
+        shoppingPageMenu.setVisible(false);
     }
 
     private void setMarketItems() {
@@ -285,6 +297,7 @@ public class GameGraphics extends Application {
                 public void handle(MouseEvent mouseEvent) {
                     String name = image.getName();
                     name = name.substring(0,name.indexOf("."));
+                    System.out.println(name);
                     enterShoppingAnItemMenu(name);
                 }
             });
@@ -294,8 +307,11 @@ public class GameGraphics extends Application {
         }
     }
 
-    private void enterShoppingAnItemMenu(String resource) {// TODO: 6/27/2023 complete this
-
+    private void enterShoppingAnItemMenu(String resourceName) {
+        clearStatusBar();
+        Resources resource = Resources.getResource(resourceName);
+        shoppingPage.setResource(resource);
+        shoppingPageMenu.setVisible(true);
     }
 
     private void setGovernmentDetails() {
@@ -308,7 +324,7 @@ public class GameGraphics extends Application {
         setGovernmentActionButton();
     }
 
-    private void setGovernmentActionButton() { // TODO: 6/26/2023 these menus have no back button
+    private void setGovernmentActionButton() {
         governmentActionsButtons = makeAHBoxMenu();
         setFoodRateActions();
         setTaxActions();
@@ -646,7 +662,13 @@ public class GameGraphics extends Application {
                 hBox.getChildren().add(text);
                 text.setStyle("-fx-font-family: GothicE; -fx-font-size: 40; -fx-font-weight: bold");
                 text.setTranslateY(10);
+                if (getPhotoName(file.getPath()).equals("market")){
+                    if (marketMenu == null) marketMenu = hBox;
+                    else
+                        hBox.getChildren().add(marketMenu);
+                }
                 hBox.setVisible(false);
+
             }
         }
         createUnitMenu();
@@ -855,7 +877,8 @@ public class GameGraphics extends Application {
         governmentActionsButtons.setVisible(false);
         for (HBox menu : governmentActionsMenus)
             menu.setVisible(false);
-        marketMenu.setVisible(false);
+//        marketMenu.setVisible(false);
+        shoppingPageMenu.setVisible(false);
 
     }
 
