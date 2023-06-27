@@ -229,7 +229,7 @@ public class GameGraphics extends Application {
     private void initStatusBar() {
         StackPane stackPane = new StackPane();
         statusPane = stackPane;
-        stackPane.setLayoutY(Main.screenHeight - 250);
+        stackPane.setLayoutY(Main.screenHeight - 215);
         stackPane.setLayoutX(100);
         ImageView imageView = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Menu/menu.png").toExternalForm()));
         imageView.setScaleX(1.4);
@@ -347,7 +347,6 @@ public class GameGraphics extends Application {
 
     private HBox getFearRateHBox() {
         HBox fearRateHBox = makeAHBoxMenu();
-
         Slider slider = makeSlider(-5,5);
         slider.setValue(gameMenuController.getFearRate());
         slider.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -617,7 +616,7 @@ public class GameGraphics extends Application {
                 imageView.setPreserveRatio(true);
                 imageView.setFitWidth(120);
                 hBox.getChildren().add(stackPane);
-                stackPane.hoverProperty().addListener((observable -> {
+                imageView.hoverProperty().addListener((observable -> {
                     imageView.setOpacity(0.7);
                     if (!stackPane.isHover())
                         imageView.setOpacity(1);
@@ -951,9 +950,10 @@ public class GameGraphics extends Application {
         miniMapBorder.setPreserveRatio(true);
         miniMapBorder.setFitWidth(250);
         miniMapPane = new StackPane(miniMap,miniMapBorder,rectangle);
-        statusPane.getChildren().add(miniMapPane);
+        rootPane.getChildren().add(miniMapPane);
         miniMapPane.setAlignment(Pos.TOP_LEFT);
-        miniMapPane.setTranslateX(1300);
+        miniMapPane.setLayoutX(1400);
+        miniMapPane.setLayoutY(Main.screenHeight-250);
     }
 
 //    private void setZoomOut(Pane pane) {     //TODO just zooooooooooooooooooooooooooom
