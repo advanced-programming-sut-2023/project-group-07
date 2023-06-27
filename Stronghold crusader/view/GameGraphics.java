@@ -227,7 +227,7 @@ public class GameGraphics extends Application {
     private void initStatusBar() {
         StackPane stackPane = new StackPane();
         statusPane = stackPane;
-        stackPane.setLayoutY(Main.screenHeight - 250);
+        stackPane.setLayoutY(Main.screenHeight - 215);
         stackPane.setLayoutX(100);
         ImageView imageView = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Menu/menu.png").toExternalForm()));
         imageView.setScaleX(1.4);
@@ -310,7 +310,6 @@ public class GameGraphics extends Application {
 
     private void setGovernmentActionButton() { // TODO: 6/26/2023 these menus have no back button
         governmentActionsButtons = makeAHBoxMenu();
-        governmentActionsButtons.setMaxHeight(140);
         setFoodRateActions();
         setTaxActions();
         setFearRateActions();
@@ -320,9 +319,6 @@ public class GameGraphics extends Application {
 
     private void setFearRateActions() {
         HBox fearRateHBox = getFearRateHBox();
-        fearRateHBox.setMaxHeight(140);
-        fearRateHBox.setMaxWidth(500);
-        fearRateHBox.setStyle("-fx-background-color: blue");
         governmentActionsMenus.add(fearRateHBox);
         Button fearRateButton = new Button();
         fearRateButton.setText("set fear rate");
@@ -931,9 +927,10 @@ public class GameGraphics extends Application {
         miniMapBorder.setPreserveRatio(true);
         miniMapBorder.setFitWidth(250);
         miniMapPane = new StackPane(miniMap,miniMapBorder,rectangle);
-        statusPane.getChildren().add(miniMapPane);
+        rootPane.getChildren().add(miniMapPane);
         miniMapPane.setAlignment(Pos.TOP_LEFT);
-        miniMapPane.setTranslateX(1300);
+        miniMapPane.setLayoutX(1400);
+        miniMapPane.setLayoutY(Main.screenHeight-250);
     }
 
 //    private void setZoomOut(Pane pane) {     //TODO just zooooooooooooooooooooooooooom
