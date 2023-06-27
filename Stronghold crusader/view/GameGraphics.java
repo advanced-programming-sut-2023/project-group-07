@@ -310,6 +310,7 @@ public class GameGraphics extends Application {
 
     private void setGovernmentActionButton() { // TODO: 6/26/2023 these menus have no back button
         governmentActionsButtons = makeAHBoxMenu();
+        governmentActionsButtons.setMaxHeight(140);
         setFoodRateActions();
         setTaxActions();
         setFearRateActions();
@@ -319,6 +320,9 @@ public class GameGraphics extends Application {
 
     private void setFearRateActions() {
         HBox fearRateHBox = getFearRateHBox();
+        fearRateHBox.setMaxHeight(140);
+        fearRateHBox.setMaxWidth(500);
+        fearRateHBox.setStyle("-fx-background-color: blue");
         governmentActionsMenus.add(fearRateHBox);
         Button fearRateButton = new Button();
         fearRateButton.setText("set fear rate");
@@ -331,7 +335,6 @@ public class GameGraphics extends Application {
 
     private HBox getFearRateHBox() {
         HBox fearRateHBox = makeAHBoxMenu();
-
         Slider slider = makeSlider(-5,5);
         slider.setValue(gameMenuController.getFearRate());
         slider.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -601,7 +604,7 @@ public class GameGraphics extends Application {
                 imageView.setPreserveRatio(true);
                 imageView.setFitWidth(120);
                 hBox.getChildren().add(stackPane);
-                stackPane.hoverProperty().addListener((observable -> {
+                imageView.hoverProperty().addListener((observable -> {
                     imageView.setOpacity(0.7);
                     if (!stackPane.isHover())
                         imageView.setOpacity(1);
