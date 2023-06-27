@@ -14,9 +14,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -178,6 +179,17 @@ public class GameGraphics extends Application {
             }
         });
         scene.getStylesheets().add(GameGraphics.class.getResource("/CSS/slideBar.css").toExternalForm());
+        setCheat(scene);
+    }
+
+    private void setCheat(Scene scene) {
+        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                if (keyEvent.getCode().equals(KeyCode.Q) && keyEvent.isControlDown())
+                    clearStatusBar();
+            }
+        });
     }
 
     private boolean isCursorOnGround() {
@@ -238,9 +250,36 @@ public class GameGraphics extends Application {
 
     private void setMarketMenu(){
         marketMenu = makeAHBoxMenu();
+        setMarketItems();
+        // TODO: 6/26/2023 set enter trade menu
+        marketMenu.setVisible(false);
+    }
+
+    private void setMarketItems() {
+        int numberOfRows = 3;
+        ArrayList<HBox> rowsHBox = getMarketRowsHBox(numberOfRows);
+        addItemsToMarketMenu(rowsHBox, numberOfRows);
+    }
+
+    private ArrayList<HBox> getMarketRowsHBox(int numberOfRows) {
+        VBox rowsPane = new VBox();
+        rowsPane.setSpacing(20);
+        marketMenu.getChildren().add(rowsPane);
+        ArrayList<HBox> rowsHBox = new ArrayList<>();
+        for (int i = 0; i< numberOfRows; i++){
+            HBox hBox = new HBox();
+            hBox.setSpacing(20);
+            rowsHBox.add(hBox);
+            rowsPane.getChildren().add(hBox);
+        }
+        return rowsHBox;
+    }
+
+    private void addItemsToMarketMenu(ArrayList<HBox> rowsHBox, int numberOfRows) {
         File[] itemsList = filesListMaker("/Images/Game/market/items");
+        int i=0;
         for( File image : itemsList){
-            Rectangle itemImage = new Rectangle(50,50);
+            Rectangle itemImage = new Rectangle(35,35);
             itemImage.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent mouseEvent) {
@@ -250,15 +289,13 @@ public class GameGraphics extends Application {
                 }
             });
             itemImage.setFill(new ImagePattern(new Image(image.getAbsolutePath())));
-            marketMenu.getChildren().add(itemImage);
+            rowsHBox.get(i).getChildren().add(itemImage);
+            i = (i+1)% numberOfRows;
         }
-
-        // TODO: 6/26/2023 set items
-        // TODO: 6/26/2023 set enter trade menu
-        marketMenu.setVisible(false);
     }
 
     private void enterShoppingAnItemMenu(String resource) {// TODO: 6/27/2023 complete this
+
     }
 
     private void setGovernmentDetails() {
@@ -458,6 +495,7 @@ public class GameGraphics extends Application {
 
 
     private void setEnterGovernmentActionButton() {
+        // TODO: 6/27/2023  uncomment
         Button governmentActionButton = new Button();
         governmentActionButton.setPrefSize(162, 173);
         governmentActionButton.setTranslateY(45);
