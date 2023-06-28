@@ -1,8 +1,13 @@
 package view;
 
+import javafx.event.EventHandler;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Box;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import model.Resources;
@@ -11,22 +16,58 @@ public class TradingPage {
     private Resources resource;
     private HBox menu;
     private Rectangle image;
-    private Text itemAmountText ;
+    private Text itemAmountText;
+    private Text tradingAmountText;
+    private Integer tradingAmount;
+
     public TradingPage(Resources resource) {
         this.resource = resource;
 
         initializeMenu();
         setImage(resource);
+        setActions();
 //        setButtons();
         // TODO: 6/28/2023 set buttons
         setItemAmounts();
 //        addButtonsToMenu();
         // TODO: 6/28/2023 add + and - buttons
     }
+
+    private void setActions() {
+        VBox vBox = new VBox();
+        menu().getChildren().add(vBox);
+        vBox.setSpacing(20);
+        tradingAmount = 0;
+        tradingAmountText = new Text("0");
+        vBox.getChildren().add(new HBox(new Text("trading amount\t"), tradingAmountText));
+
+        Button addButton = new Button();
+        addButton.setText("+");
+        addButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                increaseTradingAmount();
+            }
+        });
+        vBox.getChildren().add(addButton);
+        vBox.getChildren().add(new Button()); // TODO: 6/28/2023  
+    }
+
+    private void increaseTradingAmount() {
+        tradingAmount++;
+        updateTradingAmount();
+    }
+
+    private void updateTradingAmount(){
+        tradingAmountText.setText(tradingAmount.toString());
+    }
+
     private void setItemAmounts() {
         itemAmountText = new Text("0");
+        menu.getChildren().add(new Text("current amount"));
         menu.getChildren().add(itemAmountText);
     }
+
     private void setImage(Resources resource) {
         image = new Rectangle(60, 60);
         image.setFill(new ImagePattern(new Image(ShoppingPage.class.getResource(
@@ -48,6 +89,8 @@ public class TradingPage {
     public void setResource(Resources resource) {
         this.resource = resource;
         updateImage();
+        tradingAmount = 0;
+        updateTradingAmount();
     }
 
     public HBox menu() {
@@ -57,7 +100,8 @@ public class TradingPage {
     public Resources resource() {
         return resource;
     }
-    public void setItemAmount(Integer amount){
+
+    public void setItemAmount(Integer amount) {
         itemAmountText.setText(amount.toString());
     }
 
