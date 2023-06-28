@@ -93,4 +93,10 @@ public class TradeMenuController {
         return Messages.REQUEST_TRADE_SUCCESSFUL;
 
     }
+    public ArrayList<LordColor> getUserColors(){
+        ArrayList<LordColor> usersByColor = new ArrayList<>();
+        for (LordColor lordColor : LordColor.values())
+            if (Controller.currentGame.getGovernmentByColor(lordColor) != null) usersByColor.add(lordColor);
+        return usersByColor;
+    }
 }
