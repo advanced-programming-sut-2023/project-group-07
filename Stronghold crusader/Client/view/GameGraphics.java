@@ -31,6 +31,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import Client.model.*;
 
+import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -258,6 +259,9 @@ public class GameGraphics extends Application {
         personPane.setLayoutX(40 * j);
         personPane.setLayoutY(40 * i);
         mapPane.getChildren().add(personPane);
+        people.add(personPane);
+        if(person instanceof Unit)
+            gameMenuController.addHealthBarListener(personPane.getHealthBar(),(Unit)personPane.getPerson());
     }
 
     private void addTexture(Texture texture, int i, int j) {
@@ -908,6 +912,7 @@ public class GameGraphics extends Application {
                 }
     }
 
+
     private void createUnit(String name) {
         Messages message = gameMenuController.createUnit(name, 1);
         switch (message) {
@@ -938,8 +943,8 @@ public class GameGraphics extends Application {
             for (Person person : gameMenuController.getSelectedUnit())
                 if (person instanceof Unit unit && unit.getType().equals(unitTypes))
                     counter++;
-            if (counter > 0 && unitTypes.getMilitaryCampType() != null) {
-                ImageView imageView = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Menu/" + unitTypes.getMilitaryCampType().getName() + "/" + unitTypes.getType() + ".png").toExternalForm()));
+            if (counter > 0) {
+                ImageView imageView = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Soldiers/selection/"+unitTypes.getType()+".png").toExternalForm()));
                 ImageView archway = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Menu/archway.png").toExternalForm()));
                 archway.setPreserveRatio(true);
                 archway.setFitWidth(90);
@@ -1162,7 +1167,6 @@ public class GameGraphics extends Application {
         miniMapPane = new StackPane(miniMap, miniMapBorder, rectangle);
         rootPane.getChildren().add(miniMapPane);
         miniMapPane.setAlignment(Pos.TOP_LEFT);
-        miniMapPane.setLayoutX(1400);
         miniMapPane.setLayoutY(Main.screenHeight - 250);
     }
 
