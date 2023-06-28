@@ -212,7 +212,7 @@ public class GameGraphics extends Application {
 
     private void addBuilding(Building building, int i, int j) {
         System.out.println(building.getTypeOfBuilding().toString());
-        ImageView imageView = new ImageView (GameGraphics.class.getResource("/Images/Buildings/" + building.getTypeOfBuilding().toString() + ".png").toString());
+        ImageView imageView = new ImageView (GameGraphics.class.getResource("/Images/Game/Buildings/" + building.getTypeOfBuilding().toString() + ".png").toString());
         StackPane stackPane = new StackPane(imageView);
         addEventHandlerForBuilding(stackPane);
         mapPane.getChildren().add(stackPane);
@@ -221,7 +221,7 @@ public class GameGraphics extends Application {
         buildings.add(stackPane);
         imageView.setFitWidth(40 * TypeOfBuilding.getBuilding(building.getTypeOfBuilding().toString()).getWidth());
         imageView.setPreserveRatio(true);
-        addImageToMiniMap(stackPane.getLayoutX(), stackPane.getLayoutY(), TypeOfBuilding.getBuilding(building.getTypeOfBuilding().toString()).getWidth());
+        //addImageToMiniMap(stackPane.getLayoutX(), stackPane.getLayoutY(), TypeOfBuilding.getBuilding(building.getTypeOfBuilding().toString()).getWidth());
     }
 
     private void addPerson(Person person, int i, int j) {
