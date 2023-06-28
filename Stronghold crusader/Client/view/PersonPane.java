@@ -34,7 +34,7 @@ public class PersonPane extends StackPane {
         personDirection = new PersonDirection(GameGraphics.class.getResource("/Images/Game/Soldiers/"+name+"/").toExternalForm(),this,"left");
         personMove = new PersonMove(this,gameMenuController);
         this.person = person;
-        personImage = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Soldiers/"+name+"/down/anim1.png").toExternalForm()));
+        personImage = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Soldiers/"+name+"/down/anim (1).png").toExternalForm()));
         VBox vBox = new VBox(5);
         vBox.setAlignment(Pos.CENTER);
         Double a=0.0;

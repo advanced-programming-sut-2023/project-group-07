@@ -36,7 +36,7 @@ public class PersonDirection extends Transition {
                             personPane.getPerson().getCurrentLocation()[1],
                             personPane.getPerson().getMovePattern().get(0)[0],
                             personPane.getPerson().getMovePattern().get(0)[1]);
-                    personPane.getPersonImage().setImage(new Image(directory+direction+"/anim"+(i+1)+".png"));
+                    personPane.getPersonImage().setImage(new Image(directory+direction+"/anim ("+(i+1)+").png"));
                 }
             }
         }
