@@ -4,6 +4,7 @@ package Client.view;
 import Client.controller.Controller;
 import Client.controller.GameMenuController;
 import Client.controller.Messages;
+import Client.controller.TradeMenuController;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -198,22 +199,22 @@ public class GameGraphics extends Application {
     private void setMap() {
         ArrayList<ArrayList<MapPixel>> field = map.getWholeField();
         int size = field.size();
-        for (int i = 0 ; i < size ; i++)
-            for (int j = 0 ; j < size ; j++) {
+        for (int i = 0; i < size; i++)
+            for (int j = 0; j < size; j++) {
                 MapPixel pixel = field.get(i).get(j);
                 if (!pixel.getTexture().equals(Texture.LAND))
                     addTexture(pixel.getTexture(), i, j);
                 for (Building building : pixel.getBuildings())
                     addBuilding(building, i, j);
-                if (pixel.getLordKeep() != null)
-                    addKeep(pixel.getLordKeep(), i, j);
+//                if (pixel.getLordKeep() != null)
+//                    addKeep(pixel.getLordKeep(), i, j); // TODO: 6/28/2023 uncomment
 //                for (Person person : pixel.getPeople())
 //                    addPerson(person, i, j);
             }
     }
 
     private void addKeep(LordColor lordKeep, int i, int j) {
-        ImageView imageView = new ImageView (GameGraphics.class.getResource("/Images/Game/Buildings/keep.png").toString());
+        ImageView imageView = new ImageView(GameGraphics.class.getResource("/Images/Game/Buildings/keep.png").toString());
         StackPane stackPane = new StackPane(imageView);
         addEventHandlerForBuilding(stackPane);
         mapPane.getChildren().add(stackPane);
@@ -225,7 +226,7 @@ public class GameGraphics extends Application {
 
     private void addBuilding(Building building, int i, int j) {
         System.out.println(building.getTypeOfBuilding().toString());
-        ImageView imageView = new ImageView (GameGraphics.class.getResource("/Images/Game/Buildings/" + building.getTypeOfBuilding().toString() + ".png").toString());
+        ImageView imageView = new ImageView(GameGraphics.class.getResource("/Images/Game/Buildings/" + building.getTypeOfBuilding().toString() + ".png").toString());
         StackPane stackPane = new StackPane(imageView);
         addEventHandlerForBuilding(stackPane);
         mapPane.getChildren().add(stackPane);
@@ -338,7 +339,7 @@ public class GameGraphics extends Application {
         tradeMenu.getChildren().add(new Text("trade menu\t"));
         setTradeMenuItems();
         setTradingPage();
-        // TODO: 6/28/2023 add request  
+        // TODO: 6/28/2023 add requests
     }
 
     private void initializingTradeMenu() {
@@ -350,11 +351,42 @@ public class GameGraphics extends Application {
 
     private void setTradingPage() {
         tradingPage = new TradingPage(Resources.IRON);
-//        addClickActionsForShoppingMenu();
-        // TODO: 6/28/2023 change them
         tradingPageMenu = makeAHBoxMenu();
         tradingPageMenu.getChildren().add(tradingPage.menu());
         tradingPageMenu.setVisible(false);
+        tradingPage.requestButton().setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                switch (tradeMenuController().requestTrade(tradingPage.resource().toString()
+                        , tradingPage.lordColor().toString()
+                        , tradingPage.message()
+                        , tradingPage.tradingAmount()
+                        , tradingPage.goldAmount())) {
+                    case INVALID_COLOR:
+                        addToMessageBar("choose color.");
+                        break;
+                    case NEGATIVE_PRICE:
+                        addToMessageBar("Price can't be negative.");
+                        break;
+                    case NO_LORD_WITH_THIS_COLOR:
+                        addToMessageBar("No one has this color.");
+                        break;
+                    case REQUEST_YOURSELF:
+                        addToMessageBar("You can't request yourself.");
+                        break;
+                    case REQUEST_TRADE_SUCCESSFUL:
+                        addToMessageBar("You have successfully made a trade request.");
+                        break;
+                }
+            }
+        });
+    }
+
+    private TradeMenuController tradeMenuController;
+
+    public TradeMenuController tradeMenuController() {
+        if (tradeMenuController == null) tradeMenuController = new TradeMenuController();
+        return tradeMenuController;
     }
 
 
@@ -363,7 +395,6 @@ public class GameGraphics extends Application {
         ArrayList<HBox> rowsHBox = getMenuRowsHBox(numberOfRows, tradeMenu);
         addItemsToMenu(rowsHBox, numberOfRows, true);
     }
-
 
 
     private void setEnterTradeMenuButton() {
@@ -377,6 +408,7 @@ public class GameGraphics extends Application {
         });
         marketMenu.getChildren().add(enterTradeMenuButton);
     }
+
     private void enterTradingItemMenu(String resourceName) {
         clearStatusBar();
         Resources resource = Resources.getResource(resourceName);
@@ -446,7 +478,7 @@ public class GameGraphics extends Application {
         return rowsHBox;
     }
 
-    private void addItemsToMenu(ArrayList<HBox> rowsHBox, int numberOfRows, boolean isForTrade ) { // boolean is bad practice
+    private void addItemsToMenu(ArrayList<HBox> rowsHBox, int numberOfRows, boolean isForTrade) { // boolean is bad practice
         // this method is used for trade and market
         File[] itemsList = filesListMaker("/Images/Game/market/items");
         int i = 0;
