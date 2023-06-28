@@ -50,7 +50,21 @@ public class TradingPage {
             }
         });
         vBox.getChildren().add(addButton);
-        vBox.getChildren().add(new Button()); // TODO: 6/28/2023  
+        Button minusButton = new Button();
+        minusButton.setText("-");
+        minusButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                decreaseTradingAmount();
+            }
+        });
+        vBox.getChildren().add(minusButton);
+    }
+
+    private void decreaseTradingAmount() {
+        if (tradingAmount <= 0) return;
+        tradingAmount--;
+        updateTradingAmount();
     }
 
     private void increaseTradingAmount() {
