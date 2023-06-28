@@ -6,7 +6,7 @@ public enum NonMilitaryTypes {
     HUNTER(100, 12, "hunter"),
     FARMER(100, 12, "farmer"),
     PEASANT(20, 12, "peasant"),
-    ORDINARY_PERSON(20, 8, "ordirary person"),
+    ORDINARY_PERSON(20, 8, "ordinary person"),
     STONE_MASON(100, 8, "stone mason"),
     IRON_MINER(100, 8, "iron miner"),
     PITCH_DIGGER(100, 12, "pitch digger"),
