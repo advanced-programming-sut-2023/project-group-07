@@ -78,6 +78,10 @@ public class Map {
         return output;
     }
 
+    public ArrayList<ArrayList<MapPixel>> getWholeField() {
+        return getField(0,0, size - 1, size - 1);
+    }
+
     public int getSize() {
         return this.size;
     }

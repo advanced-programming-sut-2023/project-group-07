@@ -1,16 +1,35 @@
 package controller;
 
+<<<<<<< Updated upstream
+=======
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+>>>>>>> Stashed changes
 import java.math.BigInteger;
+import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.*;
 import java.util.regex.Matcher;
 
+<<<<<<< Updated upstream
 import model.*;
 import model.Map;
 import view.CaptchaPrinter;
 import view.MenuPrinter;
+=======
+import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Alert;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import model.*;
+import model.Map;
+import view.*;
+>>>>>>> Stashed changes
 
 public class Controller {
     public static User currentUser;
@@ -221,4 +240,61 @@ public class Controller {
     public static void releaseDogs(int numberOfDogs, int x, int y) {
         currentGame.releaseDogs(numberOfDogs, x, y, currentGame.getCurrentGovernment());
     }
+<<<<<<< Updated upstream
+=======
+
+    public static DropShadow getBorderGlow(Color color, double height) {
+        DropShadow borderGlow = new DropShadow();
+        borderGlow.setColor(color);
+        borderGlow.setOffsetX(0f);
+        borderGlow.setOffsetY(0f);
+        borderGlow.setHeight(30);
+        return borderGlow;
+    }
+
+    public static Alert information(String headerText, String contentText) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText(headerText);
+        alert.setContentText(contentText);
+        return alert;
+    }
+
+    public static Alert error(String headerText, String contentText){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setHeaderText(headerText);
+        alert.setContentText(contentText);
+        return alert;
+    }
+
+    public static String giveARandomAvatar() {
+        try {
+            String path = GameGraphics.class.getResource("/Images/Avatars").toString();
+            path = path.replaceAll("%20", " ");
+            path = path.substring("file:".length());
+            File file2 = new File(path);
+            File[] files = file2.listFiles();
+            System.out.println(files);
+            ArrayList<String> defaultAvatarsNames = new ArrayList<>();
+            for (File file : files) {
+                if (file.getName().matches("\\d+\\.[^.]+")) defaultAvatarsNames.add(file.getName()); //default avatars names contains just number
+            }
+            return defaultAvatarsNames.get(randomNumber(defaultAvatarsNames.size()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static BorderPane getBorderPane(String path) throws IOException {
+        URL url = CreateMapGraphics.class.getResource(path);
+        BorderPane borderPane = FXMLLoader.load(url);
+        Background background = new Background(new BackgroundImage((new Image(LoginMenuGraphics.class.getResource("/Images/Background/1.jpg").toString(), Main.screenWidth, Main.screenHeight, false, false)),
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.DEFAULT,
+                BackgroundSize.DEFAULT));
+        borderPane.setBackground(background);
+        return borderPane;
+    }
+>>>>>>> Stashed changes
 }

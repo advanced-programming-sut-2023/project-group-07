@@ -14,7 +14,7 @@ import controller.Controller;
 import java.util.HashMap;
 
 public class CreateMapMenu extends MapMenu {
-    private final CreateMapMenuController controller = new CreateMapMenuController(super.controller);
+    private final CreateMapMenuController controller = new CreateMapMenuController();
     private Scanner scanner;
 
     public void run(Scanner scanner) throws IOException {
@@ -73,7 +73,7 @@ public class CreateMapMenu extends MapMenu {
         System.out.println("Are you sure you want to remove this map?");
         String input = scanner.nextLine();
         if (input.toLowerCase().matches("\\s*yes\\s*")) {
-            controller.removeMap();
+            //controller.removeMap();
             return Messages.REMOVE_MAP_SUCCESSFUL;
         }
         return Messages.REMOVE_MAP_CANCLED;
