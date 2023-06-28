@@ -87,8 +87,8 @@ public class TradeMenuController {
         if (receiver == null)
             return Messages.NO_LORD_WITH_THIS_COLOR;
         Government requester = Controller.currentGame.getCurrentGovernment();
-        if (receiver.equals(requester))
-            return Messages.REQUEST_YOURSELF;
+//        if (receiver.equals(requester))
+//            return Messages.REQUEST_YOURSELF;
         TradeRequest.makeATradeRequest(price, resource, amount, requester, receiver, message);
         return Messages.REQUEST_TRADE_SUCCESSFUL;
 

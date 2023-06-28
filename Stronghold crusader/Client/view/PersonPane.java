@@ -31,6 +31,7 @@ public class PersonPane extends StackPane {
 
     public PersonPane(String name,Person person,GameMenuController gameMenuController) {
         this.gameMenuController = gameMenuController;
+        PersonAttacking personAttacking = new PersonAttacking(GameGraphics.class.getResource("/Images/Game/Soldiers/"+name+"/").toExternalForm(),this,"left");
         personDirection = new PersonDirection(GameGraphics.class.getResource("/Images/Game/Soldiers/"+name+"/").toExternalForm(),this,"left");
         personMove = new PersonMove(this,gameMenuController);
         this.person = person;

@@ -14,6 +14,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -31,6 +32,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import Client.model.*;
 
+import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -66,6 +68,7 @@ public class GameGraphics extends Application {
     private TradingPage tradingPage = null;
     private HBox shoppingPageMenu = null;
     private HBox tradingPageMenu = null;
+    private HBox tradingRequestsMenu = null;
     private HBox tradeMenu = null;
 
     private ArrayList<PopularityFactor> popularityFactors = new ArrayList<>();
@@ -193,7 +196,7 @@ public class GameGraphics extends Application {
             }
         });
         scene.getStylesheets().add(GameGraphics.class.getResource("/CSS/slideBar.css").toExternalForm());
-        setCheat(scene);
+        setCheatShortCuts(scene);
     }
 
     private void setMap() {
@@ -258,6 +261,9 @@ public class GameGraphics extends Application {
         personPane.setLayoutX(40 * j);
         personPane.setLayoutY(40 * i);
         mapPane.getChildren().add(personPane);
+        people.add(personPane);
+        if(person instanceof Unit)
+            gameMenuController.addHealthBarListener(personPane.getHealthBar(),(Unit)personPane.getPerson());
     }
 
     private void addTexture(Texture texture, int i, int j) {
@@ -267,7 +273,7 @@ public class GameGraphics extends Application {
         mapPane.getChildren().add(imageView);
     }
 
-    private void setCheat(Scene scene) {
+    private void setCheatShortCuts(Scene scene) {
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
@@ -349,7 +355,38 @@ public class GameGraphics extends Application {
         tradeMenu.getChildren().add(new Text("trade menu\t"));
         setTradeMenuItems();
         setTradingPage();
-        // TODO: 6/28/2023 add requests
+        setEnterTradeRequestsMenu();
+        setTradeRequestsMenu();
+
+    }
+
+    private void setTradeRequestsMenu() {
+        tradingRequestsMenu = makeAHBoxMenu();
+        Button tradeHistoryButton = new Button("trade history"); // TODO: 6/28/2023 set action
+        ArrayList<TradeRequest> availableTrades = tradeMenuController().getAvailableTrades();
+        ComboBox<TradeRequest> availableTradesComboBox = new ComboBox<>();
+        availableTradesComboBox.getItems().addAll(availableTrades);
+        tradingRequestsMenu.getChildren().add(availableTradesComboBox);
+
+        tradingRequestsMenu.getChildren().add(tradeHistoryButton);
+        tradingRequestsMenu.setVisible(false);
+    }
+
+    private void setEnterTradeRequestsMenu() {
+        Button enterRequestsMenuButton = new Button("trade requests");
+        enterRequestsMenuButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                enterRequestsMenu();
+            }
+        });
+        tradeMenu.getChildren().add(enterRequestsMenuButton);
+    }
+
+    private void enterRequestsMenu() {
+        clearStatusBar();
+        tradingRequestsMenu.setVisible(true);
+        //todo complete this
     }
 
     private void initializingTradeMenu() {
@@ -450,6 +487,7 @@ public class GameGraphics extends Application {
                 else {
                     updateGoldText();
                     shoppingPage.setItemAmount(gameMenuController.getResourceAmount(shoppingPage.resource()));
+                    addToMessageBar("Buy commodity successful!");
                 }
             }
         });
@@ -462,6 +500,7 @@ public class GameGraphics extends Application {
                 else {
                     updateGoldText();
                     shoppingPage.setItemAmount(gameMenuController.getResourceAmount(shoppingPage.resource()));
+                    addToMessageBar("Sell commodity successful!");
                 }
 
             }
@@ -886,8 +925,10 @@ public class GameGraphics extends Application {
                         ImageView imageView = new ImageView(new Image(file.getPath()));
                         StackPane stackPane = new StackPane(imageView);
                         hbox.getChildren().add(stackPane);
-                        stackPane.setTranslateX(-300);
-                        stackPane.setTranslateY(10);
+                        if(militaryCampType.getName().equals("mercenary post")){
+                            stackPane.setTranslateX(-300);
+                            stackPane.setTranslateY(10);
+                        }
                         imageView.setFitWidth(70);
                         imageView.setPreserveRatio(true);
                         stackPane.hoverProperty().addListener((observable -> {
@@ -905,6 +946,7 @@ public class GameGraphics extends Application {
 
                 }
     }
+
 
     private void createUnit(String name) {
         Messages message = gameMenuController.createUnit(name, 1);
@@ -936,8 +978,8 @@ public class GameGraphics extends Application {
             for (Person person : gameMenuController.getSelectedUnit())
                 if (person instanceof Unit unit && unit.getType().equals(unitTypes))
                     counter++;
-            if (counter > 0 && unitTypes.getMilitaryCampType() != null) {
-                ImageView imageView = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Menu/" + unitTypes.getMilitaryCampType().getName() + "/" + unitTypes.getType() + ".png").toExternalForm()));
+            if (counter > 0) {
+                ImageView imageView = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Soldiers/selection/"+unitTypes.getType()+".png").toExternalForm()));
                 ImageView archway = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Menu/archway.png").toExternalForm()));
                 archway.setPreserveRatio(true);
                 archway.setFitWidth(90);
@@ -1086,6 +1128,8 @@ public class GameGraphics extends Application {
         shoppingPageMenu.setVisible(false);
         tradingPageMenu.setVisible(false);
         tradeMenu.setVisible(false);
+        tradingRequestsMenu.setVisible(false);
+
 
     }
 
@@ -1156,7 +1200,6 @@ public class GameGraphics extends Application {
         miniMapPane = new StackPane(miniMap, miniMapBorder, rectangle);
         rootPane.getChildren().add(miniMapPane);
         miniMapPane.setAlignment(Pos.TOP_LEFT);
-        miniMapPane.setLayoutX(1400);
         miniMapPane.setLayoutY(Main.screenHeight - 250);
     }
 
