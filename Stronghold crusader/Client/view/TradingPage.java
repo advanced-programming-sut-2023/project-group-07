@@ -1,8 +1,12 @@
 package Client.view;
 
 import Client.model.Resources;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.collections.MapChangeListener;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -19,6 +23,9 @@ public class TradingPage {
     private Text itemAmountText;
     private Text tradingAmountText;
     private Integer tradingAmount;
+    private TextField messageTextField;
+    private TextField goldAmountTextField;
+
 
     public TradingPage(Resources resource) {
         this.resource = resource;
@@ -26,11 +33,7 @@ public class TradingPage {
         initializeMenu();
         setImage(resource);
         setActions();
-//        setButtons();
-        // TODO: 6/28/2023 set buttons
         setItemAmounts();
-//        addButtonsToMenu();
-        // TODO: 6/28/2023 add + and - buttons
     }
 
     private void setActions() {
@@ -41,15 +44,34 @@ public class TradingPage {
         tradingAmountText = new Text("0");
         vBox.getChildren().add(new HBox(new Text("trading amount\t"), tradingAmountText));
 
-        Button addButton = new Button();
-        addButton.setText("+");
-        addButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                increaseTradingAmount();
-            }
+        setAddAmountButton(vBox);
+        setMinusAmountButton(vBox);
+        setTextFields();
+
+    }
+
+    private void setTextFields() {
+        messageTextField = new TextField();
+        messageTextField.setPromptText("write your message here");
+        goldAmountTextField = new TextField();
+        goldAmountTextField.setPromptText("enter gold amount");
+        goldAmountTextField.textProperty().addListener((observableValue, oldVal, newVal) -> {
+            if (newVal.matches("\\d*"))
+                return;
+            if (!newVal.matches("\\d*") && oldVal.matches("\\d*"))
+                goldAmountTextField.setText(oldVal);
+            else
+                goldAmountTextField.setText("0");
+
         });
-        vBox.getChildren().add(addButton);
+        VBox vBox = new VBox();
+        vBox.setSpacing(20);
+        vBox.getChildren().add(messageTextField);
+        vBox.getChildren().add(goldAmountTextField);
+        menu().getChildren().add(vBox);
+    }
+
+    private void setMinusAmountButton(VBox vBox) {
         Button minusButton = new Button();
         minusButton.setText("-");
         minusButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -61,9 +83,21 @@ public class TradingPage {
         vBox.getChildren().add(minusButton);
     }
 
+    private void setAddAmountButton(VBox vBox) {
+        Button addButton = new Button();
+        addButton.setText("+");
+        addButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                increaseTradingAmount();
+            }
+        });
+        vBox.getChildren().add(addButton);
+    }
+
     private void decreaseTradingAmount() {
-        if (tradingAmount <= 0) return;
-        tradingAmount--;
+        if (tradingAmount <= 0) tradingAmount = 0;
+        else                    tradingAmount--;
         updateTradingAmount();
     }
 
