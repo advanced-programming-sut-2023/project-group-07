@@ -502,7 +502,7 @@ public class Game {
         int size = selectedUnit.size();
     }
 
-    private int[] nearestEnemy(Unit unit, int range) {
+    public int[] nearestEnemy(Unit unit, int range) {
         for (int i = 0; i <= range; i++) {
             int row = unit.getCurrentLocation()[0], column = unit.getCurrentLocation()[1];
             for (int j = -i; j <= i; j++) {
