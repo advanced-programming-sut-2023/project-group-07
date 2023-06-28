@@ -16,6 +16,7 @@ import javafx.scene.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -69,6 +70,8 @@ public class GameGraphics extends Application {
     private HBox tradingPageMenu = null;
     private HBox tradingRequestsMenu = null;
     private HBox tradeMenu = null;
+    private ComboBox<TradeRequest> availableTradesComboBox;
+    private ComboBox<TradeRequest> tradesHistoryComboBox;
 
     private ArrayList<PopularityFactor> popularityFactors = new ArrayList<>();
     private CursorAnimation cursorAnimation;
@@ -330,7 +333,7 @@ public class GameGraphics extends Application {
         selectedUnitBar.setVisible(false);
     }
 
-    private void updateGovernmentInto() {
+    private void updateGovernmentInfo() {
         updateGoldText();
         updatePopularityText();
         updatePopulationText();
@@ -358,14 +361,73 @@ public class GameGraphics extends Application {
 
     private void setTradeRequestsMenu() {
         tradingRequestsMenu = makeAHBoxMenu();
-        Button tradeHistoryButton = new Button("trade history"); // TODO: 6/28/2023 set action
-        ArrayList<TradeRequest> availableTrades = tradeMenuController().getAvailableTrades();
-        ComboBox<TradeRequest> availableTradesComboBox = new ComboBox<>();
-        availableTradesComboBox.getItems().addAll(availableTrades);
-        tradingRequestsMenu.getChildren().add(availableTradesComboBox);
-
-        tradingRequestsMenu.getChildren().add(tradeHistoryButton);
+        setTradeRequestMenuActions();
         tradingRequestsMenu.setVisible(false);
+    }
+
+    private void setTradeRequestMenuActions() {
+        setAvailableTradesComboBox();
+        TextField messageTextField = new TextField();
+        messageTextField.setPromptText("write your message here");
+        Button acceptButton = setAcceptButtonInTradeRequestMenu(messageTextField);
+        Button rejectButton = setRejectButtonInTradeRequestMenu();
+        VBox vBox = new VBox();
+        vBox.setSpacing(20);
+        tradingRequestsMenu.getChildren().add(vBox);
+        vBox.getChildren().add(messageTextField);
+        vBox.getChildren().add(rejectButton);
+        vBox.getChildren().add(acceptButton);
+        setTradesHistoryComboBox();
+    }
+
+    private void setTradesHistoryComboBox() {
+        tradesHistoryComboBox = new ComboBox<>();
+        tradesHistoryComboBox.setPromptText("trade's history");
+        tradingRequestsMenu.getChildren().add(tradesHistoryComboBox);
+    }
+
+    private Button setRejectButtonInTradeRequestMenu() {
+        Button rejectButton = new Button("reject");
+        rejectButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                TradeRequest selectedRequest = availableTradesComboBox.getValue();
+                if (selectedRequest == null) return;
+                tradeMenuController().rejectTrade(selectedRequest.getId());
+                addToMessageBar("You have successfully rejected a trade.");
+            }
+        });
+        return rejectButton;
+    }
+
+    private Button setAcceptButtonInTradeRequestMenu(TextField messageTextField) {
+        Button acceptButton = new Button("accept");
+        acceptButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                TradeRequest selectedRequest = availableTradesComboBox.getValue();
+                if (selectedRequest == null) return;
+                switch (tradeMenuController().acceptTrade(selectedRequest.getId(), messageTextField.getText())) {
+                    case ACCEPT_TRADE_SUCCESSFUL:
+                        addToMessageBar("You have successfully accepted a trade.");
+                        updateGovernmentInfo();
+                        break;
+                    case POOR_RECEIVER:
+                        addToMessageBar("You don't have enough recourse for this trade.");
+                        break;
+                    case POOR_REQUESTER:
+                        addToMessageBar("Requester don't have enough gold to pay you right now.");
+                        break;
+                }
+            }
+        });
+        return acceptButton;
+    }
+
+    private void setAvailableTradesComboBox() {
+        availableTradesComboBox = new ComboBox<>();
+        availableTradesComboBox.setPromptText("available requests");
+        tradingRequestsMenu.getChildren().add(availableTradesComboBox);
     }
 
     private void setEnterTradeRequestsMenu() {
@@ -381,8 +443,13 @@ public class GameGraphics extends Application {
 
     private void enterRequestsMenu() {
         clearStatusBar();
+        ArrayList<TradeRequest> availableTrades = tradeMenuController().getAvailableTrades();
+        availableTradesComboBox.getItems().clear();
+        availableTradesComboBox.getItems().addAll(availableTrades);
+        tradesHistoryComboBox.getItems().clear();
+        tradesHistoryComboBox.getItems().addAll(tradeMenuController().getTradeHistory());
         tradingRequestsMenu.setVisible(true);
-        //todo complete this
+
     }
 
     private void initializingTradeMenu() {
@@ -400,6 +467,10 @@ public class GameGraphics extends Application {
         tradingPage.requestButton().setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
+                if (tradingPage.lordColor() == null){
+                    addToMessageBar("choose color.");
+                    return;
+                }
                 switch (tradeMenuController().requestTrade(tradingPage.resource().toString()
                         , tradingPage.lordColor().toString()
                         , tradingPage.message()
@@ -744,7 +815,7 @@ public class GameGraphics extends Application {
         setPopularityText();
         setGoldText();
         setPopulationText();
-        updateGovernmentInto();
+        updateGovernmentInfo();
     }
 
 
@@ -797,7 +868,7 @@ public class GameGraphics extends Application {
 
     private void setPopularityText() {
         popularityText = new Text("100");
-        popularityText.setStyle("-fx-font-size: 17px;");
+        popularityText.setStyle("-fx-text-fill: green; -fx-font-size: 17px;");
         popularityText.setTranslateY(23);
         popularityText.setTranslateX(285);
         statusPane.getChildren().add(popularityText);
@@ -806,7 +877,9 @@ public class GameGraphics extends Application {
     private void updatePopularityText() {
         Integer popularity = gameMenuController.getPopularity();
         popularityText.setText(popularity.toString());
-        // TODO: 6/18/2023 change color base on popularity
+        if (popularity < 50) popularityText.setStyle("-fx-text-fill: red; -fx-font-size: 17px;");
+        else if (popularity < 75) popularityText.setStyle("-fx-text-fill: orange; -fx-font-size: 17px;");
+        else popularityText.setStyle("-fx-text-fill: green; -fx-font-size: 17px;");
     }
 
     private void statusBarButtons() {
@@ -921,7 +994,7 @@ public class GameGraphics extends Application {
                         ImageView imageView = new ImageView(new Image(file.getPath()));
                         StackPane stackPane = new StackPane(imageView);
                         hbox.getChildren().add(stackPane);
-                        if(militaryCampType.getName().equals("mercenary post")){
+                        if (militaryCampType.getName().equals("mercenary post")) {
                             stackPane.setTranslateX(-300);
                             stackPane.setTranslateY(10);
                         }

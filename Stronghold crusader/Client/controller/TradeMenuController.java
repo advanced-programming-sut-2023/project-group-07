@@ -90,6 +90,7 @@ public class TradeMenuController {
 //        if (receiver.equals(requester))
 //            return Messages.REQUEST_YOURSELF;
         TradeRequest.makeATradeRequest(price, resource, amount, requester, receiver, message);
+
         return Messages.REQUEST_TRADE_SUCCESSFUL;
 
     }
