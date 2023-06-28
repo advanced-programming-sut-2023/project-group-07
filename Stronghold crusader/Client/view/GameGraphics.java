@@ -841,8 +841,9 @@ public class GameGraphics extends Application {
     }
 
     private void setPopulationText() {
-        PopulationText = new Text("1/10");
+        PopulationText = new Text("1");
         PopulationText.setStyle("-fx-font-size: 16px;");
+        popularityText.setFill(Color.GREEN);
         PopulationText.setTranslateY(75);
         PopulationText.setTranslateX(265);
         statusPane.getChildren().add(PopulationText);
@@ -855,6 +856,7 @@ public class GameGraphics extends Application {
 
     private void setGoldText() {
         goldText = new Text("100");
+        goldText.setFill(Color.GREEN);
         goldText.setStyle("-fx-font-size: 16px;");
         goldText.setTranslateY(50);
         goldText.setTranslateX(270);
@@ -868,7 +870,7 @@ public class GameGraphics extends Application {
 
     private void setPopularityText() {
         popularityText = new Text("100");
-        popularityText.setStyle("-fx-text-fill: green; -fx-font-size: 17px;");
+        popularityText.setStyle("-fx-font-size: 17px;");
         popularityText.setTranslateY(23);
         popularityText.setTranslateX(285);
         statusPane.getChildren().add(popularityText);
@@ -877,9 +879,9 @@ public class GameGraphics extends Application {
     private void updatePopularityText() {
         Integer popularity = gameMenuController.getPopularity();
         popularityText.setText(popularity.toString());
-        if (popularity < 50) popularityText.setStyle("-fx-text-fill: red; -fx-font-size: 17px;");
-        else if (popularity < 75) popularityText.setStyle("-fx-text-fill: orange; -fx-font-size: 17px;");
-        else popularityText.setStyle("-fx-text-fill: green; -fx-font-size: 17px;");
+        if (popularity < 50) popularityText.setFill(Color.RED);
+        else if (popularity < 75) popularityText.setFill(Color.ORANGE);
+        else popularityText.setFill(Color.GREEN);
     }
 
     private void statusBarButtons() {
