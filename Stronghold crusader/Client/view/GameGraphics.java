@@ -312,8 +312,10 @@ public class GameGraphics extends Application {
 
     private void setTradeMenu() {
         initializingTradeMenu();
+        tradeMenu.getChildren().add(new Text("trade menu\t"));
         setTradeMenuItems();
         setTradingPage();
+        // TODO: 6/28/2023 add request  
     }
 
     private void initializingTradeMenu() {
