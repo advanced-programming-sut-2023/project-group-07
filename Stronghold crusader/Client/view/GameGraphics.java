@@ -199,13 +199,38 @@ public class GameGraphics extends Application {
         ArrayList<ArrayList<MapPixel>> field = map.getWholeField();
         int size = field.size();
         for (int i = 0 ; i < size ; i++)
-            for (int j = 0 ; j < size ; j++)
-                if (!field.get(i).get(j).getTexture().equals(Texture.LAND)) {
-                    ImageView imageView = new ImageView(new Image(field.get(i).get(j).getTexture().getImagePath()));
-                    imageView.setLayoutX(40 * j);
-                    imageView.setLayoutY(40 * i);
-                    mapPane.getChildren().add(imageView);
-                }
+            for (int j = 0 ; j < size ; j++) {
+                MapPixel pixel = field.get(i).get(j);
+                if (!pixel.getTexture().equals(Texture.LAND))
+                    addTexture(pixel.getTexture(), i, j);
+                for (Building building : pixel.getBuildings())
+                    addBuilding(building, i, j);
+                for (Person person : pixel.getPeople())
+                    addPerson(person, i, j);
+            }
+    }
+
+    private void addBuilding(Building building, int i, int j) {
+
+    }
+
+    private void addPerson(Person person, int i, int j) {
+        String name;
+        if (person instanceof Unit)
+            name = ((Unit) person).getType().toString();
+        else
+            name = ((NonMilitary) person).getType().toString();
+        PersonPane personPane = new PersonPane(name, person, gameMenuController);
+        personPane.setLayoutX(40 * j);
+        personPane.setLayoutY(40 * i);
+        mapPane.getChildren().add(personPane);
+    }
+
+    private void addTexture(Texture texture, int i, int j) {
+        ImageView imageView = new ImageView(new Image(texture.getImagePath()));
+        imageView.setLayoutX(40 * j);
+        imageView.setLayoutY(40 * i);
+        mapPane.getChildren().add(imageView);
     }
 
     private void setCheat(Scene scene) {
