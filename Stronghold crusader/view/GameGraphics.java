@@ -27,7 +27,13 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+<<<<<<< Updated upstream:Stronghold crusader/view/GameGraphics.java
 import model.*;
+=======
+import Client.model.*;
+import view.ShoppingPage;
+import view.TradingPage;
+>>>>>>> Stashed changes:Stronghold crusader/Client/view/GameGraphics.java
 
 import java.io.File;
 import java.util.ArrayList;
