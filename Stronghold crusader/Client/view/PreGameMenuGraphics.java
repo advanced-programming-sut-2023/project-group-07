@@ -216,7 +216,7 @@ public class PreGameMenuGraphics extends Application implements Initializable {
         governments.add(new Government(LordColor.getLordColor(0), Controller.currentUser, 0,
                 map.getKeepPosition(currentLordColor)[0],
                 map.getKeepPosition(currentLordColor)[1]));
-        for (int i = 1; i < usernameFields.size(); i++) {
+        for (int i = 0; i < usernameFields.size(); i++) {
             currentLordColor = LordColor.getLordColor(i);
             String username = usernameFields.get(i).getText();
             User user = User.getUserByUsername(username);
