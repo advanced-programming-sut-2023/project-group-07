@@ -8,7 +8,8 @@
 
 <GridPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="FXML.CreateMap"
-            prefHeight="400.0" prefWidth="600.0">
+            fx:controller="FXML.CreateMapMenu"
+            prefHeight="400.0" prefWidth="600.0"
+            alignment="CENTER_LEFT" vgap="40" hgap="10" fx:id="createMap">
 
 </GridPane>

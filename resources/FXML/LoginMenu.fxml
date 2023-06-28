@@ -11,7 +11,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <Pane xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="view.LoginMenuGraphics"
+      fx:controller="Client.view.LoginMenuGraphics"
       stylesheets="@../CSS/SignUp.css"
       prefWidth="1280" prefHeight="720">
     <HBox fx:id="menuBox" alignment="CENTER" spacing="200">
