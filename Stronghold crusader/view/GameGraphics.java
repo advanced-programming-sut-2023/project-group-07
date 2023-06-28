@@ -60,7 +60,11 @@ public class GameGraphics extends Application {
     private ArrayList<HBox> governmentActionsMenus = new ArrayList<>();
     private HBox marketMenu = null;
     private ShoppingPage shoppingPage = null;
+    private TradingPage tradingPage = null;
     private HBox shoppingPageMenu = null;
+    private HBox tradingPageMenu = null;
+    private HBox tradeMenu = null;
+
     private ArrayList<PopularityFactor> popularityFactors = new ArrayList<>();
     private CursorAnimation cursorAnimation;
     private StackPane miniMapPane;
@@ -241,6 +245,7 @@ public class GameGraphics extends Application {
         statusBarButtons();
         setGovernmentDetails();
         setMarketMenu();
+        setTradeMenu();
         statusPane.getChildren().add(selectedUnitBar);
         selectedUnitBar.setVisible(false);
     }
@@ -258,7 +263,62 @@ public class GameGraphics extends Application {
         }
         setMarketItems();
         setShoppingMenu();
-        // TODO: 6/26/2023 set enter trade menu
+        setEnterTradeMenuButton();
+    }
+
+    private void setTradeMenu() {
+        initializingTradeMenu();
+        setTradeMenuItems();
+        setTradingPage();
+    }
+
+    private void initializingTradeMenu() {
+        tradeMenu = makeAHBoxMenu();
+        tradeMenu.setVisible(false);
+        tradeMenu.setTranslateY(90);
+        tradeMenu.setTranslateX(-300);
+    }
+
+    private void setTradingPage() {
+        tradingPage = new TradingPage(Resources.IRON);
+//        addClickActionsForShoppingMenu();
+        // TODO: 6/28/2023 change them
+        tradingPageMenu = makeAHBoxMenu();
+        tradingPageMenu.getChildren().add(tradingPage.menu());
+        tradingPageMenu.setVisible(false);
+    }
+
+
+    private void setTradeMenuItems() {
+        int numberOfRows = 2;
+        ArrayList<HBox> rowsHBox = getMenuRowsHBox(numberOfRows, tradeMenu);
+        addItemsToMenu(rowsHBox, numberOfRows, true);
+    }
+
+
+
+    private void setEnterTradeMenuButton() {
+        Button enterTradeMenuButton = new Button();
+        enterTradeMenuButton.setText("enter trade menu");
+        enterTradeMenuButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                enterTradeMenu();
+            }
+        });
+        marketMenu.getChildren().add(enterTradeMenuButton);
+    }
+    private void enterTradingItemMenu(String resourceName) {
+        clearStatusBar();
+        Resources resource = Resources.getResource(resourceName);
+        tradingPage.setResource(resource);
+        tradingPage.setItemAmount(gameMenuController.getResourceAmount(resource));
+        tradingPageMenu.setVisible(true);
+    }
+
+    private void enterTradeMenu() {
+        clearStatusBar();
+        tradeMenu.setVisible(true);
     }
 
     private void setShoppingMenu() {
@@ -298,15 +358,15 @@ public class GameGraphics extends Application {
     }
 
     private void setMarketItems() {
-        int numberOfRows = 3;
-        ArrayList<HBox> rowsHBox = getMarketRowsHBox(numberOfRows);
-        addItemsToMarketMenu(rowsHBox, numberOfRows);
+        int numberOfRows = 2;
+        ArrayList<HBox> rowsHBox = getMenuRowsHBox(numberOfRows, marketMenu);
+        addItemsToMenu(rowsHBox, numberOfRows, false);
     }
 
-    private ArrayList<HBox> getMarketRowsHBox(int numberOfRows) {
+    private ArrayList<HBox> getMenuRowsHBox(int numberOfRows, HBox menu) { // TODO: 6/28/2023 change
         VBox rowsPane = new VBox();
         rowsPane.setSpacing(20);
-        marketMenu.getChildren().add(rowsPane);
+        menu.getChildren().add(rowsPane);
         ArrayList<HBox> rowsHBox = new ArrayList<>();
         for (int i = 0; i < numberOfRows; i++) {
             HBox hBox = new HBox();
@@ -317,7 +377,8 @@ public class GameGraphics extends Application {
         return rowsHBox;
     }
 
-    private void addItemsToMarketMenu(ArrayList<HBox> rowsHBox, int numberOfRows) {
+    private void addItemsToMenu(ArrayList<HBox> rowsHBox, int numberOfRows, boolean isForTrade ) { // boolean is bad practice
+        // this method is used for trade and market
         File[] itemsList = filesListMaker("/Images/Game/market/items");
         int i = 0;
         for (File image : itemsList) {
@@ -328,7 +389,8 @@ public class GameGraphics extends Application {
                     String name = image.getName();
                     name = name.substring(0, name.indexOf("."));
                     System.out.println(name);
-                    enterShoppingAnItemMenu(name);
+                    if (isForTrade) enterTradingItemMenu(name);
+                    else enterShoppingAnItemMenu(name);
                 }
             });
             itemImage.setFill(new ImagePattern(new Image(image.getAbsolutePath())));
@@ -908,8 +970,9 @@ public class GameGraphics extends Application {
         governmentActionsButtons.setVisible(false);
         for (HBox menu : governmentActionsMenus)
             menu.setVisible(false);
-//        marketMenu.setVisible(false);
         shoppingPageMenu.setVisible(false);
+        tradingPageMenu.setVisible(false);
+        tradeMenu.setVisible(false);
 
     }
 

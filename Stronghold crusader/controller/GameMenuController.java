@@ -555,7 +555,7 @@ public class GameMenuController {
         int resourceAmount = game.getCurrentGovernment().getResourceAmount(resource);
         if (resourceAmount < amount)
             return Messages.NOT_ENOUGH_RESOURCES;
-        int price = amount * resource.getBuyingPrice();
+        int price = amount * resource.getSellingPrice();
         game.getCurrentGovernment().changeGold(price);
         game.getCurrentGovernment().changeResources(resource, -amount);
         return Messages.SHOP_SUCCESSFUL;
