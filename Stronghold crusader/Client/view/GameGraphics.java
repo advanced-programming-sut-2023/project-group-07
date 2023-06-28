@@ -844,7 +844,9 @@ public class GameGraphics extends Application {
                         ImageView imageView = new ImageView(new Image(file.getPath()));
                         StackPane stackPane = new StackPane(imageView);
                         hbox.getChildren().add(stackPane);
-                        imageView.setFitWidth(100);
+                        stackPane.setTranslateX(-300);
+                        stackPane.setTranslateY(10);
+                        imageView.setFitWidth(70);
                         imageView.setPreserveRatio(true);
                         stackPane.hoverProperty().addListener((observable -> {
                             imageView.setOpacity(0.7);
