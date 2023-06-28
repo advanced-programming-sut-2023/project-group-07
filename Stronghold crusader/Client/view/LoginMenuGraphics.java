@@ -22,6 +22,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import Client.model.RecoveryQuestion;
 import Client.model.Slogan;
@@ -476,8 +477,13 @@ public class LoginMenuGraphics extends Application {
         String nickname = ((TextField) signUpMenu.getChildren().get(12)).getText();
         String slogan = (sloganField == null) ? null : sloganField.getText();
         signupCheckForEmptyFields(username, password, passwordConfirm, email, nickname, slogan);
-        if (controller.getInformation(username, password, passwordConfirm, email, nickname, slogan).equals(Messages.SUCCESS))
+        if (controller.getInformation(username, password, passwordConfirm, email, nickname, slogan).equals(Messages.SUCCESS)) {
+            Alert alert = Controller.information("Success", "now please pick your security question");
+            alert.initOwner(Main.stage);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.showAndWait();
             pickRecoveryQuestion();
+        }
     }
 
     private void signupCheckForEmptyFields(String username, String password, String passwordConfirm, String email, String nickname, String slogan) {
