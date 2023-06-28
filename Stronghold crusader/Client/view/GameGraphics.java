@@ -876,8 +876,10 @@ public class GameGraphics extends Application {
                         ImageView imageView = new ImageView(new Image(file.getPath()));
                         StackPane stackPane = new StackPane(imageView);
                         hbox.getChildren().add(stackPane);
-                        stackPane.setTranslateX(-300);
-                        stackPane.setTranslateY(10);
+                        if(militaryCampType.getName().equals("mercenary post")){
+                            stackPane.setTranslateX(-300);
+                            stackPane.setTranslateY(10);
+                        }
                         imageView.setFitWidth(70);
                         imageView.setPreserveRatio(true);
                         stackPane.hoverProperty().addListener((observable -> {
