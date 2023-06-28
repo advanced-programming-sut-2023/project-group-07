@@ -289,17 +289,16 @@ public class Controller {
         button.getStylesheets().add(Controller.class.getResource("/CSS/SignUp.css").toExternalForm());
         button.setScaleX(0.75);
         button.setScaleY(0.75);
-        scrollPane.setPrefSize(300,600);
+        scrollPane.setPrefSize(300,500);
         VBox vBox = new VBox(5);
         vBox.setPrefWidth(300);
-        vBox.setMinHeight(600);
+        vBox.setMinHeight(500);
         for(int i=0;i<100;i++)
             vBox.getChildren().add(new Text("KIR"+i));
         vBox.setStyle("-fx-background-color: linear-gradient(to top,#a07759,#ca9964,rgb(75,216,137) );");
         vBox.getChildren().add(new Text(""));
         scrollPane.setContent(vBox);
         scrollPane.hbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
-        scrollPane.vbarPolicyProperty().setValue(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setVvalue(1);
         HBox hBox = new HBox();
         hBox.setAlignment(Pos.CENTER);
@@ -324,7 +323,7 @@ public class Controller {
         imageView.setPreserveRatio(true);
         pane.getChildren().add(imageView);
         imageView.setLayoutX(Main.getScreenWidth()-70);
-        imageView.setLayoutY(650);
+        imageView.setLayoutY(550);
         imageView.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {

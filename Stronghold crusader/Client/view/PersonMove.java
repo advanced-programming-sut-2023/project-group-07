@@ -1,6 +1,7 @@
 package Client.view;
 
 import Client.controller.GameMenuController;
+import Client.model.Unit;
 import javafx.animation.Interpolator;
 import javafx.animation.Transition;
 import javafx.util.Duration;
@@ -26,28 +27,28 @@ public class PersonMove extends Transition {
             switch (personPane.getPersonDirection().direction){
                 case "left" -> {
                     if((double)personPane.getPerson().getMovePattern().get(0)[1]<personPane.getLayoutX()/40) {
-                        personPane.setLayoutX(personPane.getLayoutX()-1);
+                        personPane.setLayoutX(personPane.getLayoutX()-0.1*(((Unit)personPane.getPerson()).getType().getSpeed()));
                     }
                     else
                         gameMenuController.applyPersonMove(personPane.getPerson());
                 }
                 case "right" -> {
                     if((double)personPane.getPerson().getMovePattern().get(0)[1]>personPane.getLayoutX()/40) {
-                        personPane.setLayoutX(personPane.getLayoutX()+1);
+                        personPane.setLayoutX(personPane.getLayoutX()+0.1*(((Unit)personPane.getPerson()).getType().getSpeed()));
                     }
                     else
                         gameMenuController.applyPersonMove(personPane.getPerson());
                 }
                 case "down" -> {
                     if((double)personPane.getPerson().getMovePattern().get(0)[0]>personPane.getLayoutY()/40) {
-                        personPane.setLayoutY(personPane.getLayoutY()+1);
+                        personPane.setLayoutY(personPane.getLayoutY()+0.1*(((Unit)personPane.getPerson()).getType().getSpeed()));
                     }
                     else
                         gameMenuController.applyPersonMove(personPane.getPerson());
                 }
                 case "up" -> {
                     if((double)personPane.getPerson().getMovePattern().get(0)[0]<personPane.getLayoutY()/40) {
-                        personPane.setLayoutY(personPane.getLayoutY()-1);
+                        personPane.setLayoutY(personPane.getLayoutY()-0.1*(((Unit)personPane.getPerson()).getType().getSpeed()));
                     }
                     else
                         gameMenuController.applyPersonMove(personPane.getPerson());
