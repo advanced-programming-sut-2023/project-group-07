@@ -204,12 +204,22 @@ public class GameGraphics extends Application {
                 MapPixel pixel = field.get(i).get(j);
                 if (!pixel.getTexture().equals(Texture.LAND))
                     addTexture(pixel.getTexture(), i, j);
-                for (Building building : pixel.getBuildings())
-                    addBuilding(building, i, j);
-//                if (pixel.getLordKeep() != null)
-//                    addKeep(pixel.getLordKeep(), i, j); // TODO: 6/28/2023 uncomment
-//                for (Person person : pixel.getPeople())
-//                    addPerson(person, i, j);
+                for (Building building : pixel.getBuildings()) {
+                    int width = building.getTypeOfBuilding().getWidth();
+                    int length = building.getTypeOfBuilding().getLength();
+                    MapPixel pixel1;
+                    if (!(pixel1 = field.get(i + width - 1).get(j + length - 1)).getBuildings().isEmpty() &&
+                            pixel1.getBuildings().get(0).getTypeOfBuilding().equals(building.getTypeOfBuilding()))
+                        addBuilding(building, i + (int) (width / 2), j + (int) (length / 2));
+                }
+                if (pixel.getLordKeep() != null) {
+                    MapPixel pixel1;
+                    if ((pixel1 = field.get(i + 6).get(j + 6)).getLordKeep() != null &&
+                            pixel1.getLordKeep().equals(pixel.getLordKeep()))
+                        addKeep(pixel.getLordKeep(), i - 2, j + 5);
+                }
+                for (Person person : pixel.getPeople())
+                    addPerson(person, i, j);
             }
     }
 
