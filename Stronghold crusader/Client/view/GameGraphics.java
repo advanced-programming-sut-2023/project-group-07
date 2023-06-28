@@ -205,9 +205,22 @@ public class GameGraphics extends Application {
                     addTexture(pixel.getTexture(), i, j);
                 for (Building building : pixel.getBuildings())
                     addBuilding(building, i, j);
+                if (pixel.getLordKeep() != null)
+                    addKeep(pixel.getLordKeep(), i, j);
 //                for (Person person : pixel.getPeople())
 //                    addPerson(person, i, j);
             }
+    }
+
+    private void addKeep(LordColor lordKeep, int i, int j) {
+        ImageView imageView = new ImageView (GameGraphics.class.getResource("/Images/Game/Buildings/keep.png").toString());
+        StackPane stackPane = new StackPane(imageView);
+        addEventHandlerForBuilding(stackPane);
+        mapPane.getChildren().add(stackPane);
+        stackPane.setLayoutX(40 * j);
+        stackPane.setLayoutY(40 * i);
+        buildings.add(stackPane);
+        imageView.setPreserveRatio(true);
     }
 
     private void addBuilding(Building building, int i, int j) {
