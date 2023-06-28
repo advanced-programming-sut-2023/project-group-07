@@ -17,11 +17,14 @@
                 <BorderPane fx:id="menuPane" maxWidth="550" style="-fx-background-color: pink"/>
                 <VBox alignment="CENTER" spacing="20">
                     <Label textFill="darkorange" text="Golds to begin with"/>
-                    <ComboBox fx:id="golds"/>
+                    <ComboBox fx:id="golds" prefWidth="100"/>
                 </VBox>
             </HBox>
             <HBox alignment="CENTER" spacing="20">
-                <GridPane fx:id="usernamesGridPane" style="-fx-background-color: darkgray; -fx-border-color: darkorange; -fx-border-width: 5" alignment="CENTER_LEFT" vgap="20" hgap="15"  prefHeight="360" prefWidth="600"/>
+                <GridPane fx:id="usernamesGridPane" style="-fx-background-color: darkgray; -fx-border-color: darkorange; -fx-border-width: 5" alignment="CENTER_LEFT" vgap="20" hgap="15"  prefHeight="360" prefWidth="600">
+                    <Label text="   Number of players" style="-fx-font-size: 18" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+                    <ComboBox GridPane.rowIndex="0" GridPane.columnIndex="1" fx:id="numberOfPlayers" prefWidth="100" onAction="#changeNumberOfPlayers"/>
+                </GridPane>
                 <VBox alignment="CENTER" spacing="20">
                     <Button text="start" onMouseClicked="#start" prefWidth="200"/>
                     <Button text="Back" onMouseClicked="#back" prefWidth="200"/>
