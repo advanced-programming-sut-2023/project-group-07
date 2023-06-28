@@ -83,8 +83,8 @@ public class GameGraphics extends Application {
         Pane pane = new Pane();
         mapPane = pane;
         ImageView image = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Tiles/Desert/map1.png").toExternalForm()));
-        Scene scene = new Scene(rootPane);
         pane.getChildren().add(image);
+        Scene scene = new Scene(rootPane);
         setMap();
         rootPane.getChildren().add(pane);
         pane.setMaxHeight(Main.screenHeight - 215);
@@ -107,17 +107,17 @@ public class GameGraphics extends Application {
 //        setZoomOut(mapPane);
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(5), actionEvent -> {
             Robot robot = new Robot();
-            if (robot.getMouseX() > scene.getWidth() - 50 && pane.getLayoutX() >/*-map.getSize()*40*/ -400 * 40) //TODO map is null
+            if (robot.getMouseX() > scene.getWidth() - 50 && pane.getLayoutX() >-game.getMap().getSize()*40+Main.getScreenWidth())
                 pane.setLayoutX(pane.getLayoutX() - 10);
             if (robot.getMouseX() < 50 && pane.getLayoutX() < 0)
                 pane.setLayoutX(pane.getLayoutX() + 10);
-            if (robot.getMouseY() > scene.getHeight() - 10 && pane.getLayoutY() >/*-map.getSize()*40*/ -400 * 40)
+            if (robot.getMouseY() > scene.getHeight() - 10 && pane.getLayoutY() >-game.getMap().getSize()*40+Main.getScreenHeight())
                 pane.setLayoutY(pane.getLayoutY() - 10);
             if (robot.getMouseY() < 50 && pane.getLayoutY() < 0)
                 pane.setLayoutY(pane.getLayoutY() + 10);
             Rectangle miniMapRectangle = (Rectangle) miniMapPane.getChildren().get(miniMapPane.getChildren().size() - 1);
-            miniMapRectangle.setTranslateY(16 + 225 * Math.abs(pane.getLayoutY()) / (40 * 400)); //TODO change 400
-            miniMapRectangle.setTranslateX(12.5 + 225 * Math.abs(pane.getLayoutX()) / (40 * 400));
+            miniMapRectangle.setTranslateY(16 + 225 * Math.abs(pane.getLayoutY()) / (game.getMap().getSize()*40));
+            miniMapRectangle.setTranslateX(12.5 + 225 * Math.abs(pane.getLayoutX()) / (game.getMap().getSize()*40));
         }));
         timeline.setCycleCount(-1);
         timeline.play();
@@ -957,6 +957,7 @@ public class GameGraphics extends Application {
             case UNIT_CREATED_SUCCESSFULLY -> {
                 for (Unit unit : gameMenuController.createdUnit) {
                     PersonPane personPane = new PersonPane(name, unit, gameMenuController);
+                    personPane.getPersonAttacking().play();
                     people.add(personPane);
                     mapPane.getChildren().add(personPane);
                     gameMenuController.addHealthBarListener(personPane.getHealthBar(), unit);
@@ -1089,11 +1090,10 @@ public class GameGraphics extends Application {
     }
 
     private void addImageToMiniMap(double layoutX, double layoutY, int size) {
-        //TODO should be replaced with size of map
-        Rectangle rectangle = new Rectangle(((double) size / 400) * 225, ((double) size / 400) * 225);
+        Rectangle rectangle = new Rectangle(((double) size / game.getMap().getSize()) * 225, ((double) size / game.getMap().getSize()) * 225);
         rectangle.setFill(Color.RED);
-        rectangle.setTranslateX((layoutX / (40 * 400)) * 225 + 12.5);
-        rectangle.setTranslateY((layoutY / (40 * 400)) * 225 + 16);
+        rectangle.setTranslateX((layoutX / (40 * game.getMap().getSize())) * 225 + 12.5);
+        rectangle.setTranslateY((layoutY / (40 * game.getMap().getSize())) * 225 + 16);
         miniMapPane.getChildren().add(2, rectangle);
     }
 
@@ -1184,7 +1184,7 @@ public class GameGraphics extends Application {
     }
 
     private void createMiniMap() {
-        Rectangle rectangle = new Rectangle(225 * Main.screenWidth / (40 * 400), 225 * Main.screenHeight / (40 * 400)); //TODO change 400 with map size
+        Rectangle rectangle = new Rectangle(225 * Main.screenWidth / (game.getMap().getSize()*40), 225 * Main.screenHeight / (game.getMap().getSize()*40));
         rectangle.setFill(Color.TRANSPARENT);
         rectangle.setStroke(Color.BLACK);
         rectangle.setTranslateX(12.5);
