@@ -205,13 +205,23 @@ public class GameGraphics extends Application {
                     addTexture(pixel.getTexture(), i, j);
                 for (Building building : pixel.getBuildings())
                     addBuilding(building, i, j);
-                for (Person person : pixel.getPeople())
-                    addPerson(person, i, j);
+//                for (Person person : pixel.getPeople())
+//                    addPerson(person, i, j);
             }
     }
 
     private void addBuilding(Building building, int i, int j) {
-
+        System.out.println(building.getTypeOfBuilding().toString());
+        ImageView imageView = new ImageView (GameGraphics.class.getResource("/Images/Buildings/" + building.getTypeOfBuilding().toString() + ".png").toString());
+        StackPane stackPane = new StackPane(imageView);
+        addEventHandlerForBuilding(stackPane);
+        mapPane.getChildren().add(stackPane);
+        stackPane.setLayoutX(40 * j);
+        stackPane.setLayoutY(40 * i);
+        buildings.add(stackPane);
+        imageView.setFitWidth(40 * TypeOfBuilding.getBuilding(building.getTypeOfBuilding().toString()).getWidth());
+        imageView.setPreserveRatio(true);
+        addImageToMiniMap(stackPane.getLayoutX(), stackPane.getLayoutY(), TypeOfBuilding.getBuilding(building.getTypeOfBuilding().toString()).getWidth());
     }
 
     private void addPerson(Person person, int i, int j) {
