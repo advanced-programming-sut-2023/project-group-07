@@ -14,6 +14,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -66,6 +67,7 @@ public class GameGraphics extends Application {
     private TradingPage tradingPage = null;
     private HBox shoppingPageMenu = null;
     private HBox tradingPageMenu = null;
+    private HBox tradingRequestsMenu = null;
     private HBox tradeMenu = null;
 
     private ArrayList<PopularityFactor> popularityFactors = new ArrayList<>();
@@ -193,7 +195,7 @@ public class GameGraphics extends Application {
             }
         });
         scene.getStylesheets().add(GameGraphics.class.getResource("/CSS/slideBar.css").toExternalForm());
-        setCheat(scene);
+        setCheatShortCuts(scene);
     }
 
     private void setMap() {
@@ -257,7 +259,7 @@ public class GameGraphics extends Application {
         mapPane.getChildren().add(imageView);
     }
 
-    private void setCheat(Scene scene) {
+    private void setCheatShortCuts(Scene scene) {
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
@@ -339,7 +341,38 @@ public class GameGraphics extends Application {
         tradeMenu.getChildren().add(new Text("trade menu\t"));
         setTradeMenuItems();
         setTradingPage();
-        // TODO: 6/28/2023 add requests
+        setEnterTradeRequestsMenu();
+        setTradeRequestsMenu();
+
+    }
+
+    private void setTradeRequestsMenu() {
+        tradingRequestsMenu = makeAHBoxMenu();
+        Button tradeHistoryButton = new Button("trade history"); // TODO: 6/28/2023 set action
+        ArrayList<TradeRequest> availableTrades = tradeMenuController().getAvailableTrades();
+        ComboBox<TradeRequest> availableTradesComboBox = new ComboBox<>();
+        availableTradesComboBox.getItems().addAll(availableTrades);
+        tradingRequestsMenu.getChildren().add(availableTradesComboBox);
+
+        tradingRequestsMenu.getChildren().add(tradeHistoryButton);
+        tradingRequestsMenu.setVisible(false);
+    }
+
+    private void setEnterTradeRequestsMenu() {
+        Button enterRequestsMenuButton = new Button("trade requests");
+        enterRequestsMenuButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                enterRequestsMenu();
+            }
+        });
+        tradeMenu.getChildren().add(enterRequestsMenuButton);
+    }
+
+    private void enterRequestsMenu() {
+        clearStatusBar();
+        tradingRequestsMenu.setVisible(true);
+        //todo complete this
     }
 
     private void initializingTradeMenu() {
@@ -440,6 +473,7 @@ public class GameGraphics extends Application {
                 else {
                     updateGoldText();
                     shoppingPage.setItemAmount(gameMenuController.getResourceAmount(shoppingPage.resource()));
+                    addToMessageBar("Buy commodity successful!");
                 }
             }
         });
@@ -452,6 +486,7 @@ public class GameGraphics extends Application {
                 else {
                     updateGoldText();
                     shoppingPage.setItemAmount(gameMenuController.getResourceAmount(shoppingPage.resource()));
+                    addToMessageBar("Sell commodity successful!");
                 }
 
             }
@@ -1074,6 +1109,8 @@ public class GameGraphics extends Application {
         shoppingPageMenu.setVisible(false);
         tradingPageMenu.setVisible(false);
         tradeMenu.setVisible(false);
+        tradingRequestsMenu.setVisible(false);
+
 
     }
 
