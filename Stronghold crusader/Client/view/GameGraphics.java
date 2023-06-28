@@ -46,6 +46,7 @@ public class GameGraphics extends Application {
     private ArrayList<PersonPane> selectedUnits = new ArrayList<>();
     private String buildingToBeBuilt;
     private StackPane selectBuildingToBeBuilt;
+    private Game game;
     private Map map;
     private GameMenuController gameMenuController;
     private VBox messageBar = new VBox(20);
@@ -72,12 +73,15 @@ public class GameGraphics extends Application {
 
     @Override
     public void start(Stage stage) {
+        game = Controller.currentGame;
+        map = game.getMap();
         rootPane = new Pane();
         Pane pane = new Pane();
         mapPane = pane;
         ImageView image = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Tiles/Desert/map1.png").toExternalForm()));
         Scene scene = new Scene(rootPane);
         pane.getChildren().add(image);
+        setMap();
         rootPane.getChildren().add(pane);
         pane.setMaxHeight(Main.screenHeight - 215);
         initStatusBar();
@@ -189,6 +193,19 @@ public class GameGraphics extends Application {
         });
         scene.getStylesheets().add(GameGraphics.class.getResource("/CSS/slideBar.css").toExternalForm());
         setCheat(scene);
+    }
+
+    private void setMap() {
+        ArrayList<ArrayList<MapPixel>> field = map.getWholeField();
+        int size = field.size();
+        for (int i = 0 ; i < size ; i++)
+            for (int j = 0 ; j < size ; j++)
+                if (!field.get(i).get(j).getTexture().equals(Texture.LAND)) {
+                    ImageView imageView = new ImageView(new Image(field.get(i).get(j).getTexture().getImagePath()));
+                    imageView.setLayoutX(40 * j);
+                    imageView.setLayoutY(40 * i);
+                    mapPane.getChildren().add(imageView);
+                }
     }
 
     private void setCheat(Scene scene) {
