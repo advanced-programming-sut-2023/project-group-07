@@ -1,20 +1,16 @@
-package Client.controller;
+package controller;
 
 import java.util.HashMap;
 import java.util.ArrayList;
 
-import Client.model.*;
+import model.*;
 
 import java.io.IOException;
 
 public class CreateMapMenuController {
     private Map map;
-    private final MapMenuController mapMenuController;
     private int indexOfMap;
 
-    public CreateMapMenuController(MapMenuController mapMenuController) {
-        this.mapMenuController = mapMenuController;
-    }
 
     public ArrayList<String> getMaps() {
         ArrayList<String> out = new ArrayList<String>();
@@ -26,13 +22,11 @@ public class CreateMapMenuController {
     public void setExistingMap(int index) {
         this.map = Map.getMaps().get(index);
         this.indexOfMap = index;
-        this.mapMenuController.refreshMap(this.map);
     }
 
     public void setNewMap(int size, String name, int numberOfPlayers, HashMap<LordColor, int[]> lordsKeeps) {
         this.map = new Map(size, name, numberOfPlayers, lordsKeeps);
         this.indexOfMap = Map.getMaps().size();
-        this.mapMenuController.refreshMap(this.map);
     }
 
     public void saveMap() throws IOException {
@@ -127,8 +121,8 @@ public class CreateMapMenuController {
         return Messages.DROP_ROCK_SUCCESSFUL;
     }
 
-    public void removeMap() throws IOException {
-        Map.removeMap(map);
+    public void removeMap(int index) throws IOException {
+        Map.removeMap(Map.getMaps().get(index));
     }
 
     public Messages dropUnit(int row, int column, int count, String type, String color, boolean isFromCreateMap) {
