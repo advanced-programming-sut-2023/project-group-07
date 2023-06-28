@@ -407,4 +407,8 @@ public class Map {
         }
         return path;
     }
+
+    public ArrayList<ArrayList<MapPixel>> getWholeField() {
+        return getField(0,0,size-1,size-1);
+    }
 }

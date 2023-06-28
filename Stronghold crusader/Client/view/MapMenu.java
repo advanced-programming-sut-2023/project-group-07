@@ -132,7 +132,7 @@ public class MapMenu {
     }
 
     private void printGuide(Texture texture) {
-        System.out.print(texture.getColor());
+//        System.out.print(texture.getColor());
         System.out.print(" ");
         System.out.print(Colors.RESET);
         System.out.println(" : " + texture);

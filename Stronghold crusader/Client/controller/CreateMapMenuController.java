@@ -1,11 +1,10 @@
-package controller;
+package Client.controller;
 
-import java.util.HashMap;
-import java.util.ArrayList;
-
-import model.*;
+import Client.model.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class CreateMapMenuController {
     private Map map;

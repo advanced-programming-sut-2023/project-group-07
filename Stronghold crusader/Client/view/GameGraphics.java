@@ -75,7 +75,7 @@ public class GameGraphics extends Application {
         rootPane = new Pane();
         Pane pane = new Pane();
         mapPane = pane;
-        ImageView image = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Tiles/Desert/map.png").toExternalForm()));
+        ImageView image = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Tiles/Desert/map1.png").toExternalForm()));
         Scene scene = new Scene(rootPane);
         pane.getChildren().add(image);
         rootPane.getChildren().add(pane);

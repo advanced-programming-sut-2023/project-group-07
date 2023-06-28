@@ -16,11 +16,11 @@ public class MapMenuController {
         int x1 = getCornersRow(x)[0], x2 = getCornersRow(x)[1];
         int y1 = getCornersColumn(y)[0], y2 = getCornersColumn(y)[1];
         ArrayList<ArrayList<MapPixel>> field = map.getField(x1, y1, x2, y2);
-        for (int i = 0; i < field.size(); i++) {
-            output.add(new ArrayList<Colors>());
-            for (int j = 0; j < field.get(i).size(); j++)
-                output.get(i).add(field.get(i).get(j).getTexture().getColor());
-        }
+//        for (int i = 0; i < field.size(); i++) {
+//            output.add(new ArrayList<Colors>());
+//            for (int j = 0; j < field.get(i).size(); j++)
+//                output.get(i).add(field.get(i).get(j).getTexture().getColor());
+//        }
         return output;
     }
 

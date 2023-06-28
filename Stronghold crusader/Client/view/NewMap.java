@@ -1,7 +1,6 @@
-package view;
+package Client.view;
 
-import controller.Controller;
-import controller.CreateMapMenuController;
+import Client.controller.*;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -14,8 +13,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import model.LordColor;
-import model.Map;
+import Client.model.LordColor;
+import Client.model.Map;
 
 import java.io.IOException;
 import java.net.URL;

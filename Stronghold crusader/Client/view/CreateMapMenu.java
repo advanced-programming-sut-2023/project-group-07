@@ -14,7 +14,7 @@ import Client.controller.Controller;
 import java.util.HashMap;
 
 public class CreateMapMenu extends MapMenu {
-    private final CreateMapMenuController controller = new CreateMapMenuController(super.controller);
+    private final CreateMapMenuController controller = new CreateMapMenuController();
     private Scanner scanner;
 
     public void run(Scanner scanner) throws IOException {
@@ -41,10 +41,10 @@ public class CreateMapMenu extends MapMenu {
                 else if (MapMenuCommands.getMatcher(input, MapMenuCommands.MAP_GUIDE) != null)
                     super.mapGuide();
                 else if (CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.REMOVE_MAP) != null) {
-                    if (removeMap().equals(Messages.REMOVE_MAP_SUCCESSFUL)) {
+                    //if (removeMap().equals(Messages.REMOVE_MAP_SUCCESSFUL)) {
                         if (setMap().equals(Messages.EXIT_CREATE_MAP_MENU))
                             return;
-                    }
+                    //}
                 } else if (CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.SET_PIXEL_TEXTURE) != null)
                     System.out.println(setPixelTexture(input));
                 else if (CreateMapMenuCommands.getMatcher(input, CreateMapMenuCommands.SET_REGION_TEXTURE) != null)
@@ -69,15 +69,15 @@ public class CreateMapMenu extends MapMenu {
         }
     }
 
-    private Messages removeMap() throws IOException {
-        System.out.println("Are you sure you want to remove this map?");
-        String input = scanner.nextLine();
-        if (input.toLowerCase().matches("\\s*yes\\s*")) {
-            controller.removeMap();
-            return Messages.REMOVE_MAP_SUCCESSFUL;
-        }
-        return Messages.REMOVE_MAP_CANCLED;
-    }
+//    private Messages removeMap() throws IOException {
+//        System.out.println("Are you sure you want to remove this map?");
+//        String input = scanner.nextLine();
+//        if (input.toLowerCase().matches("\\s*yes\\s*")) {
+//            controller.removeMap();
+//            return Messages.REMOVE_MAP_SUCCESSFUL;
+//        }
+//        return Messages.REMOVE_MAP_CANCLED;
+//    }
 
     private Messages setMap() {
         ArrayList<String> maps = controller.getMaps();

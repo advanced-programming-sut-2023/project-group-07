@@ -1,7 +1,10 @@
-package view;
+package Client.view;
 
-import controller.Controller;
-import controller.CreateMapMenuController;
+import Client.controller.Controller;
+import Client.controller.CreateMapMenuController;
+import Client.view.Main;
+import Client.view.MainMenuGraphics;
+import Client.view.NewMap;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -15,7 +18,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import model.Map;
+import Client.model.Map;
 
 
 import java.io.IOException;

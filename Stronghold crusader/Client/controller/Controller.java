@@ -2,7 +2,9 @@ package Client.controller;
 
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
+import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -10,9 +12,9 @@ import java.util.*;
 import java.util.List;
 import java.util.regex.Matcher;
 
-import Client.view.LoginMenuGraphics;
-import Client.view.Main;
+import Client.view.*;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -27,8 +29,6 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import Client.model.*;
 import Client.model.Map;
-import Client.view.GameGraphics;
-import Client.view.MenuPrinter;
 import javafx.scene.text.Text;
 
 public class Controller {
@@ -335,5 +335,15 @@ public class Controller {
         chatBox.setLayoutX(Main.getScreenWidth()-300);
         return chatBox;
     }
-
+    public static BorderPane getBorderPane(String path) throws IOException {
+        URL url = Controller.class.getResource(path);
+        BorderPane borderPane = FXMLLoader.load(url);
+        Background background = new Background(new BackgroundImage((new Image(LoginMenuGraphics.class.getResource("/Images/Background/1.jpg").toString(), Main.getScreenWidth(), Main.getScreenHeight(), false, false)),
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.DEFAULT,
+                BackgroundSize.DEFAULT));
+        borderPane.setBackground(background);
+        return borderPane;
+    }
 }

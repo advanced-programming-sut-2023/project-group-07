@@ -33,8 +33,8 @@ public class MainMenuGraphics extends Application {
     public void newGame(MouseEvent mouseEvent) {
     }
 
-    public void createMap(MouseEvent mouseEvent) {
-
+    public void createMap(MouseEvent mouseEvent) throws Exception {
+        new CreateMapGraphics().start(Main.stage);
     }
 
     public void profileMenu(MouseEvent mouseEvent) throws Exception {
