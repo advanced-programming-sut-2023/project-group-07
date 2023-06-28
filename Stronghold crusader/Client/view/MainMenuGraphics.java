@@ -30,11 +30,12 @@ public class MainMenuGraphics extends Application {
         primaryStage.show();
     }
 
-    public void newGame(MouseEvent mouseEvent) {
+    public void newGame(MouseEvent mouseEvent) throws Exception {
+        new PreGameMenuGraphics().start(Main.stage);
     }
 
     public void createMap(MouseEvent mouseEvent) throws Exception {
-        new CreateMapGraphics().start(Main.stage);
+        //new CreateMapGraphics().start(Main.stage);
     }
 
     public void profileMenu(MouseEvent mouseEvent) throws Exception {

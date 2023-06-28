@@ -49,7 +49,7 @@ public class GameGraphics extends Application {
     private StackPane selectBuildingToBeBuilt;
     private Game game;
     private Map map;
-    private GameMenuController gameMenuController;
+    private GameMenuController gameMenuController = new GameMenuController();
     private VBox messageBar = new VBox(20);
     private double oldMouseX;
     private double oldMouseY;
@@ -1087,10 +1087,6 @@ public class GameGraphics extends Application {
         tradingPageMenu.setVisible(false);
         tradeMenu.setVisible(false);
 
-    }
-
-    public void setGameMenuController(GameMenuController gameMenuController) {
-        this.gameMenuController = gameMenuController;
     }
 
     private String getPhotoName(String path) {
