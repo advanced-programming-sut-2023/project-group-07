@@ -203,8 +203,6 @@ public class PreGameMenuGraphics extends Application implements Initializable {
             Map map = Map.getMaps().get(mapIndex);
             ArrayList<Government> governments = getGovernments(map);
             Integer earlyGameGolds = Integer.parseInt(golds.getValue().toString());
-            Game game = new Game(map, governments, earlyGameGolds);
-            Controller.currentGame = game;
             Controller.currentGame = new Game(map,governments,earlyGameGolds);
             new GameGraphics().start(Main.stage);
         }
@@ -216,9 +214,9 @@ public class PreGameMenuGraphics extends Application implements Initializable {
         governments.add(new Government(LordColor.getLordColor(0), Controller.currentUser, 0,
                 map.getKeepPosition(currentLordColor)[0],
                 map.getKeepPosition(currentLordColor)[1]));
-        for (int i = 0; i < usernameFields.size(); i++) {
+        for (int i = 1; i <= usernameFields.size(); i++) {
             currentLordColor = LordColor.getLordColor(i);
-            String username = usernameFields.get(i).getText();
+            String username = usernameFields.get(i-1).getText();
             User user = User.getUserByUsername(username);
             governments.add(new Government(LordColor.getLordColor(i), user, 0, map.getKeepPosition(currentLordColor)[0],
                     map.getKeepPosition(currentLordColor)[1]));

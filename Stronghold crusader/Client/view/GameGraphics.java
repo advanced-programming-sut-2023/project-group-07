@@ -35,6 +35,7 @@ import Client.model.*;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -88,7 +89,7 @@ public class GameGraphics extends Application {
         ImageView image = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Tiles/Desert/map1.png").toExternalForm()));
         pane.getChildren().add(image);
         Scene scene = new Scene(rootPane);
-        setMap();
+        scene.getStylesheets().add(GameGraphics.class.getResource("/CSS/SignUp.css").toString());
         rootPane.getChildren().add(pane);
         pane.setMaxHeight(Main.screenHeight - 215);
         initStatusBar();
@@ -106,6 +107,7 @@ public class GameGraphics extends Application {
         buildingMenu();
         setUnitTimeline();
         createMiniMap();
+        setMap();
         Controller.createChatMenu(rootPane);
 //        setZoomOut(mapPane);
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(5), actionEvent -> {
@@ -251,7 +253,7 @@ public class GameGraphics extends Application {
         buildings.add(stackPane);
         imageView.setFitWidth(40 * TypeOfBuilding.getBuilding(building.getTypeOfBuilding().toString()).getWidth());
         imageView.setPreserveRatio(true);
-        //addImageToMiniMap(stackPane.getLayoutX(), stackPane.getLayoutY(), TypeOfBuilding.getBuilding(building.getTypeOfBuilding().toString()).getWidth());
+        addImageToMiniMap(stackPane.getLayoutX(), stackPane.getLayoutY(), TypeOfBuilding.getBuilding(building.getTypeOfBuilding().toString()).getWidth());
     }
 
     private void addPerson(Person person, int i, int j) {
@@ -892,8 +894,9 @@ public class GameGraphics extends Application {
         HBox hBox = new HBox(10);
         statusPane.getChildren().add(hBox);
         hBox.setTranslateY(-40);
-        hBox.setTranslateX(-20);
+        hBox.setTranslateX(-70);
         hBox.setAlignment(Pos.CENTER);
+        addNextTurn(hBox);
         for (int i = 1; i < 7; i++) {
             ImageView imageView = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Menu/button" + i + ".png").toExternalForm()));
             imageView.hoverProperty().addListener((observable -> {
@@ -919,6 +922,23 @@ public class GameGraphics extends Application {
             });
             hBox.getChildren().add(imageView);
         }
+    }
+
+    private void addNextTurn(HBox hBox) {
+        Button button = new Button();
+        button.setText("Next turn");
+        button.setMaxWidth(200);
+        button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                try {
+                    gameMenuController.nextTurn();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        hBox.getChildren().add(button);
     }
 
     private void setCreateBuilding() throws SecurityException {

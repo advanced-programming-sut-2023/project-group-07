@@ -8,7 +8,6 @@ import java.util.HashSet;
 //import static org.mockito.ArgumentMatchers.contains;
 
 import java.io.IOException;
-//import net.bytebuddy.implementation.bytecode.ByteCodeAppender.Size;
 
 public class Game {
     private final Map map;
