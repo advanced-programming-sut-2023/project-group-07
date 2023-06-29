@@ -43,15 +43,17 @@ public class ChatMessage {
     public void setContent(String content) {
         this.content = content;
     }
+    @Override
+    public String toString() {
+        return owner.getUsername() + "\t" + sentTime + " : " + content;
+    }
 
     public static void main(String[] args) {
-        System.out.println((PrivateChat.privateChats));
         try {
             User.loadUsers();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        new PrivateChat(User.getUserByUsername("Rat"),User.getUserByUsername("Alireza"));
-        System.out.println((PrivateChat.privateChats));
+        System.out.println(new ChatMessage(User.getUserByUsername("Rat"),"salam be haem"));
     }
 }
