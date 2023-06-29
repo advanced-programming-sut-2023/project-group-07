@@ -37,7 +37,8 @@ public class GlobalChatMenu {
                 else if (input.matches("\\s*exit\\s*")) {
                     dataOutputStream.writeUTF("enter main menu");
                     return;
-                }
+                }else
+                    dataOutputStream.writeUTF("invalid input");
             }
         } catch (IOException e) {
             e.printStackTrace();

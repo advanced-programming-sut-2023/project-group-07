@@ -10,7 +10,9 @@ public class GlobalChatController {
         return GlobalChat.messages();
     }
     public static void send(String messageContent, User currentUser){
-        int id = getMessages().get(getMessages().size()-1).id() +1;
+        int id;
+        if (getMessages().size() == 0) id = 1;
+        else id = getMessages().get(getMessages().size()-1).id() +1;
         ChatMessage message = new ChatMessage(currentUser, messageContent, id);
         GlobalChat.sendMessage(message);
     }

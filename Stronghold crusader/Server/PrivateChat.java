@@ -78,8 +78,8 @@ public class PrivateChat {
     }
 
     public boolean deleteMessage(ChatMessage message, User currentUser) {
-        if (!message.owner().equals(currentUser) || messages.contains(message) ||
-                !userSet.contains(currentUser)) return false;
+        if (!message.owner().equals(currentUser) || !messages.contains(message) ||
+                !userSet.contains(currentUser)) return false; // todo change condition
         deleteMessage(message);
         return true;
     }
@@ -90,8 +90,8 @@ public class PrivateChat {
     }
 
     public boolean editMessage(ChatMessage message, User currentUser, String newMessage) {
-        if (!message.owner().equals(currentUser) || messages.contains(message) ||
-                !userSet.contains(currentUser)) return false;
+        if (!message.owner().equals(currentUser) || !messages.contains(message) ||
+                !userSet.contains(currentUser)) return false; // TODO: 6/29/2023 change condition 
         editMessage(message, newMessage);
         return true;
     }

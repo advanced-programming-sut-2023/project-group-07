@@ -42,6 +42,7 @@ public class Connection extends Thread {
                 else if (input.equals("enter private chat"))
                     new GlobalChatMenu(dataOutputStream, dataInputStream, currentUser).globalChat();// TODO: 6/29/2023 pv
                 else if (input.matches("\\s*logout\\s*")) return;
+                else dataOutputStream.writeUTF("invalid input");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -51,7 +52,7 @@ public class Connection extends Thread {
 
     public synchronized static void getFriendRequest(String username) {
         String[] request = username.split(" ");
-        if(request.length!=3)
+//        if(request.length!=3)
 
     }
 
