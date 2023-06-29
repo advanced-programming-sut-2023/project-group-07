@@ -75,6 +75,7 @@ public class GameGraphics extends Application {
     private HBox tradeMenu = null;
     private ComboBox<TradeRequest> availableTradesComboBox;
     private ComboBox<TradeRequest> tradesHistoryComboBox;
+    private ArrayList<Rectangle> selectionRectangles = new ArrayList<>();
 
     private ArrayList<PopularityFactor> popularityFactors = new ArrayList<>();
     private CursorAnimation cursorAnimation;
@@ -82,6 +83,25 @@ public class GameGraphics extends Application {
 
     @Override
     public void start(Stage stage) {
+        Scene scene = prepareStageElements();
+        stage.setScene(scene);
+        stage.setFullScreen(true);
+        stage.show();
+        mapPaneEvent();
+        buildingMenu();
+        setUnitTimeline();
+        createMiniMap();
+        setMap();
+        addNextTurn();
+        setMoveMapTimeLine(mapPane, scene);
+        addStageEventHandlers(stage);
+        setHoverTimeLine();
+        Controller.createChatMenu(rootPane);
+        scene.getStylesheets().add(GameGraphics.class.getResource("/CSS/slideBar.css").toExternalForm());
+        setCheatShortCuts(scene);
+    }
+
+    private Scene prepareStageElements() {
         game = Controller.currentGame;
         map = game.getMap();
         rootPane = new Pane();
@@ -101,34 +121,75 @@ public class GameGraphics extends Application {
         messageBar.setLayoutY(300);
         createSelectionArea();
         cursorAnimation = new CursorAnimation(GameGraphics.class.getResource("/Images/Game/Cursors/moveUnit/").toExternalForm(), scene);
-        stage.setScene(scene);
-        stage.setFullScreen(true);
-        stage.show();
-        mapPaneEvent();
-        buildingMenu();
-        setUnitTimeline();
-        createMiniMap();
-        setMap();
-        addNextTurn();
-        setHoverTimeLine();
-        Controller.createChatMenu(rootPane);
-//        setZoomOut(mapPane);
-        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(5), actionEvent -> {
-            Robot robot = new Robot();
-            if (robot.getMouseX() > scene.getWidth() - 50 && pane.getLayoutX() >-game.getMap().getSize()*40+Main.getScreenWidth())
-                pane.setLayoutX(pane.getLayoutX() - 10);
-            if (robot.getMouseX() < 50 && pane.getLayoutX() < 0)
-                pane.setLayoutX(pane.getLayoutX() + 10);
-            if (robot.getMouseY() > scene.getHeight() - 10 && pane.getLayoutY() >-game.getMap().getSize()*40+Main.getScreenHeight())
-                pane.setLayoutY(pane.getLayoutY() - 10);
-            if (robot.getMouseY() < 50 && pane.getLayoutY() < 0)
-                pane.setLayoutY(pane.getLayoutY() + 10);
-            Rectangle miniMapRectangle = (Rectangle) miniMapPane.getChildren().get(miniMapPane.getChildren().size() - 1);
-            miniMapRectangle.setTranslateY(16 + 225 * Math.abs(pane.getLayoutY()) / (game.getMap().getSize()*40));
-            miniMapRectangle.setTranslateX(12.5 + 225 * Math.abs(pane.getLayoutX()) / (game.getMap().getSize()*40));
-        }));
-        timeline.setCycleCount(-1);
-        timeline.play();
+        return scene;
+    }
+
+    private void addStageEventHandlers(Stage stage) {
+        mouseMoved(stage);
+        mouseDragged(stage);
+        mousePressed(stage);
+        mouseReleased(stage);
+    }
+
+    private void mouseReleased(Stage stage) {
+        stage.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseEvent -> {
+            if (mouseEvent.getButton() == MouseButton.PRIMARY && selectionArea.getWidth() > 1) {
+                int y1 = (int) Math.floor(selectionArea.getLayoutY() / 40);
+                int y2 = (int) Math.floor(selectionArea.getLayoutY() / 40 + selectionArea.getHeight() / 40);
+                int x1 = (int) Math.floor(selectionArea.getLayoutX() / 40);
+                int x2 = (int) Math.floor(selectionArea.getLayoutX() / 40 + selectionArea.getWidth() / 40);
+                selectTiles(x1, y1, x2, y2);
+                gameMenuController.getSelectedUnit().clear();
+                selectedUnits.clear();
+                gameMenuController.selectUnit(y1, x1, y2, x2);
+                for (Person person : gameMenuController.getSelectedUnit()) {
+                    for (PersonPane personPane : people) {
+                        if (personPane.getPerson().equals(person)) {
+                            selectedUnits.add(personPane);
+                            break;
+                        }
+                    }
+                }
+                if (!gameMenuController.getSelectedUnit().isEmpty()) {
+                    unitSelectionBar();
+                    clearStatusBar();
+                    selectedUnitBar.setVisible(true);
+                }
+                selectionArea.setVisible(false);
+            }
+        });
+    }
+
+    private void mousePressed(Stage stage) {
+        stage.addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
+            if (mouseEvent.getButton() == MouseButton.PRIMARY) {
+                resetSelectionArea();
+                removeTilesSelection();
+                oldMouseX = mouseEvent.getX() + Math.abs(mapPane.getLayoutX());
+                oldMouseY = mouseEvent.getY() + Math.abs(mapPane.getLayoutY());
+                Robot robot = new Robot();
+                int x = (int) Math.floor(robot.getMouseX() / 40 + Math.abs(mapPane.getLayoutX()) / 40);
+                int y = (int) Math.floor(robot.getMouseY() / 40 + Math.abs(mapPane.getLayoutY()) / 40);
+                selectTiles(x, y, x, y);
+            }
+            else
+                removeTilesSelection();
+        });
+    }
+
+    private void mouseDragged(Stage stage) {
+        stage.addEventHandler(MouseEvent.MOUSE_DRAGGED, mouseEvent -> {
+            if (mouseEvent.getButton() == MouseButton.PRIMARY) {
+                selectionArea.setVisible(true);
+                selectionArea.setLayoutX(Math.min(mouseEvent.getX() + Math.abs(mapPane.getLayoutX()), oldMouseX));
+                selectionArea.setLayoutY(Math.min(mouseEvent.getY() + Math.abs(mapPane.getLayoutY()), oldMouseY));
+                selectionArea.setWidth(Math.abs(mouseEvent.getX() + Math.abs(mapPane.getLayoutX()) - oldMouseX));
+                selectionArea.setHeight(Math.abs(mouseEvent.getY() + Math.abs(mapPane.getLayoutY()) - oldMouseY));
+            }
+        });
+    }
+
+    private void mouseMoved(Stage stage) {
         stage.addEventHandler(MouseEvent.MOUSE_MOVED, mouseEvent -> {
             if (buildingToBeBuilt != null) {
                 selectBuildingToBeBuilt.setLayoutX(40 * ((int) ((mouseEvent.getX() + Math.abs(mapPane.getLayoutX()) - selectBuildingToBeBuilt.getWidth() / 2) / 40)));
@@ -162,49 +223,47 @@ public class GameGraphics extends Application {
             } else
                 resetCursor();
         });
-        stage.addEventHandler(MouseEvent.MOUSE_DRAGGED, mouseEvent -> {
-            if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-                selectionArea.setVisible(true);
-                selectionArea.setLayoutX(Math.min(mouseEvent.getX() + Math.abs(mapPane.getLayoutX()), oldMouseX));
-                selectionArea.setLayoutY(Math.min(mouseEvent.getY() + Math.abs(mapPane.getLayoutY()), oldMouseY));
-                selectionArea.setWidth(Math.abs(mouseEvent.getX() + Math.abs(mapPane.getLayoutX()) - oldMouseX));
-                selectionArea.setHeight(Math.abs(mouseEvent.getY() + Math.abs(mapPane.getLayoutY()) - oldMouseY));
+    }
+
+    private void setMoveMapTimeLine(Pane pane, Scene scene) {
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(5), actionEvent -> {
+            Robot robot = new Robot();
+            if (robot.getMouseX() > scene.getWidth() - 50 && pane.getLayoutX() > -game.getMap().getSize() * 40 + Main.getScreenWidth())
+                pane.setLayoutX(pane.getLayoutX() - 10);
+            if (robot.getMouseX() < 50 && pane.getLayoutX() < 0)
+                pane.setLayoutX(pane.getLayoutX() + 10);
+            if (robot.getMouseY() > scene.getHeight() - 10 && pane.getLayoutY() > -game.getMap().getSize() * 40 + Main.getScreenHeight())
+                pane.setLayoutY(pane.getLayoutY() - 10);
+            if (robot.getMouseY() < 50 && pane.getLayoutY() < 0)
+                pane.setLayoutY(pane.getLayoutY() + 10);
+            Rectangle miniMapRectangle = (Rectangle) miniMapPane.getChildren().get(miniMapPane.getChildren().size() - 1);
+            miniMapRectangle.setTranslateY(16 + 225 * Math.abs(pane.getLayoutY()) / (game.getMap().getSize() * 40));
+            miniMapRectangle.setTranslateX(12.5 + 225 * Math.abs(pane.getLayoutX()) / (game.getMap().getSize() * 40));
+        }));
+        timeline.setCycleCount(-1);
+        timeline.play();
+    }
+
+    private void selectTiles(int x1, int y1, int x2, int y2) {
+        removeTilesSelection();
+        for (int i = x1; i <= x2; i++)
+            for (int j = y1; j <= y2; j++) {
+                Rectangle rectangle = new Rectangle(40, 40);
+                rectangle.setFill(Color.DARKGRAY);
+                rectangle.setStroke(Color.BLACK);
+                rectangle.setOpacity(0.3);
+                rectangle.setLayoutX(40 * i);
+                rectangle.setLayoutY(40 * j);
+                mapPane.getChildren().add(rectangle);
+                selectionRectangles.add(rectangle);
             }
-        });
-        stage.addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
-            if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-                resetSelectionArea();
-                oldMouseX = mouseEvent.getX() + Math.abs(mapPane.getLayoutX());
-                oldMouseY = mouseEvent.getY() + Math.abs(mapPane.getLayoutY());
-            }
-        });
-        stage.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseEvent -> {
-            if (mouseEvent.getButton() == MouseButton.PRIMARY && selectionArea.getWidth() > 1) {
-                int y1 = (int) Math.floor(selectionArea.getLayoutY() / 40);
-                int y2 = (int) Math.floor(selectionArea.getLayoutY() / 40 + selectionArea.getHeight() / 40);
-                int x1 = (int) Math.floor(selectionArea.getLayoutX() / 40);
-                int x2 = (int) Math.floor(selectionArea.getLayoutX() / 40 + selectionArea.getWidth() / 40);
-                gameMenuController.getSelectedUnit().clear();
-                selectedUnits.clear();
-                gameMenuController.selectUnit(y1, x1, y2, x2);
-                for (Person person : gameMenuController.getSelectedUnit()) {
-                    for (PersonPane personPane : people) {
-                        if (personPane.getPerson().equals(person)) {
-                            selectedUnits.add(personPane);
-                            break;
-                        }
-                    }
-                }
-                if (!gameMenuController.getSelectedUnit().isEmpty()) {
-                    unitSelectionBar();
-                    clearStatusBar();
-                    selectedUnitBar.setVisible(true);
-                }
-                selectionArea.setVisible(false);
-            }
-        });
-        scene.getStylesheets().add(GameGraphics.class.getResource("/CSS/slideBar.css").toExternalForm());
-        setCheatShortCuts(scene);
+    }
+
+    private void removeTilesSelection() {
+        for (Rectangle rectangle : selectionRectangles)
+            if (mapPane.getChildren().contains(rectangle))
+                mapPane.getChildren().remove(rectangle);
+        selectionRectangles.clear();
     }
 
     private void setHoverTimeLine() {
@@ -216,15 +275,14 @@ public class GameGraphics extends Application {
             if (X == oldX && Y == oldY) {
                 if (!isDataShown) {
                     isDataShown = true;
-                    int row = (int) Math.floor(Y/40);
-                    int column = (int) Math.floor(X/40);
+                    int row = (int) Math.floor(Y / 40);
+                    int column = (int) Math.floor(X / 40);
                     dataBox.setText(map.getMapPixel(row, column).details());
                     dataBox.setLayoutX(X);
                     dataBox.setLayoutY(Y);
                     mapPane.getChildren().add(dataBox);
                 }
-            }
-            else {
+            } else {
                 isDataShown = false;
                 if (mapPane.getChildren().contains(dataBox))
                     mapPane.getChildren().remove(dataBox);
@@ -299,8 +357,8 @@ public class GameGraphics extends Application {
         personPane.setLayoutY(40 * i);
         mapPane.getChildren().add(personPane);
         people.add(personPane);
-        if(person instanceof Unit)
-            gameMenuController.addHealthBarListener(personPane.getHealthBar(),(Unit)personPane.getPerson());
+        if (person instanceof Unit)
+            gameMenuController.addHealthBarListener(personPane.getHealthBar(), (Unit) personPane.getPerson());
     }
 
     private void addTexture(Texture texture, int i, int j) {
@@ -505,7 +563,7 @@ public class GameGraphics extends Application {
         tradingPage.requestButton().setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                if (tradingPage.lordColor() == null){
+                if (tradingPage.lordColor() == null) {
                     addToMessageBar("choose color.");
                     return;
                 }
@@ -980,16 +1038,15 @@ public class GameGraphics extends Application {
             if (person.getPerson().getHp() <= 0 || person.getPerson().getGovernment().getDefeatedBy() != null)
                 mapPane.getChildren().remove(person);
         for (StackPane buildingPane : buildings) {
-            int row = (int) Math.floor(buildingPane.getLayoutY()/40);
-            int column = (int) Math.floor(buildingPane.getLayoutX()/40);
-            System.out.println(((ImageView)buildingPane.getChildren().get(0)).getImage().getUrl()+row+"  "+column);
+            int row = (int) Math.floor(buildingPane.getLayoutY() / 40);
+            int column = (int) Math.floor(buildingPane.getLayoutX() / 40);
+            System.out.println(((ImageView) buildingPane.getChildren().get(0)).getImage().getUrl() + row + "  " + column);
             MapPixel pixel = map.getMapPixel(row, column);
             if (!pixel.getBuildings().isEmpty()) {
                 Building building = pixel.getBuildings().get(0);
                 if (building.getHp() <= -2 || building.getGovernment().getDefeatedBy() != null)
                     mapPane.getChildren().remove(buildingPane);
-            }
-            else {
+            } else {
                 pixel = map.getMapPixel(row + 4, column - 2);
                 LordColor keep = pixel.getLordKeep();
                 if (game.getGovernmentByColor(keep).getDefeatedBy() != null)
@@ -1132,7 +1189,7 @@ public class GameGraphics extends Application {
                 if (person instanceof Unit unit && unit.getType().equals(unitTypes))
                     counter++;
             if (counter > 0) {
-                ImageView imageView = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Soldiers/selection/"+unitTypes.getType()+".png").toExternalForm()));
+                ImageView imageView = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Soldiers/selection/" + unitTypes.getType() + ".png").toExternalForm()));
 //                ImageView archway = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Menu/archway.png").toExternalForm()));
 //                archway.setPreserveRatio(true);
 //                archway.setFitWidth(90);
@@ -1149,22 +1206,22 @@ public class GameGraphics extends Application {
                 vBox.setOnMouseClicked(new EventHandler<MouseEvent>() {
                     @Override
                     public void handle(MouseEvent mouseEvent) {
-                        if(mouseEvent.getButton()==MouseButton.PRIMARY) {
-                            for(int i= selectedUnits.size()-1;i>-1;i--)
-                                if(!((Unit)(selectedUnits.get(i).getPerson())).getType().getType().equals(unitTypes.getType()))
+                        if (mouseEvent.getButton() == MouseButton.PRIMARY) {
+                            for (int i = selectedUnits.size() - 1; i > -1; i--)
+                                if (!((Unit) (selectedUnits.get(i).getPerson())).getType().getType().equals(unitTypes.getType()))
                                     selectedUnits.remove(i);
-                            for(int i=gameMenuController.getSelectedUnit().size()-1;i>-1;i--)
-                                if(!((Unit)gameMenuController.getSelectedUnit().get(i)).getType().getType().equals(unitTypes.getType()))
+                            for (int i = gameMenuController.getSelectedUnit().size() - 1; i > -1; i--)
+                                if (!((Unit) gameMenuController.getSelectedUnit().get(i)).getType().getType().equals(unitTypes.getType()))
                                     gameMenuController.getSelectedUnit().remove(i);
                             selectedUnitBar.getChildren().clear();
                             selectedUnitBar.getChildren().add(stackPane);
                         }
-                        if(mouseEvent.getButton()==MouseButton.SECONDARY) {
-                            for(int i= selectedUnits.size()-1;i>-1;i--)
-                                if(((Unit)(selectedUnits.get(i).getPerson())).getType().getType().equals(unitTypes.getType()))
+                        if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+                            for (int i = selectedUnits.size() - 1; i > -1; i--)
+                                if (((Unit) (selectedUnits.get(i).getPerson())).getType().getType().equals(unitTypes.getType()))
                                     selectedUnits.remove(i);
-                            for(int i=gameMenuController.getSelectedUnit().size()-1;i>-1;i--)
-                                if(((Unit)gameMenuController.getSelectedUnit().get(i)).getType().getType().equals(unitTypes.getType()))
+                            for (int i = gameMenuController.getSelectedUnit().size() - 1; i > -1; i--)
+                                if (((Unit) gameMenuController.getSelectedUnit().get(i)).getType().getType().equals(unitTypes.getType()))
                                     gameMenuController.getSelectedUnit().remove(i);
                             selectedUnitBar.getChildren().remove(stackPane);
                         }
@@ -1238,7 +1295,7 @@ public class GameGraphics extends Application {
         Messages message = gameMenuController.dropBuilding(((int) ((mouseEvent.getY() + Math.abs(mapPane.getLayoutY()) - selectBuildingToBeBuilt.getWidth() / 2) / 40)),
                 ((int) ((mouseEvent.getX() + Math.abs(mapPane.getLayoutX()) - selectBuildingToBeBuilt.getWidth() / 2) / 40)),
                 string);
-        System.out.println(((int) ((mouseEvent.getX() + Math.abs(mapPane.getLayoutX()) - selectBuildingToBeBuilt.getWidth() / 2) / 40))+"   "+
+        System.out.println(((int) ((mouseEvent.getX() + Math.abs(mapPane.getLayoutX()) - selectBuildingToBeBuilt.getWidth() / 2) / 40)) + "   " +
                 ((int) ((mouseEvent.getY() + Math.abs(mapPane.getLayoutY()) - selectBuildingToBeBuilt.getWidth() / 2) / 40)));
         switch (message) {
             case THERES_ALREADY_BUILDING -> addToMessageBar("There's already a building here!");
@@ -1362,7 +1419,7 @@ public class GameGraphics extends Application {
     }
 
     private void createMiniMap() {
-        Rectangle rectangle = new Rectangle(225 * Main.screenWidth / (game.getMap().getSize()*40), 225 * Main.screenHeight / (game.getMap().getSize()*40));
+        Rectangle rectangle = new Rectangle(225 * Main.screenWidth / (game.getMap().getSize() * 40), 225 * Main.screenHeight / (game.getMap().getSize() * 40));
         rectangle.setFill(Color.TRANSPARENT);
         rectangle.setStroke(Color.BLACK);
         rectangle.setTranslateX(12.5);
