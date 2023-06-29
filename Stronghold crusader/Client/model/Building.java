@@ -89,7 +89,10 @@ public class Building {
     }
 
     public void destroy() {
-        hp = 0;
+        hp = -2;
     }
 
+    public void setHp(int hp) {
+        this.hp = hp;
+    }
 }

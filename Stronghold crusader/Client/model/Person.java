@@ -88,4 +88,7 @@ public class Person {
         hp = 0;
     }
 
+    public void setHp(int hp) {
+        this.hp = hp;
+    }
 }

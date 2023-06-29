@@ -29,6 +29,7 @@ public class User {
 
     private static ArrayList<User> users = new ArrayList<User>();
     private static JsonArray usersArray = new JsonArray();
+    private final ArrayList<String> friends= new ArrayList<>();
 
     public User(Information information, RecoveryQuestion passwordRecoveryQuestion, String passwordRecoveryAnswer) {
         this.username = information.getUsername();
@@ -44,6 +45,14 @@ public class User {
         this.rank = 0; // TODO : CHECK THIS SHIT :)
         this.giveAAvatar();
     }
+
+    public void addFriend(String username) {
+        friends.add(username);
+    }
+    public void removeFriend(String username) {
+        friends.remove(username);
+    }
+
 
     public String getUsername() {
         return username;
