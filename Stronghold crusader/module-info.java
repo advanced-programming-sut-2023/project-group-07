@@ -9,6 +9,8 @@ module project.group {
 
     exports Client.view;
     exports Client.model;
+    exports Server;
+    opens Server to com.google.gson;
     opens Client.view to javafx.fxml;
     opens Client.model to com.google.gson;
 }
