@@ -42,10 +42,19 @@ public class Connection extends Thread {
         }
     }
 
-    public synchronized static void getFriendRequest(String username) {
+    public synchronized String getFriendRequest(String username) throws IOException {
         String[] request = username.split(" ");
-        if(request.length!=3)
-
+        if(request.length!=2 || !request[0].equals("friendRequest"))
+            return "invalid command!";
+        else{
+            String targetUser = request[1];
+            Connection connection = getConnectionByUsername(targetUser);
+            if(connection==null){
+                return "invalid target!";
+            }
+            connection.dataOutputStream.writeUTF("acceptFriend? "+currentUser.getUsername());
+        }
+        return "successful!";
     }
 
     private Connection getConnectionByUsername(String username) {
