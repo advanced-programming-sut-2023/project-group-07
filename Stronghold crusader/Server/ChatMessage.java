@@ -53,5 +53,5 @@ public class ChatMessage {
     public String toString() {
         return "id)"+ id + " "  + owner.getUsername() + " " + sentTime + " : " + content;
     }
-    
+
 }
