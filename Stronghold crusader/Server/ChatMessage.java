@@ -9,10 +9,12 @@ public class ChatMessage {
     private User owner;
     private String content;
     private String sentTime;
+    private int id;
 
-    public ChatMessage(User owner, String message) {
+    public ChatMessage(User owner, String message, int id) {
         this.owner = owner;
         this.content = message;
+        this.id = id;
         setSentTime();
     }
 
@@ -40,20 +42,16 @@ public class ChatMessage {
         return sentTime;
     }
 
+    public int id() {
+        return id;
+    }
+
     public void setContent(String content) {
         this.content = content;
     }
     @Override
     public String toString() {
-        return owner.getUsername() + " " + sentTime + " : " + content;
+        return "id)"+ id + " "  + owner.getUsername() + " " + sentTime + " : " + content;
     }
 
-    public static void main(String[] args) {
-        try {
-            User.loadUsers();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.println(new ChatMessage(User.getUserByUsername("Alireza"),"salam be haem"));
-    }
 }
