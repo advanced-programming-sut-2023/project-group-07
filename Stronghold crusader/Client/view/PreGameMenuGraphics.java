@@ -26,6 +26,8 @@ import java.util.ResourceBundle;
 
 public class PreGameMenuGraphics extends Application implements Initializable {
     @FXML
+    private ComboBox numberOfPlayers;
+    @FXML
     private ComboBox golds;
     @FXML
     private GridPane usernamesGridPane;
@@ -59,7 +61,7 @@ public class PreGameMenuGraphics extends Application implements Initializable {
         initExistingMaps();
         scrollPane.setContent(mapGrid);
         menuPane.setCenter(scrollPane);
-        setUsernameFields();
+        setNumberOfPlayers();
     }
 
     private void initialGolds() {
@@ -113,7 +115,7 @@ public class PreGameMenuGraphics extends Application implements Initializable {
                         CheckBox checkBox1 = checkBoxes.get(i);
                         if (checkBox1.equals(checkBox)) {
                             mapIndex = i;
-                            setUsernameFields();
+                            setNumberOfPlayers();
                         }
                         else
                             checkBox1.setSelected(false);
@@ -123,9 +125,18 @@ public class PreGameMenuGraphics extends Application implements Initializable {
         });
     }
 
-    private void setUsernameFields() {
+    private void setNumberOfPlayers() {
+        numberOfPlayers.getItems().clear();
+        for (int i = 2; i <= Map.getMaps().get(mapIndex).getNumberOfPlayers(); i++)
+            numberOfPlayers.getItems().add(String.valueOf(i));
+        numberOfPlayers.setValue(String.valueOf(Map.getMaps().get(mapIndex).getNumberOfPlayers()));
+        setUsernameFields(Map.getMaps().get(mapIndex).getNumberOfPlayers());
+
+    }
+
+    private void setUsernameFields(int numberOfPlayers) {
         clearGridPane();
-        for (int i = 1 ; i < Map.getMaps().get(mapIndex).getNumberOfPlayers(); i++) {
+        for (int i = 1 ; i < numberOfPlayers; i++) {
             Label label = new Label("   " + LordColor.getLordColor(i).toString() + " lord (player " + (i+1) + ") username");
             label.setStyle("-fx-font-size: 15");
             TextField textField = new TextField();
@@ -136,9 +147,9 @@ public class PreGameMenuGraphics extends Application implements Initializable {
             usernameLabels.add(label);
             usernameFields.add(textField);
             errorTexts.add(text);
-            usernamesGridPane.add(label, 0, i-1);
-            usernamesGridPane.add(textField,1, i-1);
-            usernamesGridPane.add(text, 2, i-1);
+            usernamesGridPane.add(label, 0, i);
+            usernamesGridPane.add(textField,1, i);
+            usernamesGridPane.add(text, 2, i);
             addUsernameFieldListener(textField, text);
         }
     }
@@ -153,6 +164,11 @@ public class PreGameMenuGraphics extends Application implements Initializable {
                 text.setText("Username doesn't exist!");
             } else {
                 boolean found = false;
+                if (t1.equals(Controller.currentUser.getUsername())) {
+                    textField.setStyle("-fx-border-color: red");
+                    text.setText("Repetitive username!");
+                    found = true;
+                }
                 for (TextField textField1 : usernameFields)
                     if (!textField1.equals(textField) && textField1.getText().equals(t1)) {
                         textField.setStyle("-fx-border-color: red");
@@ -176,6 +192,9 @@ public class PreGameMenuGraphics extends Application implements Initializable {
             usernamesGridPane.getChildren().remove(textField);
         for (Text text : errorTexts)
             usernamesGridPane.getChildren().remove(text);
+        usernameLabels.clear();
+        usernameFields.clear();
+        errorTexts.clear();
     }
 
     public void start(MouseEvent mouseEvent) {
@@ -184,8 +203,6 @@ public class PreGameMenuGraphics extends Application implements Initializable {
             Map map = Map.getMaps().get(mapIndex);
             ArrayList<Government> governments = getGovernments(map);
             Integer earlyGameGolds = Integer.parseInt(golds.getValue().toString());
-            Game game = new Game(map, governments, earlyGameGolds);
-            Controller.currentGame = game;
             Controller.currentGame = new Game(map,governments,earlyGameGolds);
             new GameGraphics().start(Main.stage);
         }
@@ -197,9 +214,9 @@ public class PreGameMenuGraphics extends Application implements Initializable {
         governments.add(new Government(LordColor.getLordColor(0), Controller.currentUser, 0,
                 map.getKeepPosition(currentLordColor)[0],
                 map.getKeepPosition(currentLordColor)[1]));
-        for (int i = 1; i < usernameFields.size(); i++) {
+        for (int i = 1; i <= usernameFields.size(); i++) {
             currentLordColor = LordColor.getLordColor(i);
-            String username = usernameFields.get(i).getText();
+            String username = usernameFields.get(i-1).getText();
             User user = User.getUserByUsername(username);
             governments.add(new Government(LordColor.getLordColor(i), user, 0, map.getKeepPosition(currentLordColor)[0],
                     map.getKeepPosition(currentLordColor)[1]));
@@ -224,5 +241,10 @@ public class PreGameMenuGraphics extends Application implements Initializable {
 
     public void back(MouseEvent mouseEvent) throws Exception {
         new MainMenuGraphics().start(Main.stage);
+    }
+
+    public void changeNumberOfPlayers(ActionEvent actionEvent) {
+        if (numberOfPlayers.getValue() != null)
+            setUsernameFields(Integer.parseInt(numberOfPlayers.getValue().toString()));
     }
 }

@@ -29,9 +29,13 @@ public class PersonPane extends StackPane {
     private PersonMove personMove;
     private GameMenuController gameMenuController;
 
+
+
+    private PersonAttacking personAttacking;
+
     public PersonPane(String name,Person person,GameMenuController gameMenuController) {
         this.gameMenuController = gameMenuController;
-        PersonAttacking personAttacking = new PersonAttacking(GameGraphics.class.getResource("/Images/Game/Soldiers/"+name+"/").toExternalForm(),this,"left");
+        personAttacking = new PersonAttacking(GameGraphics.class.getResource("/Images/Game/Soldiers/"+name+"/").toExternalForm(),this,"left");
         personDirection = new PersonDirection(GameGraphics.class.getResource("/Images/Game/Soldiers/"+name+"/").toExternalForm(),this,"left");
         personMove = new PersonMove(this,gameMenuController);
         this.person = person;
@@ -77,5 +81,8 @@ public class PersonPane extends StackPane {
 
     public void setMoving(boolean moving) {
         isMoving = moving;
+    }
+    public PersonAttacking getPersonAttacking() {
+        return personAttacking;
     }
 }
