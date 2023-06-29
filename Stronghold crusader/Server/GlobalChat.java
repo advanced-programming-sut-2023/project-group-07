@@ -46,7 +46,6 @@ public class GlobalChat {
         }
     }
 
-
     public static void sendMessage(ChatMessage message) {
         messages.add(message);
         saveMessages();
@@ -71,16 +70,19 @@ public class GlobalChat {
     public static ArrayList<ChatMessage> messages() {
         return messages;
     }
-    public static boolean deleteMessage(ChatMessage message, User currentUser){
+
+    public static boolean deleteMessage(ChatMessage message, User currentUser) {
         if (!message.owner().equals(currentUser) || messages.contains(message)) return false;
         deleteMessage(message);
         return true;
     }
-    private static void deleteMessage(ChatMessage message){
+
+    private static void deleteMessage(ChatMessage message) {
         messages.remove(message);
         saveMessages();
     }
-    public static boolean editMessage(ChatMessage message, User currentUser, String newMessage){
+
+    public static boolean editMessage(ChatMessage message, User currentUser, String newMessage) {
         if (!message.owner().equals(currentUser) || messages.contains(message)) return false;
         editMessage(message, newMessage);
         return true;
@@ -90,6 +92,5 @@ public class GlobalChat {
         message.setContent(newMessage);
         saveMessages();
     }
-
 
 }
