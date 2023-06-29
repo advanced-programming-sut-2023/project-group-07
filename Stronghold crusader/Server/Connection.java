@@ -1,5 +1,7 @@
 package Server;
 
+import Client.controller.Client;
+import Client.controller.Controller;
 import Client.model.User;
 
 import java.io.DataInputStream;
@@ -15,7 +17,7 @@ public class Connection extends Thread {
     private final DataInputStream dataInputStream;
     private final DataOutputStream dataOutputStream;
     private User currentUser;
-
+    private static final ArrayList<Connection> connections = new ArrayList<>();
     public Connection(Socket socket) throws IOException {
         this.socket = socket;
         this.dataInputStream = new DataInputStream(socket.getInputStream());
@@ -45,4 +47,17 @@ public class Connection extends Thread {
             e.printStackTrace();
         }
     }
-}
+
+
+    public synchronized static void getFriendRequest(String username) {
+        String[] request = username.split(" ");
+        if(request.length!=3)
+
+    }
+
+    private Connection getConnectionByUsername(String username) {
+        for(Connection connection: connections)
+            if(connection.currentUser.getUsername().equals(username))
+                return connection;
+        return null;
+    }}

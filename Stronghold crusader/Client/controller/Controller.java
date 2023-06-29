@@ -331,6 +331,7 @@ public class Controller {
                 chatBox.setVisible(!chatBox.isVisible());
             }
         });
+        chatBox.setVisible(false);
         chatBox.getChildren().addAll(scrollPane,hBox);
         chatBox.setLayoutX(Main.getScreenWidth()-300);
         return chatBox;
@@ -347,11 +348,6 @@ public class Controller {
         return borderPane;
     }
 
-    public static void sendFriendRequest(String username) throws IOException {
-//        if(User.getUserByUsername(username)==null)
 
-        String addFriendRequest = "FriendRequest "+currentUser.getUsername()+" "+username;
-        currentClient.dataOutputStream.writeUTF(addFriendRequest);
-    }
 
 }
