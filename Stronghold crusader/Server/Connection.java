@@ -36,7 +36,9 @@ public class Connection extends Thread {
                 if (input.equals("enter global chat"))
                     new GlobalChatMenu(dataOutputStream, dataInputStream, currentUser).globalChat();
                 else if (input.equals("enter private chat"))
-                    new PrivateChatMenu(dataOutputStream, dataInputStream, currentUser).privateChat();// TODO: 6/29/2023 pv
+                    new PrivateChatMenu(dataOutputStream, dataInputStream, currentUser).privateChat();
+                else if (input.equals("enter group chat"))
+                    new GroupChatMenu(dataOutputStream, dataInputStream, currentUser).GroupChat();
                 else if (input.matches("\\s*logout\\s*")) return;
                 else dataOutputStream.writeUTF("invalid input");
             }

@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
-public class PrivateChat {
-    public static ArrayList<PrivateChat> privateChats = new ArrayList<>();
+public class GroupChat {
+    public static ArrayList<GroupChat> groupChats = new ArrayList<>();
 
     static {
         loadChats();
@@ -23,7 +23,7 @@ public class PrivateChat {
         FileReader file = null;
         try {
             URL url = GlobalChat.class.
-                    getResource("/DB/private_chats");
+                    getResource("/DB/group_chats");
             file = new FileReader(url.toExternalForm().substring("file:\\".length()));
 
             Scanner scanner = new Scanner(file);
@@ -36,9 +36,9 @@ public class PrivateChat {
             file.close();
             Gson gson = new Gson();
             JsonArray jsonArray = gson.fromJson(allChats, JsonArray.class);
-            privateChats.clear();
+            groupChats.clear();
             for (JsonElement jsonElement : jsonArray) {
-                privateChats.add(gson.fromJson(jsonElement, PrivateChat.class));
+                groupChats.add(gson.fromJson(jsonElement, GroupChat.class));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -49,11 +49,11 @@ public class PrivateChat {
         try {
             Gson gson = new Gson();
             JsonArray jsonArray = new JsonArray();
-            for (PrivateChat chat : privateChats) {
+            for (GroupChat chat : groupChats) {
                 jsonArray.add(gson.toJsonTree(chat).getAsJsonObject());
             }
             FileWriter file = new FileWriter(GlobalChat.class.
-                    getResource("/DB/private_chats").toExternalForm().substring("file:\\".length()));
+                    getResource("/DB/group_chats").toExternalForm().substring("file:\\".length()));
             file.write(jsonArray.toString());
             file.close();
         } catch (IOException e) {
@@ -61,17 +61,17 @@ public class PrivateChat {
         }
     }
 
-    public static PrivateChat getPrivateChat(Set<User> users) {
-        for (PrivateChat privateChat : privateChats) {
+    public static GroupChat getChat(Set<User> users) {
+        for (GroupChat groupChat : groupChats) {
             boolean flag = true;
             for (Iterator<User> it = users.iterator(); it.hasNext(); ) {
                 User user = it.next();
-                if (!privateChat.userSet.contains(user)) {
+                if (!groupChat.userSet.contains(user)) {
                     flag = false;
                     break;
                 }
             }
-            if (flag) return privateChat;
+            if (flag) return groupChat;
         }
         return null;
     }
@@ -79,15 +79,9 @@ public class PrivateChat {
     private Set<User> userSet = new HashSet<>();
     private ArrayList<ChatMessage> messages = new ArrayList<>();
 
-    public PrivateChat(User user1, User user2) {
-        userSet.add(user1);
-        userSet.add(user2);
-        privateChats.add(this);
-        saveChats();
-    }
-    public PrivateChat(HashSet<User> usersSet) {
+    public GroupChat(HashSet<User> usersSet) {
         this.userSet = usersSet;
-        privateChats.add(this);
+        groupChats.add(this);
         saveChats();
     }
 
