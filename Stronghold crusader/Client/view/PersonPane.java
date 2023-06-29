@@ -12,6 +12,7 @@ import Client.model.UnitTypes;
 
 public class PersonPane extends StackPane {
     private ImageView personImage;
+    private ImageView bodyEffectImage;
     private ProgressBar healthBar;
     private Person person;
     private boolean isMoving =false;
@@ -28,16 +29,17 @@ public class PersonPane extends StackPane {
 
     private PersonMove personMove;
     private GameMenuController gameMenuController;
-
-
-
     private PersonAttacking personAttacking;
+    private BodyEffect bodyEffectFire;
+    private BodyEffect bodyEffectDisease;
 
     public PersonPane(String name,Person person,GameMenuController gameMenuController) {
         this.gameMenuController = gameMenuController;
-        personAttacking = new PersonAttacking(GameGraphics.class.getResource("/Images/Game/Soldiers/"+name+"/").toExternalForm(),this,"left");
+        personAttacking = new PersonAttacking(GameGraphics.class.getResource("/Images/Game/Soldiers/"+name+"/").toExternalForm(),this,"left",GameMenuController.getGame());
         personDirection = new PersonDirection(GameGraphics.class.getResource("/Images/Game/Soldiers/"+name+"/").toExternalForm(),this,"left");
         personMove = new PersonMove(this,gameMenuController);
+        bodyEffectFire = new BodyEffect(GameGraphics.class.getResource("/Images/Game/BodyEffects/Fire/").toExternalForm(),this);
+        bodyEffectDisease = new BodyEffect(GameGraphics.class.getResource("/Images/Game/BodyEffects/Disease/").toExternalForm(),this);
         this.person = person;
         personImage = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Soldiers/"+name+"/down/anim (1).png").toExternalForm()));
         VBox vBox = new VBox(5);
@@ -58,6 +60,9 @@ public class PersonPane extends StackPane {
         this.setLayoutY(person.getCurrentLocation()[0]*40);
         personImage.setFitWidth(25);
         personImage.setPreserveRatio(true);
+        bodyEffectImage = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/BodyEffects/Fire/anim (1).png").toExternalForm()));
+        bodyEffectImage.setVisible(false);
+        this.getChildren().add(bodyEffectImage);
     }
     public void setPerson(Person person) {
         this.person = person;
@@ -84,5 +89,16 @@ public class PersonPane extends StackPane {
     }
     public PersonAttacking getPersonAttacking() {
         return personAttacking;
+    }
+    public ImageView getBodyEffectImage() {
+        return bodyEffectImage;
+    }
+
+    public BodyEffect getBodyEffectDisease() {
+        return bodyEffectDisease;
+    }
+
+    public BodyEffect getBodyEffectFire() {
+        return bodyEffectFire;
     }
 }

@@ -47,8 +47,6 @@ public class Main extends Application {
 //                Map.getMaps().get(0).getKeepPosition(currentLordColor)[1]));
 //        Controller.currentGame = new Game(Map.getMaps().get(0),governments,2000);
 //        GameGraphics gameGraphics = new GameGraphics();
-//        GameMenuController gameMenuController= new GameMenuController();
-//        gameGraphics.setGameMenuController(gameMenuController);
 //        gameGraphics.start(stage);
         if(User.stayLoggedIn()!=null) {
             Controller.currentUser=User.stayLoggedIn();

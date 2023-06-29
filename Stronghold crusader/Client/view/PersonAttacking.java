@@ -1,5 +1,6 @@
 package Client.view;
 
+import Client.model.Game;
 import Client.model.Unit;
 import javafx.animation.Interpolator;
 import javafx.animation.Transition;
@@ -11,11 +12,11 @@ public class PersonAttacking extends Transition {
     int frameCount = 8;
     PersonPane personPane;
     String attackingDirection;
-    GameGraphics gameGraphics;
+    Game game;
     int[] nearestEnemy = new int[2];
 
-    public PersonAttacking(String directory,PersonPane personPane,String attackingDirection,GameGraphics gameGraphics) {
-        this.gameGraphics =gameGraphics;
+    public PersonAttacking(String directory, PersonPane personPane, String attackingDirection, Game game) {
+        this.game =game;
         this.directory = directory;
         this.personPane = personPane;
         this.attackingDirection = attackingDirection;
@@ -28,7 +29,7 @@ public class PersonAttacking extends Transition {
     protected void interpolate(double frac) {
         for(int i=0;i<frameCount;i++) {
             if((double)i/frameCount<frac && frac<=((double)i+1)/frameCount){
-                    nearestEnemy = gameGraphics.getGame().nearestEnemy((Unit)personPane.getPerson(),((Unit)personPane.getPerson()).getType().getRange());
+                    nearestEnemy = game.nearestEnemy((Unit)personPane.getPerson(),((Unit)personPane.getPerson()).getType().getRange());
                     if(nearestEnemy!=null){
                         attackingDirection = showDirection(personPane.getPerson().getCurrentLocation()[0],
                                 personPane.getPerson().getCurrentLocation()[1],

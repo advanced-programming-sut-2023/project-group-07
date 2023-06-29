@@ -896,7 +896,7 @@ public class GameGraphics extends Application {
         hBox.setTranslateY(-40);
         hBox.setTranslateX(-70);
         hBox.setAlignment(Pos.CENTER);
-        addNextTurn(hBox);
+//        addNextTurn(hBox);
         for (int i = 1; i < 7; i++) {
             ImageView imageView = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Menu/button" + i + ".png").toExternalForm()));
             imageView.hoverProperty().addListener((observable -> {
@@ -1052,7 +1052,8 @@ public class GameGraphics extends Application {
             case UNIT_CREATED_SUCCESSFULLY -> {
                 for (Unit unit : gameMenuController.createdUnit) {
                     PersonPane personPane = new PersonPane(name, unit, gameMenuController);
-                    personPane.getPersonAttacking().play();
+//                    personPane.getPersonAttacking().play();
+//                    personPane.getBodyEffectDisease().play();
                     people.add(personPane);
                     mapPane.getChildren().add(personPane);
                     gameMenuController.addHealthBarListener(personPane.getHealthBar(), unit);
@@ -1076,11 +1077,11 @@ public class GameGraphics extends Application {
                     counter++;
             if (counter > 0) {
                 ImageView imageView = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Soldiers/selection/"+unitTypes.getType()+".png").toExternalForm()));
-                ImageView archway = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Menu/archway.png").toExternalForm()));
-                archway.setPreserveRatio(true);
-                archway.setFitWidth(90);
+//                ImageView archway = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Menu/archway.png").toExternalForm()));
+//                archway.setPreserveRatio(true);
+//                archway.setFitWidth(90);
                 VBox vBox = new VBox();
-                StackPane stackPane = new StackPane(archway, vBox);
+                StackPane stackPane = new StackPane(vBox);
                 vBox.getChildren().add(imageView);
                 imageView.setFitWidth(80);
                 imageView.setPreserveRatio(true);
@@ -1089,11 +1090,35 @@ public class GameGraphics extends Application {
                     if (!vBox.isHover())
                         imageView.setOpacity(1);
                 }));
+                vBox.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent mouseEvent) {
+                        if(mouseEvent.getButton()==MouseButton.PRIMARY) {
+                            for(int i= selectedUnits.size()-1;i>-1;i--)
+                                if(!((Unit)(selectedUnits.get(i).getPerson())).getType().getType().equals(unitTypes.getType()))
+                                    selectedUnits.remove(i);
+                            for(int i=gameMenuController.getSelectedUnit().size()-1;i>-1;i--)
+                                if(!((Unit)gameMenuController.getSelectedUnit().get(i)).getType().getType().equals(unitTypes.getType()))
+                                    gameMenuController.getSelectedUnit().remove(i);
+                            selectedUnitBar.getChildren().clear();
+                            selectedUnitBar.getChildren().add(stackPane);
+                        }
+                        if(mouseEvent.getButton()==MouseButton.SECONDARY) {
+                            for(int i= selectedUnits.size()-1;i>-1;i--)
+                                if(((Unit)(selectedUnits.get(i).getPerson())).getType().getType().equals(unitTypes.getType()))
+                                    selectedUnits.remove(i);
+                            for(int i=gameMenuController.getSelectedUnit().size()-1;i>-1;i--)
+                                if(((Unit)gameMenuController.getSelectedUnit().get(i)).getType().getType().equals(unitTypes.getType()))
+                                    gameMenuController.getSelectedUnit().remove(i);
+                            selectedUnitBar.getChildren().remove(stackPane);
+                        }
+                    }
+                });
                 Text text = new Text(counter + "");
                 text.setStyle("-fx-font-size: 20;-fx-font-weight: bold;");
                 vBox.getChildren().add(text);
                 vBox.setAlignment(Pos.CENTER);
-                archway.setTranslateY(-20);
+//                archway.setTranslateY(-20);
                 selectedUnitBar.getChildren().add(stackPane);
             }
         }
