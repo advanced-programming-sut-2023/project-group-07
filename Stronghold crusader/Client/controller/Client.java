@@ -20,4 +20,8 @@ public class Client {
     public String getUsername() {
         return username;
     }
+
+    private void handleClient() {
+
+    }
 }
