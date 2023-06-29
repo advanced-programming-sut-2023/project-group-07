@@ -172,8 +172,10 @@ public class GameGraphics extends Application {
                 int y = (int) Math.floor(robot.getMouseY() / 40 + Math.abs(mapPane.getLayoutY()) / 40);
                 selectTiles(x, y, x, y);
             }
-            else
+            else{
+                resetCursor();
                 removeTilesSelection();
+            }
         });
     }
 
@@ -220,6 +222,7 @@ public class GameGraphics extends Application {
                     cursorAnimation.isPlaying = true;
                 } else if (!isCursorOnGround)
                     resetCursor();
+                System.out.println(stage.getScene().getCursor());
             } else
                 resetCursor();
         });
@@ -333,7 +336,6 @@ public class GameGraphics extends Application {
     }
 
     private void addBuilding(Building building, int i, int j) {
-        System.out.println(building.getTypeOfBuilding().toString());
         ImageView imageView = new ImageView(GameGraphics.class.getResource("/Images/Game/Buildings/" + building.getTypeOfBuilding().toString() + ".png").toString());
         StackPane stackPane = new StackPane(imageView);
         addEventHandlerForBuilding(stackPane);
@@ -701,7 +703,6 @@ public class GameGraphics extends Application {
                 public void handle(MouseEvent mouseEvent) {
                     String name = image.getName();
                     name = name.substring(0, name.indexOf("."));
-                    System.out.println(name);
                     if (isForTrade) enterTradingItemMenu(name);
                     else enterShoppingAnItemMenu(name);
                 }
@@ -1040,7 +1041,6 @@ public class GameGraphics extends Application {
         for (StackPane buildingPane : buildings) {
             int row = (int) Math.floor(buildingPane.getLayoutY() / 40);
             int column = (int) Math.floor(buildingPane.getLayoutX() / 40);
-            System.out.println(((ImageView) buildingPane.getChildren().get(0)).getImage().getUrl() + row + "  " + column);
             MapPixel pixel = map.getMapPixel(row, column);
             if (!pixel.getBuildings().isEmpty()) {
                 Building building = pixel.getBuildings().get(0);
@@ -1273,7 +1273,7 @@ public class GameGraphics extends Application {
                     if (!gameMenuController.getSelectedUnit().isEmpty() && isCursorOnGround()) {
                         for (PersonPane personPane : selectedUnits) {
                             Unit unit = (Unit) (personPane.getPerson());
-                            gameMenuController.moveUnit((int) ((mouseEvent.getY() + Math.abs(mapPane.getLayoutY())) / 40), (int) ((mouseEvent.getX() + Math.abs(mapPane.getLayoutX())) / 40));
+                            gameMenuController.moveUnit((int) (mouseEvent.getY() / 40), (int) (mouseEvent.getX() / 40));
                             if (unit.getMovePattern() != null && !unit.getMovePattern().isEmpty()) {
                                 personPane.getPersonDirection().play();
                                 personPane.getPersonMove().play();
@@ -1292,11 +1292,9 @@ public class GameGraphics extends Application {
 
     private void dropBuilding(MouseEvent mouseEvent) {
         String string = getPhotoName(buildingToBeBuilt);
-        Messages message = gameMenuController.dropBuilding(((int) ((mouseEvent.getY() + Math.abs(mapPane.getLayoutY()) - selectBuildingToBeBuilt.getWidth() / 2) / 40)),
-                ((int) ((mouseEvent.getX() + Math.abs(mapPane.getLayoutX()) - selectBuildingToBeBuilt.getWidth() / 2) / 40)),
+        Messages message = gameMenuController.dropBuilding((int) ((mouseEvent.getY() - selectBuildingToBeBuilt.getWidth() / 2) / 40),
+                (int) ((mouseEvent.getX() - selectBuildingToBeBuilt.getWidth()/ 2) / 40),
                 string);
-        System.out.println(((int) ((mouseEvent.getX() + Math.abs(mapPane.getLayoutX()) - selectBuildingToBeBuilt.getWidth() / 2) / 40)) + "   " +
-                ((int) ((mouseEvent.getY() + Math.abs(mapPane.getLayoutY()) - selectBuildingToBeBuilt.getWidth() / 2) / 40)));
         switch (message) {
             case THERES_ALREADY_BUILDING -> addToMessageBar("There's already a building here!");
             case THERES_ALREADY_UNIT -> addToMessageBar("There's already a unit here!");

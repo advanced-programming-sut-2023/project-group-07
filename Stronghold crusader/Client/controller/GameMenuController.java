@@ -36,6 +36,7 @@ public class GameMenuController {
     public ArrayList<Unit> createdUnit = new ArrayList<>();
 
     public Messages dropBuilding(int row, int column, String name) {
+        System.out.println(row+"  "+column+"  "+name);
         Map map = game.getMap();
         Government currentGovernment = game.getCurrentGovernment();
         int indexOfCurrentGovernment = game.getIndexOfCurrentGovernment();

@@ -56,6 +56,7 @@ public class PersonPane extends StackPane {
             vBox.getChildren().add(personImage);
         }
         this.getChildren().add(vBox);
+        System.out.println(person.getCurrentLocation()[0]+"  "+person.getCurrentLocation()[1]+"==========================");
         this.setLayoutX(person.getCurrentLocation()[1]*40);
         this.setLayoutY(person.getCurrentLocation()[0]*40);
         personImage.setFitWidth(25);
