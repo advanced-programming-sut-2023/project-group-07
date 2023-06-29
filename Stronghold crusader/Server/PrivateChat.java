@@ -18,6 +18,7 @@ public class PrivateChat {
         loadChats();
     }
 
+
     private static void loadChats() {
         FileReader file = null;
         try {
@@ -76,6 +77,11 @@ public class PrivateChat {
         privateChats.add(this);
         saveChats();
     }
+    public PrivateChat(HashSet<User> usersSet) {
+        this.userSet = usersSet;
+        privateChats.add(this);
+        saveChats();
+    }
 
     public boolean deleteMessage(ChatMessage message, User currentUser) {
         if (!message.owner().equals(currentUser) || !messages.contains(message) ||
@@ -91,7 +97,7 @@ public class PrivateChat {
 
     public boolean editMessage(ChatMessage message, User currentUser, String newMessage) {
         if (!message.owner().equals(currentUser) || !messages.contains(message) ||
-                !userSet.contains(currentUser)) return false; // TODO: 6/29/2023 change condition 
+                !userSet.contains(currentUser)) return false; // TODO: 6/29/2023 change condition
         editMessage(message, newMessage);
         return true;
     }
@@ -109,4 +115,7 @@ public class PrivateChat {
     }
 
 
+    public ArrayList<ChatMessage> messages() {
+        return messages;
+    }
 }
