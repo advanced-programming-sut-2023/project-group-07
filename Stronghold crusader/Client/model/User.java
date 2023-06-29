@@ -14,6 +14,14 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class User {
+    static {
+        try {
+            users = new ArrayList<>();
+            loadUsers();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
     private String username;
     private String password;
     private String email;

@@ -26,16 +26,22 @@ public class Connection extends Thread {
 
     @Override
     public void run() {
-        currentUser = new LoginMenuServer(dataOutputStream, dataInputStream).login();
-        enterMainChatMenu();
+        while (true){
+            currentUser = new LoginMenuServer(dataOutputStream, dataInputStream).login();
+            enterMainChatMenu();
+        }
     }
 
     private void enterMainChatMenu() {
         try {
+            dataOutputStream.writeUTF("entered main menu");
             while (true) {
                 String input = dataInputStream.readUTF();
                 if (input.equals("enter global chat"))
                     new GlobalChatMenu(dataOutputStream, dataInputStream, currentUser).globalChat();
+                else if (input.equals("enter private chat"))
+                    new GlobalChatMenu(dataOutputStream, dataInputStream, currentUser).globalChat();// TODO: 6/29/2023 pv
+                else if (input.matches("\\s*logout\\s*")) return;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -62,5 +68,4 @@ public class Connection extends Thread {
             if(connection.currentUser.getUsername().equals(username))
                 return connection;
         return null;
-    }
-}
+    }}
