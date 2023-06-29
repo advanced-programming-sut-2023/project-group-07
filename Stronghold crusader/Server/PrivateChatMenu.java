@@ -91,14 +91,17 @@ public class PrivateChatMenu {
     }
 
     private void preSetPrivateChat() throws IOException {
-        dataOutputStream.writeUTF("entered private chat menu");
         User targetUser = null;
         while (true){
             dataOutputStream.writeUTF("enter target user's username");
+            dataOutputStream.flush();
             targetUser = PrivateChatController.getUserByUsername(dataInputStream.readUTF());
             if (targetUser!=null) break;
+            else dataOutputStream.writeUTF("enter a valid username");
+
         }
         dataOutputStream.writeUTF("user : " + targetUser.getUsername() +" is selected");
+        dataOutputStream.flush();
         HashSet<User> usersSet = new HashSet<>();
         usersSet.add(currentUser);
         usersSet.add(targetUser);

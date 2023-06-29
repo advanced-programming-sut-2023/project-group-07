@@ -63,7 +63,15 @@ public class PrivateChat {
 
     public static PrivateChat getPrivateChat(Set<User> users) {
         for (PrivateChat privateChat : privateChats) {
-            if (privateChat.userSet.equals(users)) return privateChat;
+            boolean flag = true;
+            for (Iterator<User> it = users.iterator(); it.hasNext(); ) {
+                User user = it.next();
+                if (!privateChat.userSet.contains(user)) {
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag) return privateChat;
         }
         return null;
     }
