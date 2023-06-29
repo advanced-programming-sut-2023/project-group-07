@@ -49,10 +49,48 @@ public class Connection extends Thread {
                     dataOutputStream.writeUTF(showMessagesGlobalChat());
                 else if ((matcher = GlobalChatCommands.getMatcher(input,GlobalChatCommands.SEND_MESSAGE)) != null)
                     dataOutputStream.writeUTF(sendMessageGlobal(matcher.group("message")));
+                else if ((matcher = GlobalChatCommands.getMatcher(input,GlobalChatCommands.DELETE_MESSAGE)) != null)
+                    dataOutputStream.writeUTF(deleteGlobalMessage(matcher.group("id")));
+                else if ((matcher = GlobalChatCommands.getMatcher(input,GlobalChatCommands.EDIT_MESSAGE)) != null)
+                    dataOutputStream.writeUTF(
+                            editGlobalMessage(matcher.group("id"), matcher.group("newContent")));
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private String deleteGlobalMessage(String idStr) {
+        try {
+            int id = Integer.parseInt(idStr);
+            switch(GlobalChatController.deleteMessage(id, currentUser)){
+                case INVALID_ID :
+                    return "id is invalid";
+                case NOT_YOUR_MESSAGE:
+                    return "this message is not yours";
+                case SUCCESSFUL:
+                    return "successful";
+            }
+        }catch (NumberFormatException e){
+            return e.getMessage();
+        }
+        return "";
+    }
+    private String editGlobalMessage(String idStr, String newContent) {
+        try {
+            int id = Integer.parseInt(idStr);
+            switch(GlobalChatController.editMessage(id, currentUser, newContent)){
+                case INVALID_ID :
+                    return "id is invalid";
+                case NOT_YOUR_MESSAGE:
+                    return "this message is not yours";
+                case SUCCESSFUL:
+                    return "successful";
+            }
+        }catch (NumberFormatException e){
+            return e.getMessage();
+        }
+        return "";
     }
 
     private String sendMessageGlobal(String message) {
