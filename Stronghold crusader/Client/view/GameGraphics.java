@@ -108,6 +108,7 @@ public class GameGraphics extends Application {
         setUnitTimeline();
         createMiniMap();
         setMap();
+        addNextTurn();
         Controller.createChatMenu(rootPane);
 //        setZoomOut(mapPane);
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(5), actionEvent -> {
@@ -896,7 +897,6 @@ public class GameGraphics extends Application {
         hBox.setTranslateY(-40);
         hBox.setTranslateX(-70);
         hBox.setAlignment(Pos.CENTER);
-//        addNextTurn(hBox);
         for (int i = 1; i < 7; i++) {
             ImageView imageView = new ImageView(new Image(GameGraphics.class.getResource("/Images/Game/Menu/button" + i + ".png").toExternalForm()));
             imageView.hoverProperty().addListener((observable -> {
@@ -924,7 +924,7 @@ public class GameGraphics extends Application {
         }
     }
 
-    private void addNextTurn(HBox hBox) {
+    private void addNextTurn() {
         Button button = new Button();
         button.setText("Next turn");
         button.setMaxWidth(200);
@@ -933,12 +933,37 @@ public class GameGraphics extends Application {
             public void handle(MouseEvent mouseEvent) {
                 try {
                     gameMenuController.nextTurn();
+                    eliminateDeadObjects();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }
         });
-        hBox.getChildren().add(button);
+        button.setLayoutX(Main.screenWidth - 170);
+        button.setLayoutY(600);
+        rootPane.getChildren().add(button);
+    }
+
+    private void eliminateDeadObjects() {
+        for (PersonPane person : people)
+            if (person.getPerson().getHp() <= 0 || person.getPerson().getGovernment().getDefeatedBy() != null)
+                mapPane.getChildren().remove(person);
+        for (StackPane buildingPane : buildings) {
+            int row = (int) Math.floor(buildingPane.getLayoutY()/40);
+            int column = (int) Math.floor(buildingPane.getLayoutX()/40);
+            MapPixel pixel = map.getMapPixel(row, column);
+            if (!pixel.getBuildings().isEmpty()) {
+                Building building = pixel.getBuildings().get(0);
+                if (building.getHp() <= -2 || building.getGovernment().getDefeatedBy() != null)
+                    mapPane.getChildren().remove(buildingPane);
+            }
+            else {
+                pixel = map.getMapPixel(row + 4, column - 2);
+                LordColor keep = pixel.getLordKeep();
+                if (game.getGovernmentByColor(keep).getDefeatedBy() != null)
+                    mapPane.getChildren().remove(buildingPane);
+            }
+        }
     }
 
     private void setCreateBuilding() throws SecurityException {
