@@ -17,8 +17,8 @@ public class ClientMenu {
             DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
             Scanner scanner = new Scanner(System.in);
             while(true){
-                dataOutputStream.writeUTF(scanner.nextLine());
                 System.out.println(dataInputStream.readUTF());
+                dataOutputStream.writeUTF(scanner.nextLine());
             }
         } catch (IOException e){
         }

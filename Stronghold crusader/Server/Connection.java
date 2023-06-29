@@ -32,6 +32,7 @@ public class Connection extends Thread {
 
     private void enterMainChatMenu() {
         try {
+            dataOutputStream.writeUTF("entered main menu");
             while (true) {
                 String input = dataInputStream.readUTF();
                 if (input.equals("enter global chat"))
