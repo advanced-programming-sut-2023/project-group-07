@@ -52,6 +52,7 @@ public class GameGraphics extends Application {
     private Map map;
     private GameMenuController gameMenuController = new GameMenuController();
     private VBox messageBar = new VBox(20);
+    private HBox moveUnitShortcutHbox = new HBox();
     private double oldMouseX;
     private int oldX = -1;
     private double oldMouseY;
@@ -96,9 +97,28 @@ public class GameGraphics extends Application {
         setMoveMapTimeLine(mapPane, scene);
         addStageEventHandlers(stage);
         setHoverTimeLine();
+        createMoveUnitShortcutVbox();
         Controller.createChatMenu(rootPane);
         scene.getStylesheets().add(GameGraphics.class.getResource("/CSS/slideBar.css").toExternalForm());
         setCheatShortCuts(scene);
+    }
+
+    private void createMoveUnitShortcutVbox() {
+        moveUnitShortcutHbox.setSpacing(20);
+        moveUnitShortcutHbox.setAlignment(Pos.CENTER);
+        moveUnitShortcutHbox.setPrefWidth(250);
+        moveUnitShortcutHbox.setPrefHeight(50);
+        moveUnitShortcutHbox.setStyle("-fx-background-color: black");
+        moveUnitShortcutHbox.setOpacity(0.7);
+        Text text = new Text("Move to : ");
+        text.setFill(Color.WHITE);
+        TextField row = new TextField();
+        TextField column = new TextField();
+        row.setPromptText("row");
+        column.setPromptText("column");
+        row.setMaxWidth(60);
+        column.setMaxWidth(60);
+        moveUnitShortcutHbox.getChildren().addAll(text, row, column);
     }
 
     private Scene prepareStageElements() {
@@ -129,6 +149,42 @@ public class GameGraphics extends Application {
         mouseDragged(stage);
         mousePressed(stage);
         mouseReleased(stage);
+        setShortcuts(stage);
+    }
+
+    private void setShortcuts(Stage stage) {
+        stage.addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {
+            String keyName = keyEvent.getCode().getName();
+            if (keyName.matches("F\\d")) {
+                int number = (int) (keyName.charAt(1) - 48);
+                if (number < 6) {
+                    clearStatusBar();
+                    createBuilding.get(number).setVisible(true);
+                }
+            }
+            else if (keyName.equals("G"))
+                enterGovernmentActionButtonsMenu();
+            else if (keyName.equals("M"))
+                moveUnitShortcut();
+        });
+    }
+
+    private void moveUnitShortcut() {
+        if (selectionRectangles.isEmpty())
+            return;
+        Rectangle selectionRectangle = selectionRectangles.get(0);
+        moveUnitShortcutHbox.setLayoutX(selectionRectangle.getLayoutX());
+        moveUnitShortcutHbox.setLayoutY(selectionRectangle.getLayoutY() + ((selectionRectangle.getLayoutY() < 100) ? 100 : -100));
+        if (!mapPane.getChildren().contains(moveUnitShortcutHbox))
+            mapPane.getChildren().add(moveUnitShortcutHbox);
+        moveUnitShortcutHbox.requestFocus();
+        moveUnitShortcutHbox.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                if (keyEvent.getCode().getName().equals("Enter"))
+                    mapPane.getChildren().remove(moveUnitShortcutHbox);
+            }
+        });
     }
 
     private void mouseReleased(Stage stage) {
@@ -1002,6 +1058,7 @@ public class GameGraphics extends Application {
                 public void handle(MouseEvent mouseEvent) {
                     if (mouseEvent.getButton() == MouseButton.PRIMARY) {
                         resetSelectionArea();
+                        removeTilesSelection();
                         gameMenuController.getSelectedUnit().clear();
                         selectedUnits.clear();
                         clearStatusBar();

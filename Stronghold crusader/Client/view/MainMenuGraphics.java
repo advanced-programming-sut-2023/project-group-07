@@ -24,16 +24,7 @@ public class MainMenuGraphics extends Application {
     public BorderPane borderPane;
     @Override
     public void start(Stage primaryStage) throws Exception {
-        URL url = LoginMenuGraphics.class.getResource("/FXML/MainMenu.fxml");
-        borderPane = FXMLLoader.load(url);
-        Scene scene = new Scene(borderPane);
-        Background background = new Background(new BackgroundImage((new Image(LoginMenuGraphics.class.getResource("/Images/Background/1.jpg").toString(), Main.screenWidth, Main.screenHeight, false, false)),
-                BackgroundRepeat.NO_REPEAT,
-                BackgroundRepeat.NO_REPEAT,
-                BackgroundPosition.DEFAULT,
-                BackgroundSize.DEFAULT));
-        borderPane.setBackground(background);
-        primaryStage.setScene(scene);
+        primaryStage.setScene(new Scene(Controller.getBorderPane("/FXML/MainMenu.fxml")));
         primaryStage.setFullScreen(true);
         primaryStage.show();
     }
