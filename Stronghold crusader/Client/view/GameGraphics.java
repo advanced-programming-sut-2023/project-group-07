@@ -1053,14 +1053,13 @@ public class GameGraphics extends Application {
                 for (Unit unit : gameMenuController.createdUnit) {
                     PersonPane personPane = new PersonPane(name, unit, gameMenuController);
 //                    personPane.getPersonAttacking().play();
-//                    personPane.getBodyEffectDisease().play();
+//                    personPane.getBodyEffectFire().play();
                     people.add(personPane);
                     mapPane.getChildren().add(personPane);
                     gameMenuController.addHealthBarListener(personPane.getHealthBar(), unit);
                     gameMenuController.addUnitListener(unit);
                 }
                 updateGoldText();
-
                 gameMenuController.createdUnit.clear();
             }
         }

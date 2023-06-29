@@ -37,6 +37,7 @@ public class Controller {
     public static final MenuPrinter menuPrinter = new MenuPrinter();
     private static Random random;
     private static ArrayList<Integer> captchaNumbers;
+    private static Client currentClient;
 
     static {
         captchaNumbers = new ArrayList<>();
@@ -345,4 +346,12 @@ public class Controller {
         borderPane.setBackground(background);
         return borderPane;
     }
+
+    public static void sendFriendRequest(String username) throws IOException {
+//        if(User.getUserByUsername(username)==null)
+
+        String addFriendRequest = "FriendRequest "+currentUser.getUsername()+" "+username;
+        currentClient.dataOutputStream.writeUTF(addFriendRequest);
+    }
+
 }
