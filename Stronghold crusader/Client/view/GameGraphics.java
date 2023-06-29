@@ -13,10 +13,7 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -56,7 +53,11 @@ public class GameGraphics extends Application {
     private GameMenuController gameMenuController = new GameMenuController();
     private VBox messageBar = new VBox(20);
     private double oldMouseX;
+    private int oldX = -1;
     private double oldMouseY;
+    private int oldY = -1;
+    private boolean isDataShown;
+    private Label dataBox = new Label();
     private Rectangle selectionArea = new Rectangle();
     private ArrayList<HBox> buildingMenus = new ArrayList<>();
     private HBox selectedUnitBar = new HBox(20);
@@ -109,6 +110,7 @@ public class GameGraphics extends Application {
         createMiniMap();
         setMap();
         addNextTurn();
+        setHoverTimeLine();
         Controller.createChatMenu(rootPane);
 //        setZoomOut(mapPane);
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(5), actionEvent -> {
@@ -203,6 +205,35 @@ public class GameGraphics extends Application {
         });
         scene.getStylesheets().add(GameGraphics.class.getResource("/CSS/slideBar.css").toExternalForm());
         setCheatShortCuts(scene);
+    }
+
+    private void setHoverTimeLine() {
+        dataBox.setStyle("-fx-border-color: red; -fx-font-size: 17; -fx-background-color: darkorange");
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(500), actionEvent -> {
+            Robot robot = new Robot();
+            int X = (int) (robot.getMouseX() + Math.abs(mapPane.getLayoutX()));
+            int Y = (int) (robot.getMouseY() + Math.abs(mapPane.getLayoutY()));
+            if (X == oldX && Y == oldY) {
+                if (!isDataShown) {
+                    isDataShown = true;
+                    int row = (int) Math.floor(Y/40);
+                    int column = (int) Math.floor(X/40);
+                    dataBox.setText(map.getMapPixel(row, column).details());
+                    dataBox.setLayoutX(X);
+                    dataBox.setLayoutY(Y);
+                    mapPane.getChildren().add(dataBox);
+                }
+            }
+            else {
+                isDataShown = false;
+                if (mapPane.getChildren().contains(dataBox))
+                    mapPane.getChildren().remove(dataBox);
+            }
+            oldX = X;
+            oldY = Y;
+        }));
+        timeline.setCycleCount(-1);
+        timeline.play();
     }
 
     private void setMap() {
