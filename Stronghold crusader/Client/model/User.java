@@ -38,6 +38,7 @@ public class User {
     private static ArrayList<User> users = new ArrayList<User>();
     private static JsonArray usersArray = new JsonArray();
     private final ArrayList<String> friends= new ArrayList<>();
+    private final ArrayList<String> pendingFriendRequests = new ArrayList<>();
 
     public User(Information information, RecoveryQuestion passwordRecoveryQuestion, String passwordRecoveryAnswer) {
         this.username = information.getUsername();
@@ -54,13 +55,31 @@ public class User {
         this.giveAAvatar();
     }
 
+    public ArrayList<String> getFriends() {
+        if(friends==null)
+            return new ArrayList<>();
+        return friends;
+    }
+
+    public ArrayList<String> getPendingFriendRequests() {
+        if(pendingFriendRequests==null)
+            return new ArrayList<>();
+        return pendingFriendRequests;
+    }
+
     public void addFriend(String username) {
         friends.add(username);
     }
     public void removeFriend(String username) {
         friends.remove(username);
     }
-
+    public void acceptFriend(String username) {
+        pendingFriendRequests.remove(username);
+        addFriend(username);
+    }
+    public void addFriendRequest(String username) {
+        pendingFriendRequests.add(username);
+    }
 
     public String getUsername() {
         return username;

@@ -11,6 +11,7 @@ public enum GlobalChatCommands {
     DELETE_MESSAGE("\\s*delete message -i (?<id>\\d+)\\s*"),
     EDIT_MESSAGE("\\s*edit message -i (?<id>\\d+) -m (?<newContent>.*)\\s*");
 
+
     private String regex;
 
     private GlobalChatCommands(String regex) {

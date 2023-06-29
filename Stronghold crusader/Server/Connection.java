@@ -1,7 +1,5 @@
 package Server;
 
-import Client.controller.Client;
-import Client.controller.Controller;
 import Client.model.User;
 
 import java.io.DataInputStream;
@@ -9,8 +7,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Connection extends Thread {
     private final Socket socket;
@@ -48,8 +44,23 @@ public class Connection extends Thread {
         }
     }
 
-    public synchronized String getFriendRequest(String username) throws IOException {
-        String[] request = username.split(" ");
+    private synchronized void handleClient() throws IOException {
+        if(dataInputStream.available()!=0){
+            String input = dataInputStream.readUTF();
+            if(input.matches("\\s*acceptFriend (\\w+)\\s*")){
+                dataOutputStream.writeUTF(sendFriendRequest(input));
+            }
+            else if(input.matches("\\s*friendRequest (\\w+)\\s*")){
+                dataOutputStream.writeUTF(acceptFriendRequest(input));
+            }
+            else if(input.matches("\\s*friendReject (\\w+)\\s*")) {
+                dataOutputStream.writeUTF(rejectFriendRequest(input));
+            }
+        }
+    }
+
+    public synchronized String sendFriendRequest(String friendRequest) throws IOException {
+        String[] request = friendRequest.split(" ");
         if(request.length!=2 || !request[0].equals("friendRequest"))
             return "invalid command!";
         else{
@@ -58,7 +69,49 @@ public class Connection extends Thread {
             if(connection==null){
                 return "invalid target!";
             }
+            if(currentUser.getFriends().contains(targetUser))
+                return "this user is already your friend!";
+            if(connection.currentUser.getPendingFriendRequests().contains(targetUser))
+                return "you have already sent a request to this user!";
             connection.dataOutputStream.writeUTF("acceptFriend? "+currentUser.getUsername());
+            connection.currentUser.addFriendRequest(currentUser.getUsername());
+        }
+        return "successful!";
+    }
+
+    public synchronized String acceptFriendRequest(String acceptRequest) throws IOException {
+        String[] accept = acceptRequest.split(" ");
+        if(accept.length!=2 || !accept[0].equals("friendAccept"))
+            return "invalid command!";
+        else{
+            String targetUser = accept[1];
+            Connection connection = getConnectionByUsername(targetUser);
+            if(connection==null){
+                return "invalid target!";
+            }
+            if(!currentUser.getPendingFriendRequests().contains(targetUser))
+                return "no request from this user!";
+            connection.dataOutputStream.writeUTF(currentUser.getUsername()+" accepted your friendship!");
+            connection.currentUser.acceptFriend(currentUser.getUsername());
+            currentUser.acceptFriend(targetUser);
+        }
+        return "successful!";
+    }
+
+    public synchronized String rejectFriendRequest(String rejectRequest) throws IOException {
+        String[] reject = rejectRequest.split(" ");
+        if(reject.length!=2 || !reject[0].equals("friendReject"))
+            return "invalid command!";
+        else{
+            String targetUser = reject[1];
+            Connection connection = getConnectionByUsername(targetUser);
+            if(connection==null){
+                return "invalid target!";
+            }
+            if(!currentUser.getPendingFriendRequests().contains(targetUser))
+                return "no request from this user!";
+            connection.dataOutputStream.writeUTF(currentUser.getUsername()+" rejected your friendship!");
+            currentUser.getPendingFriendRequests().remove(targetUser);
         }
         return "successful!";
     }
