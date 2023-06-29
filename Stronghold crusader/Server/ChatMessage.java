@@ -39,13 +39,11 @@ public class ChatMessage {
         return sentTime;
     }
 
+    public void setContent(String content) {
+        this.content = content;
+    }
+
     public static void main(String[] args) {
-//        System.out.println(GlobalChat.messages());
-//        GlobalChat.sendMessage(new ChatMessage(null, "sklgjasg"));
-//        GlobalChat.sendMessage(new ChatMessage(null, "sjgsklgsklgdj"));
-//        GlobalChat.sendMessage(new ChatMessage(null, "orifjkcaskjd"));
-//        GlobalChat.messages().clear();
-//        GlobalChat.saveMessages();
-//        System.out.println(GlobalChat.messages());
+
     }
 }
