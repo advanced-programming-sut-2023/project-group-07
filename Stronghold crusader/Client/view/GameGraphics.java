@@ -1298,7 +1298,11 @@ public class GameGraphics extends Application {
         miniMapPane.setLayoutY(Main.screenHeight - 250);
     }
 
-//    private void setZoomOut(Pane pane) {     //TODO just zooooooooooooooooooooooooooom
+    public Game getGame() {
+        return game;
+    }
+
+    //    private void setZoomOut(Pane pane) {     //TODO just zooooooooooooooooooooooooooom
 //        pane.setOnScroll(new EventHandler<ScrollEvent>() {
 //            @Override
 //            public void handle(ScrollEvent scrollEvent) {

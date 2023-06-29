@@ -11,8 +11,11 @@ public class PersonAttacking extends Transition {
     int frameCount = 8;
     PersonPane personPane;
     String attackingDirection;
+    GameGraphics gameGraphics;
+    int[] nearestEnemy = new int[2];
 
-    public PersonAttacking(String directory,PersonPane personPane,String attackingDirection) {
+    public PersonAttacking(String directory,PersonPane personPane,String attackingDirection,GameGraphics gameGraphics) {
+        this.gameGraphics =gameGraphics;
         this.directory = directory;
         this.personPane = personPane;
         this.attackingDirection = attackingDirection;
@@ -25,26 +28,36 @@ public class PersonAttacking extends Transition {
     protected void interpolate(double frac) {
         for(int i=0;i<frameCount;i++) {
             if((double)i/frameCount<frac && frac<=((double)i+1)/frameCount){
-                if(((Unit)personPane.getPerson()).getType().getRange()==1)
-                    attackingDirection = showDirection(personPane.getPerson().getCurrentLocation()[0],
-                            personPane.getPerson().getCurrentLocation()[1],
-                            personPane.getPerson().getMovePattern().get(0)[0],
-                            personPane.getPerson().getMovePattern().get(0)[1]);
-                personPane.getPersonImage().setImage(new Image(directory+"attacking "+attackingDirection+"/anim ("+(i+1)+").png",30,60,false,false));
+                    nearestEnemy = gameGraphics.getGame().nearestEnemy((Unit)personPane.getPerson(),((Unit)personPane.getPerson()).getType().getRange());
+                    if(nearestEnemy!=null){
+                        attackingDirection = showDirection(personPane.getPerson().getCurrentLocation()[0],
+                                personPane.getPerson().getCurrentLocation()[1],
+                                nearestEnemy[0],
+                                nearestEnemy[1]);
+                        personPane.getPersonImage().setImage(new Image(directory+"attacking "+attackingDirection+"/anim ("+(i+1)+").png",30,60,false,false));
+                    }
             }
         }
     }
-    public String showDirection(int x1,int y1,int x2,int y2) {
-        if(x1==x2){
-            if(y1>y2)
-                return "left";
-            if(y1<y2)
-                return "right";
+    public String showDirection(int row1, int column1, int row2, int column2) {
+        if(column1 == column2){
+            if(row1 > row2)
+                    return "up";
+            if(row1 < row2)
+                return "down";
+            return "left";
         }
-        if(x1>x2)
-            return "up";
-        if(x1<x2)
-            return "down";
-        return null;
+        double arcTan = Math.atan((double)(row2-row1)/(column2-column1));
+        if(column2>column1){
+            if(arcTan<=1 && arcTan>=0) return "down";
+            if(arcTan>=1 || arcTan<=-1) return "right";
+            if(arcTan>=-1) return "up";
+        }
+        if(column2<column1){
+            if(arcTan<=1 && arcTan>=0) return "up";
+            if(arcTan>=1 || arcTan<=-1) return "left";
+            if(arcTan>=-1) return "down";
+        }
+        return "left";
     }
 }
