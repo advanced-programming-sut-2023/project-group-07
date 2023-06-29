@@ -72,7 +72,7 @@ public class GlobalChat {
     }
 
     public static boolean deleteMessage(ChatMessage message, User currentUser) {
-        if (!message.owner().equals(currentUser) || messages.contains(message)) return false;
+        if (!message.owner().getUsername().equals(currentUser.getUsername())) return false;
         deleteMessage(message);
         return true;
     }
@@ -83,7 +83,9 @@ public class GlobalChat {
     }
 
     public static boolean editMessage(ChatMessage message, User currentUser, String newMessage) {
-        if (!message.owner().equals(currentUser) || messages.contains(message)) return false;
+        System.out.println(currentUser);
+        System.out.println(message.owner());
+        if (!message.owner().getUsername().equals(currentUser.getUsername())) return false;
         editMessage(message, newMessage);
         return true;
     }

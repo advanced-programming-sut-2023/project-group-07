@@ -336,5 +336,12 @@ public class User {
         public String getSlogan() {
             return slogan;
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if(obj == null) return false;
+            if(!(obj instanceof User)) return false;
+            return ((User) obj).username.equals(this.username);
+        }
     }
 }
