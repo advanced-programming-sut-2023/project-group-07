@@ -700,6 +700,7 @@ public class Game {
         ArrayList<Building> eliminatedBuildings = new ArrayList<>();
         for (Building building : government.getBuildings()) {
             if (building.getHp() <= 0) {
+                building.destroy();
                 eliminatedBuildings.add(building);
                 for (int i = 0; i < building.getTypeOfBuilding().getWidth(); i++)
                     for (int j = 0; j < building.getTypeOfBuilding().getLength(); j++) {
