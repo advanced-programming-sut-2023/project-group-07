@@ -982,6 +982,7 @@ public class GameGraphics extends Application {
         for (StackPane buildingPane : buildings) {
             int row = (int) Math.floor(buildingPane.getLayoutY()/40);
             int column = (int) Math.floor(buildingPane.getLayoutX()/40);
+            System.out.println(((ImageView)buildingPane.getChildren().get(0)).getImage().getUrl()+row+"  "+column);
             MapPixel pixel = map.getMapPixel(row, column);
             if (!pixel.getBuildings().isEmpty()) {
                 Building building = pixel.getBuildings().get(0);
@@ -1109,14 +1110,13 @@ public class GameGraphics extends Application {
                 for (Unit unit : gameMenuController.createdUnit) {
                     PersonPane personPane = new PersonPane(name, unit, gameMenuController);
 //                    personPane.getPersonAttacking().play();
-//                    personPane.getBodyEffectDisease().play();
+//                    personPane.getBodyEffectFire().play();
                     people.add(personPane);
                     mapPane.getChildren().add(personPane);
                     gameMenuController.addHealthBarListener(personPane.getHealthBar(), unit);
                     gameMenuController.addUnitListener(unit);
                 }
                 updateGoldText();
-
                 gameMenuController.createdUnit.clear();
             }
         }
@@ -1235,9 +1235,11 @@ public class GameGraphics extends Application {
 
     private void dropBuilding(MouseEvent mouseEvent) {
         String string = getPhotoName(buildingToBeBuilt);
-        Messages message = gameMenuController.dropBuilding((int) (((mouseEvent.getSceneY() + Math.abs(mapPane.getLayoutY()))) / 40),
-                (int) ((mouseEvent.getSceneX() + Math.abs(mapPane.getLayoutX())) / 40),
+        Messages message = gameMenuController.dropBuilding(((int) ((mouseEvent.getY() + Math.abs(mapPane.getLayoutY()) - selectBuildingToBeBuilt.getWidth() / 2) / 40)),
+                ((int) ((mouseEvent.getX() + Math.abs(mapPane.getLayoutX()) - selectBuildingToBeBuilt.getWidth() / 2) / 40)),
                 string);
+        System.out.println(((int) ((mouseEvent.getX() + Math.abs(mapPane.getLayoutX()) - selectBuildingToBeBuilt.getWidth() / 2) / 40))+"   "+
+                ((int) ((mouseEvent.getY() + Math.abs(mapPane.getLayoutY()) - selectBuildingToBeBuilt.getWidth() / 2) / 40)));
         switch (message) {
             case THERES_ALREADY_BUILDING -> addToMessageBar("There's already a building here!");
             case THERES_ALREADY_UNIT -> addToMessageBar("There's already a unit here!");

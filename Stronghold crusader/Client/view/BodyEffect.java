@@ -26,6 +26,7 @@ public class BodyEffect extends Transition {
                 personPane.getBodyEffectImage().setImage(new Image(directory+"anim ("+(i+1)+").png",30,60,false,false));
             }
         }
-//        personPane.getPerson().changeHP();
+        if(personPane.getPerson().getHp()>0)
+            personPane.getPerson().changeHP(-1);
     }
 }

@@ -1,12 +1,20 @@
 package Client.view;
 
+import Client.controller.Controller;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.FileWriter;
 import java.net.URL;
@@ -54,4 +62,5 @@ public class MainMenuGraphics extends Application {
     public void exit(MouseEvent mouseEvent) {
         Main.stage.close();
     }
+
 }
