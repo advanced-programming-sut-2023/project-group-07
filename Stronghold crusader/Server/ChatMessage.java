@@ -45,7 +45,7 @@ public class ChatMessage {
     }
     @Override
     public String toString() {
-        return owner.getUsername() + "\t" + sentTime + " : " + content;
+        return owner.getUsername() + " " + sentTime + " : " + content;
     }
 
     public static void main(String[] args) {
@@ -54,6 +54,6 @@ public class ChatMessage {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println(new ChatMessage(User.getUserByUsername("Rat"),"salam be haem"));
+        System.out.println(new ChatMessage(User.getUserByUsername("Alireza"),"salam be haem"));
     }
 }
