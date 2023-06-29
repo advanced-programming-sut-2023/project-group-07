@@ -846,6 +846,10 @@ public class GameMenuController {
         return null;
     }
 
+    public static Game getGame() {
+        return game;
+    }
+
     public void applyPersonMove(Person person) {
         game.applyPersonMove(person);
     }
