@@ -34,6 +34,10 @@ public class GlobalChatMenu {
                 else if ((matcher = GlobalChatCommands.getMatcher(input,GlobalChatCommands.EDIT_MESSAGE)) != null)
                     dataOutputStream.writeUTF(
                             editGlobalMessage(matcher.group("id"), matcher.group("newContent")));
+                else if (input.matches("\\s*exit\\s*")) {
+                    dataOutputStream.writeUTF("enter main menu");
+                    return;
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

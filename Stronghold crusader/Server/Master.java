@@ -19,8 +19,6 @@ public class Master {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    } // run nemishe alan.
-    // client nazadam.
-    // vali mesl phase 1 hast
+    }
 
 }
