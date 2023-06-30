@@ -84,7 +84,7 @@ public class GlobalChatMenu {
     }
 
     private String showMessagesGlobalChat() {
-        ArrayList<ChatMessage> messages = GlobalChatController.getMessages();
+        ArrayList<ChatMessage> messages = GlobalChatController.showMessages(currentUser);
         StringBuilder str = new StringBuilder();
         for(ChatMessage message : messages){
             str.append(message).append("\n");

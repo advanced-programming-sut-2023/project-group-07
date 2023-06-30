@@ -97,7 +97,7 @@ public class GroupChatMenu {
     }
 
     private String showMessagesPrivateChat() {
-        ArrayList<ChatMessage> messages = GroupChatController.getMessages();
+        ArrayList<ChatMessage> messages = GroupChatController.showMessages(currentUser);
         StringBuilder str = new StringBuilder();
         for (ChatMessage message : messages) {
             str.append(message).append("\n");

@@ -10,11 +10,13 @@ public class ChatMessage {
     private String content;
     private String sentTime;
     private int id;
+    private SeenStatus status;
 
     public ChatMessage(User owner, String message, int id) {
         this.owner = owner;
         this.content = message;
         this.id = id;
+        this.status = SeenStatus.SENT;
         setSentTime();
     }
 
@@ -45,13 +47,20 @@ public class ChatMessage {
     public int id() {
         return id;
     }
+    public void setSeen(){
+        status = SeenStatus.SEEN;
+    }
+    private SeenStatus status(){
+        if (status == null) status = SeenStatus.SENT;
+        return status;
+    }
 
     public void setContent(String content) {
         this.content = content;
     }
     @Override
     public String toString() {
-        return "id)"+ id + " "  + owner.getUsername() + " " + sentTime + " : " + content;
+        return "id)"+ id + " "  + owner.getUsername() + " " + sentTime + " : " + content + " " + status();
     }
 
 }

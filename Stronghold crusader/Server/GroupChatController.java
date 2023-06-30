@@ -16,7 +16,7 @@ public class GroupChatController {
         if (groupChat == null) groupChat = new GroupChat(usersSet);
     }
 
-    public static ArrayList<ChatMessage> getMessages(){
+    private static ArrayList<ChatMessage> getMessages(){
         return groupChat.messages();
     }
     public static void send(String messageContent, User currentUser){
@@ -45,5 +45,11 @@ public class GroupChatController {
             if (chatMessage.id() == id) return chatMessage;
         }
         return null;
+    }
+    public static ArrayList<ChatMessage> showMessages(User currentUser) {
+        for (ChatMessage message : getMessages()){
+            if (!message.owner().equals(currentUser)) message.setSeen();
+        }
+        return getMessages();
     }
 }

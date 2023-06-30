@@ -6,7 +6,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class GlobalChatController {
-    public static ArrayList<ChatMessage> getMessages(){
+    private static ArrayList<ChatMessage> getMessages(){
         return GlobalChat.messages();
     }
     public static void send(String messageContent, User currentUser){
@@ -35,5 +35,12 @@ public class GlobalChatController {
             if (chatMessage.id() == id) return chatMessage;
         }
         return null;
+    }
+
+    public static ArrayList<ChatMessage> showMessages(User currentUser) {
+        for (ChatMessage message : getMessages()){
+            if (!message.owner().equals(currentUser)) message.setSeen();
+        }
+        return getMessages();
     }
 }
