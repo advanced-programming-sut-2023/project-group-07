@@ -105,6 +105,8 @@ public class User {
     }
 
     public String getSlogan() {
+        if(slogan==null)
+            return "";
         return slogan;
     }
 
