@@ -18,20 +18,28 @@ public class LoginMenuServer {
     }
 
     public User login() {
+        User user;
         try {
             dataOutputStream.writeUTF("do you want to sign up or login?");
             String input = dataInputStream.readUTF();
             while (true) {
-                if (input.matches(".*1.*") || input.matches(".*sign up.*"))
-                    return signUp();
-                else if ((input.matches(".*2.*") || input.matches(".*login.*")))
-                    return loginWihExistingUser();
+                if (input.equals("exit")) return null;
+                if (input.matches(".*1.*") || input.matches(".*sign up.*")){
+                    user = signUp();
+                    break;
+                }
+                else if ((input.matches(".*2.*") || input.matches(".*login.*"))) {
+                    user = loginWihExistingUser();
+                    break;
+                }
                 dataOutputStream.writeUTF("sign up/login? 1/2?");
                 input = dataInputStream.readUTF();
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        user.setEntrance();
+        return user;
     }
 
     private User loginWihExistingUser() {
@@ -41,6 +49,7 @@ public class LoginMenuServer {
             regex = "\\s*" + regex + "\\s*";
             while (true) {
                 String input = dataInputStream.readUTF();
+                if (input.equals("exit")) return null;
                 Matcher matcher = Pattern.compile(regex).matcher(input);
                 if (!matcher.find()) {
                     dataOutputStream.writeUTF("invalid input");
@@ -62,10 +71,9 @@ public class LoginMenuServer {
             regex = "\\s*" + regex + "\\s*";
             while (true) {
                 String input = dataInputStream.readUTF();
+                if (input.equals("exit")) return null;
                 Matcher matcher = Pattern.compile(regex).matcher(input);
                 if (!matcher.find()) {
-                    System.out.println(input);
-                    System.out.println(regex);
                     dataOutputStream.writeUTF("invalid input");
                     continue;
                 }
