@@ -64,6 +64,8 @@ public class LoginMenuServer {
                 String input = dataInputStream.readUTF();
                 Matcher matcher = Pattern.compile(regex).matcher(input);
                 if (!matcher.find()) {
+                    System.out.println(input);
+                    System.out.println(regex);
                     dataOutputStream.writeUTF("invalid input");
                     continue;
                 }
