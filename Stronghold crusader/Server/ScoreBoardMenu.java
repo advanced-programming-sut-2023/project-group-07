@@ -5,28 +5,33 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class ScoreBoardMenu {
+public class ScoreBoardMenu extends Thread {
     private DataOutputStream dataOutputStream;
+    private DataInputStream dataInputStream;
+    private boolean isRunning = true;
 
-    public ScoreBoardMenu(DataOutputStream dataOutputStream) {
+    public ScoreBoardMenu(DataOutputStream dataOutputStream, DataInputStream dataInputStream) {
         this.dataOutputStream = dataOutputStream;
+        this.dataInputStream = dataInputStream;
     }
 
-    public void scoreBoard() {
-        StringBuilder str = new StringBuilder();
-        ArrayList<ArrayList<String>> usersInformation = ScoreBoardController.getUsersInformation();
-        str.append("| rank | username | score | last entrance |\n");
-        for (ArrayList<String> aUserInformation : usersInformation){
-            str.append("|");
-            for (String information : aUserInformation){
-                str.append(" ").append(information).append(" |");
+    public void run() {
+        ScoreboardPrinter printScoreboard =new ScoreboardPrinter(dataOutputStream);
+        printScoreboard.start();
+        while (true) {
+            String input = null;
+            try {
+                input = dataInputStream.readUTF();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            str.append("\n");
-        }
-        try {
-            dataOutputStream.writeUTF(str.toString());
-        }catch (IOException e){
-            e.printStackTrace();
+            if (input.equals("exit")) {
+                printScoreboard.stopPrinting();
+                return;
+            }
         }
     }
+
+
 }
+

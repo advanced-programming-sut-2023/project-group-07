@@ -72,14 +72,19 @@ public class Connection extends Thread {
                         new PrivateChatMenu(dataOutputStream, dataInputStream, currentUser).privateChat();
                     else if (input.equals("enter group chat"))
                         new GroupChatMenu(dataOutputStream, dataInputStream, currentUser).GroupChat();
-                    else if (input.equals("show scoreboard"))
-                        new ScoreBoardMenu(dataOutputStream).scoreBoard();
+                    else if (input.equals("show scoreboard")){
+                        ScoreBoardMenu scoreBoardMenu = new ScoreBoardMenu(dataOutputStream, dataInputStream);
+                        scoreBoardMenu.start();
+                        scoreBoardMenu.join();
+                    }
                     else if (input.matches("\\s*logout\\s*")) return;
                     else dataOutputStream.writeUTF("invalid input");
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 

@@ -38,7 +38,7 @@ public class LoginMenuServer {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        user.setEntrance();
+        if (user != null) user.setEntrance();
         return user;
     }
 
