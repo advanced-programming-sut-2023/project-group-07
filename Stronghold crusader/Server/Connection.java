@@ -12,8 +12,20 @@ public class Connection extends Thread {
     private final Socket socket;
     private final DataInputStream dataInputStream;
     private final DataOutputStream dataOutputStream;
-    private User currentUser;
+    private User currentUser = null;
     private static final ArrayList<Connection> connections = new ArrayList<>();
+
+    public static ArrayList<Connection> connections() {
+        pureConnections();
+        return connections;
+    }
+
+    private static void pureConnections() {
+        for (int i = connections.size() - 1; i >= 0; i--){
+            if (!connections.get(i).isAlive()) connections.remove(i);
+        }
+    }
+
     public Connection(Socket socket) throws IOException {
         this.socket = socket;
         this.dataInputStream = new DataInputStream(socket.getInputStream());
@@ -23,13 +35,18 @@ public class Connection extends Thread {
 
     @Override
     public void run() {
-        while (true){
+        while (true) {
             currentUser = new LoginMenuServer(dataOutputStream, dataInputStream).login();
-            enterMainChatMenu();
+            if (currentUser == null) return;
+            enterMainMenu();
         }
     }
 
-    private void enterMainChatMenu() {
+    public User currentUser() {
+        return currentUser;
+    }
+
+    private void enterMainMenu() {
         try {
             dataOutputStream.writeUTF("entered main menu");
             while (true) {
@@ -55,6 +72,8 @@ public class Connection extends Thread {
                         new PrivateChatMenu(dataOutputStream, dataInputStream, currentUser).privateChat();
                     else if (input.equals("enter group chat"))
                         new GroupChatMenu(dataOutputStream, dataInputStream, currentUser).GroupChat();
+                    else if (input.equals("show scoreboard"))
+                        new ScoreBoardMenu(dataOutputStream).scoreBoard();
                     else if (input.matches("\\s*logout\\s*")) return;
                     else dataOutputStream.writeUTF("invalid input");
                 }
@@ -84,17 +103,17 @@ public class Connection extends Thread {
         System.out.println(request.length+" "+request[0]+" "+request[1]);
         if(request.length!=2 || !request[0].equals("friendRequest"))
             return "invalid command!";
-        else{
+        else {
             String targetUser = request[1];
             Connection connection = getConnectionByUsername(targetUser);
             if(connection==null || targetUser.equals(currentUser.getUsername())){
                 return "invalid target!";
             }
-            if(currentUser.getFriends().contains(targetUser))
+            if (currentUser.getFriends().contains(targetUser))
                 return "this user is already your friend!";
             if(connection.currentUser.getPendingFriendRequests().contains(currentUser.getUsername()))
                 return "you have already sent a request to this user!";
-            connection.dataOutputStream.writeUTF("acceptFriend? "+currentUser.getUsername());
+            connection.dataOutputStream.writeUTF("acceptFriend? " + currentUser.getUsername());
             connection.currentUser.addFriendRequest(currentUser.getUsername());
         }
         return "successful!";
@@ -104,15 +123,15 @@ public class Connection extends Thread {
         String[] accept = acceptRequest.split(" ");
         if(accept.length!=2 || !accept[0].equals("acceptFriend"))
             return "invalid command!";
-        else{
+        else {
             String targetUser = accept[1];
             Connection connection = getConnectionByUsername(targetUser);
             if(connection==null || targetUser.equals(currentUser.getUsername())){
                 return "invalid target!";
             }
-            if(!currentUser.getPendingFriendRequests().contains(targetUser))
+            if (!currentUser.getPendingFriendRequests().contains(targetUser))
                 return "no request from this user!";
-            connection.dataOutputStream.writeUTF(currentUser.getUsername()+" accepted your friendship!");
+            connection.dataOutputStream.writeUTF(currentUser.getUsername() + " accepted your friendship!");
             connection.currentUser.acceptFriend(currentUser.getUsername());
             currentUser.acceptFriend(targetUser);
         }
@@ -121,25 +140,27 @@ public class Connection extends Thread {
 
     public synchronized String rejectFriendRequest(String rejectRequest) throws IOException {
         String[] reject = rejectRequest.split(" ");
-        if(reject.length!=2 || !reject[0].equals("friendReject"))
+        if (reject.length != 2 || !reject[0].equals("friendReject"))
             return "invalid command!";
-        else{
+        else {
             String targetUser = reject[1];
             Connection connection = getConnectionByUsername(targetUser);
             if(connection==null || targetUser.equals(currentUser.getUsername())){
                 return "invalid target!";
             }
-            if(!currentUser.getPendingFriendRequests().contains(targetUser))
+            if (!currentUser.getPendingFriendRequests().contains(targetUser))
                 return "no request from this user!";
-            connection.dataOutputStream.writeUTF(currentUser.getUsername()+" rejected your friendship!");
+            connection.dataOutputStream.writeUTF(currentUser.getUsername() + " rejected your friendship!");
             currentUser.getPendingFriendRequests().remove(targetUser);
         }
         return "successful!";
     }
 
     private Connection getConnectionByUsername(String username) {
-        for(Connection connection: connections)
-            if(connection.currentUser.getUsername().equals(username))
+        for (Connection connection : connections)
+            if (connection.currentUser.getUsername().equals(username))
                 return connection;
         return null;
-    }}
+    }
+
+}

@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Scanner;
 import java.util.regex.Pattern;
@@ -34,6 +35,7 @@ public class User {
     private int numberOfAttempts;
     private int highScore;
     private int rank;
+    private String lastEntrance;
 
     private static ArrayList<User> users = new ArrayList<User>();
     private static JsonArray usersArray = new JsonArray();
@@ -52,6 +54,7 @@ public class User {
         this.numberOfAttempts = 0;
         this.highScore = 0;
         this.rank = 0; // TODO : CHECK THIS SHIT :)
+        setEntrance();
         this.giveAAvatar();
     }
 
@@ -204,6 +207,23 @@ public class User {
         setAvatarName(Controller.giveARandomAvatar());
     }
 
+    public String lastEntrance(){
+        if (this.lastEntrance == null) this.lastEntrance = "unknown";
+        return lastEntrance;
+    }
+    public void setEntrance(){
+        Calendar calendar = Calendar.getInstance();
+        int minutes = calendar.get(Calendar.MINUTE);
+        int hours = calendar.get(Calendar.HOUR_OF_DAY);
+        String mmTime, hhTime;
+        if (minutes < 10) mmTime = "0" + minutes;
+        else mmTime = Integer.toString(minutes);
+        if (hours < 10) hhTime = "0" + hours;
+        else hhTime = Integer.toString(hours);
+        lastEntrance = hhTime + ":" + mmTime;
+        User.updateUsers();
+    }
+
     public static ArrayList<User> getUsers() {
         return users;
     }
@@ -339,11 +359,12 @@ public class User {
             return slogan;
         }
 
-        @Override
-        public boolean equals(Object obj) {
-            if(obj == null) return false;
-            if(!(obj instanceof User)) return false;
-            return ((User) obj).username.equals(this.username);
-        }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (!(obj instanceof User)) return false;
+        return ((User) obj).username.equals(this.username);
     }
 }
