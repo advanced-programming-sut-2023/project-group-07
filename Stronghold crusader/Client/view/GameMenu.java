@@ -1,5 +1,7 @@
 package Client.view;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +11,7 @@ import java.util.regex.Matcher;
 import Client.controller.*;
 
 import Client.model.Resources;
+import Client.model.User;
 
 public class GameMenu {
     private final GameMenuController controller = new GameMenuController(new GameGraphics());
