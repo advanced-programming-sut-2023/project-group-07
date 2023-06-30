@@ -10,13 +10,17 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 
 public class PrivateChatMenu {
-    DataOutputStream dataOutputStream;
-    DataInputStream dataInputStream;
-    User currentUser;
+    private DataOutputStream dataOutputStream;
+    private DataInputStream dataInputStream;
+    private User currentUser;
+    private GroupChatController groupChatController;
+
     public PrivateChatMenu(DataOutputStream dataOutputStream, DataInputStream dataInputStream, User currentUser) {
         this.currentUser = currentUser;
         this.dataInputStream = dataInputStream;
         this.dataOutputStream = dataOutputStream;
+        groupChatController = new GroupChatController();
+
     }
     public void privateChat(){
         try {
@@ -46,7 +50,7 @@ public class PrivateChatMenu {
     private String deleteMessage(String idStr) {
         try {
             int id = Integer.parseInt(idStr);
-            switch(GroupChatController.deleteMessage(id, currentUser)){
+            switch(groupChatController.deleteMessage(id, currentUser)){
                 case INVALID_ID :
                     return "id is invalid";
                 case NOT_YOUR_MESSAGE:
@@ -62,7 +66,7 @@ public class PrivateChatMenu {
     private String editPrivateMessage(String idStr, String newContent) {
         try {
             int id = Integer.parseInt(idStr);
-            switch(GroupChatController.editMessage(id, currentUser, newContent)){
+            switch(groupChatController.editMessage(id, currentUser, newContent)){
                 case INVALID_ID :
                     return "id is invalid";
                 case NOT_YOUR_MESSAGE:
@@ -77,12 +81,12 @@ public class PrivateChatMenu {
     }
 
     private String sendMessagePrivate(String message) {
-        GroupChatController.send(message, currentUser);
+        groupChatController.send(message, currentUser);
         return "message has been sent";
     }
 
     private String showMessagesPrivateChat() {
-        ArrayList<ChatMessage> messages = GroupChatController.showMessages(currentUser);
+        ArrayList<ChatMessage> messages = groupChatController.showMessages(currentUser);
         StringBuilder str = new StringBuilder();
         for(ChatMessage message : messages){
             str.append(message).append("\n");
@@ -95,7 +99,7 @@ public class PrivateChatMenu {
         while (true){
             dataOutputStream.writeUTF("enter target user's username");
             dataOutputStream.flush();
-            targetUser = GroupChatController.getUserByUsername(dataInputStream.readUTF());
+            targetUser = groupChatController.getUserByUsername(dataInputStream.readUTF());
             if (targetUser!=null) break;
             else dataOutputStream.writeUTF("enter a valid username");
 
@@ -105,6 +109,6 @@ public class PrivateChatMenu {
         HashSet<User> usersSet = new HashSet<>();
         usersSet.add(currentUser);
         usersSet.add(targetUser);
-        GroupChatController.setGroupChat(usersSet);
+        groupChatController.setGroupChat(usersSet);
     }
 }

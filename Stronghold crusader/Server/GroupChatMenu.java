@@ -10,14 +10,16 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 
 public class GroupChatMenu {
-    DataOutputStream dataOutputStream;
-    DataInputStream dataInputStream;
-    User currentUser;
+    private DataOutputStream dataOutputStream;
+    private DataInputStream dataInputStream;
+    private User currentUser;
+    private GroupChatController groupChatController;
 
     public GroupChatMenu(DataOutputStream dataOutputStream, DataInputStream dataInputStream, User currentUser) {
         this.currentUser = currentUser;
         this.dataInputStream = dataInputStream;
         this.dataOutputStream = dataOutputStream;
+        groupChatController = new GroupChatController();
     }
 
     public void GroupChat() {
@@ -60,7 +62,7 @@ public class GroupChatMenu {
     private String deleteMessage(String idStr) {
         try {
             int id = Integer.parseInt(idStr);
-            switch (GroupChatController.deleteMessage(id, currentUser)) {
+            switch (groupChatController.deleteMessage(id, currentUser)) {
                 case INVALID_ID:
                     return "id is invalid";
                 case NOT_YOUR_MESSAGE:
@@ -77,7 +79,7 @@ public class GroupChatMenu {
     private String editPrivateMessage(String idStr, String newContent) {
         try {
             int id = Integer.parseInt(idStr);
-            switch (GroupChatController.editMessage(id, currentUser, newContent)) {
+            switch (groupChatController.editMessage(id, currentUser, newContent)) {
                 case INVALID_ID:
                     return "id is invalid";
                 case NOT_YOUR_MESSAGE:
@@ -92,12 +94,12 @@ public class GroupChatMenu {
     }
 
     private String sendMessagePrivate(String message) {
-        GroupChatController.send(message, currentUser);
+        groupChatController.send(message, currentUser);
         return "message has been sent";
     }
 
     private String showMessagesPrivateChat() {
-        ArrayList<ChatMessage> messages = GroupChatController.showMessages(currentUser);
+        ArrayList<ChatMessage> messages = groupChatController.showMessages(currentUser);
         StringBuilder str = new StringBuilder();
         for (ChatMessage message : messages) {
             str.append(message).append("\n");
@@ -117,7 +119,7 @@ public class GroupChatMenu {
             String input = dataInputStream.readUTF();
             System.out.println(System.currentTimeMillis());
             if (input.matches("\\s*done\\s*")) break;
-            User user = GroupChatController.getUserByUsername(input);
+            User user = groupChatController.getUserByUsername(input);
             if (user == null) {
                 dataOutputStream.writeUTF("enter a valid username");
             }
@@ -125,6 +127,6 @@ public class GroupChatMenu {
                 users.add(user);
         }
         System.out.println(users);
-        GroupChatController.setGroupChat(users);
+        groupChatController.setGroupChat(users);
     }
 }

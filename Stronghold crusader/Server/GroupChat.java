@@ -65,8 +65,16 @@ public class GroupChat {
         for (GroupChat groupChat : groupChats) {
             boolean flag = true;
             for (Iterator<User> it = users.iterator(); it.hasNext(); ) {
-                User user = it.next();
-                if (!groupChat.userSet.contains(user)) {
+                User user1 = it.next();
+                boolean groupContainsUser1 = false;
+                for (Iterator<User> iter = groupChat.userSet.iterator(); iter.hasNext(); ) {
+                    User user2 = iter.next();
+                    if (user2.getUsername().equals(user1.getUsername())) {
+                        groupContainsUser1 = true;
+                        break;
+                    }
+                }
+                if (!groupContainsUser1) {
                     flag = false;
                     break;
                 }

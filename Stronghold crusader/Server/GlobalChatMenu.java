@@ -12,11 +12,15 @@ public class GlobalChatMenu {
     private DataOutputStream dataOutputStream;
     private DataInputStream dataInputStream;
     private User currentUser;
+    private GlobalChatController globalChatController;
+
 
     public GlobalChatMenu(DataOutputStream dataOutputStream, DataInputStream dataInputStream, User currentUser) {
         this.dataOutputStream = dataOutputStream;
         this.dataInputStream = dataInputStream;
         this.currentUser = currentUser;
+        globalChatController = new GlobalChatController();
+
     }
 
     public void globalChat() {
@@ -48,7 +52,7 @@ public class GlobalChatMenu {
     private String deleteGlobalMessage(String idStr) {
         try {
             int id = Integer.parseInt(idStr);
-            switch(GlobalChatController.deleteMessage(id, currentUser)){
+            switch(globalChatController.deleteMessage(id, currentUser)){
                 case INVALID_ID :
                     return "id is invalid";
                 case NOT_YOUR_MESSAGE:
@@ -64,7 +68,7 @@ public class GlobalChatMenu {
     private String editGlobalMessage(String idStr, String newContent) {
         try {
             int id = Integer.parseInt(idStr);
-            switch(GlobalChatController.editMessage(id, currentUser, newContent)){
+            switch(globalChatController.editMessage(id, currentUser, newContent)){
                 case INVALID_ID :
                     return "id is invalid";
                 case NOT_YOUR_MESSAGE:
@@ -79,12 +83,12 @@ public class GlobalChatMenu {
     }
 
     private String sendMessageGlobal(String message) {
-        GlobalChatController.send(message, currentUser);
+        globalChatController.send(message, currentUser);
         return "message has been sent";
     }
 
     private String showMessagesGlobalChat() {
-        ArrayList<ChatMessage> messages = GlobalChatController.showMessages(currentUser);
+        ArrayList<ChatMessage> messages = globalChatController.showMessages(currentUser);
         StringBuilder str = new StringBuilder();
         for(ChatMessage message : messages){
             str.append(message).append("\n");
