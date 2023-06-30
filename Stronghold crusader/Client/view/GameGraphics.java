@@ -53,6 +53,7 @@ public class GameGraphics extends Application {
     private GameMenuController gameMenuController = new GameMenuController();
     private VBox messageBar = new VBox(20);
     private HBox moveUnitShortcutHbox = new HBox();
+    private HBox attackUnitShortcutHbox = new HBox();
     private double oldMouseX;
     private int oldX = -1;
     private double oldMouseY;
@@ -97,28 +98,29 @@ public class GameGraphics extends Application {
         setMoveMapTimeLine(mapPane, scene);
         addStageEventHandlers(stage);
         setHoverTimeLine();
-        createMoveUnitShortcutVbox();
+        setShortcutHbox(moveUnitShortcutHbox, "Move to: ");
+        setShortcutHbox(attackUnitShortcutHbox, "Attack to: ");
         Controller.createChatMenu(rootPane);
         scene.getStylesheets().add(GameGraphics.class.getResource("/CSS/slideBar.css").toExternalForm());
         setCheatShortCuts(scene);
     }
 
-    private void createMoveUnitShortcutVbox() {
-        moveUnitShortcutHbox.setSpacing(20);
-        moveUnitShortcutHbox.setAlignment(Pos.CENTER);
-        moveUnitShortcutHbox.setPrefWidth(250);
-        moveUnitShortcutHbox.setPrefHeight(50);
-        moveUnitShortcutHbox.setStyle("-fx-background-color: black");
-        moveUnitShortcutHbox.setOpacity(0.7);
-        Text text = new Text("Move to : ");
+    private void setShortcutHbox(HBox shortcutHbox, String textForShow) {
+        shortcutHbox.setSpacing(15);
+        shortcutHbox.setAlignment(Pos.CENTER);
+        shortcutHbox.setPrefWidth(250);
+        shortcutHbox.setPrefHeight(50);
+        shortcutHbox.setStyle("-fx-background-color: black");
+        shortcutHbox.setOpacity(0.6);
+        Text text = new Text(textForShow);
         text.setFill(Color.WHITE);
         TextField row = new TextField();
         TextField column = new TextField();
         row.setPromptText("row");
         column.setPromptText("column");
-        row.setMaxWidth(60);
-        column.setMaxWidth(60);
-        moveUnitShortcutHbox.getChildren().addAll(text, row, column);
+        row.setPrefWidth(70);
+        column.setPrefWidth(70);
+        shortcutHbox.getChildren().addAll(text, row, column);
     }
 
     private Scene prepareStageElements() {
@@ -166,11 +168,32 @@ public class GameGraphics extends Application {
                 enterGovernmentActionButtonsMenu();
             else if (keyName.equals("M"))
                 moveUnitShortcut();
+            else if (keyName.equals("A"))
+                attackUnitShortcut();
+        });
+    }
+
+    private void attackUnitShortcut() {
+        if (selectionRectangles.isEmpty() || selectedUnits.isEmpty())
+            return;
+        Rectangle selectionRectangle = selectionRectangles.get(0);
+        attackUnitShortcutHbox.setLayoutX(selectionRectangle.getLayoutX());
+        attackUnitShortcutHbox.setLayoutY(selectionRectangle.getLayoutY() + ((selectionRectangle.getLayoutY() < 100) ? 100 : -100));
+        if (!mapPane.getChildren().contains(attackUnitShortcutHbox))
+            mapPane.getChildren().add(attackUnitShortcutHbox);
+        attackUnitShortcutHbox.requestFocus();
+        attackUnitShortcutHbox.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                if (keyEvent.getCode().getName().equals("Enter")) {
+                    mapPane.getChildren().remove(attackUnitShortcutHbox);
+                }
+            }
         });
     }
 
     private void moveUnitShortcut() {
-        if (selectionRectangles.isEmpty())
+        if (selectionRectangles.isEmpty() || selectedUnits.isEmpty())
             return;
         Rectangle selectionRectangle = selectionRectangles.get(0);
         moveUnitShortcutHbox.setLayoutX(selectionRectangle.getLayoutX());
@@ -181,8 +204,12 @@ public class GameGraphics extends Application {
         moveUnitShortcutHbox.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
-                if (keyEvent.getCode().getName().equals("Enter"))
+                if (keyEvent.getCode().getName().equals("Enter")) {
                     mapPane.getChildren().remove(moveUnitShortcutHbox);
+                    int row = Integer.parseInt(((TextField) moveUnitShortcutHbox.getChildren().get(1)).getText());
+                    int column = Integer.parseInt(((TextField) moveUnitShortcutHbox.getChildren().get(2)).getText());
+                    moveUnits(row, column);
+                }
             }
         });
     }
@@ -238,6 +265,7 @@ public class GameGraphics extends Application {
     private void mouseDragged(Stage stage) {
         stage.addEventHandler(MouseEvent.MOUSE_DRAGGED, mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.PRIMARY) {
+                removeTilesSelection();
                 selectionArea.setVisible(true);
                 selectionArea.setLayoutX(Math.min(mouseEvent.getX() + Math.abs(mapPane.getLayoutX()), oldMouseX));
                 selectionArea.setLayoutY(Math.min(mouseEvent.getY() + Math.abs(mapPane.getLayoutY()), oldMouseY));
@@ -322,6 +350,10 @@ public class GameGraphics extends Application {
             if (mapPane.getChildren().contains(rectangle))
                 mapPane.getChildren().remove(rectangle);
         selectionRectangles.clear();
+        if (mapPane.getChildren().contains(moveUnitShortcutHbox))
+            mapPane.getChildren().remove(moveUnitShortcutHbox);
+        if (mapPane.getChildren().contains(attackUnitShortcutHbox))
+            mapPane.getChildren().remove(attackUnitShortcutHbox);
     }
 
     private void setHoverTimeLine() {
@@ -1333,20 +1365,23 @@ public class GameGraphics extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-                    if (!gameMenuController.getSelectedUnit().isEmpty() && isCursorOnGround()) {
-                        for (PersonPane personPane : selectedUnits) {
-                            Unit unit = (Unit) (personPane.getPerson());
-                            gameMenuController.moveUnit((int) (mouseEvent.getY() / 40), (int) (mouseEvent.getX() / 40));
-                            if (unit.getMovePattern() != null && !unit.getMovePattern().isEmpty()) {
-                                personPane.getPersonDirection().play();
-                                personPane.getPersonMove().play();
-                                personPane.setMoving(true);
-                            }
-                        }
-                    }
+                    if (!gameMenuController.getSelectedUnit().isEmpty() && isCursorOnGround())
+                       moveUnits((int) (mouseEvent.getY() / 40), (int) (mouseEvent.getX() / 40));
                 }
             }
         });
+    }
+
+    private void moveUnits(int row, int column) {
+        for (PersonPane personPane : selectedUnits) {
+            Unit unit = (Unit) (personPane.getPerson());
+            gameMenuController.moveUnit(row, column);
+            if (unit.getMovePattern() != null && !unit.getMovePattern().isEmpty()) {
+                personPane.getPersonDirection().play();
+                personPane.getPersonMove().play();
+                personPane.setMoving(true);
+            }
+        }
     }
 
     private void emptySelection() {
