@@ -8,6 +8,7 @@ import Client.controller.TradeMenuController;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -31,10 +32,12 @@ import javafx.util.Duration;
 import Client.model.*;
 
 import javax.swing.*;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.TimerTask;
 
 
 public class GameGraphics extends Application {
@@ -106,7 +109,6 @@ public class GameGraphics extends Application {
         setDetailsShortcut();
         Controller.createChatMenu(rootPane);
         createAttackBanner();
-        setAttackBanner(true);
         scene.getStylesheets().add(GameGraphics.class.getResource("/CSS/slideBar.css").toExternalForm());
         setCheatShortCuts(scene);
     }
@@ -173,10 +175,15 @@ public class GameGraphics extends Application {
     }
 
     private void setAttackBanner(boolean show) {
-        if (show && !rootPane.getChildren().contains(attackBanner))
-            rootPane.getChildren().add(attackBanner);
-        if (!show && rootPane.getChildren().contains(attackBanner))
-            rootPane.getChildren().remove(attackBanner);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                if (show && !rootPane.getChildren().contains(attackBanner))
+                    rootPane.getChildren().add(attackBanner);
+                if (!show && rootPane.getChildren().contains(attackBanner))
+                    rootPane.getChildren().remove(attackBanner);
+            }
+        });
     }
 
     private void addCoordinatesListener(TextField textField) {
@@ -208,8 +215,8 @@ public class GameGraphics extends Application {
         rootPane.getChildren().add(pane);
         pane.setMaxHeight(Main.screenHeight - 215);
         initStatusBar();
-        Image image1 = new Image(Objects.requireNonNull(GameGraphics.class.getResource("/Images/Game/Cursors/fook.png")).toExternalForm());
-        scene.setCursor(new ImageCursor(image1));
+//        Image image1 = new Image(Objects.requireNonNull(GameGraphics.class.getResource("/Images/Game/Cursors/fook.png")).toExternalForm());
+//        scene.setCursor(new ImageCursor(image1));
         rootPane.getChildren().add(messageBar);
         messageBar.setLayoutX(20);
         messageBar.setLayoutY(300);
@@ -293,7 +300,7 @@ public class GameGraphics extends Application {
                         mapPane.getChildren().remove(attackUnitShortcutHbox);
                         int row = Integer.parseInt(rowStr);
                         int column = Integer.parseInt(columnStr);
-                        moveUnits(row, column);
+                        attackUnits(row, column);
                     }
                 }
             }
@@ -431,15 +438,15 @@ public class GameGraphics extends Application {
                         selectBuildingToBeBuilt.getChildren().remove(1);
                 }
             }
-            if (!gameMenuController.getSelectedUnit().isEmpty()) {
-                boolean isCursorOnGround = isCursorOnGround();
-                if (isCursorOnGround && !cursorAnimation.isPlaying) {
-                    cursorAnimation.play();
-                    cursorAnimation.isPlaying = true;
-                } else if (!isCursorOnGround)
-                    resetCursor();
-            } else
-                resetCursor();
+//            if (!gameMenuController.getSelectedUnit().isEmpty()) {
+//                boolean isCursorOnGround = isCursorOnGround();
+//                if (isCursorOnGround && !cursorAnimation.isPlaying) {
+//                    cursorAnimation.play();
+//                    cursorAnimation.isPlaying = true;
+//                } else if (!isCursorOnGround)
+//                    resetCursor();
+//            } else
+//                resetCursor();
         });
     }
 
@@ -615,11 +622,11 @@ public class GameGraphics extends Application {
     }
 
     private void resetCursor() {
-        cursorAnimation.stop();
-        cursorAnimation.isPlaying = false;
-        Scene scene = rootPane.getScene();
-        Image image1 = new Image(GameGraphics.class.getResource("/Images/Game/Cursors/fook.png").toExternalForm());
-        scene.setCursor(new ImageCursor(image1));
+//        cursorAnimation.stop();
+//        cursorAnimation.isPlaying = false;
+//        Scene scene = rootPane.getScene();
+//        Image image1 = new Image(GameGraphics.class.getResource("/Images/Game/Cursors/fook.png").toExternalForm());
+//        scene.setCursor(new ImageCursor(image1));
 
     }
 
@@ -1485,6 +1492,10 @@ public class GameGraphics extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+                    if(selectBuildingToBeBuilt!=null){
+                        selectBuildingToBeBuilt.setVisible(false);
+                        selectBuildingToBeBuilt=null;
+                    }
                     resetCursor();
                     resetSelectionArea();
                     gameMenuController.getSelectedUnit().clear();
@@ -1504,17 +1515,45 @@ public class GameGraphics extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton() == MouseButton.PRIMARY) {
-                    if (!gameMenuController.getSelectedUnit().isEmpty() && isCursorOnGround())
-                       moveUnits((int) (mouseEvent.getY() / 40), (int) (mouseEvent.getX() / 40));
+                    if (!gameMenuController.getSelectedUnit().isEmpty() && isCursorOnGround()){
+                        if(!attackUnits((int) (mouseEvent.getY() / 40), (int) (mouseEvent.getX() / 40)))
+                            moveUnits((int) (mouseEvent.getY() / 40), (int) (mouseEvent.getX() / 40));
+                    }
                 }
             }
         });
     }
 
+    private boolean attackUnits(int row ,int column) {
+        Messages message = gameMenuController.attackEnemy(row,column);
+        switch (message){
+            case NO_ENEMY_HERE -> {
+                return false;
+            }
+            case ATTACKING_ENEMY_UNITS -> {
+                for(PersonPane personPane: selectedUnits)
+                    if (((Unit) (personPane.getPerson())).getMovePattern() != null && !((Unit) (personPane.getPerson())).getMovePattern().isEmpty()) {
+                        personPane.getPersonDirection().play();
+                        personPane.getPersonMove().play();
+                        personPane.setMoving(true);
+                }
+                setAttackBanner(true);
+                new java.util.Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        setAttackBanner(false);
+                    }
+                }, 10000);
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void moveUnits(int row, int column) {
+        gameMenuController.moveUnit(row, column);
         for (PersonPane personPane : selectedUnits) {
             Unit unit = (Unit) (personPane.getPerson());
-            gameMenuController.moveUnit(row, column);
             if (unit.getMovePattern() != null && !unit.getMovePattern().isEmpty()) {
                 personPane.getPersonDirection().play();
                 personPane.getPersonMove().play();
