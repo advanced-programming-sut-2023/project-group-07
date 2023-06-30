@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 
 public class GameGraphics extends Application {
@@ -335,17 +336,17 @@ public class GameGraphics extends Application {
 
     private boolean checkCoordinates(String rowStr, String columnStr) {
         if (rowStr.isEmpty() || columnStr.isEmpty()) {
-            addToMessageBar("There are empty fields!");
+            addToMessageBar("There are empty fields!", Color.RED);
             return false;
         }
         if (!rowStr.matches("\\d+") || !columnStr.matches("\\d+")) {
-            addToMessageBar("Enter whole numbers!");
+            addToMessageBar("Enter whole numbers!", Color.RED);
             return false;
         }
         int row = Integer.parseInt(rowStr);
         int column = Integer.parseInt(columnStr);
         if (row < 1 || row > map.getSize() || column < 1 || column > map.getSize()) {
-            addToMessageBar("Invalid coordinates");
+            addToMessageBar("Invalid coordinates", Color.RED);
             return false;
         }
         return true;
@@ -723,7 +724,7 @@ public class GameGraphics extends Application {
                 TradeRequest selectedRequest = availableTradesComboBox.getValue();
                 if (selectedRequest == null) return;
                 tradeMenuController().rejectTrade(selectedRequest.getId());
-                addToMessageBar("You have successfully rejected a trade.");
+                addToMessageBar("You have successfully rejected a trade.", Color.GREEN);
             }
         });
         return rejectButton;
@@ -738,14 +739,14 @@ public class GameGraphics extends Application {
                 if (selectedRequest == null) return;
                 switch (tradeMenuController().acceptTrade(selectedRequest.getId(), messageTextField.getText())) {
                     case ACCEPT_TRADE_SUCCESSFUL:
-                        addToMessageBar("You have successfully accepted a trade.");
+                        addToMessageBar("You have successfully accepted a trade.", Color.GREEN);
                         updateGovernmentInfo();
                         break;
                     case POOR_RECEIVER:
-                        addToMessageBar("You don't have enough recourse for this trade.");
+                        addToMessageBar("You don't have enough recourse for this trade.", Color.RED);
                         break;
                     case POOR_REQUESTER:
-                        addToMessageBar("Requester don't have enough gold to pay you right now.");
+                        addToMessageBar("Requester don't have enough gold to pay you right now.", Color.RED);
                         break;
                 }
             }
@@ -797,7 +798,7 @@ public class GameGraphics extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 if (tradingPage.lordColor() == null) {
-                    addToMessageBar("choose color.");
+                    addToMessageBar("choose color.", Color.BLACK);
                     return;
                 }
                 switch (tradeMenuController().requestTrade(tradingPage.resource().toString()
@@ -806,19 +807,19 @@ public class GameGraphics extends Application {
                         , tradingPage.tradingAmount()
                         , tradingPage.goldAmount())) {
                     case INVALID_COLOR:
-                        addToMessageBar("choose color.");
+                        addToMessageBar("choose color.", Color.BLACK);
                         break;
                     case NEGATIVE_PRICE:
-                        addToMessageBar("Price can't be negative.");
+                        addToMessageBar("Price can't be negative.", Color.RED);
                         break;
                     case NO_LORD_WITH_THIS_COLOR:
-                        addToMessageBar("No one has this color.");
+                        addToMessageBar("No one has this color.", Color.RED);
                         break;
                     case REQUEST_YOURSELF:
-                        addToMessageBar("You can't request yourself.");
+                        addToMessageBar("You can't request yourself.", Color.RED);
                         break;
                     case REQUEST_TRADE_SUCCESSFUL:
-                        addToMessageBar("You have successfully made a trade request.");
+                        addToMessageBar("You have successfully made a trade request.", Color.GREEN);
                         break;
                 }
             }
@@ -879,11 +880,11 @@ public class GameGraphics extends Application {
             public void handle(Event event) {
                 if (gameMenuController.buyCommodity(shoppingPage.resource().getName(), 1)
                         == Messages.NOT_ENOUGH_GOLD)
-                    addToMessageBar("not enough gold");
+                    addToMessageBar("not enough gold", Color.RED);
                 else {
                     updateGoldText();
                     shoppingPage.setItemAmount(gameMenuController.getResourceAmount(shoppingPage.resource()));
-                    addToMessageBar("Buy commodity successful!");
+                    addToMessageBar("Buy commodity successful!", Color.GREEN);
                 }
             }
         });
@@ -892,11 +893,11 @@ public class GameGraphics extends Application {
             public void handle(Event event) {
                 if (gameMenuController.sellCommodity(shoppingPage.resource().getName(), 1)
                         == Messages.NOT_ENOUGH_RESOURCES)
-                    addToMessageBar("not enough resources");
+                    addToMessageBar("not enough resources", Color.RED);
                 else {
                     updateGoldText();
                     shoppingPage.setItemAmount(gameMenuController.getResourceAmount(shoppingPage.resource()));
-                    addToMessageBar("Sell commodity successful!");
+                    addToMessageBar("Sell commodity successful!", Color.GREEN);
                 }
 
             }
@@ -1117,7 +1118,7 @@ public class GameGraphics extends Application {
         slider.valueProperty().addListener((observable, oldValue, newValue) -> {
             int roundedValue = (int) Math.round(newValue.doubleValue());
             if (gameMenuController.setFoodList(roundedValue) == Messages.NOT_ENOUGH_FOOD)
-                addToMessageBar("not enough food");
+                addToMessageBar("not enough food", Color.RED);
             slider.setValue(gameMenuController.getFoodRate());
         });
         foodRateHBox.getChildren().add(new Text("food rate\t"));
@@ -1255,7 +1256,31 @@ public class GameGraphics extends Application {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 try {
-                    gameMenuController.nextTurn();
+                    String returnMessage = gameMenuController.nextTurn();
+                    if (returnMessage != null && returnMessage.contains("GAME OVER!")) {
+                        int counter = 0;
+                        String [] split = returnMessage.split("\n");
+                        String lordsDefeated = "";
+                        while (!split[counter].contains("GAME OVER!"))
+                            lordsDefeated += split[counter++] + "\n";
+                        addToMessageBar(lordsDefeated, Color.RED);
+                        gameMenuController.resetMapsAndUsers();
+                        returnMessage = "";
+                        while (counter < split.length)
+                            returnMessage += split[counter++] + "\n";
+                        EndGameScene.setEndGameMessage(returnMessage);
+                        try {
+                            TimeUnit.SECONDS.sleep(3);
+                            new EndGameScene().start(Main.stage);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    } else if (returnMessage != null) {
+                        addToMessageBar(returnMessage, Color.RED);
+                        addToMessageBar(gameMenuController.nextTurnMessage(), Color.BLACK);
+                    }
+                    else
+                        addToMessageBar(gameMenuController.nextTurnMessage(), Color.BLACK);
                     updateGovernmentInfo();
                     for(PersonPane personPane:people){
                         if(personPane.getPerson() instanceof Unit unit){
@@ -1281,15 +1306,15 @@ public class GameGraphics extends Application {
         for (StackPane buildingPane : buildings) {
             int row = (int) Math.floor(buildingPane.getLayoutY() / 40);
             int column = (int) Math.floor(buildingPane.getLayoutX() / 40);
-            MapPixel pixel = map.getMapPixel(row, column);
+            MapPixel pixel = map.getMapPixel(row , column);
             if (!pixel.getBuildings().isEmpty()) {
                 Building building = pixel.getBuildings().get(0);
-                if (building.getHp() <= -2 || building.getGovernment().getDefeatedBy() != null)
+                if (building.getHp() <= -2 || building.getGovernment().getLordHp() <= 0)
                     mapPane.getChildren().remove(buildingPane);
             } else {
-                pixel = map.getMapPixel(row + 2, column);
+                pixel = map.getMapPixel(row + 4, column - 2);
                 LordColor keep = pixel.getLordKeep();
-                if (game.getGovernmentByColor(keep).getDefeatedBy() != null)
+                if (keep != null && game.getGovernmentByColor(keep).getLordHp() <= 0)
                     mapPane.getChildren().remove(buildingPane);
             }
         }
@@ -1400,9 +1425,9 @@ public class GameGraphics extends Application {
     private void createUnit(String name) {
         Messages message = gameMenuController.createUnit(name, 1);
         switch (message) {
-            case NOT_ENOUGH_PEASANTS -> addToMessageBar("Not enough peasants!");
-            case NOT_ENOUGH_GOLD -> addToMessageBar("Not enough gold!");
-            case NOT_ENOUGH_RESOURCES -> addToMessageBar("Not enough resources!");
+            case NOT_ENOUGH_PEASANTS -> addToMessageBar("Not enough peasants!", Color.RED);
+            case NOT_ENOUGH_GOLD -> addToMessageBar("Not enough gold!", Color.RED);
+            case NOT_ENOUGH_RESOURCES -> addToMessageBar("Not enough resources!", Color.RED);
             case UNIT_CREATED_SUCCESSFULLY -> {
                 for (Unit unit : gameMenuController.createdUnit) {
                     PersonPane personPane = new PersonPane(name, unit, gameMenuController);
@@ -1571,14 +1596,14 @@ public class GameGraphics extends Application {
                 (int) ((mouseEvent.getX() - selectBuildingToBeBuilt.getWidth()/ 2) / 40),
                 string);
         switch (message) {
-            case THERES_ALREADY_BUILDING -> addToMessageBar("There's already a building here!");
-            case THERES_ALREADY_UNIT -> addToMessageBar("There's already a unit here!");
-            case CANT_PLACE_THIS -> addToMessageBar("Can't place this here!");
-            case NOT_ENOUGH_GOLD -> addToMessageBar("Not enough gold!");
-            case NOT_ENOUGH_RESOURCES -> addToMessageBar("Not enough resources!");
-            case THERES_AN_ENEMY_CLOSE_BY -> addToMessageBar("There's an enemy close by!");
+            case THERES_ALREADY_BUILDING -> addToMessageBar("There's already a building here!", Color.RED);
+            case THERES_ALREADY_UNIT -> addToMessageBar("There's already a unit here!", Color.RED);
+            case CANT_PLACE_THIS -> addToMessageBar("Can't place this here!", Color.RED);
+            case NOT_ENOUGH_GOLD -> addToMessageBar("Not enough gold!", Color.RED);
+            case NOT_ENOUGH_RESOURCES -> addToMessageBar("Not enough resources!", Color.RED);
+            case THERES_AN_ENEMY_CLOSE_BY -> addToMessageBar("There's an enemy close by!", Color.RED);
             case MUST_BE_ADJACENT_TO_BUILDINGS_OF_THE_SAME_TYPE ->
-                    addToMessageBar("Must be adjacent to buildings of the same type!");
+                    addToMessageBar("Must be adjacent to buildings of the same type!", Color.RED);
             case DEPLOYMENT_SUCCESSFUL -> {
                 ImageView imageView = new ImageView(buildingToBeBuilt);
                 StackPane stackPane = new StackPane(imageView);
@@ -1648,12 +1673,12 @@ public class GameGraphics extends Application {
         return string;
     }
 
-    private void addToMessageBar(String message) {
+    private void addToMessageBar(String message, Color color) {
         Text text = new Text(message);
         text.setStyle("-fx-font-weight: bold; -fx-font-size: 14;");
         text.setStroke(Color.BLACK);
         text.setStrokeWidth(0.4);
-        text.setFill(Color.RED);
+        text.setFill(color);
         messageBar.getChildren().add(text);
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(5000), actionEvent -> {
             if (messageBar.getChildren().contains(text))

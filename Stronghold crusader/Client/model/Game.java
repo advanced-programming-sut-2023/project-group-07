@@ -702,7 +702,7 @@ public class Game {
     public void removeEliminatedBuildings(Government government) {
         ArrayList<Building> eliminatedBuildings = new ArrayList<>();
         for (Building building : government.getBuildings()) {
-            if (building.getHp() <= 0) {
+            if (building.getHp() <= 0 && !building.getTypeOfBuilding().isUnDestroyable()) {
                 building.destroy();
                 eliminatedBuildings.add(building);
                 for (int i = 0; i < building.getTypeOfBuilding().getWidth(); i++)
@@ -939,8 +939,7 @@ public class Game {
     private String eliminateDefeatedLords() {
         String result = "";
         for (Government government : getDefeatedGovernments()) {
-            result += government.getColor() + " Lord has been defeated by " + government.getDefeatedBy().getColor()
-                    + " lord!\n";
+            result += government.getColor() + " Lord has been defeated!\n";
             this.governments.remove(government);
             this.nonPlayingGovernments.add(government);
             ArrayList<Building> buildings = government.getBuildings();

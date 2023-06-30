@@ -150,6 +150,10 @@ public enum TypeOfBuilding {
         return workerInUse;
     }
 
+    public boolean isUnDestroyable () {
+        return this.getHp() == -1;
+    }
+
     @Override
     public String toString() {
         return buildingName;
