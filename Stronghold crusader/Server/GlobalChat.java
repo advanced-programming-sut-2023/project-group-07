@@ -23,9 +23,8 @@ public class GlobalChat {
     private static void loadMessages() {
         FileReader file = null;
         try {
-            URL url = GlobalChat.class.
-                    getResource("/DB/global_chat_messages");
-            file = new FileReader(url.toExternalForm().substring("file:\\".length()));
+            String address = "Stronghold crusader/DB/global_chat_messages";
+            file = new FileReader(address);
 
             Scanner scanner = new Scanner(file);
             if (!scanner.hasNextLine()) {

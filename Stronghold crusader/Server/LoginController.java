@@ -1,5 +1,6 @@
 package Server;
 
+import Client.controller.Controller;
 import Client.controller.Messages;
 import Client.model.RecoveryQuestion;
 import Client.model.User;
@@ -24,12 +25,14 @@ public class LoginController {
         if (!User.isPasswordStrong(password).equals(Messages.STRONG_PASSWORD))
             return OutputMessage.WEEK_PASSWORD;
         if (!User.isUsernameValid(username)) return OutputMessage.INVALID_USERNAME;
-        User user = new User(new User.Information(username,password,email,nickname,""),
-                RecoveryQuestion.FATHERNAME ,
-                "answer");
         try {
+            password = Controller.toSHA256(password);
+            User user = new User(new User.Information(username, password, email, nickname, ""),
+                    RecoveryQuestion.FATHERNAME,
+                    "answer");
+
             User.addUser(user);
-        } catch (IOException e) {
+        } catch (IOException | NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
         return OutputMessage.SUCCESSFUL;

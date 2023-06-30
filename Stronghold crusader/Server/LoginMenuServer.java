@@ -38,6 +38,7 @@ public class LoginMenuServer {
         String regex = "login -u (?<username>\\S+) -p (?<password>\\S+)";
         try {
             dataOutputStream.writeUTF(regex);
+            regex = "\\s*" + regex + "\\s*";
             while (true) {
                 String input = dataInputStream.readUTF();
                 Matcher matcher = Pattern.compile(regex).matcher(input);
@@ -58,6 +59,7 @@ public class LoginMenuServer {
         String regex = "sign up -u (?<username>\\S+) -n (?<nickname>\\S+) -p (?<password>\\S+) -e (?<email>\\S+)";
         try {
             dataOutputStream.writeUTF(regex);
+            regex = "\\s*" + regex + "\\s*";
             while (true) {
                 String input = dataInputStream.readUTF();
                 Matcher matcher = Pattern.compile(regex).matcher(input);

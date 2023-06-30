@@ -22,9 +22,8 @@ public class GroupChat {
     private static void loadChats() {
         FileReader file = null;
         try {
-            URL url = GlobalChat.class.
-                    getResource("/DB/group_chats");
-            file = new FileReader(url.toExternalForm().substring("file:\\".length()));
+            String address = "Stronghold crusader/DB/group_chat";
+            file = new FileReader(address);
 
             Scanner scanner = new Scanner(file);
             if (!scanner.hasNextLine()) {
