@@ -79,10 +79,11 @@ public class GameGraphics extends Application {
     private ComboBox<TradeRequest> availableTradesComboBox;
     private ComboBox<TradeRequest> tradesHistoryComboBox;
     private ArrayList<Rectangle> selectionRectangles = new ArrayList<>();
-
+    private ImageView attackBanner;
     private ArrayList<PopularityFactor> popularityFactors = new ArrayList<>();
     private CursorAnimation cursorAnimation;
     private StackPane miniMapPane;
+    private Camera camera = new PerspectiveCamera(true);
 
     @Override
     public void start(Stage stage) {
@@ -90,6 +91,7 @@ public class GameGraphics extends Application {
         stage.setScene(scene);
         stage.setFullScreen(true);
         stage.show();
+        setCamera();
         mapPaneEvent();
         buildingMenu();
         setUnitTimeline();
@@ -103,8 +105,18 @@ public class GameGraphics extends Application {
         setShortcutHbox(attackUnitShortcutHbox, "Attack to: ");
         setDetailsShortcut();
         Controller.createChatMenu(rootPane);
+        createAttackBanner();
+        setAttackBanner(true);
         scene.getStylesheets().add(GameGraphics.class.getResource("/CSS/slideBar.css").toExternalForm());
         setCheatShortCuts(scene);
+    }
+
+    private void setCamera() {
+        camera.translateXProperty().set(0);
+        camera.translateYProperty().set(0);
+        camera.translateZProperty().set(-3000);
+        camera.setNearClip(0);
+        camera.setFarClip(2000);
     }
 
     private void setDetailsShortcut() {
@@ -151,6 +163,20 @@ public class GameGraphics extends Application {
         addCoordinatesListener(row);
         addCoordinatesListener(column);
         return new TextField[] {row, column};
+    }
+
+    private void createAttackBanner() {
+        attackBanner = new ImageView(GameGraphics.class.getResource("/Images/Game/attackBanner.png").toString());
+        attackBanner.setLayoutX(600);
+        attackBanner.setLayoutY(Main.screenHeight - 300);
+        attackBanner.setOpacity(0.7);
+    }
+
+    private void setAttackBanner(boolean show) {
+        if (show && !rootPane.getChildren().contains(attackBanner))
+            rootPane.getChildren().add(attackBanner);
+        if (!show && rootPane.getChildren().contains(attackBanner))
+            rootPane.getChildren().remove(attackBanner);
     }
 
     private void addCoordinatesListener(TextField textField) {
