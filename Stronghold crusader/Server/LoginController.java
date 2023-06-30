@@ -13,6 +13,9 @@ public class LoginController {
             throw new RuntimeException(e);
         }
         return user;
+    }
+
+    public static User singUp(String username, String nickname, String password, String email) {
 
     }
 }

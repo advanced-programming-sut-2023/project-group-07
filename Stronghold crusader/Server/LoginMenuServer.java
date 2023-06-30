@@ -55,7 +55,26 @@ public class LoginMenuServer {
     }
 
     private User signUp() {
-        // TODO: 6/29/2023 complete
-        return null;
+        String regex = "sign up -u (?<username>\\S+) -n (?<nickname>\\S+) -p (?<password>\\S+) -e (?<email>\\S+)";
+        try {
+            dataOutputStream.writeUTF(regex);
+            while (true) {
+                String input = dataInputStream.readUTF();
+                Matcher matcher = Pattern.compile(regex).matcher(input);
+                if (!matcher.find()) {
+                    dataOutputStream.writeUTF("invalid input");
+                    continue;
+                }
+                User user = LoginController.singUp(matcher.group("username"),
+                        matcher.group("nickname"),
+                        matcher.group("password"),
+                        matcher.group("email")
+                );
+                if (user == null) dataOutputStream.writeUTF("invalid username or password");
+                else return user;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
