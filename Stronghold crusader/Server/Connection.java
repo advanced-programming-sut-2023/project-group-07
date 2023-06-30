@@ -38,7 +38,7 @@ public class Connection extends Thread {
         while (true) {
             currentUser = new LoginMenuServer(dataOutputStream, dataInputStream).login();
             if (currentUser == null) return;
-            enterMainChatMenu();
+            enterMainMenu();
         }
     }
 
@@ -46,7 +46,7 @@ public class Connection extends Thread {
         return currentUser;
     }
 
-    private void enterMainChatMenu() {
+    private void enterMainMenu() {
         try {
             dataOutputStream.writeUTF("entered main menu");
             while (true) {
