@@ -50,7 +50,7 @@ public class GameGraphics extends Application {
     private StackPane selectBuildingToBeBuilt;
     private Game game;
     private Map map;
-    private GameMenuController gameMenuController = new GameMenuController();
+    private GameMenuController gameMenuController = new GameMenuController(this);
     private VBox messageBar = new VBox(20);
     private HBox moveUnitShortcutHbox = new HBox();
     private HBox attackUnitShortcutHbox = new HBox();
@@ -1257,7 +1257,6 @@ public class GameGraphics extends Application {
                             }
                         }
                     }
-                    eliminateDeadObjects();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -1268,7 +1267,7 @@ public class GameGraphics extends Application {
         rootPane.getChildren().add(button);
     }
 
-    private void eliminateDeadObjects() {
+    public void eliminateDeadObjects() {
         for (PersonPane person : people)
             if (person.getPerson().getHp() <= 0 || person.getPerson().getGovernment().getDefeatedBy() != null)
                 mapPane.getChildren().remove(person);

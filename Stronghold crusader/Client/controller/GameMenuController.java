@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 //import org.mockito.internal.matchers.InstanceOf;
 
+import Client.view.GameGraphics;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.control.ProgressBar;
@@ -14,6 +15,10 @@ import Client.model.*;
 
 public class GameMenuController {
     private static Game game = Controller.currentGame;
+    private GameGraphics gameGraphics;
+    public GameMenuController (GameGraphics gameGraphics) {
+        this.gameGraphics = gameGraphics;
+    }
     private boolean[][] isDestinationOfUnit = new boolean[game.getMap().getSize()][game.getMap().getSize()];
     public void refreshGame() {
         this.game = Controller.currentGame;
@@ -576,7 +581,7 @@ public class GameMenuController {
 
     public String nextTurn() throws IOException {
         String result = "";
-        result += game.nextTurn();
+        result += game.nextTurn(gameGraphics);
         if (game.gameOver())
             result += game.endGame();
         return result.equals("") ? null : result;
