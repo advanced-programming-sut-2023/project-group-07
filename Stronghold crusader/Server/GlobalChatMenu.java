@@ -20,7 +20,6 @@ public class GlobalChatMenu {
         this.dataInputStream = dataInputStream;
         this.currentUser = currentUser;
         globalChatController = new GlobalChatController();
-
     }
 
     public void globalChat() {
