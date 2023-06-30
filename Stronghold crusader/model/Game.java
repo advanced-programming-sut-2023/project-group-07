@@ -1,19 +1,11 @@
 package model;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import static model.TypeOfBuilding.CAGED_WAR_DOGS;
-import static org.mockito.ArgumentMatchers.contains;
-
 import java.io.IOException;
-
-import controller.Controller;
-import controller.Messages;
-import net.bytebuddy.implementation.bytecode.ByteCodeAppender.Size;
 
 public class Game {
     private final Map map;

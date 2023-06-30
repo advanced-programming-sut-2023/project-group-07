@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.mockito.internal.matchers.InstanceOf;
-
 import model.*;
 
 public class GameMenuController {

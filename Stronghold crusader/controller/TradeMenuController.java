@@ -6,7 +6,6 @@ import model.Resources;
 import model.TradeRequest;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 public class TradeMenuController {
 

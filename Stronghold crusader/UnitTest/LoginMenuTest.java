@@ -6,7 +6,6 @@ import model.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.Assert;
-import view.LoginMenu;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;

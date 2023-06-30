@@ -1,7 +1,6 @@
 package UnitTest;
 
 import controller.Controller;
-import controller.LoginMenuController;
 import controller.Messages;
 import controller.ProfileMenuController;
 import model.User;
@@ -12,8 +11,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ConcurrentModificationException;
-import java.util.Currency;
 
 public class ProfileMenuTest {
      /*

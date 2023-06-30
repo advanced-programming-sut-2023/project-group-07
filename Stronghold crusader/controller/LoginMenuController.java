@@ -5,17 +5,12 @@ import com.google.gson.*;
 import model.User;
 import model.Slogan;
 import view.LoginMenu;
-import controller.Controller;
 import model.RecoveryQuestion;
 
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Random;
-import java.util.Scanner;
 import java.util.Collections;
-import java.util.Arrays;
 import java.util.ArrayList;
 
 public class LoginMenuController {
@@ -124,7 +119,7 @@ public class LoginMenuController {
         if (!LoginMenu.checkCaptcha())
             return Messages.EXIT_CAPTCHA;
         password = Controller.toSHA256(password);
-        User user = new User(username, password, email, nickname, slogan, recoveryQuestion, answer);
+        User user = new User(new User.Information(username,password,email,nickname,slogan), recoveryQuestion, answer);
         User.addUser(user);
         return Messages.SIGNUP_SUCCESSFUL;
     }

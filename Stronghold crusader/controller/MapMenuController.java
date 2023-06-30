@@ -6,7 +6,6 @@ import view.Colors;
 import java.util.ArrayList;
 
 import model.MapPixel;
-import model.Texture;
 import model.Government;
 
 public class MapMenuController {

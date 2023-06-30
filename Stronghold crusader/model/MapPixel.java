@@ -1,7 +1,6 @@
 package model;
 
 import java.util.*;
-import model.Texture;
 
 public class MapPixel {
     private Texture texture;

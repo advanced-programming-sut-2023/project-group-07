@@ -1,108 +1,127 @@
-package view;
+package Server;
 
+import controller.*;
+import model.Game;
+import model.Resources;
+import model.User;
+import view.MapMenu;
+import view.Shop;
+import view.TradeMenu;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 
-import controller.*;
-
-import model.Resources;
-
-public class GameMenu {
-    private final GameMenuController controller = new GameMenuController();
-    private final Shop shop = new Shop(controller);
-    private final MapMenu mapMenu = new MapMenu();
-    private final TradeMenu tradeMenu = new TradeMenu();
+public class GameMenuServer {
+    User currentUser;
+    DataOutputStream dataOutputStream;
+    DataInputStream dataInputStream;
+    private final GameMenuController gameMenuController;
+    private final ShopServer shopServer;
+    private final MapMenuServer mapMenuServer = new MapMenuServer();
+    private final TradeMenuServer tradeMenuServer = new TradeMenuServer();
+    private final Game game;
     private Scanner scanner;
-
-    public void run(Scanner scanner) throws IOException {
-        controller.refreshGame();
-        this.scanner = scanner;
-        Matcher matcher;
+    public GameMenuServer(DataOutputStream dataOutputStream, DataInputStream dataInputStream,User currentUser,GameMenuController gameMenuController,Game game) {
+        this.gameMenuController=gameMenuController;
+        this.game=game;
+        shopServer = new ShopServer(dataOutputStream,dataInputStream,gameMenuController);
+        this.dataInputStream = dataInputStream;
+        this.dataOutputStream=dataOutputStream;
+        this.currentUser = currentUser;
+    }
+    public void gameHandler() throws IOException {
+        dataOutputStream.writeUTF("you have entered the game");
         while (true) {
-            String input = scanner.nextLine();
-            if (GameMenuCommands.getMatcher(input, GameMenuCommands.DROP_BUILDING) != null)
-                System.out.println(dropBuilding(input));
-            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_CURRENT_PLAYER) != null)
-                System.out.println(controller.showCurrentPlayer());
-            else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_MAP) != null)
-                mapMenu.run(scanner, input);
-            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_BUILDING) != null)
-                System.out.println(selectBuilding(input));
-            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_PIXEL_UNIT) != null)
-                System.out.println(selectPixelUnit(input));
-            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_REGION_UNIT) != null)
-                System.out.println(selectRegionUnit(input));
-            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.BUILD_SIEGE_WEAPON) != null)
-                System.out.println(buildSiegeWeapon(input));
-            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.MOVE_UNIT) != null)
-                System.out.println(moveUnit(input));
-            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.PATROL_UNIT) != null)
-                System.out.println(patrolUnit(input));
-            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.STOP_UNIT) != null)
-                System.out.println(stopUnit());
-            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SET_STANCE) != null)
-                System.out.println(setStance(input));
-            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY) != null)
-                System.out.println(attackEnemy(input));
-            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_BUILDING) != null)
-                System.out.println(attackBuilding(input));
-            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.AREA_ATTACK) != null)
-                System.out.println(areaAttack(input));
-            else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.POUR_OIL)) != null)
-                System.out.println(pourOil(matcher));
-            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.GIVE_OIL) != null)
-                System.out.println(giveOil());
-            else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.DIG_TUNNEL)) != null
-                    && matcher.group("x") != null && matcher.group("y") != null)
-                System.out.println(digTunnel(matcher));
-            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.DISBAND_UNIT) != null)
-                System.out.println(disbandUnit());
-            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULARITY) != null)
-                System.out.println(getPopularity());
-            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULARITY_FACTORS) != null)
-                System.out.println(getPopularityFactors());
-            else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.FEAR_RATE)) != null)
-                System.out.println(setFearRate(matcher));
-            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.FEAR_RATE_SHOW) != null)
-                System.out.println(showFearRate());
-            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.FOOD_RATE_SHOW) != null)
-                System.out.println(showFoodRate());
-            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_FOOD_LIST) != null)
-                System.out.print(getFoodList());
-            else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.FOOD_RATE)) != null)
-                System.out.println(setFoodList(matcher));
-            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_GOLD) != null)
-                System.out.println(showGold());
-            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.TAX_RATE_SHOW) != null)
-                System.out.println(showTaxRate());
-            else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.TAX_RATE)) != null)
-                System.out.println(setTaxRate(matcher));
-            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULATION) != null)
-                System.out.println(getPopulation());
-            else if (GameMenuCommands.getMatcher(input, GameMenuCommands.NEXT_TURN) != null) {
-                String returnMessage = controller.nextTurn();
-                if (returnMessage != null && returnMessage.contains("GAME OVER!")) {
-                    System.out.println(returnMessage);
-                    System.out.print(Colors.YELLOW_BOLD);
-                    System.out.print("Reseting maps and users...");
-                    controller.resetMapsAndUsers();
-                    System.out.print("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
-                    System.out.print(Colors.RESET);
-                    return;
-                } else if (returnMessage != null)
-                    System.out.println(returnMessage + controller.nextTurnMessage());
-                else
-                    System.out.println(controller.nextTurnMessage());
-            } else if (GameMenuCommands.getMatcher(input, GameMenuCommands.ENTER_TRADE_MENU) != null) {
-                System.out.println("You have entered trade menu");
-                tradeMenu.run(scanner);
-            } else
-                System.out.println("Invalid command!");
+            if(dataInputStream.available()!=0){
+                Matcher matcher;
+                String input = dataInputStream.readUTF();
+                if(!game.getCurrentGovernment().getUser().equals(currentUser))
+                    dataOutputStream.writeUTF("it's not your turn!");
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.DROP_BUILDING) != null)
+                    dataOutputStream.writeUTF(dropBuilding(input));
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_CURRENT_PLAYER) != null)
+                    dataOutputStream.writeUTF(gameMenuController.showCurrentPlayer());
+                else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_MAP) != null)
+                    mapMenuServer.run(dataOutputStream,dataInputStream, input);
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_BUILDING) != null)
+                    dataOutputStream.writeUTF(selectBuilding(input));
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_PIXEL_UNIT) != null)
+                    dataOutputStream.writeUTF(selectPixelUnit(input));
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_REGION_UNIT) != null)
+                    dataOutputStream.writeUTF(selectRegionUnit(input));
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.BUILD_SIEGE_WEAPON) != null)
+                    dataOutputStream.writeUTF(buildSiegeWeapon(input));
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.MOVE_UNIT) != null)
+                    dataOutputStream.writeUTF(moveUnit(input));
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.PATROL_UNIT) != null)
+                    dataOutputStream.writeUTF(patrolUnit(input));
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.STOP_UNIT) != null)
+                    dataOutputStream.writeUTF(stopUnit());
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SET_STANCE) != null)
+                    dataOutputStream.writeUTF(setStance(input));
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY) != null)
+                    dataOutputStream.writeUTF(attackEnemy(input));
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_BUILDING) != null)
+                    dataOutputStream.writeUTF(attackBuilding(input));
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.AREA_ATTACK) != null)
+                    dataOutputStream.writeUTF(areaAttack(input));
+                else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.POUR_OIL)) != null)
+                    dataOutputStream.writeUTF(pourOil(matcher));
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.GIVE_OIL) != null)
+                    dataOutputStream.writeUTF(giveOil());
+                else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.DIG_TUNNEL)) != null
+                        && matcher.group("x") != null && matcher.group("y") != null)
+                    dataOutputStream.writeUTF(digTunnel(matcher));
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.DISBAND_UNIT) != null)
+                    dataOutputStream.writeUTF(disbandUnit());
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULARITY) != null)
+                    dataOutputStream.writeUTF(getPopularity());
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULARITY_FACTORS) != null)
+                    dataOutputStream.writeUTF(getPopularityFactors());
+                else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.FEAR_RATE)) != null)
+                    dataOutputStream.writeUTF(setFearRate(matcher));
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.FEAR_RATE_SHOW) != null)
+                    dataOutputStream.writeUTF(showFearRate());
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.FOOD_RATE_SHOW) != null)
+                    dataOutputStream.writeUTF(showFoodRate());
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_FOOD_LIST) != null)
+                    dataOutputStream.writeUTF(getFoodList());
+                else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.FOOD_RATE)) != null)
+                    dataOutputStream.writeUTF(setFoodList(matcher));
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_GOLD) != null)
+                    dataOutputStream.writeUTF(showGold());
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.TAX_RATE_SHOW) != null)
+                    dataOutputStream.writeUTF(showTaxRate());
+                else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.TAX_RATE)) != null)
+                    dataOutputStream.writeUTF(setTaxRate(matcher));
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULATION) != null)
+                    dataOutputStream.writeUTF(getPopulation());
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.NEXT_TURN) != null) {
+                    String returnMessage = gameMenuController.nextTurn();
+                    if (returnMessage != null && returnMessage.contains("GAME OVER!")) {
+                        dataOutputStream.writeUTF(returnMessage);
+                        dataOutputStream.writeUTF("\033[1;33m");
+                        dataOutputStream.writeUTF("Reseting maps and users...");
+                        gameMenuController.resetMapsAndUsers();
+                        dataOutputStream.writeUTF("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+                        dataOutputStream.writeUTF("\033[0m");
+                        return;
+                    } else if (returnMessage != null)
+                        dataOutputStream.writeUTF(returnMessage + gameMenuController.nextTurnMessage());
+                    else
+                        dataOutputStream.writeUTF(gameMenuController.nextTurnMessage());
+                } else if (GameMenuCommands.getMatcher(input, GameMenuCommands.ENTER_TRADE_MENU) != null) {
+                    dataOutputStream.writeUTF("You have entered trade menu");
+                    tradeMenuServer.run(dataInputStream,dataOutputStream);
+                } else
+                    dataOutputStream.writeUTF("Invalid command!");
+            }
         }
-
     }
 
     private String setFearRate(Matcher matcher) {
@@ -112,7 +131,7 @@ public class GameMenu {
         } catch (NumberFormatException e) {
             return "Number is not valid.";
         }
-        switch (controller.setFearRate(rate)) {
+        switch (gameMenuController.setFearRate(rate)) {
             case INVALID_RATE:
                 return "Rate is not in valid range.";
             case SET_FEAR_RATE_SUCCESSFUL:
@@ -124,17 +143,17 @@ public class GameMenu {
     }
 
     private String showFoodRate() {
-        return "Your food rate is : " + controller.getFoodRate();
+        return "Your food rate is : " + gameMenuController.getFoodRate();
     }
 
     private String showGold() {
-        return "You have " + controller.getGold() + " gold.";
+        return "You have " + gameMenuController.getGold() + " gold.";
     }
 
     private String digTunnel(Matcher matcher) {
         int x = Integer.parseInt(matcher.group("x")),
                 y = Integer.parseInt(matcher.group("y"));
-        switch (controller.digTunnel(x - 1, y - 1)) {
+        switch (gameMenuController.digTunnel(x - 1, y - 1)) {
             case INVALID_COORDINATES:
                 return "Coordinates are invalid.";
             case NO_AVAILABLE_TUNNELER:
@@ -148,7 +167,7 @@ public class GameMenu {
     }
 
     private String giveOil() {
-        switch (controller.giveOil()) {
+        switch (gameMenuController.giveOil()) {
             case DONT_HAVE_OIL_SMELTER:
                 return "You don't have oil smelter.";
             case NO_ONE_TO_GIVE_OIL_TO:
@@ -166,7 +185,7 @@ public class GameMenu {
         Directions direction = Directions.getByName(directionString);
         if (direction == null)
             return "Invalid direction.";
-        switch (controller.pourOil(direction)) {
+        switch (gameMenuController.pourOil(direction)) {
             case NO_ONE_HAS_OIL:
                 return "There is no engineer with oil in selected units.";
             case BAD_DIRECTION:
@@ -180,7 +199,7 @@ public class GameMenu {
     }
 
     private String getPopularityFactors() {
-        ArrayList<Integer> factorsInOrder = controller.getPopularityFactors();
+        ArrayList<Integer> factorsInOrder = gameMenuController.getPopularityFactors();
         return "Popularity factors:\n" +
                 "Food : " + factorsInOrder.get(0) + "\n" +
                 "Tax : " + factorsInOrder.get(1) + "\n" +
@@ -192,7 +211,7 @@ public class GameMenu {
     private String setFoodList(Matcher matcher) {
         String rateString = Controller.trimmer(matcher.group("rate"));
         int rate = Integer.parseInt(rateString);
-        switch (controller.setFoodList(rate)) {
+        switch (gameMenuController.setFoodList(rate)) {
             case INVALID_RATE:
                 return "Rate is not in valid range.";
             case SET_FOOD_RATE_SUCCESSFUL:
@@ -207,7 +226,7 @@ public class GameMenu {
 
     private String getFoodList() {
         String result = "";
-        HashMap<Resources, Integer> foodList = controller.getFoodList();
+        HashMap<Resources, Integer> foodList = gameMenuController.getFoodList();
         for (Resources food : foodList.keySet()) {
             result += "you have " + foodList.get(food) + " of " + food.getName() + "\n";
         }
@@ -215,11 +234,11 @@ public class GameMenu {
     }
 
     private String getPopulation() {
-        return "Your population is " + controller.getPopulation();
+        return "Your population is " + gameMenuController.getPopulation();
     }
 
     private String getPopularity() {
-        return "Your popularity is : " + controller.getPopularity();
+        return "Your popularity is : " + gameMenuController.getPopularity();
 
     }
 
@@ -230,7 +249,7 @@ public class GameMenu {
         } catch (NumberFormatException e) {
             return "Invalid number format.";
         }
-        switch (controller.setTax(rate)) {
+        switch (gameMenuController.setTax(rate)) {
             case INVALID_RATE:
                 return "Rate is not in valid range";
             case SETTING_TAX_SUCCESSFUL:
@@ -242,12 +261,12 @@ public class GameMenu {
     }
 
     private String showFearRate() {
-        return "Your fear rate: " + controller.showFearRate();
+        return "Your fear rate: " + gameMenuController.showFearRate();
     }
 
     private String showTaxRate() {
-        return ("Your tax rate: " + controller.showTaxRate() + " coins\n" +
-                "Popularity effect: " + controller.getTaxEffectOnPopularity());
+        return ("Your tax rate: " + gameMenuController.showTaxRate() + " coins\n" +
+                "Popularity effect: " + gameMenuController.getTaxEffectOnPopularity());
     }
 
     private String dropBuilding(String input) {
@@ -263,7 +282,7 @@ public class GameMenu {
         int row = Integer.parseInt(rowMatcher.group("row")) - 1;
         int column = Integer.parseInt(columnMatcher.group("column")) - 1;
         String type = typeMatcher.group("type").trim();
-        switch (controller.dropBuilding(row, column, type)) {
+        switch (gameMenuController.dropBuilding(row, column, type)) {
             case INVALID_BUILDING_NAME:
                 return "Invalid building name!";
             case INVALID_ROW_OR_COLUMN:
@@ -292,7 +311,7 @@ public class GameMenu {
         return null;
     }
 
-    private String selectBuilding(String input) {
+    private String selectBuilding(String input) throws IOException {
         int row, column;
         if (GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_BUILDING).group("row1") == null) {
             row = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_BUILDING).group("row2"));
@@ -303,12 +322,12 @@ public class GameMenu {
             column = Integer
                     .parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_BUILDING).group("column1"));
         }
-        Messages returnMessage = controller.selectBuilding(row, column);
+        Messages returnMessage = gameMenuController.selectBuilding(row, column);
         if (returnMessage.equals(Messages.NO_BUILDING_HERE))
             return "No building here!";
         else if (returnMessage.equals(Messages.ENEMY_BUILDING))
             return "Enemy building!";
-        System.out.println("You have entered " + controller.getSelectedBuilding() + "!");
+        dataOutputStream.writeUTF("You have entered " + gameMenuController.getSelectedBuilding() + "!");
         switch (returnMessage) {
             case ENTERED_TOWER:
             case ENTERED_GATEHOUSE:
@@ -321,7 +340,7 @@ public class GameMenu {
                 armsWorkshop();
                 break;
             case ENTERED_MARKET:
-                shop.run(scanner);
+                shopServer.run();
                 break;
             case ENTERED_BUILDING_SUCCESSFULLY:
                 enteredBuilding();
@@ -331,145 +350,145 @@ public class GameMenu {
         return "";
     }
 
-    private void towerAndGate(boolean isGate) {
+    private void towerAndGate(boolean isGate) throws IOException {
         while (true) {
-            String command = scanner.nextLine();
+            String command = dataInputStream.readUTF();
             if (GameMenuCommands.getMatcher(command, GameMenuCommands.REPAIR) != null) {
-                Messages message = controller.repair();
+                Messages message = gameMenuController.repair();
                 switch (message) {
                     case NOT_ENOUGH_RESOURCES:
-                        System.out.println("Not enough resources!");
+                        dataOutputStream.writeUTF("Not enough resources!");
                         break;
                     case THERES_AN_ENEMY_CLOSE_BY:
-                        System.out.println("Can't repair! There's an enemy close by!");
+                        dataOutputStream.writeUTF("Can't repair! There's an enemy close by!");
                         break;
                     case ALREADY_AT_FULL_HP:
-                        System.out.println("This building already has maximum HP!");
+                        dataOutputStream.writeUTF("This building already has maximum HP!");
                         break;
                     case REPAIRED_SUCCESSFULLY:
-                        controller.repair();
-                        System.out.println("Repaired successfully!");
+                        gameMenuController.repair();
+                        dataOutputStream.writeUTF("Repaired successfully!");
                         break;
                     default:
                         break;
                 }
             } else if (GameMenuCommands.getMatcher(command, GameMenuCommands.CLOSE_GATE) != null && isGate) {
-                Messages message = controller.closeGate();
+                Messages message = gameMenuController.closeGate();
                 switch (message) {
                     case GATE_ALREADY_CLOSED:
-                        System.out.println("Gate already closed!");
+                        dataOutputStream.writeUTF("Gate already closed!");
                         break;
                     case GATE_HAS_BEEN_CLOSED:
-                        System.out.println("Gate has been closed!");
+                        dataOutputStream.writeUTF("Gate has been closed!");
                         break;
                     default:
                         break;
                 }
             } else if (GameMenuCommands.getMatcher(command, GameMenuCommands.OPEN_GATE) != null && isGate) {
-                Messages message = controller.openGate();
+                Messages message = gameMenuController.openGate();
                 switch (message) {
                     case GATE_ALREADY_OPEN:
-                        System.out.println("Gate is already open!");
+                        dataOutputStream.writeUTF("Gate is already open!");
                         break;
                     case GATE_HAS_BEEN_OPENED:
-                        System.out.println("Gate has been opened!");
+                        dataOutputStream.writeUTF("Gate has been opened!");
                         break;
                     default:
                         break;
                 }
             } else if (GameMenuCommands.getMatcher(command, GameMenuCommands.EXIT) != null) {
-                System.out.print("Exit was successful!");
+                dataOutputStream.writeUTF("Exit was successful!");
                 break;
             } else
-                System.out.println("Invalid command!");
+                dataOutputStream.writeUTF("Invalid command!");
         }
     }
 
-    private void militaryCamp() {
+    private void militaryCamp() throws IOException {
         while (true) {
-            String command = scanner.nextLine();
+            String command = dataInputStream.readUTF();
             if (GameMenuCommands.getMatcher(command, GameMenuCommands.CREATE_UNIT) != null) {
                 Matcher typeMatcher = GameMenuCommands.getMatcher(command, GameMenuCommands.TYPE);
                 Matcher countMatcher = GameMenuCommands.getMatcher(command, GameMenuCommands.COUNT);
                 if (typeMatcher == null) {
-                    System.out.println("Enter the unit type!");
+                    dataOutputStream.writeUTF("Enter the unit type!");
                     continue;
                 }
                 if (countMatcher == null) {
-                    System.out.println("Enter the unit count!");
+                    dataOutputStream.writeUTF("Enter the unit count!");
                     continue;
                 }
                 String type = typeMatcher.group("type").trim();
                 int count = Integer.parseInt(countMatcher.group("count"));
-                switch (controller.createUnit(type, count)) {
+                switch (gameMenuController.createUnit(type, count)) {
                     case INVALID_UNIT_NAME:
-                        System.out.println("Invalid unit name!");
+                        dataOutputStream.writeUTF("Invalid unit name!");
                         break;
                     case INVALID_NUMBER:
-                        System.out.println("Invalid number!");
+                        dataOutputStream.writeUTF("Invalid number!");
                         break;
                     case NOT_ENOUGH_PEASANTS:
-                        System.out.println("Not enough peasants!");
+                        dataOutputStream.writeUTF("Not enough peasants!");
                         break;
                     case NOT_ENOUGH_GOLD:
-                        System.out.println("Not enough gold!");
+                        dataOutputStream.writeUTF("Not enough gold!");
                         break;
                     case NOT_ENOUGH_RESOURCES:
-                        System.out.println("Not enough resources!");
+                        dataOutputStream.writeUTF("Not enough resources!");
                         break;
                     case CANT_CREATE_THIS_UNIT_HERE:
-                        System.out.println("Can't create this unit here!");
+                        dataOutputStream.writeUTF("Can't create this unit here!");
                         break;
                     case UNIT_CREATED_SUCCESSFULLY:
-                        System.out.println("Unit created successfully!");
+                        dataOutputStream.writeUTF("Unit created successfully!");
                         break;
                     default:
                         break;
                 }
             } else if (GameMenuCommands.getMatcher(command, GameMenuCommands.SHOW_UNITS) != null) {
-                System.out.print(controller.getUnitsInfo(controller.getSelectedBuilding()));
+                dataOutputStream.writeUTF(gameMenuController.getUnitsInfo(gameMenuController.getSelectedBuilding()));
             } else if (GameMenuCommands.getMatcher(command, GameMenuCommands.CHANGE_WORKING_STATE) != null
-                    && controller.getSelectedBuilding().equals("cathedral")) {
-                System.out.println("Working state changed successfully!");
-                controller.changeWorkingState();
+                    && gameMenuController.getSelectedBuilding().equals("cathedral")) {
+                dataOutputStream.writeUTF("Working state changed successfully!");
+                gameMenuController.changeWorkingState();
             } else if (GameMenuCommands.getMatcher(command, GameMenuCommands.EXIT) != null) {
-                System.out.print("Exit was successful!");
+                dataOutputStream.writeUTF("Exit was successful!");
                 break;
             } else {
-                System.out.println("Invalid command!");
+                dataOutputStream.writeUTF("Invalid command!");
             }
         }
     }
 
-    private void armsWorkshop() {
+    private void armsWorkshop() throws IOException {
         while (true) {
-            String command = scanner.nextLine();
+            String command = dataInputStream.readUTF();
             if (GameMenuCommands.getMatcher(command, GameMenuCommands.CHANGE_ARMS) != null) {
-                controller.changeArms();
-                System.out.println("This workshop is now creating " + controller.getResources() + "!");
+                gameMenuController.changeArms();
+                dataOutputStream.writeUTF("This workshop is now creating " + gameMenuController.getResources() + "!");
             } else if (GameMenuCommands.getMatcher(command, GameMenuCommands.CHANGE_WORKING_STATE) != null) {
-                controller.changeWorkingState();
-                System.out.println("Working state changed successfully!");
+                gameMenuController.changeWorkingState();
+                dataOutputStream.writeUTF("Working state changed successfully!");
             } else if (GameMenuCommands.getMatcher(command, GameMenuCommands.EXIT) != null) {
-                System.out.print("Exit was successful!");
+                dataOutputStream.writeUTF("Exit was successful!");
                 break;
             } else {
-                System.out.println("Invalid command!");
+                dataOutputStream.writeUTF("Invalid command!");
             }
         }
     }
 
-    private void enteredBuilding() {
+    private void enteredBuilding() throws IOException {
         while (true) {
-            String command = scanner.nextLine();
+            String command = dataInputStream.readUTF();
             if (GameMenuCommands.getMatcher(command, GameMenuCommands.CHANGE_WORKING_STATE) != null) {
-                System.out.println("Working state changed successfully!");
-                controller.changeWorkingState();
+                dataOutputStream.writeUTF("Working state changed successfully!");
+                gameMenuController.changeWorkingState();
             } else if (GameMenuCommands.getMatcher(command, GameMenuCommands.EXIT) != null) {
-                System.out.print("Exit was successful!");
+                dataOutputStream.writeUTF("Exit was successful!");
                 break;
             } else {
-                System.out.println("Invalid command!");
+                dataOutputStream.writeUTF("Invalid command!");
             }
         }
     }
@@ -482,7 +501,7 @@ public class GameMenu {
             return checkCoordinates;
         int row = Integer.parseInt(rowMatcher.group("row")) - 1;
         int column = Integer.parseInt(columnMatcher.group("column")) - 1;
-        switch (controller.selectUnit(row, column, row, column)) {
+        switch (gameMenuController.selectUnit(row, column, row, column)) {
             case INVALID_COORDINATES:
                 return "Invalid Coordinates!";
             case NO_UNITS_HERE:
@@ -508,7 +527,7 @@ public class GameMenu {
         int fcolumn = Integer.parseInt(y1Matcher.group("fcolumn")) - 1;
         int srow = Integer.parseInt(x2Matcher.group("srow")) - 1;
         int scolumn = Integer.parseInt(y2Matcher.group("scolumn")) - 1;
-        switch (controller.selectUnit(frow, fcolumn, srow, scolumn)) {
+        switch (gameMenuController.selectUnit(frow, fcolumn, srow, scolumn)) {
             case INVALID_COORDINATES:
                 return "Invalid Coordinates!";
             case UNIT_SELECTED_SUCCESSFULLY:
@@ -527,7 +546,7 @@ public class GameMenu {
             return checkCoordinates;
         int row = Integer.parseInt(rowMatcher.group("row"));
         int column = Integer.parseInt(columnMatcher.group("column"));
-        switch (controller.moveUnit(row, column)) {
+        switch (gameMenuController.moveUnit(row, column)) {
             case INVALID_COORDINATES:
                 return "Invalid coordinates!";
             case CANT_MOVE_UNITS_TO_THIS_LOCATION:
@@ -555,7 +574,7 @@ public class GameMenu {
         int fcolumn = Integer.parseInt(y1Matcher.group("fcolumn"));
         int srow = Integer.parseInt(x2Matcher.group("srow"));
         int scolumn = Integer.parseInt(y2Matcher.group("scolumn"));
-        switch (controller.patrolUnit(frow, fcolumn, srow, scolumn)) {
+        switch (gameMenuController.patrolUnit(frow, fcolumn, srow, scolumn)) {
             case INVALID_COORDINATES:
                 return "Invalid coordinates!";
             case CANT_MOVE_UNITS_TO_THIS_LOCATION:
@@ -571,7 +590,7 @@ public class GameMenu {
     }
 
     public String stopUnit() {
-        switch (controller.stopUnit()) {
+        switch (gameMenuController.stopUnit()) {
             case UNIT_STOPPED_SUCCESSFULLY:
                 return "Units stopped successfully!";
             default:
@@ -592,7 +611,7 @@ public class GameMenu {
         int row = Integer.parseInt(rowMatcher.group("row")) - 1;
         int column = Integer.parseInt(columnMatcher.group("column")) - 1;
         String stance = stanceMatcher.group("stance");
-        switch (controller.setStance(row, column, stance)) {
+        switch (gameMenuController.setStance(row, column, stance)) {
             case INVALID_STANCE:
                 return "Invalid stance!";
             case INVALID_COORDINATES:
@@ -611,7 +630,7 @@ public class GameMenu {
         int row = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY).group("row")) - 1;
         int column = Integer.parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY).group("column"))
                 - 1;
-        switch (controller.attackEnemy(row, column)) {
+        switch (gameMenuController.attackEnemy(row, column)) {
             case INVALID_COORDINATES:
                 return "Invalid coordinates!";
             case NO_ENEMY_HERE:
@@ -631,7 +650,7 @@ public class GameMenu {
                 - 1;
         int column = Integer
                 .parseInt(GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_BUILDING).group("column")) - 1;
-        switch (controller.attackBuilding(row, column)) {
+        switch (gameMenuController.attackBuilding(row, column)) {
             case INVALID_COORDINATES:
                 return "Invalid coordinates!";
             case NO_ENEMY_HERE:
@@ -656,7 +675,7 @@ public class GameMenu {
             return checkCoordinates;
         int row = Integer.parseInt(rowMatcher.group("row")) - 1;
         int column = Integer.parseInt(columnMatcher.group("column")) - 1;
-        switch (controller.areaAttack(row, column)) {
+        switch (gameMenuController.areaAttack(row, column)) {
             case NO_UNITS_SELECTED:
                 return "No units selected!";
             case MUST_SELECT_RANGED_UNITS:
@@ -672,7 +691,7 @@ public class GameMenu {
     }
 
     private String disbandUnit() {
-        switch (controller.disbandUnit()) {
+        switch (gameMenuController.disbandUnit()) {
             case NO_UNITS_SELECTED:
                 return "You don't have any selected unit.";
             case UNITS_DISBANDED_SUCCESSFULLY:
@@ -688,7 +707,7 @@ public class GameMenu {
         String type = typeMatcher.group("type").trim();
         if (type == null)
             return "Enter the type!";
-        switch (controller.buildSiegeWeapon(type)) {
+        switch (gameMenuController.buildSiegeWeapon(type)) {
             case INVALID_COORDINATES:
                 return "Invalid coordinates!";
             case INVALID_SIEGE_WEAPON_TYPE:
@@ -705,5 +724,4 @@ public class GameMenu {
         return null;
 
     }
-
 }

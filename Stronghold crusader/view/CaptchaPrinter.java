@@ -2,7 +2,7 @@ package view;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
+
 import controller.Controller;
 
 public class CaptchaPrinter {

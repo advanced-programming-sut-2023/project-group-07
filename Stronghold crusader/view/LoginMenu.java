@@ -1,7 +1,6 @@
 package view;
 
 import controller.LoginMenuCommands;
-import controller.Messages;
 import model.User;
 import controller.LoginMenuController;
 import controller.Controller;
