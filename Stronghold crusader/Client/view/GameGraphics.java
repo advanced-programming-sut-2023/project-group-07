@@ -412,7 +412,6 @@ public class GameGraphics extends Application {
                     cursorAnimation.isPlaying = true;
                 } else if (!isCursorOnGround)
                     resetCursor();
-                System.out.println(stage.getScene().getCursor());
             } else
                 resetCursor();
         });
@@ -1225,6 +1224,13 @@ public class GameGraphics extends Application {
                 try {
                     gameMenuController.nextTurn();
                     updateGovernmentInfo();
+                    for(PersonPane personPane:people){
+                        if(personPane.getPerson() instanceof Unit unit){
+                            if(game.nearestEnemy(unit,unit.range())!=null){
+                                personPane.getPersonAttacking().play();
+                            }
+                        }
+                    }
                     eliminateDeadObjects();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -1249,7 +1255,7 @@ public class GameGraphics extends Application {
                 if (building.getHp() <= -2 || building.getGovernment().getDefeatedBy() != null)
                     mapPane.getChildren().remove(buildingPane);
             } else {
-                pixel = map.getMapPixel(row + 4, column - 2);
+                pixel = map.getMapPixel(row + 2, column);
                 LordColor keep = pixel.getLordKeep();
                 if (game.getGovernmentByColor(keep).getDefeatedBy() != null)
                     mapPane.getChildren().remove(buildingPane);

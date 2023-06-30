@@ -591,7 +591,7 @@ public class Game {
                     SiegeWeapon siegeWeapon = (SiegeWeapon) unit;
                     range = siegeWeapon.getSiegeWeaponType().getRange();
                 }
-                else unit.getType().getRange();
+                else range = unit.getType().getRange();
                 if (!(unit instanceof SiegeWeapon) && unit.getType().getRange() > 1
                         && !map.getMapPixel(unit.currentLocation[0], unit.currentLocation[1]).getBuildings().isEmpty())
                     range = unit.getType().getRange()
@@ -611,8 +611,9 @@ public class Game {
                 int enemyLocation[] = nearestEnemy(unit, range);
                 if (enemyLocation != null) {
                     for (Person person2 : map.getMapPixel(enemyLocation[0], enemyLocation[1]).getPeople()) {
-                        if (!person2.getGovernment().equals(unit.getGovernment()))
+                        if (!person2.getGovernment().equals(unit.getGovernment())){
                             person2.changeHP(-(int) (unit.getDamage() * (1 + government.getFearRate() * 5.0 / 100)));
+                        }
                     }
                     if (getLordInPixel(enemyLocation) != null && getLordInPixel(enemyLocation).getHp() <= 0) {
                         if (getLordInPixel(enemyLocation).getGovernment().getDefeatedBy() == null) {
