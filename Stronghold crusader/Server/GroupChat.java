@@ -63,6 +63,7 @@ public class GroupChat {
 
     public static GroupChat getChat(Set<User> users) {
         for (GroupChat groupChat : groupChats) {
+            if (groupChat.userSet.size() != users.size()) continue;
             boolean flag = true;
             for (Iterator<User> it = users.iterator(); it.hasNext(); ) {
                 User user1 = it.next();
