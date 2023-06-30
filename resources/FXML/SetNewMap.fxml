@@ -1,31 +1,31 @@
-<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<?xml version="1.0" encoding="UTF-8"?>
 
-<!--<?import java.lang.*?>-->
-<!--<?import java.util.*?>-->
-<!--<?import javafx.scene.*?>-->
-<!--<?import javafx.scene.control.*?>-->
-<!--<?import javafx.scene.layout.*?>-->
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<!--<BorderPane xmlns="http://javafx.com/javafx"-->
-<!--            xmlns:fx="http://javafx.com/fxml"-->
-<!--            fx:controller="Client.view.NewMap"-->
-<!--            stylesheets="@../CSS/SignUp.css"-->
-<!--            prefHeight="400.0" prefWidth="600.0">-->
-<!--    <center>-->
-<!--        <VBox alignment="CENTER" spacing="20">-->
-<!--            <GridPane fx:id="menuPane" style="-fx-background-color: darkgray; -fx-border-color: black; -fx-border-width: 5" alignment="CENTER" vgap="20" hgap="15"  prefHeight="530" maxWidth="600">-->
-<!--                <Label GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-font-size: 17" text="Map name"/>-->
-<!--                <TextField GridPane.rowIndex="0" GridPane.columnIndex="1" promptText="map name" maxWidth="200" fx:id="mapName"/>-->
-<!--                <Label GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-font-size: 17" text="Size of new map"/>-->
-<!--                <ComboBox GridPane.rowIndex="1" GridPane.columnIndex="1" prefWidth="150" fx:id="mapSize" onAction="#changeSize"/>-->
-<!--                <Label GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-font-size: 17" text="Number of players"/>-->
-<!--                <ComboBox GridPane.rowIndex="2" GridPane.columnIndex="1" prefWidth="150" fx:id="numberOfPlayers" onAction="#changeNumberOfPlayers"/>-->
-<!--            </GridPane>-->
-<!--            <Label textFill="red" style="-fx-font-size: 15; -fx-background-color: darkgray" fx:id="error"/>-->
-<!--            <Button text="Modify" onMouseClicked="#modify" maxWidth="200"/>-->
-<!--            <Button text="Back" onMouseClicked="#back" maxWidth="200"/>-->
-<!--        </VBox>-->
-<!--    </center>-->
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="Client.view.NewMap"
+            stylesheets="@../CSS/SignUp.css"
+            prefHeight="400.0" prefWidth="600.0">
+    <center>
+        <VBox alignment="CENTER" spacing="20">
+            <GridPane fx:id="menuPane" style="-fx-background-color: darkgray; -fx-border-color: black; -fx-border-width: 5" alignment="CENTER" vgap="20" hgap="15"  prefHeight="530" maxWidth="600">
+                <Label GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-font-size: 17" text="Map name"/>
+                <TextField GridPane.rowIndex="0" GridPane.columnIndex="1" promptText="map name" maxWidth="200" fx:id="mapName"/>
+                <Label GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-font-size: 17" text="Size of new map"/>
+                <ComboBox GridPane.rowIndex="1" GridPane.columnIndex="1" prefWidth="150" fx:id="mapSize" onAction="#changeSize"/>
+                <Label GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-font-size: 17" text="Number of players"/>
+                <ComboBox GridPane.rowIndex="2" GridPane.columnIndex="1" prefWidth="150" fx:id="numberOfPlayers" onAction="#changeNumberOfPlayers"/>
+            </GridPane>
+            <Label textFill="red" style="-fx-font-size: 15; -fx-background-color: darkgray" fx:id="error"/>
+            <Button text="Modify" onMouseClicked="#modify" maxWidth="200"/>
+            <Button text="Back" onMouseClicked="#back" maxWidth="200"/>
+        </VBox>
+    </center>
 
 
-<!--</BorderPane>-->
+</BorderPane>

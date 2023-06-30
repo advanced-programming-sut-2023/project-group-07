@@ -1,23 +1,23 @@
-<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<?xml version="1.0" encoding="UTF-8"?>
 
 
-<!--<?import javafx.scene.control.*?>-->
-<!--<?import javafx.scene.layout.*?>-->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<!--<BorderPane xmlns="http://javafx.com/javafx"-->
-<!--            xmlns:fx="http://javafx.com/fxml"-->
-<!--            fx:controller="Client.view.CreateMapGraphics"-->
-<!--            stylesheets="@../CSS/SignUp.css"-->
-<!--            prefHeight="400.0" prefWidth="600.0">-->
-<!--    <center>-->
-<!--        <VBox alignment="CENTER" spacing="20">-->
-<!--            <AnchorPane fx:id="menuPane"/>-->
-<!--            <Button text="Modify" onMouseClicked="#modify" maxWidth="200"/>-->
-<!--            <Button text="remove" onMouseClicked="#remove" maxWidth="200"/>-->
-<!--            <Button text="New map" onMouseClicked="#newMap" maxWidth="200"/>-->
-<!--            <Button text="Back" onMouseClicked="#back" maxWidth="200"/>-->
-<!--        </VBox>-->
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="Client.view.CreateMapGraphics"
+            stylesheets="@../CSS/SignUp.css"
+            prefHeight="400.0" prefWidth="600.0">
+    <center>
+        <VBox alignment="CENTER" spacing="20">
+            <AnchorPane fx:id="menuPane"/>
+            <Button text="Modify" onMouseClicked="#modify" maxWidth="200"/>
+            <Button text="remove" onMouseClicked="#remove" maxWidth="200"/>
+            <Button text="New map" onMouseClicked="#newMap" maxWidth="200"/>
+            <Button text="Back" onMouseClicked="#back" maxWidth="200"/>
+        </VBox>
 
-<!--    </center>-->
+    </center>
 
-<!--</BorderPane>-->
+</BorderPane>
