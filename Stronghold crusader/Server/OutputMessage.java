@@ -3,6 +3,6 @@ package Server;
 public enum OutputMessage {
     INVALID_ID,
     SUCCESSFUL,
-    NOT_YOUR_MESSAGE
-    ;
+    NOT_YOUR_MESSAGE,
+    USERNAME_EXISTS, EMAIL_EXISTS, WEEK_PASSWORD, INVALID_USERNAME;
 }

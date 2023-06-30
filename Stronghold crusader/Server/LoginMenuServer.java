@@ -65,13 +65,29 @@ public class LoginMenuServer {
                     dataOutputStream.writeUTF("invalid input");
                     continue;
                 }
-                User user = LoginController.singUp(matcher.group("username"),
+                String username = matcher.group("username");
+                OutputMessage message = LoginController.singUp(username,
                         matcher.group("nickname"),
                         matcher.group("password"),
                         matcher.group("email")
                 );
-                if (user == null) dataOutputStream.writeUTF("invalid username or password");
-                else return user;
+                switch (message){
+                    case WEEK_PASSWORD:
+                        dataOutputStream.writeUTF("week password");
+                        break;
+                    case EMAIL_EXISTS:
+                        dataOutputStream.writeUTF("email exists");
+                        break;
+                    case USERNAME_EXISTS:
+                        dataOutputStream.writeUTF("username exists");
+                        break;
+                    case INVALID_USERNAME:
+                        dataOutputStream.writeUTF("invalid username");
+                        break;
+                    case SUCCESSFUL :
+                        dataOutputStream.writeUTF("successful");
+                        return LoginController.getUser(username);
+                }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
