@@ -54,6 +54,7 @@ public class GameGraphics extends Application {
     private VBox messageBar = new VBox(20);
     private HBox moveUnitShortcutHbox = new HBox();
     private HBox attackUnitShortcutHbox = new HBox();
+    private VBox mapPixelDetailsShortcutVbox = new VBox();
     private double oldMouseX;
     private int oldX = -1;
     private double oldMouseY;
@@ -100,9 +101,31 @@ public class GameGraphics extends Application {
         setHoverTimeLine();
         setShortcutHbox(moveUnitShortcutHbox, "Move to: ");
         setShortcutHbox(attackUnitShortcutHbox, "Attack to: ");
+        setDetailsShortcut();
         Controller.createChatMenu(rootPane);
         scene.getStylesheets().add(GameGraphics.class.getResource("/CSS/slideBar.css").toExternalForm());
         setCheatShortCuts(scene);
+    }
+
+    private void setDetailsShortcut() {
+        mapPixelDetailsShortcutVbox.setSpacing(20);
+        mapPixelDetailsShortcutVbox.setAlignment(Pos.CENTER);
+        mapPixelDetailsShortcutVbox.setPrefWidth(350);
+        mapPixelDetailsShortcutVbox.setPrefHeight(350);
+        mapPixelDetailsShortcutVbox.setStyle("-fx-background-color: lightblue");
+        mapPixelDetailsShortcutVbox.setOpacity(0.8);
+        Text text = new Text("Tile coordinates: ");
+        text.setFill(Color.BLACK);
+        HBox hBox = new HBox();
+        hBox.setAlignment(Pos.CENTER);
+        hBox.setSpacing(15);
+        hBox.getChildren().add(text);
+        hBox.getChildren().addAll(getRowAndColumnFields());
+        Label details = new Label();
+        details.setPrefWidth(300);
+        details.setPrefHeight(270);
+        details.setStyle("-fx-border-color: black");
+        mapPixelDetailsShortcutVbox.getChildren().addAll(hBox, details);
     }
 
     private void setShortcutHbox(HBox shortcutHbox, String textForShow) {
@@ -114,13 +137,36 @@ public class GameGraphics extends Application {
         shortcutHbox.setOpacity(0.6);
         Text text = new Text(textForShow);
         text.setFill(Color.WHITE);
+        shortcutHbox.getChildren().add(text);
+        shortcutHbox.getChildren().addAll(getRowAndColumnFields());
+    }
+
+    private TextField[] getRowAndColumnFields() {
         TextField row = new TextField();
         TextField column = new TextField();
         row.setPromptText("row");
         column.setPromptText("column");
         row.setPrefWidth(70);
         column.setPrefWidth(70);
-        shortcutHbox.getChildren().addAll(text, row, column);
+        addCoordinatesListener(row);
+        addCoordinatesListener(column);
+        return new TextField[] {row, column};
+    }
+
+    private void addCoordinatesListener(TextField textField) {
+        textField.textProperty().addListener(((observableValue, s, t1) -> {
+            if (t1.isEmpty())
+                textField.setStyle("-fx-border-color: lightgray");
+            else if (!t1.matches("\\d+"))
+                textField.setStyle("-fx-border-color: red");
+            else {
+                int coordinate = Integer.parseInt(textField.getText());
+                if (coordinate < 1 || coordinate > map.getSize())
+                    textField.setStyle("-fx-border-color: red");
+                else
+                    textField.setStyle("-fx-border-color: lightgray");
+            }
+        }));
     }
 
     private Scene prepareStageElements() {
@@ -143,6 +189,8 @@ public class GameGraphics extends Application {
         messageBar.setLayoutY(300);
         createSelectionArea();
         cursorAnimation = new CursorAnimation(GameGraphics.class.getResource("/Images/Game/Cursors/moveUnit/").toExternalForm(), scene);
+        mapPixelDetailsShortcutVbox.setLayoutX(0);
+        mapPixelDetailsShortcutVbox.setLayoutY(0);
         return scene;
     }
 
@@ -170,7 +218,34 @@ public class GameGraphics extends Application {
                 moveUnitShortcut();
             else if (keyName.equals("A"))
                 attackUnitShortcut();
+            else if (keyName.equals("I"))
+                mapPixelDetailsShortcut();
         });
+    }
+
+    private void mapPixelDetailsShortcut() {
+        if (rootPane.getChildren().contains(mapPixelDetailsShortcutVbox))
+            return;
+        rootPane.getChildren().add(mapPixelDetailsShortcutVbox);
+        mapPixelDetailsShortcutVbox.requestFocus();
+        mapPixelDetailsShortcutVbox.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                if (keyEvent.getCode().getName().equals("Enter")) {
+                    String rowStr = ((TextField) ((HBox) mapPixelDetailsShortcutVbox.getChildren().get(0)).getChildren().get(1)).getText();
+                    String columnStr = ((TextField) ((HBox) mapPixelDetailsShortcutVbox.getChildren().get(0)).getChildren().get(2)).getText();
+                    if (checkCoordinates(rowStr, columnStr)) {
+                        int row = Integer.parseInt(rowStr);
+                        int column = Integer.parseInt(columnStr);
+                        selectTiles(column, row, column, row);
+                        ((Label) mapPixelDetailsShortcutVbox.getChildren().get(1)).setText(map.getMapPixel(row, column).details());
+//                        mapPane.setLayoutX(40 * column - mapPane.getLayoutX());
+//                        mapPane.setLayoutY(40 * row - mapPane.getLayoutY());
+                    }
+                }
+            }
+        });
+
     }
 
     private void attackUnitShortcut() {
@@ -178,7 +253,7 @@ public class GameGraphics extends Application {
             return;
         Rectangle selectionRectangle = selectionRectangles.get(0);
         attackUnitShortcutHbox.setLayoutX(selectionRectangle.getLayoutX());
-        attackUnitShortcutHbox.setLayoutY(selectionRectangle.getLayoutY() + ((selectionRectangle.getLayoutY() < 100) ? 100 : -100));
+        attackUnitShortcutHbox.setLayoutY(selectionRectangle.getLayoutY() + ((selectionRectangle.getLayoutY() < 100) ? 50 : -70));
         if (!mapPane.getChildren().contains(attackUnitShortcutHbox))
             mapPane.getChildren().add(attackUnitShortcutHbox);
         attackUnitShortcutHbox.requestFocus();
@@ -186,7 +261,14 @@ public class GameGraphics extends Application {
             @Override
             public void handle(KeyEvent keyEvent) {
                 if (keyEvent.getCode().getName().equals("Enter")) {
-                    mapPane.getChildren().remove(attackUnitShortcutHbox);
+                    String rowStr = ((TextField) attackUnitShortcutHbox.getChildren().get(1)).getText();
+                    String columnStr = ((TextField) attackUnitShortcutHbox.getChildren().get(2)).getText();
+                    if (checkCoordinates(rowStr, columnStr)) {
+                        mapPane.getChildren().remove(attackUnitShortcutHbox);
+                        int row = Integer.parseInt(rowStr);
+                        int column = Integer.parseInt(columnStr);
+                        moveUnits(row, column);
+                    }
                 }
             }
         });
@@ -197,7 +279,7 @@ public class GameGraphics extends Application {
             return;
         Rectangle selectionRectangle = selectionRectangles.get(0);
         moveUnitShortcutHbox.setLayoutX(selectionRectangle.getLayoutX());
-        moveUnitShortcutHbox.setLayoutY(selectionRectangle.getLayoutY() + ((selectionRectangle.getLayoutY() < 100) ? 100 : -100));
+        moveUnitShortcutHbox.setLayoutY(selectionRectangle.getLayoutY() + ((selectionRectangle.getLayoutY() < 100) ? 50 : -70));
         if (!mapPane.getChildren().contains(moveUnitShortcutHbox))
             mapPane.getChildren().add(moveUnitShortcutHbox);
         moveUnitShortcutHbox.requestFocus();
@@ -205,13 +287,35 @@ public class GameGraphics extends Application {
             @Override
             public void handle(KeyEvent keyEvent) {
                 if (keyEvent.getCode().getName().equals("Enter")) {
-                    mapPane.getChildren().remove(moveUnitShortcutHbox);
-                    int row = Integer.parseInt(((TextField) moveUnitShortcutHbox.getChildren().get(1)).getText());
-                    int column = Integer.parseInt(((TextField) moveUnitShortcutHbox.getChildren().get(2)).getText());
-                    moveUnits(row, column);
+                    String rowStr = ((TextField) moveUnitShortcutHbox.getChildren().get(1)).getText();
+                    String columnStr = ((TextField) moveUnitShortcutHbox.getChildren().get(2)).getText();
+                    if (checkCoordinates(rowStr, columnStr)) {
+                        mapPane.getChildren().remove(moveUnitShortcutHbox);
+                        int row = Integer.parseInt(rowStr);
+                        int column = Integer.parseInt(columnStr);
+                        moveUnits(row, column);
+                    }
                 }
             }
         });
+    }
+
+    private boolean checkCoordinates(String rowStr, String columnStr) {
+        if (rowStr.isEmpty() || columnStr.isEmpty()) {
+            addToMessageBar("There are empty fields!");
+            return false;
+        }
+        if (!rowStr.matches("\\d+") || !columnStr.matches("\\d+")) {
+            addToMessageBar("Enter whole numbers!");
+            return false;
+        }
+        int row = Integer.parseInt(rowStr);
+        int column = Integer.parseInt(columnStr);
+        if (row < 1 || row > map.getSize() || column < 1 || column > map.getSize()) {
+            addToMessageBar("Invalid coordinates");
+            return false;
+        }
+        return true;
     }
 
     private void mouseReleased(Stage stage) {
@@ -248,6 +352,7 @@ public class GameGraphics extends Application {
             if (mouseEvent.getButton() == MouseButton.PRIMARY) {
                 resetSelectionArea();
                 removeTilesSelection();
+                removeDetailsShortcut();
                 oldMouseX = mouseEvent.getX() + Math.abs(mapPane.getLayoutX());
                 oldMouseY = mouseEvent.getY() + Math.abs(mapPane.getLayoutY());
                 Robot robot = new Robot();
@@ -258,6 +363,7 @@ public class GameGraphics extends Application {
             else{
                 resetCursor();
                 removeTilesSelection();
+                removeDetailsShortcut();
             }
         });
     }
@@ -336,7 +442,7 @@ public class GameGraphics extends Application {
         for (int i = x1; i <= x2; i++)
             for (int j = y1; j <= y2; j++) {
                 Rectangle rectangle = new Rectangle(40, 40);
-                rectangle.setFill(Color.DARKGRAY);
+                rectangle.setFill(Color.DARKBLUE);
                 rectangle.setStroke(Color.BLACK);
                 rectangle.setOpacity(0.3);
                 rectangle.setLayoutX(40 * i);
@@ -355,6 +461,11 @@ public class GameGraphics extends Application {
             mapPane.getChildren().remove(moveUnitShortcutHbox);
         if (mapPane.getChildren().contains(attackUnitShortcutHbox))
             mapPane.getChildren().remove(attackUnitShortcutHbox);
+    }
+
+    private void removeDetailsShortcut() {
+        if (rootPane.getChildren().contains(mapPixelDetailsShortcutVbox))
+            rootPane.getChildren().remove(mapPixelDetailsShortcutVbox);
     }
 
     private void setHoverTimeLine() {
@@ -1092,6 +1203,7 @@ public class GameGraphics extends Application {
                     if (mouseEvent.getButton() == MouseButton.PRIMARY) {
                         resetSelectionArea();
                         removeTilesSelection();
+                        removeDetailsShortcut();
                         gameMenuController.getSelectedUnit().clear();
                         selectedUnits.clear();
                         clearStatusBar();
@@ -1112,6 +1224,7 @@ public class GameGraphics extends Application {
             public void handle(MouseEvent mouseEvent) {
                 try {
                     gameMenuController.nextTurn();
+                    updateGovernmentInfo();
                     eliminateDeadObjects();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
