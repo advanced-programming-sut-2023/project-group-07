@@ -1,5 +1,7 @@
 package Client.model;
 
+import Client.view.GameGraphics;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -167,10 +169,10 @@ public class Game {
         }
     }
 
-    public String nextTurn() throws IOException {
+    public String nextTurn(GameGraphics gameGraphics) throws IOException {
         resetAccess();
         indexOfCurrentGovernment = (indexOfCurrentGovernment + 1) % governments.size();
-        String result = (indexOfCurrentGovernment == 0) ? endOfTurn() : "";
+        String result = (indexOfCurrentGovernment == 0) ? endOfTurn(gameGraphics) : "";
         currentGovernment = governments.get(indexOfCurrentGovernment);
         setAccess();
         return result;
@@ -820,7 +822,7 @@ public class Game {
             changePeasant((int) (government.getPopularity() / 10) - 5, government);
     }
 
-    public String endOfTurn() throws IOException {
+    public String endOfTurn(GameGraphics gameGraphics) throws IOException {
         ArrayList<Government> randomGovernments = (ArrayList<Government>) governments.clone();
         Collections.shuffle(randomGovernments);
         for (Government government : randomGovernments) {
@@ -841,6 +843,7 @@ public class Game {
         }
         for (Government government : governments)
             attackAllOthers(government);
+        gameGraphics.eliminateDeadObjects();
         for (Government government : governments) {
             removeEliminatedPeople(government);
             removeEliminatedBuildings(government);

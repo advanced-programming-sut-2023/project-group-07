@@ -11,7 +11,7 @@ import Client.controller.*;
 import Client.model.Resources;
 
 public class GameMenu {
-    private final GameMenuController controller = new GameMenuController();
+    private final GameMenuController controller = new GameMenuController(new GameGraphics());
     private final Shop shop = new Shop(controller);
     private final MapMenu mapMenu = new MapMenu();
     private final TradeMenu tradeMenu = new TradeMenu();
