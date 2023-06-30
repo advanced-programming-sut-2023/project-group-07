@@ -59,6 +59,24 @@ public class Connection extends Thread {
             else if(input.matches("\\s*friendReject (\\w+)\\s*")) {
                 dataOutputStream.writeUTF(rejectFriendRequest(input));
             }
+            else if(input.matches("\\s*showDetails (\\w+)++s*")) {
+                dataOutputStream.writeUTF(showFriendDetails(input));
+            }
+        }
+    }
+
+    public synchronized String showFriendDetails(String command) {
+        String[] input = command.split(" ");
+        if(input.length!=2 || !input[0].equals("showDetails"))
+            return "invalid command!";
+        else {
+            String targetUser = input[1];
+            Connection connection = getConnectionByUsername(targetUser);
+            if (connection == null) {
+                return "invalid target!";
+            }
+            return "username: " + connection.currentUser.getUsername()+"\nrank: "+connection.currentUser.getRank()+
+                    "\nnickname: "+connection.currentUser.getNickname()+"\nslogan: "+connection.currentUser.getSlogan();
         }
     }
 
