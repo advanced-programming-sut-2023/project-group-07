@@ -24,6 +24,10 @@ public class GroupChatController {
         this.groupChat = groupChat;
     }
 
+    public GroupChat groupChat() {
+        return groupChat;
+    }
+
     private ArrayList<ChatMessage> getMessages() {
         return groupChat.messages();
     }
@@ -71,5 +75,9 @@ public class GroupChatController {
         if (message == null) return OutputMessage.INVALID_ID;
         message.setReaction(currentUser, reaction);
         return OutputMessage.SUCCESSFUL;
+    }
+
+    public GroupChat getGroupChatBySet(HashSet<User> usersSet) {
+        return GroupChat.getChat(usersSet);
     }
 }

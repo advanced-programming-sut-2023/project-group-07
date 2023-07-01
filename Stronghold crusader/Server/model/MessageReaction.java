@@ -2,7 +2,7 @@ package Server.model;
 
 public enum MessageReaction {
     HAPPY(":)"),
-    POKER(":|"),
+    POKER(":/"),
     SAD(":(");
     private String symbol;
 

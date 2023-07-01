@@ -156,7 +156,7 @@ public class GamesMenu {
         if (groupChatMenu == null) {
             groupChatMenu = new GroupChatMenu(dataOutputStream, dataInputStream, currentUser);
         }
-        groupChatMenu.lobbyChat(lobby.groupChat());
+        groupChatMenu.chatWithAGroupChat(lobby.groupChat());
     }
 
 

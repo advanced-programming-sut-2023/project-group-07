@@ -3,7 +3,6 @@ package Server.view;
 import Server.controller.GroupChatController;
 import Server.model.ChatMessage;
 import Server.model.GroupChat;
-import Server.model.MessageReaction;
 import model.User;
 
 import java.io.DataInputStream;
@@ -35,7 +34,7 @@ public class GroupChatMenu {
         }
     }
 
-    public void lobbyChat(GroupChat groupChat) {
+    public void chatWithAGroupChat(GroupChat groupChat) {
         groupChatController.setGroupChat(groupChat);
         try {
             chatHandler();
@@ -64,7 +63,7 @@ public class GroupChatMenu {
                 dataOutputStream.writeUTF(react(matcher.group("id"), matcher.group("reaction")));
 
             else if (input.matches("\\s*exit\\s*")) {
-                dataOutputStream.writeUTF("you exit");
+                dataOutputStream.writeUTF("you have exited");
                 return;
             } else
                 dataOutputStream.writeUTF("invalid input");
