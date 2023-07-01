@@ -57,10 +57,10 @@ public class Connection extends Thread {
         }
     }
 
-    public Connection(Socket socket) throws IOException {
+    public Connection(Socket socket, DataInputStream dataInputStream, DataOutputStream dataOutputStream) throws IOException {
         this.socket = socket;
-        this.dataInputStream = new DataInputStream(socket.getInputStream());
-        this.dataOutputStream = new DataOutputStream(socket.getOutputStream());
+        this.dataInputStream = dataInputStream;
+        this.dataOutputStream = dataOutputStream;
         synchronized (connections) {
             connections.add(this);
         }

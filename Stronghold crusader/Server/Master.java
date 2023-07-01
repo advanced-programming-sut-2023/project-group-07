@@ -3,6 +3,8 @@ package Server;
 import model.Map;
 import model.User;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -18,7 +20,9 @@ public class Master {
             serverSocket = new ServerSocket(port);
             while (true) {
                 Socket socket = serverSocket.accept();
-                Connection connection = new Connection(socket);
+                DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+                DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+                Connection connection = new Connection(socket, dataInputStream, dataOutputStream);
                 connection.start();
             }
         } catch (IOException e) {
