@@ -33,7 +33,7 @@ public class Connection extends Thread {
     }
 
     private static void pureConnections() {
-        for (int i = connections.size() - 1; i >= 0; i--){
+        for (int i = connections.size() - 1; i >= 0; i--) {
             if (!connections.get(i).isAlive()) connections.remove(i);
         }
     }
@@ -62,24 +62,27 @@ public class Connection extends Thread {
         try {
             dataOutputStream.writeUTF("entered main menu");
             while (true) {
-                if(dataInputStream.available()!=0) {
+                if (dataInputStream.available() != 0) {
                     String input = dataInputStream.readUTF();
-                    if(input.equals("enter friendship menu"))
-                        new FriendshipMenu(dataOutputStream,dataInputStream,currentUser).friendShipMenuHandler();
-                    else if(input.equals("enter lobby"))
-                        new GamesMenu(dataOutputStream,dataInputStream,currentUser);
+                    if (input.equals("enter friendship menu"))
+                        new FriendshipMenu(dataOutputStream, dataInputStream, currentUser).friendShipMenuHandler();
+                    else if (input.equals("enter lobby"))
+                        new GamesMenu(dataOutputStream, dataInputStream, currentUser);
                     else if (input.equals("enter global chat"))
                         new GlobalChatMenu(dataOutputStream, dataInputStream, currentUser).globalChat();
                     else if (input.equals("enter private chat"))
                         new PrivateChatMenu(dataOutputStream, dataInputStream, currentUser).privateChat();
                     else if (input.equals("enter group chat"))
                         new GroupChatMenu(dataOutputStream, dataInputStream, currentUser).GroupChat();
-                    else if (input.equals("show scoreboard")){
+                    else if (input.equals("show scoreboard")) {
                         ScoreBoardMenu scoreBoardMenu = new ScoreBoardMenu(dataOutputStream, dataInputStream);
                         scoreBoardMenu.start();
                         scoreBoardMenu.join();
                     }
-                    else if (input.matches("\\s*logout\\s*")) return;
+                    else if (input.matches("\\s*logout\\s*")) {
+                        currentUser = null;
+                        return;
+                    }
                     else dataOutputStream.writeUTF("invalid input");
                 }
             }
@@ -89,7 +92,6 @@ public class Connection extends Thread {
             throw new RuntimeException(e);
         }
     }
-
 
 
 }
