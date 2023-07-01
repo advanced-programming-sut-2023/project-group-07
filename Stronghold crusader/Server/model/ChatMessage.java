@@ -3,6 +3,7 @@ package Server.model;
 import model.User;
 
 import java.util.Calendar;
+import java.util.HashMap;
 
 public class ChatMessage {
     private User owner;
@@ -10,12 +11,14 @@ public class ChatMessage {
     private String sentTime;
     private int id;
     private SeenStatus status;
+    private HashMap<User, MessageReaction> reactions;
 
     public ChatMessage(User owner, String message, int id) {
         this.owner = owner;
         this.content = message;
         this.id = id;
         this.status = SeenStatus.SENT;
+        reactions = new HashMap<>();
         setSentTime();
     }
 
@@ -62,4 +65,8 @@ public class ChatMessage {
         return "id)"+ id + " "  + owner.getUsername() + " " + sentTime + " : " + content + " " + status();
     }
 
+    public HashMap<User, MessageReaction> reactions() {
+        if (reactions == null) reactions = new HashMap<>();
+        return reactions;
+    }
 }
