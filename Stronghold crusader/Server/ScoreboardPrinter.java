@@ -33,6 +33,11 @@ public class ScoreboardPrinter extends Thread {
             notify();
         }
     }
+    public void printNow() {
+        synchronized (this) {
+            notify();
+        }
+    }
 
     private static String getScoreboardInString() {
         StringBuilder str = new StringBuilder();
