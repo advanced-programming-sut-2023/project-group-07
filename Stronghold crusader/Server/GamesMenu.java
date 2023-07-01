@@ -14,36 +14,40 @@ public class GamesMenu {
     DataInputStream dataInputStream;
     DataOutputStream dataOutputStream;
     User currentUser;
+
     public GamesMenu(DataOutputStream dataOutputStream, DataInputStream dataInputStream, User currentUser) {
-        this.dataOutputStream=dataOutputStream;
-        this.dataInputStream=dataInputStream;
-        this.currentUser=currentUser;
+        this.dataOutputStream = dataOutputStream;
+        this.dataInputStream = dataInputStream;
+        this.currentUser = currentUser;
     }
 
     public void gameMenuHandler() throws IOException, InterruptedException {
         dataOutputStream.writeUTF("you have entered lobby");
         while (true) {
-            if(dataInputStream.available()!=0){
+            if (dataInputStream.available() != 0) {
                 String input = dataInputStream.readUTF();
                 if (input.equals("create")) {
                     createGame();
-                } else if(input.equals("join")) {
+                } else if (input.equals("join")) {
                     joinGame();
-                } else if(input.equals("show games")) {
-                    for(Lobby lobby: getLobbies()) {
-                        if(lobby.isPublic()) {
-                            String output = "id: "+lobby.getId()+"  ,  "+"capacity: "+lobby.getUsers().size()+"/"+lobby.getNumberOfPlayers()+"\nUsers:";
-                            for(User user: lobby.getUsers()) {
-                                output+="\nusername: "+user.getUsername()+"  ,  "+"nickname: "+user.getNickname();
-                            }
-                            dataOutputStream.writeUTF(output);
-                        }
-                    }
-                }
-                else if(input.equals("enter main menu"))
+                } else if (input.equals("show games")) {
+                    showGames();
+                } else if (input.equals("enter main menu"))
                     return;
                 else
                     dataOutputStream.writeUTF("invalid input");
+            }
+        }
+    }
+
+    private void showGames() throws IOException {
+        for (Lobby lobby : getLobbies()) {
+            if (lobby.isPublic()) {
+                String output = "id: " + lobby.getId() + "  ,  " + "capacity: " + lobby.getUsers().size() + "/" + lobby.getNumberOfPlayers() + "\nUsers:";
+                for (User user : lobby.getUsers()) {
+                    output += "\nusername: " + user.getUsername() + "  ,  " + "nickname: " + user.getNickname();
+                }
+                dataOutputStream.writeUTF(output);
             }
         }
     }
@@ -59,7 +63,7 @@ public class GamesMenu {
         if (earlyGameGolds == null)
             return;
         dataOutputStream.writeUTF("Game created.");
-        Lobby lobby = new Lobby(true,map,currentUser,numberOfPlayers,earlyGameGolds);
+        Lobby lobby = new Lobby(true, map, currentUser, numberOfPlayers, earlyGameGolds);
         getLobbies().add(lobby);
         lobby.getUsers().add(currentUser);
         lobbyHandler(lobby);
@@ -70,19 +74,28 @@ public class GamesMenu {
         while (true) {
             if (dataInputStream.available() != 0) {
                 String input = dataInputStream.readUTF();
-                int id = Integer.parseInt(input);
+                int id = 0;
+                try {
+                    id = Integer.parseInt(input);
+                } catch (NumberFormatException e) {
+                    dataOutputStream.writeUTF("enter a number");
+                    showGames();
+                    continue;
+                }
                 Lobby lobby = null;
-                for(Lobby lobby2:getLobbies())
-                    if(lobby2.getId()==id){
-                        lobby=lobby2;
+                for (Lobby lobby2 : getLobbies())
+                    if (lobby2.getId() == id) {
+                        lobby = lobby2;
                         break;
                     }
-                if(lobby==null)
+                if (lobby == null){
                     dataOutputStream.writeUTF("invalid id");
-                else{
-                    if(lobby.getUsers().size()==lobby.getNumberOfPlayers())
+                    showGames();
+                }
+                else {
+                    if (lobby.getUsers().size() == lobby.getNumberOfPlayers())
                         dataOutputStream.writeUTF("This lobby is full!");
-                    else{
+                    else {
                         lobby.getUsers().add(currentUser);
                         lobbyHandler(lobby);
                     }
@@ -95,56 +108,50 @@ public class GamesMenu {
         Map map = lobby.getMap();
         int numberOfPlayers = lobby.getNumberOfPlayers();
         int earlyGameGolds = lobby.getEarlyGameGolds();
-        while(true) {
-            if(!getLobbies().contains(lobby)){
+        while (true) {
+            if (!getLobbies().contains(lobby)) {
                 dataOutputStream.writeUTF("lobby was deleted due to being idle for too long!");
                 return;
-            }
-            else if(lobby.getGame()==null && lobby.getUsers().size()==numberOfPlayers && currentUser.equals(lobby.getAdmin())){
-                Game game = new Game(map,createGovernments(numberOfPlayers,lobby,map),earlyGameGolds);
+            } else if (lobby.getGame() == null && lobby.getUsers().size() == numberOfPlayers && currentUser.equals(lobby.getAdmin())) {
+                Game game = new Game(map, createGovernments(numberOfPlayers, lobby, map), earlyGameGolds);
                 lobby.setGame(game);
                 lobby.setGameMenuController(new GameMenuController(game));
-                new GameMenuServer(dataOutputStream,dataInputStream,currentUser, lobby.getGameMenuController(), lobby.getGame()).gameHandler();
-            }
-            else if(lobby.getGame()!=null && lobby.getGameMenuController()!=null && !currentUser.equals(lobby.getAdmin())) {
-                new GameMenuServer(dataOutputStream,dataInputStream,currentUser, lobby.getGameMenuController(), lobby.getGame()).gameHandler();
-            }
-            else if(dataInputStream.available()!=0) {
+                new GameMenuServer(dataOutputStream, dataInputStream, currentUser, lobby.getGameMenuController(), lobby.getGame()).gameHandler();
+            } else if (lobby.getGame() != null && lobby.getGameMenuController() != null && !currentUser.equals(lobby.getAdmin())) {
+                new GameMenuServer(dataOutputStream, dataInputStream, currentUser, lobby.getGameMenuController(), lobby.getGame()).gameHandler();
+            } else if (dataInputStream.available() != 0) {
                 String input = dataInputStream.readUTF();
-                if(input.equals("exit")){
+                if (input.equals("exit")) {
                     dataOutputStream.writeUTF("You left the lobby");
                     lobby.removeUser(currentUser);
                     lobby.updateAdminAndLobby();
                     return;
-                }
-                else if(currentUser.equals(lobby.getAdmin()) && input.equals("start game")) {
-                    if(lobby.getUsers().size()<2)
+                } else if (currentUser.equals(lobby.getAdmin()) && input.equals("start game")) {
+                    if (lobby.getUsers().size() < 2)
                         dataOutputStream.writeUTF("too few players!");
-                    else{
-                        Game game = new Game(map,createGovernments(lobby.getUsers().size(),lobby,map),earlyGameGolds);
+                    else {
+                        Game game = new Game(map, createGovernments(lobby.getUsers().size(), lobby, map), earlyGameGolds);
                         lobby.setGame(game);
                         lobby.setGameMenuController(new GameMenuController(game));
-                        new GameMenuServer(dataOutputStream,dataInputStream,currentUser, lobby.getGameMenuController(), lobby.getGame()).gameHandler();
+                        new GameMenuServer(dataOutputStream, dataInputStream, currentUser, lobby.getGameMenuController(), lobby.getGame()).gameHandler();
                     }
-                }
-                else if(currentUser.equals(lobby.getAdmin()) && input.equals("private")) {
+                } else if (currentUser.equals(lobby.getAdmin()) && input.equals("private")) {
                     lobby.setPublic(false);
                     dataOutputStream.writeUTF("This lobby is now private");
-                }
-                else if(currentUser.equals(lobby.getAdmin()) && input.equals("public")) {
+                } else if (currentUser.equals(lobby.getAdmin()) && input.equals("public")) {
                     lobby.setPublic(true);
                     dataOutputStream.writeUTF("This lobby is now public");
-                }else if(input.equals("enter chat")){
+                } else if (input.equals("enter chat")) {
                     dataOutputStream.writeUTF("you have entered chat");
                     enterChat(lobby);
-                }
-                else
+                } else
                     dataOutputStream.writeUTF("Invalid command");
             }
         }
     }
 
     private GroupChatMenu groupChatMenu = null;
+
     private void enterChat(Lobby lobby) {
         if (groupChatMenu == null) {
             groupChatMenu = new GroupChatMenu(dataOutputStream, dataInputStream, currentUser);
@@ -245,7 +252,7 @@ public class GamesMenu {
 //        return governments;
 //    }
 
-    private ArrayList<Government> createGovernments(int numberOfPlayers,Lobby lobby,Map map) {
+    private ArrayList<Government> createGovernments(int numberOfPlayers, Lobby lobby, Map map) {
         ArrayList<Government> governments = new ArrayList<>();
         LordColor currentLordColor = LordColor.getLordColor(0);
         governments.add(new Government(LordColor.getLordColor(0), currentUser, 0,
