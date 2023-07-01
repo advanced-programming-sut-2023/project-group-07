@@ -25,37 +25,42 @@ public class GroupChatMenu {
     public void GroupChat() {
         try {
             preSetGroupChat();
-            Matcher matcher;
-            while (true) {
-                String input = dataInputStream.readUTF();
-                if (GlobalChatCommands.getMatcher(input, GlobalChatCommands.SHOW_MESSAGES) != null){
-                    dataOutputStream.writeUTF(showMessagesPrivateChat());
-                    dataOutputStream.flush();
-                }
-                else if ((matcher = GlobalChatCommands.getMatcher(input, GlobalChatCommands.SEND_MESSAGE)) != null){
-                    dataOutputStream.writeUTF(sendMessagePrivate(matcher.group("message")));
-                    dataOutputStream.flush();
-                }
-                else if ((matcher = GlobalChatCommands.getMatcher(input, GlobalChatCommands.DELETE_MESSAGE)) != null) {
-                    dataOutputStream.writeUTF(deleteMessage(matcher.group("id")));
-                    dataOutputStream.flush();
-                }
-                else if ((matcher = GlobalChatCommands.getMatcher(input, GlobalChatCommands.EDIT_MESSAGE)) != null){
-                    dataOutputStream.writeUTF(
-                            editPrivateMessage(matcher.group("id"), matcher.group("newContent")));
-                    dataOutputStream.flush();
-                }
-                else if (input.matches("\\s*exit\\s*")) {
-                    dataOutputStream.writeUTF("enter main menu");
-                    dataOutputStream.flush();
-                    return;
-                } else{
-                    dataOutputStream.writeUTF("invalid input");
-                    dataOutputStream.flush();
-                }
-            }
+            chatHandler();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void lobbyChat(GroupChat groupChat){
+        groupChatController.setGroupChat(groupChat);
+        try{
+            chatHandler();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+
+
+    private void chatHandler() throws IOException {
+        Matcher matcher;
+        while (true) {
+            String input = dataInputStream.readUTF();
+            if (GlobalChatCommands.getMatcher(input, GlobalChatCommands.SHOW_MESSAGES) != null)
+                dataOutputStream.writeUTF(showMessagesPrivateChat());
+            else if ((matcher = GlobalChatCommands.getMatcher(input, GlobalChatCommands.SEND_MESSAGE)) != null)
+                dataOutputStream.writeUTF(sendMessagePrivate(matcher.group("message")));
+            else if ((matcher = GlobalChatCommands.getMatcher(input, GlobalChatCommands.DELETE_MESSAGE)) != null)
+                dataOutputStream.writeUTF(deleteMessage(matcher.group("id")));
+            else if ((matcher = GlobalChatCommands.getMatcher(input, GlobalChatCommands.EDIT_MESSAGE)) != null)
+                dataOutputStream.writeUTF(
+                        editPrivateMessage(matcher.group("id"), matcher.group("newContent")));
+
+            else if (input.matches("\\s*exit\\s*")) {
+                dataOutputStream.writeUTF("you exit");
+                return;
+            } else
+                dataOutputStream.writeUTF("invalid input");
         }
     }
 
@@ -122,8 +127,7 @@ public class GroupChatMenu {
             User user = groupChatController.getUserByUsername(input);
             if (user == null) {
                 dataOutputStream.writeUTF("enter a valid username");
-            }
-            else
+            } else
                 users.add(user);
         }
         System.out.println(users);

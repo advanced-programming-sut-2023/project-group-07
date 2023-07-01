@@ -20,6 +20,7 @@ public class Lobby {
     private int numberOfPlayers;
     private int earlyGameGolds;
     private long idleTime=0;
+    private GroupChat groupChat = null;
 
     public Lobby(boolean isPublic, Map map, User admin,int numberOfPlayers,int earlyGameGolds) {
         this.numberOfPlayers = numberOfPlayers;
@@ -106,5 +107,10 @@ public class Lobby {
 
     public long getIdleTime() {
         return idleTime;
+    }
+
+    public GroupChat groupChat() {
+        if (groupChat == null) groupChat = new GroupChat();
+        return groupChat;
     }
 }

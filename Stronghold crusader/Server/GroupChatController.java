@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 public class GroupChatController {
-     private  GroupChat groupChat;
+    private  GroupChat groupChat;
     public  User getUserByUsername(String username){
         return User.getUserByUsername(username);
     }
@@ -14,6 +14,9 @@ public class GroupChatController {
     public void setGroupChat(HashSet<User> usersSet) {
         groupChat = GroupChat.getChat(usersSet);
         if (groupChat == null) groupChat = new GroupChat(usersSet);
+    }
+    public void setGroupChat(GroupChat groupChat) {
+        this.groupChat = groupChat;
     }
 
     private ArrayList<ChatMessage> getMessages(){
@@ -52,4 +55,6 @@ public class GroupChatController {
         }
         return getMessages();
     }
+
+
 }
