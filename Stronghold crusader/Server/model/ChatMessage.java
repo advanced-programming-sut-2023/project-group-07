@@ -62,7 +62,7 @@ public class ChatMessage {
     }
     @Override
     public String toString() {
-        return "id)"+ id + " "  + owner.getUsername() + " " + sentTime + " : " + content + " " + status();
+        return "id)"+ id + " "  + owner.getUsername()  + " : " + content + "\n\t\t\t" + sentTime + " " + status();
     }
 
     public HashMap<User, MessageReaction> reactions() {
