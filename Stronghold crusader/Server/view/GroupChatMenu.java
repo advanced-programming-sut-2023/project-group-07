@@ -3,7 +3,7 @@ package Server.view;
 import Server.controller.GroupChatController;
 import Server.model.ChatMessage;
 import Server.model.GroupChat;
-import Server.view.GlobalChatCommands;
+import Server.model.MessageReaction;
 import model.User;
 
 import java.io.DataInputStream;
@@ -49,6 +49,8 @@ public class GroupChatMenu {
         Matcher matcher;
         while (true) {
             String input = dataInputStream.readUTF();
+            System.out.println(input);
+            System.out.println("react -i (?<id>\\d+) -r (?<reaction>\\S+)");
             if (GlobalChatCommands.getMatcher(input, GlobalChatCommands.SHOW_MESSAGES) != null)
                 dataOutputStream.writeUTF(showMessagesPrivateChat());
             else if ((matcher = GlobalChatCommands.getMatcher(input, GlobalChatCommands.SEND_MESSAGE)) != null)
@@ -57,7 +59,9 @@ public class GroupChatMenu {
                 dataOutputStream.writeUTF(deleteMessage(matcher.group("id")));
             else if ((matcher = GlobalChatCommands.getMatcher(input, GlobalChatCommands.EDIT_MESSAGE)) != null)
                 dataOutputStream.writeUTF(
-                        editPrivateMessage(matcher.group("id"), matcher.group("newContent")));
+                        editMessage(matcher.group("id"), matcher.group("newContent")));
+            else if ((matcher = GlobalChatCommands.getMatcher(input, GlobalChatCommands.REACT)) != null)
+                dataOutputStream.writeUTF(react(matcher.group("id"), matcher.group("reaction")));
 
             else if (input.matches("\\s*exit\\s*")) {
                 dataOutputStream.writeUTF("you exit");
@@ -65,6 +69,23 @@ public class GroupChatMenu {
             } else
                 dataOutputStream.writeUTF("invalid input");
         }
+    }
+
+    private String react(String idStr, String reactionStr) {
+        try {
+            int id = Integer.parseInt(idStr);
+            switch (groupChatController.react(id, reactionStr, currentUser)) {
+                case INVALID_ID:
+                    return "id is invalid";
+                case INVALID_REACT:
+                    return "use a proper symbol to react";
+                case SUCCESSFUL:
+                    return "successful";
+            }
+        } catch (NumberFormatException e) {
+            return e.getMessage();
+        }
+        return "";
     }
 
     private String deleteMessage(String idStr) {
@@ -84,7 +105,7 @@ public class GroupChatMenu {
         return "";
     }
 
-    private String editPrivateMessage(String idStr, String newContent) {
+    private String editMessage(String idStr, String newContent) {
         try {
             int id = Integer.parseInt(idStr);
             switch (groupChatController.editMessage(id, currentUser, newContent)) {

@@ -2,6 +2,7 @@ package Server.controller;
 
 import Server.model.ChatMessage;
 import Server.model.GroupChat;
+import Server.model.MessageReaction;
 import model.User;
 
 import java.util.ArrayList;
@@ -61,5 +62,14 @@ public class GroupChatController {
             if (!message.owner().equals(currentUser)) message.setSeen();
         }
         return getMessages();
+    }
+
+    public OutputMessage react(int id, String reactionStr, User currentUser) {
+        MessageReaction reaction = MessageReaction.getReactionBySymbol(reactionStr);
+        if (reaction == null) return OutputMessage.INVALID_REACT;
+        ChatMessage message = getMessageById(id);
+        if (message == null) return OutputMessage.INVALID_ID;
+        message.setReaction(currentUser, reaction);
+        return OutputMessage.SUCCESSFUL;
     }
 }

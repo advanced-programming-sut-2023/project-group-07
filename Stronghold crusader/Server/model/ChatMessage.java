@@ -2,6 +2,7 @@ package Server.model;
 
 import model.User;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.HashMap;
 
@@ -60,15 +61,6 @@ public class ChatMessage {
     public void setContent(String content) {
         this.content = content;
     }
-    @Override
-    public String toString() {
-        StringBuilder str = new StringBuilder("id)" + id + " " + owner.getUsername() + " : " + content + "\n\t");
-        for (MessageReaction reaction : MessageReaction.values()){
-            str.append(getNumberOfAReaction(reaction)).append(" ").append(reaction).append("   ");
-        }
-        str.append(sentTime).append(" ").append(status());
-        return str.toString();
-    }
 
     public HashMap<User, MessageReaction> reactions() {
         if (reactions == null) reactions = new HashMap<>();
@@ -82,4 +74,17 @@ public class ChatMessage {
         }
         return i;
     }
+    public void setReaction(User user, MessageReaction reaction){
+        reactions.put(user,reaction);
+    }
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder("id)" + id + " " + owner.getUsername() + " : " + content + "\n\t");
+        for (MessageReaction reaction : MessageReaction.values()){
+            str.append(getNumberOfAReaction(reaction)).append(" ").append(reaction).append("   ");
+        }
+        str.append(sentTime).append(" ").append(status());
+        return str.toString();
+    }
+
 }

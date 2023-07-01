@@ -40,6 +40,8 @@ public class GlobalChatMenu {
                 else if ((matcher = GlobalChatCommands.getMatcher(input,GlobalChatCommands.EDIT_MESSAGE)) != null)
                     dataOutputStream.writeUTF(
                             editGlobalMessage(matcher.group("id"), matcher.group("newContent")));
+                else if ((matcher = GlobalChatCommands.getMatcher(input, GlobalChatCommands.REACT)) != null)
+                    dataOutputStream.writeUTF(react(matcher.group("id"), matcher.group("reaction")));
                 else if (input.matches("\\s*exit\\s*")) {
                     dataOutputStream.writeUTF("enter main menu");
                     return;
@@ -49,6 +51,23 @@ public class GlobalChatMenu {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private String react(String idStr, String reactionStr) {
+        try {
+            int id = Integer.parseInt(idStr);
+            switch (globalChatController.react(id, reactionStr, currentUser)) {
+                case INVALID_ID:
+                    return "id is invalid";
+                case INVALID_REACT:
+                    return "use a proper symbol to react";
+                case SUCCESSFUL:
+                    return "successful";
+            }
+        } catch (NumberFormatException e) {
+            return e.getMessage();
+        }
+        return "";
     }
 
     private String deleteGlobalMessage(String idStr) {
