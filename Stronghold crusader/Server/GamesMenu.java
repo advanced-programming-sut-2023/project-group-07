@@ -134,12 +134,24 @@ public class GamesMenu {
                 else if(currentUser.equals(lobby.getAdmin()) && input.equals("public")) {
                     lobby.setPublic(true);
                     dataOutputStream.writeUTF("This lobby is now public");
+                }else if(input.equals("enter chat")){
+                    dataOutputStream.writeUTF("you have entered chat");
+                    enterChat(lobby);
                 }
                 else
                     dataOutputStream.writeUTF("Invalid command");
             }
         }
     }
+
+    private GroupChatMenu groupChatMenu = null;
+    private void enterChat(Lobby lobby) {
+        if (groupChatMenu == null) {
+            groupChatMenu = new GroupChatMenu(dataOutputStream, dataInputStream, currentUser);
+        }
+        groupChatMenu.lobbyChat(lobby.groupChat());
+    }
+
 
     private Integer getGold() throws IOException {
         dataOutputStream.writeUTF("How much gold do you want to begin with? ");

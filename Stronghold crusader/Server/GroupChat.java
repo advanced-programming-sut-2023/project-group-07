@@ -93,9 +93,10 @@ public class GroupChat {
         saveChats();
     }
 
+    public GroupChat(){}
+
     public boolean deleteMessage(ChatMessage message, User currentUser) {
-        if (!message.owner().equals(currentUser) || !messages.contains(message) ||
-                !userSet.contains(currentUser)) return false; // todo change condition
+        if (!message.owner().equals(currentUser) || !messages.contains(message)) return false;
         deleteMessage(message);
         return true;
     }
@@ -106,8 +107,7 @@ public class GroupChat {
     }
 
     public boolean editMessage(ChatMessage message, User currentUser, String newMessage) {
-        if (!message.owner().equals(currentUser) || !messages.contains(message) ||
-                !userSet.contains(currentUser)) return false; // TODO: 6/29/2023 change condition
+        if (!message.owner().equals(currentUser) || !messages.contains(message)) return false;
         editMessage(message, newMessage);
         return true;
     }
@@ -117,11 +117,9 @@ public class GroupChat {
         saveChats();
     }
 
-    public boolean sendMessage(ChatMessage message) {
-        if (!userSet.contains(message.owner())) return false;
+    public void sendMessage(ChatMessage message) {
         messages.add(message);
         saveChats();
-        return true;
     }
 
 
