@@ -16,27 +16,39 @@ public class CreateMapMenuController {
         this.mapMenuController = mapMenuController;
     }
 
-    public ArrayList<String> getMaps() {
+    public ArrayList<String> getMaps(String ownerUsername) {
         ArrayList<String> out = new ArrayList<String>();
         for (Map map : Map.getMaps())
-            out.add(map.getName());
+            if (map.getOwnerUsername().equals(ownerUsername))
+                out.add(map.getName());
         return out;
     }
 
-    public void setExistingMap(int index) {
+    public void setExistingMap(int index, String ownerUsername) {
+        ArrayList<Map> maps = Map.getMaps();
+        int counter = -1;
+        for (int i = 0 ; counter < index ; i++){
+            if (maps.get(i).getOwnerUsername().equals(ownerUsername))
+                counter++;
+        }
+        index = counter;
         this.map = Map.getMaps().get(index);
         this.indexOfMap = index;
         this.mapMenuController.refreshMap(this.map);
     }
 
-    public void setNewMap(int size, String name, int numberOfPlayers, HashMap<LordColor, int[]> lordsKeeps) {
-        this.map = new Map(size, name, numberOfPlayers, lordsKeeps);
+    public void setNewMap(String ownerUsername, int size, String name, int numberOfPlayers, HashMap<LordColor, int[]> lordsKeeps) {
+        this.map = new Map(size, name, numberOfPlayers, lordsKeeps, ownerUsername);
         this.indexOfMap = Map.getMaps().size();
         this.mapMenuController.refreshMap(this.map);
     }
 
-    public void saveMap() throws IOException {
+    public String saveMap() throws IOException {
+        for (Map map1 : Map.getMaps())
+            if (map1.isTheSame(map))
+                return "Failed : you already have a similar map!";
         Map.changeMaps(map, indexOfMap);
+        return "Changes saved!";
     }
 
     public Messages setPixelTexture(int row, int column, String textureName) {

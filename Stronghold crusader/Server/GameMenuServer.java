@@ -4,9 +4,6 @@ import controller.*;
 import model.Game;
 import model.Resources;
 import model.User;
-import view.MapMenu;
-import view.Shop;
-import view.TradeMenu;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -22,7 +19,7 @@ public class GameMenuServer {
     DataInputStream dataInputStream;
     private final GameMenuController gameMenuController;
     private final ShopServer shopServer;
-    private final MapMenuServer mapMenuServer = new MapMenuServer();
+    private final MapMenuServer mapMenuServer;
     private final TradeMenuServer tradeMenuServer = new TradeMenuServer();
     private final Game game;
     private Scanner scanner;
@@ -33,6 +30,7 @@ public class GameMenuServer {
         this.dataInputStream = dataInputStream;
         this.dataOutputStream=dataOutputStream;
         this.currentUser = currentUser;
+        this.mapMenuServer = new MapMenuServer(dataInputStream, dataOutputStream);
     }
     public void gameHandler() throws IOException {
         dataOutputStream.writeUTF("you have entered the game");
@@ -47,7 +45,7 @@ public class GameMenuServer {
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_CURRENT_PLAYER) != null)
                     dataOutputStream.writeUTF(gameMenuController.showCurrentPlayer());
                 else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_MAP) != null)
-                    mapMenuServer.run(dataOutputStream,dataInputStream, input);
+                    mapMenuServer.run(input);
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_BUILDING) != null)
                     dataOutputStream.writeUTF(selectBuilding(input));
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_PIXEL_UNIT) != null)

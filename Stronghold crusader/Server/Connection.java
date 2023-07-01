@@ -83,6 +83,8 @@ public class Connection extends Thread {
                         scoreBoardMenu.start();
                         scoreBoardMenu.join();
                     }
+                    else if (input.equals("enter create map menu"))
+                        new CreateMapMenuServer(dataInputStream, dataOutputStream).run(currentUser.getUsername());
                     else if (input.matches("\\s*logout\\s*")) return;
                     else dataOutputStream.writeUTF("invalid input");
                 }

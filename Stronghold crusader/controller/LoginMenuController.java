@@ -4,8 +4,9 @@ import java.util.regex.Pattern;
 import com.google.gson.*;
 import model.User;
 import model.Slogan;
-import view.LoginMenu;
 import model.RecoveryQuestion;
+import view.LoginMenu;
+
 
 import java.io.FileWriter;
 import java.io.IOException;

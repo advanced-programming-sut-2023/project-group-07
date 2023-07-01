@@ -4,13 +4,12 @@ import controller.Controller;
 import controller.MapMenuCommands;
 import controller.MapMenuController;
 import model.Texture;
-import view.Colors;
 
+import java.beans.PropertyEditorSupport;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 
 public class MapMenuServer {
@@ -20,9 +19,12 @@ public class MapMenuServer {
 
     DataOutputStream dataOutputStream;
     DataInputStream dataInputStream;
-    public void run(DataOutputStream dataOutputStream, DataInputStream dataInputStream, String initialInput) throws IOException {
-        this.dataInputStream=dataInputStream;
-        this.dataOutputStream=dataOutputStream;
+    public MapMenuServer(DataInputStream dataInputStream, DataOutputStream dataOutputStream) {
+        this.dataInputStream = dataInputStream;
+        this.dataOutputStream = dataOutputStream;
+    }
+
+    public void run(String initialInput) throws IOException {
         controller.refreshMap(Controller.currentGame.getMap());
         showMap(initialInput);
         while (true) {
@@ -38,8 +40,6 @@ public class MapMenuServer {
                 moveMap(input);
             else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_DETAILS) != null)
                 dataOutputStream.writeUTF(showDetails(input));
-            else if (MapMenuCommands.getMatcher(input, MapMenuCommands.MAP_GUIDE) != null)
-                mapGuide();
             else
                 dataOutputStream.writeUTF("Invalid command!");
         }
@@ -64,7 +64,7 @@ public class MapMenuServer {
             right = (rightString == null) ? 1 : Integer.parseInt(rightString.trim());
         }
         if (!controller.checkMoveCoordinates(this.x, this.y, up, down, left, right))
-            dataOutputStream.writeUTF("Cordinates out of bounds or invalid!");
+            dataOutputStream.writeUTF("Coordinates out of bounds or invalid!");
         else {
             this.x = controller.setMoveX(this.x, up, down);
             this.y = controller.setMoveY(this.y, left, right);
@@ -75,6 +75,7 @@ public class MapMenuServer {
     protected void printMap() throws IOException {
         ArrayList<ArrayList<Colors>> mapColorList = controller.getMapColorList(this.x, this.y);
         ArrayList<ArrayList<String>> mapObjects;
+        String result = "";
         if (Controller.currentGame == null)
             mapObjects = controller.getMapObjects(this.x, this.y, null);
         else
@@ -84,40 +85,40 @@ public class MapMenuServer {
         int numberOfRowSplitters = numberOfColumns * 6 + 1;
         for (int i = 0; i <= 4 * numberOfRows; i++) {
             if (i % 4 == 0) {
-                splitRow(numberOfRowSplitters, i != 0 && i != 4 * numberOfRows);
+                result += splitRow(numberOfRowSplitters, i != 0 && i != 4 * numberOfRows);
                 continue;
             }
             for (int j = 0; j <= 6 * numberOfColumns; j++) {
                 if (j % 6 == 0)
-                    System.out.print("|");
+                    result += "|";
                 else {
                     int row = (int) Math.floor(i / 4);
                     int column = (int) Math.floor(j / 6);
-                    System.out.print(mapColorList.get(row).get(column));
-                    if (i % 4 == 2 && j % 6 == 3 && !mapObjects.get(row).get(column).equals("")) {
-                        System.out.print(Colors.BLACK_BOLD);
-                        System.out.print(mapObjects.get(row).get(column));
-                    } else
-                        System.out.print("#");
-                    System.out.print(Colors.RESET);
+                    if (i % 4 == 2 && j % 6 == 3 && !mapObjects.get(row).get(column).equals(""))
+                        result += mapObjects.get(row).get(column);
+                    else
+                        result += "#";
                 }
             }
-            dataOutputStream.writeUTF("");
+            result += "\n";
         }
+        dataOutputStream.writeUTF(result);
     }
 
-    private void splitRow(int length, boolean flag) throws IOException {
+    private String splitRow(int length, boolean flag) throws IOException {
+        String result = "";
         if (flag) {
             length -= 2;
-            System.out.print("|");
+            result += "|";
             while (length-- > 0)
-                System.out.print("-");
-            dataOutputStream.writeUTF("|");
+                result += "-";
+            result += "|\n";
         } else {
             while (length-- > 0)
-                System.out.print("-");
-            dataOutputStream.writeUTF("\n");
+                result += "-";
+            result += "\n";
         }
+        return result;
     }
 
     protected String showDetails(String input) {
@@ -130,20 +131,8 @@ public class MapMenuServer {
         int row = Integer.parseInt(rowMatcher.group("row")) - 1;
         int column = Integer.parseInt(columnMatcher.group("column")) - 1;
         if (!controller.checkCordinates(row, column))
-            return "Invalid cordinates!";
+            return "Invalid coordinates!";
         return controller.getDetails(row, column);
-    }
-
-    protected void mapGuide() throws IOException {
-        for (Texture texture : Texture.values())
-            printGuide(texture);
-    }
-
-    private void printGuide(Texture texture) throws IOException {
-        System.out.print(texture.getColor());
-        System.out.print(" ");
-        System.out.print(Colors.RESET);
-        dataOutputStream.writeUTF(" : " + texture);
     }
 
     protected String showMap(String input) throws IOException {
@@ -156,7 +145,7 @@ public class MapMenuServer {
         int row = Integer.parseInt(rowMatcher.group("row")) - 1;
         int column = Integer.parseInt(columnMatcher.group("column")) - 1;
         if (!controller.checkCordinates(row, column))
-            return "Invalid cordinates!";
+            return "Invalid coordinates!";
         this.x = row;
         this.y = column;
         printMap();

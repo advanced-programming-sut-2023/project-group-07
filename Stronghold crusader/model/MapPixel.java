@@ -184,7 +184,7 @@ public class MapPixel {
 
     private boolean doesHaveVisibleUnit(Government government) {
         if (government == null)
-            return true;
+            return !units.isEmpty();
         for (Unit unit : units)
             if (unit.getGovernment().equals(government))
                 return true;
@@ -232,10 +232,10 @@ public class MapPixel {
                     }
                 if (counter > 0) {
                     if (!unitType.equals(UnitTypes.LORD))
-                        unitsStr += unitType.toString() + " (color: " + lordColor.toString() + ") (count: " + counter
+                        unitsStr += unitType + " (color: " + lordColor.toString() + ") (count: " + counter
                                 + ") (Average Hp: " + (int) (hpSum / counter) + ")\n";
                     else
-                        unitsStr += unitType.toString() + " (color: " + lordColor.toString() + ") (Hp: " + hpSum
+                        unitsStr += unitType + " (color: " + lordColor.toString() + ") (Hp: " + hpSum
                                 + ")\n";
                 }
             }

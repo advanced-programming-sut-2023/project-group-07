@@ -1,6 +1,6 @@
 package model;
 
-import view.Colors;
+import Server.Colors;
 
 public enum Texture {
     LAND("land", Colors.YELLOW_BACKGROUND, true, true, true),

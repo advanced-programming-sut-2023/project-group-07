@@ -10,12 +10,10 @@ import java.util.regex.Matcher;
 import model.*;
 import model.Map;
 import view.CaptchaPrinter;
-import view.MenuPrinter;
 
 public class Controller {
     public static User currentUser;
     public static Game currentGame;
-    public static final MenuPrinter menuPrinter = new MenuPrinter();
     private static Random random;
 
     public static int randomNumber(int max) {

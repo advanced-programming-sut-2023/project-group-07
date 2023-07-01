@@ -1,5 +1,6 @@
 package view;
 
+import Server.Colors;
 import controller.LoginMenuCommands;
 import model.User;
 import controller.LoginMenuController;
@@ -21,7 +22,6 @@ public class LoginMenu {
             mainMenu.run(scanner);
         }
         LoginMenu.scanner = scanner;
-        Controller.menuPrinter.print("LOGIN/REGISTER MENU", Colors.BLUE_BACKGROUND, 25, 1);
         while (true) {
             String input = scanner.nextLine();
             if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.CREATE_USER) != null && createUserFormat(input))
@@ -31,7 +31,6 @@ public class LoginMenu {
                 System.out.println(login);
                 if (login.equals("Login successful!")) {
                     mainMenu.run(scanner);
-                    Controller.menuPrinter.print("LOGIN/REGISTER MENU", Colors.BLUE_BACKGROUND, 25, 1);
                 }
             } else if (LoginMenuCommands.getMatcher(input, LoginMenuCommands.FORGOT_MY_PASSWORD) != null)
                 System.out.println(forgotMyPassword(scanner));

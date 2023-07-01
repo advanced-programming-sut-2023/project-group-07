@@ -18,12 +18,14 @@ public class Map {
     private String name;
     private int numberOfPlayers;
     private HashMap<LordColor, int[]> keepsPositions;
+    private String ownerUsername;
 
-    public Map(int size, String name, int numberOfPlayers, HashMap<LordColor, int[]> keepsPositions) {
+    public Map(int size, String name, int numberOfPlayers, HashMap<LordColor, int[]> keepsPositions, String ownerUsername) {
         this.size = size;
         this.name = name;
         this.numberOfPlayers = numberOfPlayers;
         this.keepsPositions = keepsPositions;
+        this.ownerUsername = ownerUsername;
         buildMap();
         for (LordColor lordColor : keepsPositions.keySet()) {
             int row = keepsPositions.get(lordColor)[0];
@@ -403,5 +405,25 @@ public class Map {
             path.add(new int[] { currentX, currentY });
         }
         return path;
+    }
+
+    public String getOwnerUsername() {
+        return ownerUsername;
+    }
+
+    public boolean isTheSame (Map map) {
+        if (!this.ownerUsername.equals(map.ownerUsername))
+            System.out.println("user");
+        if (this.size != map.size)
+            return false;
+        if (this.keepsPositions.keySet().size() != map.keepsPositions.keySet().size())
+                return false;
+        for (LordColor lordColor : this.keepsPositions.keySet()) {
+            int[] firstCoordinates = this.keepsPositions.get(lordColor);
+            int[] secondCoordinates = map.keepsPositions.get(lordColor);
+            if (firstCoordinates[0] != secondCoordinates[0] || firstCoordinates[1] != secondCoordinates[1])
+                return false;
+        }
+        return true;
     }
 }

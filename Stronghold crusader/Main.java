@@ -4,8 +4,7 @@ import java.util.Scanner;
 
 import model.Map;
 import model.User;
-import view.LoginMenu;
-import view.Colors;
+import Server.Colors;
 
 public class Main {
     
@@ -16,8 +15,8 @@ public class Main {
         Map.loadMaps();
         System.out.print("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
         System.out.print(Colors.RESET);
-        LoginMenu loginMenu = new LoginMenu();
-        loginMenu.run(new Scanner(System.in));
+//        LoginMenu loginMenu = new LoginMenu();
+//        loginMenu.run(new Scanner(System.in));
     
     }
     

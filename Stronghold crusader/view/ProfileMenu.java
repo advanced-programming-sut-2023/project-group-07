@@ -1,5 +1,6 @@
 package view;
 
+import Server.Colors;
 import controller.ProfileMenuCommands;
 import controller.ProfileMenuController;
 import controller.Controller;
@@ -12,7 +13,6 @@ public class ProfileMenu {
     private final ProfileMenuController controller = new ProfileMenuController();
 
     public void run(Scanner scanner) throws IOException, NoSuchAlgorithmException {
-        Controller.menuPrinter.print("PROFILE MENU", Colors.RED_BACKGROUND, 25, 1);
         controller.refreshProfile();
         while (true) {
             String input = scanner.nextLine();
