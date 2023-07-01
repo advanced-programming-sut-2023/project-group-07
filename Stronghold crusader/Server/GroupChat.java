@@ -52,7 +52,7 @@ public class GroupChat {
                 jsonArray.add(gson.toJsonTree(chat).getAsJsonObject());
             }
             FileWriter file = new FileWriter(GlobalChat.class.
-                    getResource("/DB/group_chats").toExternalForm().substring("file:\\".length()));
+                    getResource("/DB/group_chat").toExternalForm().substring("file:\\".length()));
             file.write(jsonArray.toString());
             file.close();
         } catch (IOException e) {
