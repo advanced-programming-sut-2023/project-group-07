@@ -898,7 +898,8 @@ public class Game {
     private String eliminateDefeatedLords() {
         String result = "";
         for (Government government : getDefeatedGovernments()) {
-            result += government.getColor() + " Lord has been defeated\n";
+            result += government.getColor() + " Lord has been defeated by " + government.getDefeatedBy().getColor()
+                    + " lord!\n";
             this.governments.remove(government);
             this.nonPlayingGovernments.add(government);
             ArrayList<Building> buildings = government.getBuildings();

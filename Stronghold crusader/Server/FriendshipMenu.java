@@ -45,7 +45,7 @@ public class FriendshipMenu {
             return "invalid command!";
         else {
             String targetUser = input[1];
-            Connection connection = Connection.getConnectionByUsername(targetUser);
+            Connection connection = getConnectionByUsername(targetUser);
             if (connection == null) {
                 return "invalid target!";
             }
@@ -61,7 +61,7 @@ public class FriendshipMenu {
             return "invalid command!";
         else {
             String targetUser = request[1];
-            Connection connection = Connection.getConnectionByUsername(targetUser);
+            Connection connection = getConnectionByUsername(targetUser);
             if(connection==null || targetUser.equals(currentUser.getUsername())){
                 return "invalid target!";
             }
@@ -81,7 +81,7 @@ public class FriendshipMenu {
             return "invalid command!";
         else {
             String targetUser = accept[1];
-            Connection connection = Connection.getConnectionByUsername(targetUser);
+            Connection connection = getConnectionByUsername(targetUser);
             if(connection==null || targetUser.equals(currentUser.getUsername())){
                 return "invalid target!";
             }
@@ -100,7 +100,7 @@ public class FriendshipMenu {
             return "invalid command!";
         else {
             String targetUser = reject[1];
-            Connection connection = Connection.getConnectionByUsername(targetUser);
+            Connection connection = getConnectionByUsername(targetUser);
             if(connection==null || targetUser.equals(currentUser.getUsername())){
                 return "invalid target!";
             }
@@ -112,5 +112,10 @@ public class FriendshipMenu {
         return "successful!";
     }
 
-
+    private Connection getConnectionByUsername(String username) {
+        for (Connection connection : Connection.connections())
+            if (connection.getCurrentUser().getUsername().equals(username))
+                return connection;
+        return null;
+    }
 }

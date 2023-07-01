@@ -10,6 +10,7 @@ import com.google.gson.JsonElement;
 
 public class Map {
     private static ArrayList<Map> maps = new ArrayList<Map>();
+    private static ArrayList<Map> sharedMaps = new ArrayList<>();
     private static JsonArray allMaps = new JsonArray();
     private static int maxPlayerOfMaps = 8;
     private static final int MAX_DISTANCE = 1000;
@@ -18,14 +19,14 @@ public class Map {
     private String name;
     private int numberOfPlayers;
     private HashMap<LordColor, int[]> keepsPositions;
-    private String ownerUsername;
+    private ArrayList<String> ownersUsernames = new ArrayList<>();
 
     public Map(int size, String name, int numberOfPlayers, HashMap<LordColor, int[]> keepsPositions, String ownerUsername) {
         this.size = size;
         this.name = name;
         this.numberOfPlayers = numberOfPlayers;
         this.keepsPositions = keepsPositions;
-        this.ownerUsername = ownerUsername;
+        this.ownersUsernames.add(ownerUsername);
         buildMap();
         for (LordColor lordColor : keepsPositions.keySet()) {
             int row = keepsPositions.get(lordColor)[0];
@@ -407,13 +408,13 @@ public class Map {
         return path;
     }
 
-    public String getOwnerUsername() {
-        return ownerUsername;
+    public ArrayList<String> getOwnersUsernames() {
+        return ownersUsernames;
     }
 
-    public boolean isTheSame (Map map) {
-        if (!this.ownerUsername.equals(map.ownerUsername))
-            System.out.println("user");
+    public boolean isTheSame (Map map, String ownerUsername) {
+        if (!this.ownersUsernames.contains(ownerUsername) || !map.ownersUsernames.contains(ownerUsername))
+           return false;
         if (this.size != map.size)
             return false;
         if (this.keepsPositions.keySet().size() != map.keepsPositions.keySet().size())
@@ -425,5 +426,9 @@ public class Map {
                 return false;
         }
         return true;
+    }
+
+    public static ArrayList<Map> getSharedMaps() {
+        return sharedMaps;
     }
 }

@@ -25,7 +25,7 @@ public class CreateMapMenuServer extends MapMenuServer {
     private String currentUserUsername;
 
     public CreateMapMenuServer(DataInputStream dataInputStream, DataOutputStream dataOutputStream) {
-        super(dataInputStream, dataOutputStream,null);
+        super(dataInputStream, dataOutputStream);
         this.dataInputStream = dataInputStream;
         this.dataOutputStream = dataOutputStream;
     }
@@ -39,7 +39,7 @@ public class CreateMapMenuServer extends MapMenuServer {
             while (true) {
                 String input = dataInputStream.readUTF();
                 if (input.matches("\\s*exit\\s*")) {
-                    dataOutputStream.writeUTF(controller.saveMap());
+                    dataOutputStream.writeUTF(controller.saveMap(currentUserUsername));
                     return;
                 } else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_MAP) != null) {
                     String showMapStr = super.showMap(input);
