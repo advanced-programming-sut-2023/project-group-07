@@ -1,10 +1,17 @@
 package Client.view;
 
+import Client.controller.Controller;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ClientMenu {
     private static final int port = 8080;
@@ -16,33 +23,60 @@ public class ClientMenu {
             DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
             DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
             Scanner scanner = new Scanner(System.in);
-            Thread outputThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while (true) {
-                        try {
-                            System.out.println(dataInputStream.readUTF());
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                }
-            });
-            outputThread.start();
+            final boolean[] isRunning = {true};
             Thread inputThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    while (true) {
+                    while (isRunning[0]) {
                         try {
-                            dataOutputStream.writeUTF(scanner.nextLine());
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
+                            String input = dataInputStream.readUTF();
+                            if (input.equals(toSHA256("connection is dead"))){
+                                isRunning[0] = false;
+                                break;
+                            }
+                            System.out.println(input);
+                        } catch (IOException | NoSuchAlgorithmException e) {
+                            e.printStackTrace();
+                            break;
                         }
+                    }
+                    try {
+                        socket.close();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
                     }
                 }
             });
             inputThread.start();
+            Thread outputThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    String input = null;
+                    while (isRunning[0]) {
+                        try {
+                            if (input != null) dataOutputStream.writeUTF(input);
+                            input = scanner.nextLine();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            break;
+                        }
+                    }
+                    try {
+                        socket.close();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+            outputThread.start();
         } catch (IOException e) {
         }
+    }
+    public static String toSHA256(String string) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        md.update(string.getBytes(StandardCharsets.UTF_8));
+        byte[] digest = md.digest();
+        String hex = String.format("%064x", new BigInteger(1, digest));
+        return hex;
     }
 }

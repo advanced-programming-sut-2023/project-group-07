@@ -1,11 +1,13 @@
 package Server;
 
+import Client.controller.Controller;
 import Client.model.User;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 public class Connection extends Thread {
@@ -13,6 +15,7 @@ public class Connection extends Thread {
     private final DataInputStream dataInputStream;
     private final DataOutputStream dataOutputStream;
     private User currentUser = null;
+    private boolean isRunning = true;
     private static final ArrayList<Connection> connections = new ArrayList<>();
 
     public static ArrayList<Connection> connections() {
@@ -33,8 +36,21 @@ public class Connection extends Thread {
     }
 
     private static void pureConnections() {
-        for (int i = connections.size() - 1; i >= 0; i--) {
-            if (!connections.get(i).isAlive()) connections.remove(i);
+        synchronized (connections) {
+            for (int i = connections.size() - 1; i >= 0; i--) {
+                if (!connections.get(i).isAlive() || !connections.get(i).isRunning) {
+                    connections.get(i).closeConnection();
+                    connections.remove(i);
+                }
+            }
+        }
+    }
+
+    private void closeConnection() {
+        try {
+            this.socket.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -42,14 +58,25 @@ public class Connection extends Thread {
         this.socket = socket;
         this.dataInputStream = new DataInputStream(socket.getInputStream());
         this.dataOutputStream = new DataOutputStream(socket.getOutputStream());
-        connections.add(this);
+        synchronized (connections) {
+            connections.add(this);
+        }
     }
 
     @Override
     public void run() {
         while (true) {
             currentUser = new LoginMenuServer(dataOutputStream, dataInputStream).login();
-            if (currentUser == null) return;
+            if (currentUser == null) {
+                this.isRunning = false;
+                try {
+                    dataOutputStream.writeUTF(Controller.toSHA256("connection is dead"));
+                } catch (IOException |NoSuchAlgorithmException e) {
+                    throw new RuntimeException(e);
+                }
+                pureConnections();
+                return;
+            }
             enterMainMenu();
         }
     }
@@ -78,12 +105,10 @@ public class Connection extends Thread {
                         ScoreBoardMenu scoreBoardMenu = new ScoreBoardMenu(dataOutputStream, dataInputStream);
                         scoreBoardMenu.start();
                         scoreBoardMenu.join();
-                    }
-                    else if (input.matches("\\s*logout\\s*")) {
+                    } else if (input.matches("\\s*logout\\s*")) {
                         currentUser = null;
                         return;
-                    }
-                    else dataOutputStream.writeUTF("invalid input");
+                    } else dataOutputStream.writeUTF("invalid input");
                 }
             }
         } catch (IOException e) {

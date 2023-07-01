@@ -20,6 +20,7 @@ public class Master {
                 Socket socket = serverSocket.accept();
                 Connection connection = new Connection(socket);
                 connection.start();
+
             }
         } catch (IOException e) {
             e.printStackTrace();
