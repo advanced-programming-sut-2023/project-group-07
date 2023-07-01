@@ -19,7 +19,7 @@ public class CreateMapMenuController {
     public ArrayList<String> getMaps(String ownerUsername) {
         ArrayList<String> out = new ArrayList<String>();
         for (Map map : Map.getMaps())
-            if (map.getOwnerUsername().equals(ownerUsername))
+            if (map.getOwnersUsernames().contains(ownerUsername))
                 out.add(map.getName());
         return out;
     }
@@ -28,7 +28,7 @@ public class CreateMapMenuController {
         ArrayList<Map> maps = Map.getMaps();
         int counter = -1;
         for (int i = 0 ; counter < index ; i++){
-            if (maps.get(i).getOwnerUsername().equals(ownerUsername))
+            if (maps.get(i).getOwnersUsernames().contains(ownerUsername))
                 counter++;
         }
         index = counter;
@@ -43,9 +43,9 @@ public class CreateMapMenuController {
         this.mapMenuController.refreshMap(this.map);
     }
 
-    public String saveMap() throws IOException {
+    public String saveMap(String ownerUsername) throws IOException {
         for (Map map1 : Map.getMaps())
-            if (map1.isTheSame(map))
+            if (map1.isTheSame(map, ownerUsername))
                 return "Failed : you already have a similar map!";
         Map.changeMaps(map, indexOfMap);
         return "Changes saved!";

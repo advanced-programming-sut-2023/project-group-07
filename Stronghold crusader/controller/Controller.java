@@ -96,7 +96,7 @@ public class Controller {
     }
 
     public static void sendToOilSmelter(Engineer engineer) {
-//        GameMenuController.sendToOilSmelter(engineer);
+        GameMenuController.sendToOilSmelter(engineer);
     }
 
     public static void sendToCoordinate(int x, int y, Person person) {
