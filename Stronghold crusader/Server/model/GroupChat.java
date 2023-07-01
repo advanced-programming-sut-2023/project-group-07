@@ -50,8 +50,7 @@ public class GroupChat {
             for (GroupChat chat : groupChats) {
                 jsonArray.add(gson.toJsonTree(chat).getAsJsonObject());
             }
-            FileWriter file = new FileWriter(GlobalChat.class.
-                    getResource("/DB/group_chat").toExternalForm().substring("file:\\".length()));
+            FileWriter file = new FileWriter("Stronghold crusader/DB/group_chat");
             file.write(jsonArray.toString());
             file.close();
         } catch (IOException e) {
