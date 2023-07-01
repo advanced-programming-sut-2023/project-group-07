@@ -56,8 +56,6 @@ public class GlobalChat {
                 jsonArray.add(gson.toJsonTree(message).getAsJsonObject());
             }
             FileWriter file = new FileWriter("Stronghold crusader/DB/global_chat_messages");
-            System.out.println(messages);
-            System.out.println(jsonArray);
             file.write(jsonArray.toString());
             file.close();
         } catch (IOException e) {

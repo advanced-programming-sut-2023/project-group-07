@@ -62,11 +62,24 @@ public class ChatMessage {
     }
     @Override
     public String toString() {
-        return "id)"+ id + " "  + owner.getUsername()  + " : " + content + "\n\t\t\t" + sentTime + " " + status();
+        StringBuilder str = new StringBuilder("id)" + id + " " + owner.getUsername() + " : " + content + "\n\t");
+        for (MessageReaction reaction : MessageReaction.values()){
+            str.append(getNumberOfAReaction(reaction)).append(" ").append(reaction).append("   ");
+        }
+        str.append(sentTime).append(" ").append(status());
+        return str.toString();
     }
 
     public HashMap<User, MessageReaction> reactions() {
         if (reactions == null) reactions = new HashMap<>();
         return reactions;
+    }
+
+    private int getNumberOfAReaction(MessageReaction reaction){
+        int i=0;
+        for (MessageReaction messageReaction : reactions().values()){
+            if (messageReaction == reaction) i++;
+        }
+        return i;
     }
 }

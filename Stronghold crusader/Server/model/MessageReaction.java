@@ -9,4 +9,9 @@ public enum MessageReaction {
     MessageReaction(String symbol) {
         this.symbol = symbol;
     }
+
+    @Override
+    public String toString() {
+        return this.symbol;
+    }
 }
