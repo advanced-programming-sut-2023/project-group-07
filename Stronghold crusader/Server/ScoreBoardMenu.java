@@ -28,6 +28,8 @@ public class ScoreBoardMenu extends Thread {
             if (input.equals("exit")) {
                 printScoreboard.stopPrinting();
                 return;
+            }else if (input.equals("refresh")){
+                printScoreboard.printNow();
             }
         }
     }
