@@ -7,8 +7,11 @@ import java.util.HashMap;
 import model.*;
 
 public class GameMenuController {
-    private static Game game = Controller.currentGame;
+    private Game game;
 
+    public GameMenuController(Game game){
+        this.game=game;
+    }
     public void refreshGame() {
         this.game = Controller.currentGame;
     }
@@ -633,13 +636,13 @@ public class GameMenuController {
         if (badDirection)
             return Messages.BAD_DIRECTION;
         engineer.pourOil(direction);
-        sendToOilSmelter(engineer);
+//        sendToOilSmelter(engineer);
         return Messages.POUR_OIL_SUCCESSFUL;
     }
 
-    protected static void sendToOilSmelter(Engineer engineer) {
-        engineer.goToOilSmelter(game.sendToAOilSmelter(engineer));
-    }
+//    protected static void sendToOilSmelter(Engineer engineer) {
+//        engineer.goToOilSmelter(game.sendToAOilSmelter(engineer));
+//    }
 
     public Messages giveOil() {
         Map map = game.getMap();
@@ -664,7 +667,7 @@ public class GameMenuController {
         if (getterEngineers.size() == 0)
             return Messages.NO_ONE_TO_GIVE_OIL_TO;
         for (Engineer engineer : getterEngineers) {
-            sendToOilSmelter(engineer);
+//            sendToOilSmelter(engineer);
         }
         return Messages.GIVING_OIL_SUCESSFUL;
     }

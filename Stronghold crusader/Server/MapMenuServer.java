@@ -3,6 +3,7 @@ package Server;
 import controller.Controller;
 import controller.MapMenuCommands;
 import controller.MapMenuController;
+import model.Game;
 import model.Texture;
 
 import java.beans.PropertyEditorSupport;
@@ -19,13 +20,15 @@ public class MapMenuServer {
 
     DataOutputStream dataOutputStream;
     DataInputStream dataInputStream;
-    public MapMenuServer(DataInputStream dataInputStream, DataOutputStream dataOutputStream) {
+    Game game;
+    public MapMenuServer(DataInputStream dataInputStream, DataOutputStream dataOutputStream, Game game) {
         this.dataInputStream = dataInputStream;
         this.dataOutputStream = dataOutputStream;
+        this.game=game;
     }
 
     public void run(String initialInput) throws IOException {
-        controller.refreshMap(Controller.currentGame.getMap());
+        controller.refreshMap(game.getMap());
         showMap(initialInput);
         while (true) {
             String input = dataInputStream.readUTF();

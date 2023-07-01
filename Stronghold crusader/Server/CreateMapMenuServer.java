@@ -25,7 +25,7 @@ public class CreateMapMenuServer extends MapMenuServer {
     private String currentUserUsername;
 
     public CreateMapMenuServer(DataInputStream dataInputStream, DataOutputStream dataOutputStream) {
-        super(dataInputStream, dataOutputStream);
+        super(dataInputStream, dataOutputStream,null);
         this.dataInputStream = dataInputStream;
         this.dataOutputStream = dataOutputStream;
     }

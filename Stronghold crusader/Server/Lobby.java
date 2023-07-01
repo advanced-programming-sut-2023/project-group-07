@@ -5,6 +5,7 @@ import model.Game;
 import model.Map;
 import model.User;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -15,28 +16,44 @@ public class Lobby {
     private boolean isPublic = true;
     private Map map;
     private User admin;
+    private final int id;
+    private int numberOfPlayers;
+    private int earlyGameGolds;
+    private long idleTime=0;
 
-    public Lobby(boolean isPublic, Map map, User admin) {
+    public Lobby(boolean isPublic, Map map, User admin,int numberOfPlayers,int earlyGameGolds) {
+        this.numberOfPlayers = numberOfPlayers;
+        this.earlyGameGolds = earlyGameGolds;
         this.isPublic = isPublic;
         this.map = map;
         this.admin = admin;
+        if(GamesMenu.getLobbies().isEmpty())
+            id=0;
+        else
+            id = 1+GamesMenu.getLobbies().get(GamesMenu.getLobbies().size()-1).id;
     }
 
-    private void addUser(User user){
+    public void addUser(User user){
         if(!users.contains(user))
             users.add(user);
     }
 
-    private void removeUser(User user){
+    public void removeUser(User user){
         users.remove(user);
     }
 
 
-    private void updateLobby(){
-        if(users.size()==0)
+    public void updateAdminAndLobby() throws IOException {
+        if(users.isEmpty())
             GamesMenu.getLobbies().remove(this);
-        if(!users.contains(admin))
+        else if(!users.contains(admin)){
             admin=users.get(0);
+            Connection.getConnectionByUsername(admin.getUsername()).getDataOutputStream().writeUTF("You are now the admin of lobby with id: "+id);
+        }
+    }
+
+    public User getAdmin() {
+        return admin;
     }
 
     public ArrayList<User> getUsers() {
@@ -57,5 +74,37 @@ public class Lobby {
 
     public GameMenuController getGameMenuController() {
         return gameMenuController;
+    }
+
+    public void setPublic(boolean aPublic) {
+        isPublic = aPublic;
+    }
+
+    public Map getMap() {
+        return map;
+    }
+
+    public int getEarlyGameGolds() {
+        return earlyGameGolds;
+    }
+
+    public int getNumberOfPlayers() {
+        return numberOfPlayers;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public boolean isPublic() {
+        return isPublic;
+    }
+
+    public void setIdleTime(long idleTime) {
+        this.idleTime = idleTime;
+    }
+
+    public long getIdleTime() {
+        return idleTime;
     }
 }

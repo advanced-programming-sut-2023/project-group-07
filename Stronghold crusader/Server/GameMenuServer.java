@@ -30,7 +30,7 @@ public class GameMenuServer {
         this.dataInputStream = dataInputStream;
         this.dataOutputStream=dataOutputStream;
         this.currentUser = currentUser;
-        this.mapMenuServer = new MapMenuServer(dataInputStream, dataOutputStream);
+        this.mapMenuServer = new MapMenuServer(dataInputStream, dataOutputStream,game);
     }
     public void gameHandler() throws IOException {
         dataOutputStream.writeUTF("you have entered the game");

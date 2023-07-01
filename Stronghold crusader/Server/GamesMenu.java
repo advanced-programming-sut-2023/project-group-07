@@ -29,7 +29,18 @@ public class GamesMenu {
                     createGame();
                 } else if(input.equals("join")) {
                     joinGame();
-                } else if(input.equals("enter main menu"))
+                } else if(input.equals("show games")) {
+                    for(Lobby lobby: getLobbies()) {
+                        if(lobby.isPublic()) {
+                            String output = "id: "+lobby.getId()+"  ,  "+"capacity: "+lobby.getUsers().size()+"/"+lobby.getNumberOfPlayers()+"\nUsers:";
+                            for(User user: lobby.getUsers()) {
+                                output+="\nusername: "+user.getUsername()+"  ,  "+"nickname: "+user.getNickname();
+                            }
+                            dataOutputStream.writeUTF(output);
+                        }
+                    }
+                }
+                else if(input.equals("enter main menu"))
                     return;
                 else
                     dataOutputStream.writeUTF("invalid input");
@@ -48,37 +59,80 @@ public class GamesMenu {
         if (earlyGameGolds == null)
             return;
         dataOutputStream.writeUTF("Game created.");
-        Lobby lobby = new Lobby(true,map,currentUser);
+        Lobby lobby = new Lobby(true,map,currentUser,numberOfPlayers,earlyGameGolds);
         getLobbies().add(lobby);
         lobby.getUsers().add(currentUser);
-        while(true) {
-            System.out.println(lobby.getUsers().size()+"   "+numberOfPlayers);
-            if(lobby.getUsers().size()==numberOfPlayers){
-                System.out.println("LOR");
-                lobby.setGame(new Game(map,createGovernments(numberOfPlayers,lobby,map),earlyGameGolds));
-                lobby.setGameMenuController(new GameMenuController());
-                new GameMenuServer(dataOutputStream,dataInputStream,currentUser, lobby.getGameMenuController(), lobby.getGame()).gameHandler();
-            }
-        }
+        lobbyHandler(lobby);
     }
 
     public void joinGame() throws IOException {
+        dataOutputStream.writeUTF("enter lobby id");
         while (true) {
             if (dataInputStream.available() != 0) {
                 String input = dataInputStream.readUTF();
                 int id = Integer.parseInt(input);
-                if(id>=getLobbies().size())
-                    dataOutputStream.writeUTF("invalid id!");
+                Lobby lobby = null;
+                for(Lobby lobby2:getLobbies())
+                    if(lobby2.getId()==id){
+                        lobby=lobby2;
+                        break;
+                    }
+                if(lobby==null)
+                    dataOutputStream.writeUTF("invalid id");
                 else{
-                    Lobby lobby = getLobbies().get(id);
-                    lobby.getUsers().add(currentUser);
-                    while (true) {
-                        if(lobby.getGame()!=null && lobby.getGameMenuController()!=null) {
-                            System.out.println("KIR");
-                            new GameMenuServer(dataOutputStream,dataInputStream,currentUser, lobby.getGameMenuController(), lobby.getGame()).gameHandler();
-                        }
+                    if(lobby.getUsers().size()==lobby.getNumberOfPlayers())
+                        dataOutputStream.writeUTF("This lobby is full!");
+                    else{
+                        lobby.getUsers().add(currentUser);
+                        lobbyHandler(lobby);
                     }
                 }
+            }
+        }
+    }
+
+    public void lobbyHandler(Lobby lobby) throws IOException {
+        Map map = lobby.getMap();
+        int numberOfPlayers = lobby.getNumberOfPlayers();
+        int earlyGameGolds = lobby.getEarlyGameGolds();
+        while(true) {
+            if(lobby.getGame()==null && lobby.getUsers().size()==numberOfPlayers && currentUser.equals(lobby.getAdmin())){
+                Game game = new Game(map,createGovernments(numberOfPlayers,lobby,map),earlyGameGolds);
+                lobby.setGame(game);
+                lobby.setGameMenuController(new GameMenuController(game));
+                new GameMenuServer(dataOutputStream,dataInputStream,currentUser, lobby.getGameMenuController(), lobby.getGame()).gameHandler();
+            }
+            else if(lobby.getGame()!=null && lobby.getGameMenuController()!=null && !currentUser.equals(lobby.getAdmin())) {
+                new GameMenuServer(dataOutputStream,dataInputStream,currentUser, lobby.getGameMenuController(), lobby.getGame()).gameHandler();
+            }
+            else if(dataInputStream.available()!=0) {
+                String input = dataInputStream.readUTF();
+                if(input.equals("exit")){
+                    dataOutputStream.writeUTF("You left the lobby");
+                    lobby.removeUser(currentUser);
+                    lobby.updateAdminAndLobby();
+                    return;
+                }
+                else if(currentUser.equals(lobby.getAdmin()) && input.equals("start game")) {
+                    if(lobby.getUsers().size()<2)
+                        dataOutputStream.writeUTF("too few players!");
+                    else{
+                        Game game = new Game(map,createGovernments(lobby.getUsers().size(),lobby,map),earlyGameGolds);
+                        lobby.setGame(game);
+                        lobby.setGameMenuController(new GameMenuController(game));
+                        new GameMenuServer(dataOutputStream,dataInputStream,currentUser, lobby.getGameMenuController(), lobby.getGame()).gameHandler();
+                    }
+                }
+                else if(currentUser.equals(lobby.getAdmin()) && input.equals("private")) {
+                    lobby.setPublic(false);
+                    dataOutputStream.writeUTF("This lobby is now private");
+                }
+                else if(currentUser.equals(lobby.getAdmin()) && input.equals("public")) {
+                    lobby.setPublic(true);
+                    dataOutputStream.writeUTF("This lobby is now public");
+                }
+                else
+                    dataOutputStream.writeUTF("Invalid command");
             }
         }
     }
@@ -115,7 +169,7 @@ public class GamesMenu {
                 mapIndex = Integer.parseInt(input);
                 if (mapIndex > 0 && mapIndex <= maps.size()) {
                     mapIndex--;
-                    if (maps.get(mapIndex).getNumberOfPlayers() != numberOfPlayers) {
+                    if (maps.get(mapIndex).getNumberOfPlayers() < numberOfPlayers) {
                         dataOutputStream.writeUTF("Too few number of players!");
                         continue;
                     } else
@@ -145,35 +199,35 @@ public class GamesMenu {
         }
     }
 
-    private ArrayList<Government> getGovernments(int numberOfPlayers, Map map) throws IOException {
-        ArrayList<Government> governments = new ArrayList<>();
-        LordColor currentLordColor = LordColor.getLordColor(0);
-        governments.add(new Government(LordColor.getLordColor(0), Controller.currentUser, 0,
-                map.getKeepPosition(currentLordColor)[0],
-                map.getKeepPosition(currentLordColor)[1]));
-        for (int i = 1; i < numberOfPlayers; i++) {
-            currentLordColor = LordColor.getLordColor(i);
-            dataOutputStream.writeUTF("Enter username of next player (color " + currentLordColor + "):");
-            String input = dataInputStream.readUTF();
-            if (input.matches("\\s*exit\\s*"))
-                return null;
-            User user = User.getUserByUsername(input);
-            while (user == null || repeatedUsername(user, governments)) {
-                if (user == null)
-                    dataOutputStream.writeUTF("There is no user with this username! Enter another one:");
-
-                else
-                    dataOutputStream.writeUTF("This user is already chosen!");
-                input = dataInputStream.readUTF();
-                if (input.matches("\\s*exit\\s*"))
-                    return null;
-                user = User.getUserByUsername(input);
-            }
-            governments.add(new Government(LordColor.getLordColor(i), user, 0, map.getKeepPosition(currentLordColor)[0],
-                    map.getKeepPosition(currentLordColor)[1]));
-        }
-        return governments;
-    }
+//    private ArrayList<Government> getGovernments(int numberOfPlayers, Map map) throws IOException {
+//        ArrayList<Government> governments = new ArrayList<>();
+//        LordColor currentLordColor = LordColor.getLordColor(0);
+//        governments.add(new Government(LordColor.getLordColor(0), Controller.currentUser, 0,
+//                map.getKeepPosition(currentLordColor)[0],
+//                map.getKeepPosition(currentLordColor)[1]));
+//        for (int i = 1; i < numberOfPlayers; i++) {
+//            currentLordColor = LordColor.getLordColor(i);
+//            dataOutputStream.writeUTF("Enter username of next player (color " + currentLordColor + "):");
+//            String input = dataInputStream.readUTF();
+//            if (input.matches("\\s*exit\\s*"))
+//                return null;
+//            User user = User.getUserByUsername(input);
+//            while (user == null || repeatedUsername(user, governments)) {
+//                if (user == null)
+//                    dataOutputStream.writeUTF("There is no user with this username! Enter another one:");
+//
+//                else
+//                    dataOutputStream.writeUTF("This user is already chosen!");
+//                input = dataInputStream.readUTF();
+//                if (input.matches("\\s*exit\\s*"))
+//                    return null;
+//                user = User.getUserByUsername(input);
+//            }
+//            governments.add(new Government(LordColor.getLordColor(i), user, 0, map.getKeepPosition(currentLordColor)[0],
+//                    map.getKeepPosition(currentLordColor)[1]));
+//        }
+//        return governments;
+//    }
 
     private ArrayList<Government> createGovernments(int numberOfPlayers,Lobby lobby,Map map) {
         ArrayList<Government> governments = new ArrayList<>();
@@ -191,12 +245,12 @@ public class GamesMenu {
         return governments;
     }
 
-    private boolean repeatedUsername(User user, ArrayList<Government> governments) {
-        for (Government government : governments)
-            if (government.getUser().equals(user))
-                return true;
-        return false;
-    }
+//    private boolean repeatedUsername(User user, ArrayList<Government> governments) {
+//        for (Government government : governments)
+//            if (government.getUser().equals(user))
+//                return true;
+//        return false;
+//    }
 
     public static ArrayList<Lobby> getLobbies() {
         return Lobbies;

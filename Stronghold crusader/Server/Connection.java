@@ -68,7 +68,7 @@ public class Connection extends Thread {
                     if(input.equals("enter games menu")){
                         new GamesMenu(dataOutputStream,dataInputStream,currentUser).gameMenuHandler();
                     }
-                    if(input.equals("enter friendship menu"))
+                    else if(input.equals("enter friendship menu"))
                         new FriendshipMenu(dataOutputStream,dataInputStream,currentUser).friendShipMenuHandler();
                     else if(input.equals("enter lobby"))
                         new GamesMenu(dataOutputStream,dataInputStream,currentUser);
@@ -96,6 +96,11 @@ public class Connection extends Thread {
         }
     }
 
-
+    public static Connection getConnectionByUsername(String username) {
+        for (Connection connection : connections())
+            if (connection.getCurrentUser().getUsername().equals(username))
+                return connection;
+        return null;
+    }
 
 }
