@@ -1,5 +1,7 @@
-package Server;
+package Server.controller;
 
+import Server.model.ChatMessage;
+import Server.model.GroupChat;
 import model.User;
 
 import java.util.ArrayList;

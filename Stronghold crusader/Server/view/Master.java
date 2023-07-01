@@ -1,5 +1,8 @@
-package Server;
+package Server.view;
 
+import Server.model.Lobby;
+import Server.view.Connection;
+import Server.view.GamesMenu;
 import model.Map;
 import model.User;
 
@@ -18,7 +21,7 @@ public class Master {
             @Override
             public void run() {
                 while (true) {
-                    for(int i=GamesMenu.getLobbies().size()-1;i>-1;i--){
+                    for(int i = GamesMenu.getLobbies().size()-1; i>-1; i--){
                         Lobby lobby = GamesMenu.getLobbies().get(i);
                         if(lobby.getGame()==null && lobby.getUsers().size()==1){
                             if(lobby.getIdleTime()==0)

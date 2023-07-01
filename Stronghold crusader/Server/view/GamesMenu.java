@@ -1,6 +1,6 @@
-package Server;
+package Server.view;
 
-import controller.Controller;
+import Server.model.Lobby;
 import controller.GameMenuController;
 import model.*;
 

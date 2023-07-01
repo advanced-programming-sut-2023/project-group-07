@@ -1,7 +1,5 @@
-package Server;
+package Server.view;
 
-import controller.GameMenuController;
-import model.Game;
 import model.User;
 
 import java.io.DataInputStream;

@@ -1,5 +1,8 @@
-package Server;
+package Server.model;
 
+import Server.model.GroupChat;
+import Server.view.Connection;
+import Server.view.GamesMenu;
 import controller.GameMenuController;
 import model.Game;
 import model.Map;
@@ -7,7 +10,6 @@ import model.User;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 public class Lobby {
     private Game game = null;

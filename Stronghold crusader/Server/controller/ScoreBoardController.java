@@ -1,5 +1,6 @@
-package Server;
+package Server.controller;
 
+import Server.view.Connection;
 import model.User;
 
 import java.util.ArrayList;

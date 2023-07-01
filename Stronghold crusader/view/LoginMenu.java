@@ -1,6 +1,5 @@
 package view;
 
-import Server.Colors;
 import controller.LoginMenuCommands;
 import model.User;
 import controller.LoginMenuController;

@@ -1,4 +1,4 @@
-package Server;
+package Server.view;
 
 public enum Colors {
     RESET("\033[0m"),

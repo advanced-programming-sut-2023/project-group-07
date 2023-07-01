@@ -1,4 +1,4 @@
-package Server;
+package Server.controller;
 
 public enum OutputMessage {
     INVALID_ID,

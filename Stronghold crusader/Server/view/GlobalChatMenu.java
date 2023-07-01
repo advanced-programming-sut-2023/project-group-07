@@ -1,56 +1,60 @@
-package Server;
+package Server.view;
 
+import Server.controller.GlobalChatController;
+import Server.model.ChatMessage;
+import Server.view.GlobalChatCommands;
 import model.User;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.regex.Matcher;
 
-public class PrivateChatMenu {
+public class GlobalChatMenu {
     private DataOutputStream dataOutputStream;
     private DataInputStream dataInputStream;
     private User currentUser;
-    private GroupChatController groupChatController;
+    private GlobalChatController globalChatController;
 
-    public PrivateChatMenu(DataOutputStream dataOutputStream, DataInputStream dataInputStream, User currentUser) {
-        this.currentUser = currentUser;
-        this.dataInputStream = dataInputStream;
+
+    public GlobalChatMenu(DataOutputStream dataOutputStream, DataInputStream dataInputStream, User currentUser) {
         this.dataOutputStream = dataOutputStream;
-        groupChatController = new GroupChatController();
-
+        this.dataInputStream = dataInputStream;
+        this.currentUser = currentUser;
+        globalChatController = new GlobalChatController();
     }
-    public void privateChat(){
+
+    public void globalChat() {
         try {
-            preSetPrivateChat();
+            dataOutputStream.writeUTF("you have entered global chat");
             Matcher matcher;
             while (true) {
                 String input = dataInputStream.readUTF();
                 if (GlobalChatCommands.getMatcher(input, GlobalChatCommands.SHOW_MESSAGES) != null)
-                    dataOutputStream.writeUTF(showMessagesPrivateChat());
+                    dataOutputStream.writeUTF(showMessagesGlobalChat());
                 else if ((matcher = GlobalChatCommands.getMatcher(input,GlobalChatCommands.SEND_MESSAGE)) != null)
-                    dataOutputStream.writeUTF(sendMessagePrivate(matcher.group("message")));
+                    dataOutputStream.writeUTF(sendMessageGlobal(matcher.group("message")));
                 else if ((matcher = GlobalChatCommands.getMatcher(input,GlobalChatCommands.DELETE_MESSAGE)) != null)
-                    dataOutputStream.writeUTF(deleteMessage(matcher.group("id")));
+                    dataOutputStream.writeUTF(deleteGlobalMessage(matcher.group("id")));
                 else if ((matcher = GlobalChatCommands.getMatcher(input,GlobalChatCommands.EDIT_MESSAGE)) != null)
                     dataOutputStream.writeUTF(
-                            editPrivateMessage(matcher.group("id"), matcher.group("newContent")));
+                            editGlobalMessage(matcher.group("id"), matcher.group("newContent")));
                 else if (input.matches("\\s*exit\\s*")) {
                     dataOutputStream.writeUTF("enter main menu");
                     return;
                 }else
                     dataOutputStream.writeUTF("invalid input");
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    private String deleteMessage(String idStr) {
+
+    private String deleteGlobalMessage(String idStr) {
         try {
             int id = Integer.parseInt(idStr);
-            switch(groupChatController.deleteMessage(id, currentUser)){
+            switch(globalChatController.deleteMessage(id, currentUser)){
                 case INVALID_ID :
                     return "id is invalid";
                 case NOT_YOUR_MESSAGE:
@@ -63,10 +67,10 @@ public class PrivateChatMenu {
         }
         return "";
     }
-    private String editPrivateMessage(String idStr, String newContent) {
+    private String editGlobalMessage(String idStr, String newContent) {
         try {
             int id = Integer.parseInt(idStr);
-            switch(groupChatController.editMessage(id, currentUser, newContent)){
+            switch(globalChatController.editMessage(id, currentUser, newContent)){
                 case INVALID_ID :
                     return "id is invalid";
                 case NOT_YOUR_MESSAGE:
@@ -80,35 +84,17 @@ public class PrivateChatMenu {
         return "";
     }
 
-    private String sendMessagePrivate(String message) {
-        groupChatController.send(message, currentUser);
+    private String sendMessageGlobal(String message) {
+        globalChatController.send(message, currentUser);
         return "message has been sent";
     }
 
-    private String showMessagesPrivateChat() {
-        ArrayList<ChatMessage> messages = groupChatController.showMessages(currentUser);
+    private String showMessagesGlobalChat() {
+        ArrayList<ChatMessage> messages = globalChatController.showMessages(currentUser);
         StringBuilder str = new StringBuilder();
         for(ChatMessage message : messages){
             str.append(message).append("\n");
         }
         return str.toString();
-    }
-
-    private void preSetPrivateChat() throws IOException {
-        User targetUser = null;
-        while (true){
-            dataOutputStream.writeUTF("enter target user's username");
-            dataOutputStream.flush();
-            targetUser = groupChatController.getUserByUsername(dataInputStream.readUTF());
-            if (targetUser!=null) break;
-            else dataOutputStream.writeUTF("enter a valid username");
-
-        }
-        dataOutputStream.writeUTF("user : " + targetUser.getUsername() +" is selected");
-        dataOutputStream.flush();
-        HashSet<User> usersSet = new HashSet<>();
-        usersSet.add(currentUser);
-        usersSet.add(targetUser);
-        groupChatController.setGroupChat(usersSet);
     }
 }

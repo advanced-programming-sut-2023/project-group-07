@@ -1,4 +1,4 @@
-package Server;
+package Server.view;
 
 import controller.*;
 import model.Game;

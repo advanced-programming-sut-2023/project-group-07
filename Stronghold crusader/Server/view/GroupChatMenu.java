@@ -1,5 +1,9 @@
-package Server;
+package Server.view;
 
+import Server.controller.GroupChatController;
+import Server.model.ChatMessage;
+import Server.model.GroupChat;
+import Server.view.GlobalChatCommands;
 import model.User;
 
 import java.io.DataInputStream;

@@ -1,5 +1,6 @@
-package Server;
+package Server.view;
 
+import Server.view.Connection;
 import model.User;
 
 import java.io.DataInputStream;

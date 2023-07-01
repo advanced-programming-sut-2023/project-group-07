@@ -6,7 +6,7 @@
 //import java.util.Scanner;
 //import java.util.regex.Matcher;
 //
-//import Server.Colors;
+//import Server.view.Colors;
 //import controller.*;
 //
 //import model.Resources;

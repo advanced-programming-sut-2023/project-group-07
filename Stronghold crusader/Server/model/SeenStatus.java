@@ -1,4 +1,4 @@
-package Server;
+package Server.model;
 
 public enum SeenStatus {
     SENT("✓"),

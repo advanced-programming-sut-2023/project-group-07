@@ -1,9 +1,7 @@
 package view;
 
-import Server.Colors;
 import controller.ProfileMenuCommands;
 import controller.ProfileMenuController;
-import controller.Controller;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;

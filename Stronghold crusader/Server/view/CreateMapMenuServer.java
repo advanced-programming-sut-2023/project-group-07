@@ -1,10 +1,9 @@
-package Server;
+package Server.view;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import controller.CreateMapMenuCommands;
 import controller.CreateMapMenuController;
@@ -13,8 +12,6 @@ import controller.Messages;
 import model.LordColor;
 import java.util.regex.Matcher;
 import controller.Controller;
-import model.Map;
-import model.MapPixel;
 
 import java.util.HashMap;
 

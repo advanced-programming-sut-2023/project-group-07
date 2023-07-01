@@ -1,9 +1,8 @@
-package Server;
+package Server.view;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class ScoreBoardMenu extends Thread {
     private DataOutputStream dataOutputStream;

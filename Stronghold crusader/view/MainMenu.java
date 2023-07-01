@@ -1,14 +1,9 @@
 package view;
 
-import java.io.DataInputStream;
 import java.util.Scanner;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-
-import Server.Colors;
-import Server.CreateMapMenuServer;
-import controller.Controller;
 
 public class MainMenu {
     private final ProfileMenu profileMenu = new ProfileMenu();

@@ -1,5 +1,6 @@
-package Server;
+package Server.controller;
 
+import Server.controller.OutputMessage;
 import controller.Controller;
 import controller.Messages;
 import model.RecoveryQuestion;

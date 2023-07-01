@@ -1,12 +1,10 @@
-package Server;
+package Server.view;
 
 import controller.Controller;
 import controller.MapMenuCommands;
 import controller.MapMenuController;
 import model.Game;
-import model.Texture;
 
-import java.beans.PropertyEditorSupport;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;

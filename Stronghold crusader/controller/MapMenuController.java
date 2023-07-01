@@ -1,7 +1,7 @@
 package controller;
 
 import model.Map;
-import Server.Colors;
+import Server.view.Colors;
 
 import java.util.ArrayList;
 

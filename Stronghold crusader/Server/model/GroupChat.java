@@ -1,4 +1,4 @@
-package Server;
+package Server.model;
 
 import model.User;
 import com.google.gson.Gson;
@@ -8,7 +8,6 @@ import com.google.gson.JsonElement;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
 import java.util.*;
 
 public class GroupChat {

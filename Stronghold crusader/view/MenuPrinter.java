@@ -1,6 +1,6 @@
 //package view;
 //
-//import Server.Colors;
+//import Server.view.Colors;
 //
 //public class MenuPrinter {
 //    public void print(String text, Colors color, int length, int type) {

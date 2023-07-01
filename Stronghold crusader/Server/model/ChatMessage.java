@@ -1,8 +1,7 @@
-package Server;
+package Server.model;
 
 import model.User;
 
-import java.io.IOException;
 import java.util.Calendar;
 
 public class ChatMessage {

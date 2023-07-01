@@ -1,8 +1,9 @@
-package Server;
+package Server.controller;
 
+import Server.model.ChatMessage;
+import Server.model.GlobalChat;
 import model.User;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class GlobalChatController {
@@ -17,7 +18,7 @@ public class GlobalChatController {
         GlobalChat.sendMessage(message);
     }
 
-    public  OutputMessage deleteMessage(int id, User currentUser) {
+    public OutputMessage deleteMessage(int id, User currentUser) {
         ChatMessage message = getMessageById(id);
         if (message == null) return OutputMessage.INVALID_ID;
         if (GlobalChat.deleteMessage(message, currentUser)) return OutputMessage.SUCCESSFUL;

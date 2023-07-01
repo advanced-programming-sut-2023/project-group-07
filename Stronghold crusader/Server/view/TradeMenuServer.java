@@ -1,4 +1,4 @@
-package Server;
+package Server.view;
 
 import controller.Controller;
 import controller.TradeCommands;

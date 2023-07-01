@@ -1,6 +1,4 @@
-package Server;
-
-import controller.LoginMenuCommands;
+package Server.view;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -1,5 +1,7 @@
-package Server;
+package Server.view;
 
+import Server.controller.LoginController;
+import Server.controller.OutputMessage;
 import model.User;
 
 import java.io.DataInputStream;
