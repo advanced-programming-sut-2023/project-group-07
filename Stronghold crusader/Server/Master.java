@@ -20,7 +20,7 @@ public class Master {
                 while (true) {
                     for(int i=GamesMenu.getLobbies().size()-1;i>-1;i--){
                         Lobby lobby = GamesMenu.getLobbies().get(i);
-                        if(lobby.getGame()!=null && lobby.getUsers().size()==1){
+                        if(lobby.getGame()==null && lobby.getUsers().size()==1){
                             if(lobby.getIdleTime()==0)
                                 lobby.setIdleTime(System.currentTimeMillis());
                             else if(System.currentTimeMillis()-lobby.getIdleTime()>30*1000) {

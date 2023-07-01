@@ -96,7 +96,11 @@ public class GamesMenu {
         int numberOfPlayers = lobby.getNumberOfPlayers();
         int earlyGameGolds = lobby.getEarlyGameGolds();
         while(true) {
-            if(lobby.getGame()==null && lobby.getUsers().size()==numberOfPlayers && currentUser.equals(lobby.getAdmin())){
+            if(!getLobbies().contains(lobby)){
+                dataOutputStream.writeUTF("lobby was deleted due to being idle for too long!");
+                return;
+            }
+            else if(lobby.getGame()==null && lobby.getUsers().size()==numberOfPlayers && currentUser.equals(lobby.getAdmin())){
                 Game game = new Game(map,createGovernments(numberOfPlayers,lobby,map),earlyGameGolds);
                 lobby.setGame(game);
                 lobby.setGameMenuController(new GameMenuController(game));
