@@ -36,7 +36,7 @@ public class CreateMapMenuServer extends MapMenuServer {
             while (true) {
                 String input = dataInputStream.readUTF();
                 if (input.matches("\\s*exit\\s*")) {
-                    dataOutputStream.writeUTF(controller.saveMap());
+                    dataOutputStream.writeUTF(controller.saveMap(currentUserUsername));
                     return;
                 } else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_MAP) != null) {
                     String showMapStr = super.showMap(input);
@@ -79,7 +79,7 @@ public class CreateMapMenuServer extends MapMenuServer {
         dataOutputStream.writeUTF("Are you sure you want to remove this map?");
         String input = dataInputStream.readUTF();
         if (input.toLowerCase().matches("\\s*yes\\s*")) {
-            controller.removeMap();
+            controller.removeMap(currentUserUsername);
             return Messages.REMOVE_MAP_SUCCESSFUL;
         }
         return Messages.REMOVE_MAP_CANCLED;

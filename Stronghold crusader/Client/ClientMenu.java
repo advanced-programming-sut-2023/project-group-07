@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 public class ClientMenu {
     private static final int port = 8080;
-    private static final String host = "192.168.1.50";
+    private static final String host = "localhost";
 
     public static void main(String[] args) {
         try {

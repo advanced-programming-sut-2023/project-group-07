@@ -120,6 +120,8 @@ public class Connection extends Thread {
                     }
                     else if (input.equals("enter create map menu"))
                         new CreateMapMenuServer(dataInputStream, dataOutputStream).run(currentUser.getUsername());
+                    else if (input.equals("enter share maps menu"))
+                        new ShareMapsMenu(dataInputStream, dataOutputStream, currentUser).run();
                     else if (input.matches("\\s*logout\\s*")) {
                         currentUser = null;
                         return;

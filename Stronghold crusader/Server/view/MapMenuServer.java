@@ -4,6 +4,7 @@ import controller.Controller;
 import controller.MapMenuCommands;
 import controller.MapMenuController;
 import model.Game;
+import model.Map;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -28,6 +29,10 @@ public class MapMenuServer {
     public void run(String initialInput) throws IOException {
         controller.refreshMap(game.getMap());
         showMap(initialInput);
+        startOperation();
+    }
+
+    private void startOperation() throws IOException {
         while (true) {
             String input = dataInputStream.readUTF();
             if (input.matches("\\s*exit\\s*")) {
@@ -44,6 +49,11 @@ public class MapMenuServer {
             else
                 dataOutputStream.writeUTF("Invalid command!");
         }
+    }
+
+    public void run(Map map) throws IOException {
+        controller.refreshMap(map);
+        startOperation();
     }
 
     protected void moveMap(String input) throws IOException {

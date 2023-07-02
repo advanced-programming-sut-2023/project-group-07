@@ -10,6 +10,7 @@ import com.google.gson.JsonElement;
 
 public class Map {
     private static ArrayList<Map> maps = new ArrayList<Map>();
+    private static ArrayList<Map> sharedMaps = new ArrayList<>();
     private static JsonArray allMaps = new JsonArray();
     private static int maxPlayerOfMaps = 8;
     private static final int MAX_DISTANCE = 1000;
@@ -18,14 +19,15 @@ public class Map {
     private String name;
     private int numberOfPlayers;
     private HashMap<LordColor, int[]> keepsPositions;
-    private String ownerUsername;
+    private ArrayList<String> ownersUsernames = new ArrayList<>();
+    private boolean isShared = false;
 
     public Map(int size, String name, int numberOfPlayers, HashMap<LordColor, int[]> keepsPositions, String ownerUsername) {
         this.size = size;
         this.name = name;
         this.numberOfPlayers = numberOfPlayers;
         this.keepsPositions = keepsPositions;
-        this.ownerUsername = ownerUsername;
+        this.ownersUsernames.add(ownerUsername);
         buildMap();
         for (LordColor lordColor : keepsPositions.keySet()) {
             int row = keepsPositions.get(lordColor)[0];
@@ -41,17 +43,11 @@ public class Map {
         return (ArrayList<Map>) maps.clone();
     }
 
-    public static void removeMap(Map map) throws IOException {
-        if (maps.contains(map)) {
+    public static void removeMap(Map map, String ownerUsername) throws IOException {
+        if (maps.contains(map) && map.getOwnersUsernames().contains(ownerUsername)) {
             Gson gson = new Gson();
+            map.getOwnersUsernames().remove(ownerUsername);
             JsonElement jsonElement = gson.toJsonTree(map).getAsJsonObject();
-            for (int i = 0; i < maps.size(); i++) {
-                if (maps.get(i).equals(map)) {
-                    allMaps.remove(i);
-                    break;
-                }
-            }
-            maps.remove(map);
             FileWriter file = new FileWriter("Stronghold crusader/DB/Maps");
             file.write(allMaps.toString());
             file.close();
@@ -60,6 +56,17 @@ public class Map {
 
     public static int maxPlayerOfMaps() {
         return maxPlayerOfMaps;
+    }
+
+    public static void updateMaps() throws IOException {
+        Gson gson = new Gson();
+        for (Map map : maps) {
+            JsonElement jsonElement = gson.toJsonTree(map).getAsJsonObject();
+            allMaps.add(jsonElement);
+        }
+        FileWriter file = new FileWriter("Stronghold crusader/DB/Maps");
+        file.write(allMaps.toString());
+        file.close();
     }
 
     private void buildMap() {
@@ -123,6 +130,7 @@ public class Map {
         file.close();
     }
 
+
     public static void loadMaps() throws IOException {
         maps.clear();
         FileReader file = new FileReader("Stronghold crusader/DB/Maps");
@@ -140,6 +148,9 @@ public class Map {
         for (JsonElement jsonElement : jsonArray) {
             maps.add(gson.fromJson(jsonElement, Map.class));
         }
+        for (Map map : maps)
+            if (map.isShared)
+                sharedMaps.add(map);
         allMaps = jsonArray;
     }
 
@@ -407,23 +418,19 @@ public class Map {
         return path;
     }
 
-    public String getOwnerUsername() {
-        return ownerUsername;
+    public ArrayList<String> getOwnersUsernames() {
+        return ownersUsernames;
     }
 
-    public boolean isTheSame (Map map) {
-        if (!this.ownerUsername.equals(map.ownerUsername))
-            System.out.println("user");
-        if (this.size != map.size)
-            return false;
-        if (this.keepsPositions.keySet().size() != map.keepsPositions.keySet().size())
-                return false;
-        for (LordColor lordColor : this.keepsPositions.keySet()) {
-            int[] firstCoordinates = this.keepsPositions.get(lordColor);
-            int[] secondCoordinates = map.keepsPositions.get(lordColor);
-            if (firstCoordinates[0] != secondCoordinates[0] || firstCoordinates[1] != secondCoordinates[1])
-                return false;
-        }
-        return true;
+    public static ArrayList<Map> getSharedMaps() {
+        return sharedMaps;
+    }
+
+    public boolean isShared() {
+        return isShared;
+    }
+
+    public void share() {
+        isShared = true;
     }
 }
