@@ -3,6 +3,7 @@ package Server.view;
 import model.User;
 
 import java.io.DataInputStream;
+import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -14,8 +15,8 @@ import java.util.ArrayList;
 
 public class Connection extends Thread {
     private final Socket socket;
-    private final DataInputStream dataInputStream;
-    private final DataOutputStream dataOutputStream;
+    private final AuthenticatedDataInputStream dataInputStream;
+    private final AuthenticatedDataOutputStream dataOutputStream;
     private User currentUser = null;
     private boolean isRunning = true;
     private static final ArrayList<Connection> connections = new ArrayList<>();
@@ -27,12 +28,7 @@ public class Connection extends Thread {
     public User getCurrentUser() {
         return currentUser;
     }
-
-    public DataInputStream getDataInputStream() {
-        return dataInputStream;
-    }
-
-    public DataOutputStream getDataOutputStream() {
+    public AuthenticatedDataOutputStream getDataOutputStream() {
         return dataOutputStream;
     }
 
@@ -55,7 +51,9 @@ public class Connection extends Thread {
         }
     }
 
-    public Connection(Socket socket, DataInputStream dataInputStream, DataOutputStream dataOutputStream) throws IOException {
+    public Connection(Socket socket,
+                      AuthenticatedDataInputStream dataInputStream,
+                      AuthenticatedDataOutputStream dataOutputStream) throws IOException {
         this.socket = socket;
         this.dataInputStream = dataInputStream;
         this.dataOutputStream = dataOutputStream;
@@ -142,5 +140,4 @@ public class Connection extends Thread {
                 return connection;
         return null;
     }
-
 }

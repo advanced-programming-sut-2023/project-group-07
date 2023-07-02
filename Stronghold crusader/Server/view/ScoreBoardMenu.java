@@ -1,15 +1,14 @@
 package Server.view;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class ScoreBoardMenu extends Thread {
-    private DataOutputStream dataOutputStream;
-    private DataInputStream dataInputStream;
+    private AuthenticatedDataOutputStream dataOutputStream;
+    private AuthenticatedDataInputStream dataInputStream;
     private boolean isRunning = true;
 
-    public ScoreBoardMenu(DataOutputStream dataOutputStream, DataInputStream dataInputStream) {
+    public ScoreBoardMenu(AuthenticatedDataOutputStream dataOutputStream,
+                          AuthenticatedDataInputStream dataInputStream) {
         this.dataOutputStream = dataOutputStream;
         this.dataInputStream = dataInputStream;
     }

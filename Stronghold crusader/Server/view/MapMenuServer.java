@@ -17,10 +17,12 @@ public class MapMenuServer {
     private int x;
     private int y;
 
-    DataOutputStream dataOutputStream;
-    DataInputStream dataInputStream;
+    AuthenticatedDataOutputStream dataOutputStream;
+    AuthenticatedDataInputStream dataInputStream;
     Game game;
-    public MapMenuServer(DataInputStream dataInputStream, DataOutputStream dataOutputStream, Game game) {
+    public MapMenuServer(AuthenticatedDataInputStream dataInputStream,
+                         AuthenticatedDataOutputStream dataOutputStream,
+                         Game game) {
         this.dataInputStream = dataInputStream;
         this.dataOutputStream = dataOutputStream;
         this.game=game;

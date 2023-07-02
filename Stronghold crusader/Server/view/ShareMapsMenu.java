@@ -9,11 +9,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class ShareMapsMenu {
-    private DataInputStream dataInputStream;
-    private DataOutputStream dataOutputStream;
+    private AuthenticatedDataInputStream dataInputStream;
+    private AuthenticatedDataOutputStream dataOutputStream;
     private ArrayList<Map> sharedMaps;
     private User currentUser;
-    public ShareMapsMenu(DataInputStream dataInputStream, DataOutputStream dataOutputStream, User currentUser) {
+    public ShareMapsMenu(AuthenticatedDataInputStream dataInputStream, AuthenticatedDataOutputStream dataOutputStream, User currentUser) {
         this.dataInputStream = dataInputStream;
         this.dataOutputStream = dataOutputStream;
         sharedMaps = Map.getSharedMaps();

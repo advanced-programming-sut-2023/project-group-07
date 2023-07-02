@@ -11,11 +11,13 @@ import java.util.ArrayList;
 
 public class GamesMenu {
     private static final ArrayList<Lobby> Lobbies = new ArrayList<>();
-    DataInputStream dataInputStream;
-    DataOutputStream dataOutputStream;
+    AuthenticatedDataInputStream dataInputStream;
+    AuthenticatedDataOutputStream dataOutputStream;
     User currentUser;
 
-    public GamesMenu(DataOutputStream dataOutputStream, DataInputStream dataInputStream, User currentUser) {
+    public GamesMenu(AuthenticatedDataOutputStream dataOutputStream,
+                     AuthenticatedDataInputStream dataInputStream,
+                     User currentUser) {
         this.dataOutputStream = dataOutputStream;
         this.dataInputStream = dataInputStream;
         this.currentUser = currentUser;

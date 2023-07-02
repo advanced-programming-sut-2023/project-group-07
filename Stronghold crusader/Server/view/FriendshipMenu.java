@@ -8,10 +8,12 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class FriendshipMenu {
-    private DataOutputStream dataOutputStream;
-    private DataInputStream dataInputStream;
+    private AuthenticatedDataOutputStream dataOutputStream;
+    private AuthenticatedDataInputStream dataInputStream;
     private User currentUser;
-    public FriendshipMenu(DataOutputStream dataOutputStream, DataInputStream dataInputStream, User currentUser){
+    public FriendshipMenu(AuthenticatedDataOutputStream dataOutputStream,
+                          AuthenticatedDataInputStream dataInputStream,
+                          User currentUser){
         this.dataOutputStream = dataOutputStream;
         this.dataInputStream = dataInputStream;
         this.currentUser = currentUser;

@@ -13,12 +13,13 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 
 public class GroupChatMenu {
-    private DataOutputStream dataOutputStream;
-    private DataInputStream dataInputStream;
+    private AuthenticatedDataOutputStream dataOutputStream;
+    private AuthenticatedDataInputStream dataInputStream;
     private User currentUser;
     private GroupChatController groupChatController;
 
-    public GroupChatMenu(DataOutputStream dataOutputStream, DataInputStream dataInputStream, User currentUser) {
+    public GroupChatMenu(AuthenticatedDataOutputStream dataOutputStream,
+                         AuthenticatedDataInputStream dataInputStream, User currentUser) {
         this.currentUser = currentUser;
         this.dataInputStream = dataInputStream;
         this.dataOutputStream = dataOutputStream;
@@ -137,13 +138,10 @@ public class GroupChatMenu {
 
     private void preSetGroupChat() throws IOException {
         dataOutputStream.writeUTF("write users you want to have chat with. Type \"done\" at the end ");
-        dataOutputStream.flush();
         HashSet<User> users = new HashSet<>();
         users.add(currentUser);
         while (true) {
-            System.out.println(14);
             dataOutputStream.writeUTF("enter next user");
-            dataOutputStream.flush();
             String input = dataInputStream.readUTF();
             System.out.println(System.currentTimeMillis());
             if (input.matches("\\s*done\\s*")) break;

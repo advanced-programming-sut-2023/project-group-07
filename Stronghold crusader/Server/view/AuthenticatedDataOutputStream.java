@@ -2,7 +2,6 @@ package Server.view;
 
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

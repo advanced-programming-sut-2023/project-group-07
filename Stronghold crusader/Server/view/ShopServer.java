@@ -4,17 +4,17 @@ import controller.GameMenuCommands;
 import controller.GameMenuController;
 
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 
 public class ShopServer {
     private final GameMenuController controller;
-    DataInputStream dataInputStream;
-    DataOutputStream dataOutputStream;
+    AuthenticatedDataInputStream dataInputStream;
+    AuthenticatedDataOutputStream dataOutputStream;
 
-    public ShopServer(DataOutputStream dataOutputStream, DataInputStream dataInputStream, GameMenuController controller) {
+    public ShopServer(AuthenticatedDataOutputStream dataOutputStream,
+                      AuthenticatedDataInputStream dataInputStream,
+                      GameMenuController controller) {
         this.dataInputStream= dataInputStream;
         this.dataOutputStream   =dataOutputStream;
         this.controller = controller;

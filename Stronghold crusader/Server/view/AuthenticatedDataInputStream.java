@@ -25,6 +25,9 @@ public class AuthenticatedDataInputStream {
             return "";
         }
     }
+    public int available() throws IOException {
+        return dataInputStream.available();
+    }
 
 
     private Gson gson = null;

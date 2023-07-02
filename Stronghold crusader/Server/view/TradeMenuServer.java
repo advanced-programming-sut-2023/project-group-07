@@ -18,10 +18,11 @@ public class TradeMenuServer {
     public TradeMenuServer() {
         controller = new TradeMenuController();
     }
-    DataOutputStream dataOutputStream;
-    DataInputStream dataInputStream;
+    AuthenticatedDataOutputStream dataOutputStream;
+    AuthenticatedDataInputStream dataInputStream;
 
-    public void run(DataInputStream dataInputStream, DataOutputStream dataOutputStream) throws IOException {
+    public void run(AuthenticatedDataInputStream dataInputStream,
+                    AuthenticatedDataOutputStream dataOutputStream) throws IOException {
         this.dataInputStream=dataInputStream;
         this.dataOutputStream=dataOutputStream;
         showNewRequests();

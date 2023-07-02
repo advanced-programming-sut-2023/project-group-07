@@ -12,13 +12,15 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 
 public class GlobalChatMenu {
-    private DataOutputStream dataOutputStream;
-    private DataInputStream dataInputStream;
+    private AuthenticatedDataOutputStream dataOutputStream;
+    private AuthenticatedDataInputStream dataInputStream;
     private User currentUser;
     private GlobalChatController globalChatController;
 
 
-    public GlobalChatMenu(DataOutputStream dataOutputStream, DataInputStream dataInputStream, User currentUser) {
+    public GlobalChatMenu(AuthenticatedDataOutputStream dataOutputStream,
+                          AuthenticatedDataInputStream dataInputStream,
+                          User currentUser) {
         this.dataOutputStream = dataOutputStream;
         this.dataInputStream = dataInputStream;
         this.currentUser = currentUser;

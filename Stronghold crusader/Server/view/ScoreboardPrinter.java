@@ -8,9 +8,9 @@ import java.util.ArrayList;
 
 public class ScoreboardPrinter extends Thread {
     private boolean keepPrinting = true;
-    private DataOutputStream dataOutputStream;
+    private AuthenticatedDataOutputStream dataOutputStream;
 
-    public ScoreboardPrinter(DataOutputStream dataOutputStream) {
+    public ScoreboardPrinter(AuthenticatedDataOutputStream dataOutputStream) {
         this.dataOutputStream = dataOutputStream;
     }
 

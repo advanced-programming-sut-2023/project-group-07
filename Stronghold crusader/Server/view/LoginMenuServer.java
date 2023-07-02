@@ -11,10 +11,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class LoginMenuServer {
-    private DataOutputStream dataOutputStream;
-    private DataInputStream dataInputStream;
+    private AuthenticatedDataOutputStream dataOutputStream;
+    private AuthenticatedDataInputStream dataInputStream;
 
-    public LoginMenuServer(DataOutputStream dataOutputStream, DataInputStream dataInputStream) {
+    public LoginMenuServer(AuthenticatedDataOutputStream dataOutputStream,
+                           AuthenticatedDataInputStream dataInputStream) {
         this.dataOutputStream = dataOutputStream;
         this.dataInputStream = dataInputStream;
     }

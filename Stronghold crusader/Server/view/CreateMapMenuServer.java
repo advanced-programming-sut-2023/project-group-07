@@ -17,11 +17,12 @@ import java.util.HashMap;
 
 public class CreateMapMenuServer extends MapMenuServer {
     private final CreateMapMenuController controller = new CreateMapMenuController(super.controller);
-    private DataOutputStream dataOutputStream;
-    private DataInputStream dataInputStream;
+    private AuthenticatedDataOutputStream dataOutputStream;
+    private AuthenticatedDataInputStream dataInputStream;
     private String currentUserUsername;
 
-    public CreateMapMenuServer(DataInputStream dataInputStream, DataOutputStream dataOutputStream) {
+    public CreateMapMenuServer(AuthenticatedDataInputStream dataInputStream,
+                               AuthenticatedDataOutputStream dataOutputStream) {
         super(dataInputStream, dataOutputStream,null);
         this.dataInputStream = dataInputStream;
         this.dataOutputStream = dataOutputStream;

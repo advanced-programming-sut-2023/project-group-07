@@ -14,13 +14,15 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 
 public class PrivateChatMenu {
-    private DataOutputStream dataOutputStream;
-    private DataInputStream dataInputStream;
+    private AuthenticatedDataOutputStream dataOutputStream;
+    private AuthenticatedDataInputStream dataInputStream;
     private User currentUser;
     private GroupChatController groupChatController;
     private GroupChat groupChat;
 
-    public PrivateChatMenu(DataOutputStream dataOutputStream, DataInputStream dataInputStream, User currentUser) {
+    public PrivateChatMenu(AuthenticatedDataOutputStream dataOutputStream,
+                           AuthenticatedDataInputStream dataInputStream,
+                           User currentUser) {
         this.currentUser = currentUser;
         this.dataInputStream = dataInputStream;
         this.dataOutputStream = dataOutputStream;
@@ -41,14 +43,12 @@ public class PrivateChatMenu {
         User targetUser = null;
         while (true){
             dataOutputStream.writeUTF("enter target user's username");
-            dataOutputStream.flush();
             targetUser = groupChatController.getUserByUsername(dataInputStream.readUTF());
             if (targetUser!=null) break;
             else dataOutputStream.writeUTF("enter a valid username");
 
         }
         dataOutputStream.writeUTF("user : " + targetUser.getUsername() +" is selected");
-        dataOutputStream.flush();
         HashSet<User> usersSet = new HashSet<>();
         usersSet.add(currentUser);
         usersSet.add(targetUser);

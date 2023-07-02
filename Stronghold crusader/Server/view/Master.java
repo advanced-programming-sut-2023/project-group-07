@@ -17,6 +17,10 @@ public class Master {
     private static ServerSocket serverSocket;
     private static final int port = 8080;
 
+    private static AuthenticatedDataInputStream authenticatedDataInputStream;
+
+    private static AuthenticatedDataOutputStream authenticatedDataOutputStream;
+
     public static void main(String[] args) {
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -46,7 +50,8 @@ public class Master {
                 DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
                 setAuthenticatingStream(dataInputStream, dataOutputStream);
 
-                Connection connection = new Connection(socket, dataInputStream, dataOutputStream);
+                Connection connection = new Connection(socket,
+                        authenticatedDataInputStream, authenticatedDataOutputStream);
                 connection.start();
             }
         } catch (IOException e) {
@@ -56,16 +61,16 @@ public class Master {
 
     private static void setAuthenticatingStream(DataInputStream dataInputStream, DataOutputStream dataOutputStream) throws IOException {
         String id = generateConnectionId();
-        AuthenticatedDataInputStream authenticatedDataInputStream =
+        authenticatedDataInputStream =
                 new AuthenticatedDataInputStream(dataInputStream, id);
-        AuthenticatedDataOutputStream authenticatedDataOutputStream =
+        authenticatedDataOutputStream =
                 new AuthenticatedDataOutputStream(dataOutputStream, id);
         dataOutputStream.writeUTF(id);
     }
 
 
-
     static Random random = null;
+
     public static Random random() {
         if (random == null)
             random = new Random();
@@ -73,7 +78,7 @@ public class Master {
     }
 
     private static String generateConnectionId() {
-        int length = random().nextInt(10) + 7 ;
+        int length = random().nextInt(10) + 7;
         StringBuilder id = new StringBuilder();
         for (int i = 0; i < length; i++)
             id.append(random().nextInt(10));

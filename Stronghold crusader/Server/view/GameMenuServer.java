@@ -15,15 +15,17 @@ import java.util.regex.Matcher;
 
 public class GameMenuServer {
     User currentUser;
-    DataOutputStream dataOutputStream;
-    DataInputStream dataInputStream;
+    AuthenticatedDataOutputStream dataOutputStream;
+    AuthenticatedDataInputStream dataInputStream;
     private final GameMenuController gameMenuController;
     private final ShopServer shopServer;
     private final MapMenuServer mapMenuServer;
     private final TradeMenuServer tradeMenuServer = new TradeMenuServer();
     private final Game game;
     private Scanner scanner;
-    public GameMenuServer(DataOutputStream dataOutputStream, DataInputStream dataInputStream,User currentUser,GameMenuController gameMenuController,Game game) {
+    public GameMenuServer(AuthenticatedDataOutputStream dataOutputStream,
+                          AuthenticatedDataInputStream dataInputStream,
+                          User currentUser,GameMenuController gameMenuController,Game game) {
         this.gameMenuController=gameMenuController;
         this.game=game;
         shopServer = new ShopServer(dataOutputStream,dataInputStream,gameMenuController);
