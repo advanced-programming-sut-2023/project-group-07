@@ -5,6 +5,7 @@ import controller.MapMenuCommands;
 import controller.MapMenuController;
 import model.Game;
 import model.Map;
+import model.User;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -17,15 +18,17 @@ public class MapMenuServer {
     private int x;
     private int y;
 
-    AuthenticatedDataOutputStream dataOutputStream;
-    AuthenticatedDataInputStream dataInputStream;
-    Game game;
+    private AuthenticatedDataOutputStream dataOutputStream;
+    private AuthenticatedDataInputStream dataInputStream;
+    private Game game;
+    private User currentUser;
     public MapMenuServer(AuthenticatedDataInputStream dataInputStream,
                          AuthenticatedDataOutputStream dataOutputStream,
-                         Game game) {
+                         Game game, User currentUser) {
         this.dataInputStream = dataInputStream;
         this.dataOutputStream = dataOutputStream;
         this.game=game;
+        this.currentUser = currentUser;
     }
 
     public void run(String initialInput) throws IOException {
@@ -37,19 +40,25 @@ public class MapMenuServer {
     private void startOperation() throws IOException {
         while (true) {
             String input = dataInputStream.readUTF();
+            sendDataToWatchingUsers(input, true);
+            String sendMessage = null;
             if (input.matches("\\s*exit\\s*")) {
-                dataOutputStream.writeUTF("Exit was successful!");
+               sendMessage = "Exit was successful!";
                 return;
             } else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_MAP) != null) {
                 String showMapStr = showMap(input);
                 if (showMapStr != null)
-                    dataOutputStream.writeUTF(showMapStr);
+                    sendMessage = showMapStr;
             } else if (MapMenuCommands.getMatcher(input, MapMenuCommands.MOVE_MAP) != null)
                 moveMap(input);
             else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_DETAILS) != null)
-                dataOutputStream.writeUTF(showDetails(input));
+                sendMessage = showDetails(input);
             else
-                dataOutputStream.writeUTF("Invalid command!");
+                sendMessage = "Invalid command!";
+            if (sendMessage != null) {
+                dataOutputStream.writeUTF(sendMessage);
+                sendDataToWatchingUsers(sendMessage, false);
+            }
         }
     }
 
@@ -76,8 +85,10 @@ public class MapMenuServer {
             String rightString = MapMenuCommands.getMatcher(input, MapMenuCommands.MOVE_RIGHT).group("right");
             right = (rightString == null) ? 1 : Integer.parseInt(rightString.trim());
         }
-        if (!controller.checkMoveCoordinates(this.x, this.y, up, down, left, right))
+        if (!controller.checkMoveCoordinates(this.x, this.y, up, down, left, right)) {
             dataOutputStream.writeUTF("Coordinates out of bounds or invalid!");
+            sendDataToWatchingUsers("Coordinates out of bounds or invalid!", false);
+        }
         else {
             this.x = controller.setMoveX(this.x, up, down);
             this.y = controller.setMoveY(this.y, left, right);
@@ -116,6 +127,7 @@ public class MapMenuServer {
             result += "\n";
         }
         dataOutputStream.writeUTF(result);
+        sendDataToWatchingUsers(result, false);
     }
 
     private String splitRow(int length, boolean flag) throws IOException {
@@ -163,6 +175,18 @@ public class MapMenuServer {
         this.y = column;
         printMap();
         return null;
+    }
+
+    private void sendDataToWatchingUsers(String data, boolean input) throws IOException {
+        if (game == null)
+            return;
+        for (Connection connection : game.getWatchingUsers())
+            if (connection.isAlive()) {
+                if (input)
+                    data += (" (" + currentUser.getUsername() + ")");
+                connection.sendData(data);
+            }
+
     }
 
 }

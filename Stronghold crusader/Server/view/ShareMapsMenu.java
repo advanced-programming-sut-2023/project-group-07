@@ -70,7 +70,7 @@ public class ShareMapsMenu {
             if (input.equals("back"))
                 return;
             else if (input.equals("1")) {
-                MapMenuServer mapMenuServer = new MapMenuServer(dataInputStream, dataOutputStream, null);
+                MapMenuServer mapMenuServer = new MapMenuServer(dataInputStream, dataOutputStream, null, null);
                 dataOutputStream.writeUTF("Now you can checkout map " + map.getName() + "!");
                 mapMenuServer.run(map);
             }

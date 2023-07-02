@@ -148,15 +148,19 @@ public class Connection extends Thread {
             dataOutputStream.writeUTF((i + 1) + ". " + publicLobbies.get(i).getId() + " number of players: " + publicLobbies.get(i).getUsers().size());
         while (true) {
             String input = dataInputStream.readUTF();
-            if(input.equals("exit"))
+            if(input.equals("exit")) {
+                for (Lobby lobby : publicLobbies)
+                    if (lobby.getGame().getWatchingUsers().contains(this))
+                        lobby.getGame().getWatchingUsers().remove(this);
+                dataOutputStream.writeUTF("Exited successfully!");
                 return;
+            }
             if (!input.matches("\\d+") || Integer.parseInt(input) < 1 || Integer.parseInt(input) > publicLobbies.size())
                 dataOutputStream.writeUTF("Enter a whole number between 1 and " + publicLobbies.size());
             else {
                 Lobby lobby = publicLobbies.get(Integer.parseInt(input) - 1);
                 lobby.getGame().getWatchingUsers().add(this);
                 dataOutputStream.writeUTF("You joined the live stream of lobby " + lobby.getId());
-                break;
             }
         }
 

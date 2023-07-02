@@ -3,7 +3,9 @@ package Server.view;
 import controller.Controller;
 import controller.TradeCommands;
 import controller.TradeMenuController;
+import model.Game;
 import model.TradeRequest;
+import model.User;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -14,9 +16,13 @@ import java.util.regex.Matcher;
 
 public class TradeMenuServer {
     TradeMenuController controller;
+    Game game;
+    User currentUser;
 
-    public TradeMenuServer() {
+    public TradeMenuServer(Game game, User currentUser) {
         controller = new TradeMenuController();
+        this.game = game;
+        this.currentUser = currentUser;
     }
     AuthenticatedDataOutputStream dataOutputStream;
     AuthenticatedDataInputStream dataInputStream;
@@ -29,21 +35,27 @@ public class TradeMenuServer {
         Matcher matcher;
         while (true) {
             String input = dataInputStream.readUTF();
+            sendDataToWatchingUsers(input, true);
+            String sendMessage = null;
             if (input.matches("\\s*exit\\s*")) {
-                dataOutputStream.writeUTF("You have exited");
+                sendMessage = "You have exited";
                 return;
             } else if (TradeCommands.getMatcher(input, TradeCommands.TRADE_LIST) != null)
                 showAvailableTrades();
             else if (TradeCommands.getMatcher(input, TradeCommands.TRADE_HISTORY) != null)
                 showTradeHistory();
             else if (TradeCommands.getMatcher(input, TradeCommands.ACCEPT_TRADE) != null)
-                dataOutputStream.writeUTF(acceptTrade(input));
+                sendMessage = acceptTrade(input);
             else if ((matcher = TradeCommands.getMatcher(input, TradeCommands.REJECT_TRADE)) != null)
-                dataOutputStream.writeUTF(rejectTrade(matcher));
+                sendMessage = rejectTrade(matcher);
             else if (TradeCommands.getMatcher(input, TradeCommands.REQUEST_TRADE) != null && tradeRequestFormat(input))
-                dataOutputStream.writeUTF(requestTrade(input));
+                sendMessage = requestTrade(input);
             else
-                dataOutputStream.writeUTF("Invalid command!");
+                sendMessage = "Invalid command!";
+            if (sendMessage != null) {
+                dataOutputStream.writeUTF(sendMessage);
+                sendDataToWatchingUsers(sendMessage, false);
+            }
         }
     }
 
@@ -125,26 +137,36 @@ public class TradeMenuServer {
 
     private void showTradeHistory() throws IOException {
         ArrayList<TradeRequest> tradeHistory = controller.getTradeHistory();
-        if (tradeHistory.size() == 0)
+        if (tradeHistory.size() == 0) {
             dataOutputStream.writeUTF("You don't have any trade history.");
+            sendDataToWatchingUsers("You don't have any trade history.", false);
+        }
         else {
             for (TradeRequest tradeRequest : tradeHistory) {
                 dataOutputStream.writeUTF(tradeRequest.toString());
+                sendDataToWatchingUsers(tradeRequest.toString(), false);
             }
         }
     }
 
     private void showNewRequests() throws IOException {
         ArrayList<TradeRequest> notSeenRequests = controller.getNotSeenRequests();
-        if (notSeenRequests.size() == 0)
+        if (notSeenRequests.size() == 0) {
             dataOutputStream.writeUTF("You don't have any new trade request.");
+            sendDataToWatchingUsers("You don't have any new trade request.", false);
+        }
         else {
-            if (notSeenRequests.size() == 1)
+            if (notSeenRequests.size() == 1) {
                 dataOutputStream.writeUTF("You have 1 new trade request :");
-            else
+                sendDataToWatchingUsers("You have 1 new trade request :", false);
+            }
+            else {
                 dataOutputStream.writeUTF("You have " + notSeenRequests.size() + " new trade requests :");
+                sendDataToWatchingUsers("You have 1 new trade request :", false);
+            }
             for (TradeRequest tradeRequest : notSeenRequests) {
                 dataOutputStream.writeUTF(tradeRequest.toString());
+                sendDataToWatchingUsers(tradeRequest.toString(), false);
             }
         }
         controller.setRequestsShown(notSeenRequests);
@@ -152,13 +174,28 @@ public class TradeMenuServer {
 
     private void showAvailableTrades() throws IOException {
         ArrayList<TradeRequest> availableTrades = controller.getAvailableTrades();
-        if (availableTrades.size() == 0)
+        if (availableTrades.size() == 0) {
             dataOutputStream.writeUTF("No available trade request");
+            sendDataToWatchingUsers("No available trade request", false);
+        }
         else {
             for (TradeRequest tradeRequest : availableTrades) {
                 dataOutputStream.writeUTF(tradeRequest.toString());
+                sendDataToWatchingUsers(tradeRequest.toString(), false);
             }
         }
+    }
+
+    private void sendDataToWatchingUsers(String data, boolean input) throws IOException {
+        if (game == null)
+            return;
+        for (Connection connection : game.getWatchingUsers())
+            if (connection.isAlive()) {
+                if (input)
+                    data += (" (" + currentUser.getUsername() + ")");
+                connection.sendData(data);
+            }
+
     }
 
 }

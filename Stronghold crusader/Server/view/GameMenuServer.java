@@ -20,34 +20,32 @@ public class GameMenuServer {
     private final GameMenuController gameMenuController;
     private final ShopServer shopServer;
     private final MapMenuServer mapMenuServer;
-    private final TradeMenuServer tradeMenuServer = new TradeMenuServer();
+    private final TradeMenuServer tradeMenuServer;
     private final Game game;
-    private Scanner scanner;
     public GameMenuServer(AuthenticatedDataOutputStream dataOutputStream,
                           AuthenticatedDataInputStream dataInputStream,
                           User currentUser,GameMenuController gameMenuController,Game game) {
         this.gameMenuController=gameMenuController;
         this.game=game;
-        shopServer = new ShopServer(dataOutputStream,dataInputStream,gameMenuController);
+        shopServer = new ShopServer(dataOutputStream,dataInputStream,gameMenuController, game);
         this.dataInputStream = dataInputStream;
         this.dataOutputStream=dataOutputStream;
         this.currentUser = currentUser;
-        this.mapMenuServer = new MapMenuServer(dataInputStream, dataOutputStream,game);
+        this.mapMenuServer = new MapMenuServer(dataInputStream, dataOutputStream,game, currentUser);
+        tradeMenuServer = new TradeMenuServer(game, currentUser);
     }
     public void gameHandler() throws IOException {
         dataOutputStream.writeUTF("you have entered the game");
-        String sendMessage = "";
         while (true) {
+            String sendMessage = null;
             if(dataInputStream.available()!=0){
                 Matcher matcher;
                 String input = dataInputStream.readUTF();
-                sendDataToWatchingUsers(input);
+                sendDataToWatchingUsers(input, true);
                 if(!game.getCurrentGovernment().getUser().equals(currentUser))
                     sendMessage = "it's not your turn!";
-                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.DROP_BUILDING) != null) {
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.DROP_BUILDING) != null)
                     sendMessage = dropBuilding(input);
-                    sendDataToWatchingUsers("it's not your turn!");
-                }
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_CURRENT_PLAYER) != null) {
                     sendMessage = gameMenuController.showCurrentPlayer();
                 }
@@ -122,8 +120,10 @@ public class GameMenuServer {
                     tradeMenuServer.run(dataInputStream,dataOutputStream);
                 } else
                     sendMessage = "Invalid command!";
-                dataOutputStream.writeUTF(sendMessage);
-                sendDataToWatchingUsers(sendMessage);
+                if (sendMessage != null) {
+                    dataOutputStream.writeUTF(sendMessage);
+                    sendDataToWatchingUsers(sendMessage, false);
+                }
             }
         }
     }
@@ -729,9 +729,14 @@ public class GameMenuServer {
 
     }
 
-    private void sendDataToWatchingUsers(String data) throws IOException {
+    private void sendDataToWatchingUsers(String data, boolean input) throws IOException {
         for (Connection connection : game.getWatchingUsers())
-            if (connection.isAlive())
-                connection.sendData(data + "\n(" + currentUser.getUsername() + ")");
+            if (connection.isAlive()) {
+                if (input)
+                    data += " (" + currentUser.getUsername() + ")";
+                connection.sendData(data);
+            }
+
     }
+
 }

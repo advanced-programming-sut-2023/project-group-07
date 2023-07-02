@@ -2,6 +2,7 @@ package Server.view;
 
 import controller.GameMenuCommands;
 import controller.GameMenuController;
+import model.Game;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -14,7 +15,7 @@ public class ShopServer {
 
     public ShopServer(AuthenticatedDataOutputStream dataOutputStream,
                       AuthenticatedDataInputStream dataInputStream,
-                      GameMenuController controller) {
+                      GameMenuController controller, Game game) {
         this.dataInputStream= dataInputStream;
         this.dataOutputStream   =dataOutputStream;
         this.controller = controller;
