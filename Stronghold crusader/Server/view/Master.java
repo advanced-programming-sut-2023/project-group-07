@@ -54,13 +54,13 @@ public class Master {
         }
     }
 
-    private static void setAuthenticatingStream(DataInputStream dataInputStream, DataOutputStream dataOutputStream) {
+    private static void setAuthenticatingStream(DataInputStream dataInputStream, DataOutputStream dataOutputStream) throws IOException {
         String id = generateConnectionId();
         AuthenticatedDataInputStream authenticatedDataInputStream =
                 new AuthenticatedDataInputStream(dataInputStream, id);
         AuthenticatedDataOutputStream authenticatedDataOutputStream =
                 new AuthenticatedDataOutputStream(dataOutputStream, id);
-
+        dataOutputStream.writeUTF(id);
     }
 
 
