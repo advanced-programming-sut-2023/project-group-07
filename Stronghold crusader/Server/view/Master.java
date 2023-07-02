@@ -11,6 +11,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Random;
 
 public class Master {
     private static ServerSocket serverSocket;
@@ -21,16 +22,15 @@ public class Master {
             @Override
             public void run() {
                 while (true) {
-                    for(int i = GamesMenu.getLobbies().size()-1; i>-1; i--){
+                    for (int i = GamesMenu.getLobbies().size() - 1; i > -1; i--) {
                         Lobby lobby = GamesMenu.getLobbies().get(i);
-                        if(lobby.getGame()==null && lobby.getUsers().size()==1){
-                            if(lobby.getIdleTime()==0)
+                        if (lobby.getGame() == null && lobby.getUsers().size() == 1) {
+                            if (lobby.getIdleTime() == 0)
                                 lobby.setIdleTime(System.currentTimeMillis());
-                            else if(System.currentTimeMillis()-lobby.getIdleTime()>30*1000) {
+                            else if (System.currentTimeMillis() - lobby.getIdleTime() > 30 * 1000) {
                                 GamesMenu.getLobbies().remove(lobby);
                             }
-                        }
-                        else lobby.setIdleTime(0);
+                        } else lobby.setIdleTime(0);
                     }
                 }
             }
@@ -44,11 +44,39 @@ public class Master {
                 Socket socket = serverSocket.accept();
                 DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
                 DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+                setAuthenticatingStream(dataInputStream, dataOutputStream);
+
                 Connection connection = new Connection(socket, dataInputStream, dataOutputStream);
                 connection.start();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void setAuthenticatingStream(DataInputStream dataInputStream, DataOutputStream dataOutputStream) {
+        String id = generateConnectionId();
+        AuthenticatedDataInputStream authenticatedDataInputStream =
+                new AuthenticatedDataInputStream(dataInputStream, id);
+        AuthenticatedDataOutputStream authenticatedDataOutputStream =
+                new AuthenticatedDataOutputStream(dataOutputStream, id);
+
+    }
+
+
+
+    static Random random = null;
+    public static Random random() {
+        if (random == null)
+            random = new Random();
+        return random;
+    }
+
+    private static String generateConnectionId() {
+        int length = random().nextInt(10) + 7 ;
+        StringBuilder id = new StringBuilder();
+        for (int i = 0; i < length; i++)
+            id.append(random().nextInt(10));
+        return id.toString();
     }
 }
