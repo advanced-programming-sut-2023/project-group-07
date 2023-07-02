@@ -148,6 +148,8 @@ public class Connection extends Thread {
             dataOutputStream.writeUTF((i + 1) + ". " + publicLobbies.get(i).getId() + " number of players: " + publicLobbies.get(i).getUsers().size());
         while (true) {
             String input = dataInputStream.readUTF();
+            if(input.equals("exit"))
+                return;
             if (!input.matches("\\d+") || Integer.parseInt(input) < 1 || Integer.parseInt(input) > publicLobbies.size())
                 dataOutputStream.writeUTF("Enter a whole number between 1 and " + publicLobbies.size());
             else {

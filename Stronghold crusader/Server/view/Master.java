@@ -40,6 +40,26 @@ public class Master {
             }
         });
         thread.start();
+//        Thread onlineCheck = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                while(true) {
+//                    try {
+//                        Thread.sleep(1000);
+//                    } catch (InterruptedException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                    for(Connection connection:Connection.connections()){
+//                        try {
+//                            connection.getDataOutputStream().writeUTF("~");
+//                        } catch (IOException e) {
+//                            throw new RuntimeException(e);
+//                        }
+//                    }
+//                }
+//            }
+//        });
+//        onlineCheck.start();
         try {
             User.loadUsers();
             Map.loadMaps();
