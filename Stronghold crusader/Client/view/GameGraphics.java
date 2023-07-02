@@ -12,19 +12,21 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.robot.Robot;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -32,6 +34,9 @@ import javafx.util.Duration;
 import Client.model.*;
 
 import javax.swing.*;
+import java.awt.datatransfer.*;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
@@ -88,9 +93,22 @@ public class GameGraphics extends Application {
     private CursorAnimation cursorAnimation;
     private StackPane miniMapPane;
     private Camera camera = new PerspectiveCamera(true);
+    private double minX;
+    private double minY;
 
     @Override
     public void start(Stage stage) {
+//        Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
+//
+//        // Get data stored in the clipboard that is in the form of a string (text)
+//        try {
+//            System.out.println(c.getContents());
+//            System.out.println(c.getData(DataFlavor.stringFlavor));
+//        } catch (UnsupportedFlavorException e) {
+//            throw new RuntimeException(e);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
         Scene scene = prepareStageElements();
         stage.setScene(scene);
         stage.setFullScreen(true);
@@ -103,6 +121,7 @@ public class GameGraphics extends Application {
         setMap();
         addNextTurn();
         setMoveMapTimeLine(mapPane, scene);
+        settingScreenMinXY(mapPane);
         addStageEventHandlers(stage);
         setHoverTimeLine();
         setShortcutHbox(moveUnitShortcutHbox, "Move to: ");
@@ -120,6 +139,21 @@ public class GameGraphics extends Application {
         camera.translateZProperty().set(-3000);
         camera.setNearClip(0);
         camera.setFarClip(2000);
+    }
+
+    private void settingScreenMinXY(Pane pane) {
+        double x = pane.getLayoutX();
+        double y = pane.getLayoutY();
+        pane.setLayoutX(0);
+        pane.setLayoutY(0);
+        pane.setScaleY(0.5);
+        pane.setScaleX(0.5);
+        minX=pane.getBoundsInParent().getMinX();
+        minY=pane.getBoundsInParent().getMinY();
+        pane.setScaleY(1);
+        pane.setScaleX(1);
+        pane.setLayoutX(x);
+        pane.setLayoutY(y);
     }
 
     private void setDetailsShortcut() {
@@ -234,6 +268,35 @@ public class GameGraphics extends Application {
         mousePressed(stage);
         mouseReleased(stage);
         setShortcuts(stage);
+        stage.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                if(keyEvent.getCode().getName().equals("Z")){
+                    if(mapPane.getScaleX()==1) {
+                        double x = mapPane.getLayoutX()/2;
+                        double y = mapPane.getLayoutY()/2;
+                        mapPane.setLayoutX(0);
+                        mapPane.setLayoutY(0);
+                        mapPane.setScaleY(0.5);
+                        mapPane.setScaleX(0.5);
+                        mapPane.setLayoutX(x-mapPane.getBoundsInParent().getMinX());
+                        mapPane.setLayoutY(y-mapPane.getBoundsInParent().getMinY());
+                    }
+                    else{
+                        double layoutX = mapPane.getLayoutX();
+                        double layoutY = mapPane.getLayoutY();
+                        mapPane.setLayoutY(0);
+                        mapPane.setLayoutX(0);
+                        double x= layoutX+mapPane.getBoundsInParent().getMinX();
+                        double y= layoutY+mapPane.getBoundsInParent().getMinY();
+                        mapPane.setScaleY(1);
+                        mapPane.setScaleX(1);
+                        mapPane.setLayoutX(2*x);
+                        mapPane.setLayoutY(2*y);
+                    }
+                }
+            }
+        });
     }
 
     private void setShortcuts(Stage stage) {
@@ -454,14 +517,26 @@ public class GameGraphics extends Application {
     private void setMoveMapTimeLine(Pane pane, Scene scene) {
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(5), actionEvent -> {
             Robot robot = new Robot();
-            if (robot.getMouseX() > scene.getWidth() - 50 && pane.getLayoutX() > -game.getMap().getSize() * 40 + Main.getScreenWidth())
-                pane.setLayoutX(pane.getLayoutX() - 10);
-            if (robot.getMouseX() < 50 && pane.getLayoutX() < 0)
-                pane.setLayoutX(pane.getLayoutX() + 10);
-            if (robot.getMouseY() > scene.getHeight() - 10 && pane.getLayoutY() > -game.getMap().getSize() * 40 + Main.getScreenHeight())
-                pane.setLayoutY(pane.getLayoutY() - 10);
-            if (robot.getMouseY() < 50 && pane.getLayoutY() < 0)
-                pane.setLayoutY(pane.getLayoutY() + 10);
+            if(pane.getScaleX()==1){
+                if (robot.getMouseX() > scene.getWidth() - 20 && pane.getLayoutX() > -game.getMap().getSize() * 40 + Main.getScreenWidth())
+                    pane.setLayoutX(pane.getLayoutX() - 10);
+                if (robot.getMouseX() < 20 && pane.getLayoutX() < 0)
+                    pane.setLayoutX(pane.getLayoutX() + 10);
+                if (robot.getMouseY() > scene.getHeight() - 10 && pane.getLayoutY() > -game.getMap().getSize() * 40 + Main.getScreenHeight())
+                    pane.setLayoutY(pane.getLayoutY() - 10);
+                if (robot.getMouseY() < 20 && pane.getLayoutY() < 0)
+                    pane.setLayoutY(pane.getLayoutY() + 10);
+            }
+            else {
+                if (robot.getMouseX() > scene.getWidth() - 20 && pane.getLayoutX() > -minX-game.getMap().getSize() * 20 + Main.getScreenWidth())
+                    pane.setLayoutX(pane.getLayoutX() - 10);
+                if (robot.getMouseX() < 20 && pane.getLayoutX() < -minX)
+                    pane.setLayoutX(pane.getLayoutX() + 10);
+                if (robot.getMouseY() > scene.getHeight() - 10 && pane.getLayoutY() > -minY-game.getMap().getSize() * 20 + Main.getScreenHeight())
+                    pane.setLayoutY(pane.getLayoutY() - 10);
+                if (robot.getMouseY() < 20 && pane.getLayoutY() < -minY)
+                    pane.setLayoutY(pane.getLayoutY() + 10);
+            }
             Rectangle miniMapRectangle = (Rectangle) miniMapPane.getChildren().get(miniMapPane.getChildren().size() - 1);
             miniMapRectangle.setTranslateY(16 + 225 * Math.abs(pane.getLayoutY()) / (game.getMap().getSize() * 40));
             miniMapRectangle.setTranslateX(12.5 + 225 * Math.abs(pane.getLayoutX()) / (game.getMap().getSize() * 40));
