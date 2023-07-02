@@ -36,90 +36,94 @@ public class GameMenuServer {
     }
     public void gameHandler() throws IOException {
         dataOutputStream.writeUTF("you have entered the game");
+        String sendMessage = "";
         while (true) {
             if(dataInputStream.available()!=0){
                 Matcher matcher;
                 String input = dataInputStream.readUTF();
+                sendDataToWatchingUsers(input);
                 if(!game.getCurrentGovernment().getUser().equals(currentUser))
-                    dataOutputStream.writeUTF("it's not your turn!");
-                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.DROP_BUILDING) != null)
-                    dataOutputStream.writeUTF(dropBuilding(input));
-                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_CURRENT_PLAYER) != null)
-                    dataOutputStream.writeUTF(gameMenuController.showCurrentPlayer());
+                    sendMessage = "it's not your turn!";
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.DROP_BUILDING) != null) {
+                    sendMessage = dropBuilding(input);
+                    sendDataToWatchingUsers("it's not your turn!");
+                }
+                else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_CURRENT_PLAYER) != null) {
+                    sendMessage = gameMenuController.showCurrentPlayer();
+                }
                 else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_MAP) != null)
                     mapMenuServer.run(input);
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_BUILDING) != null)
-                    dataOutputStream.writeUTF(selectBuilding(input));
+                    sendMessage = selectBuilding(input);
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_PIXEL_UNIT) != null)
-                    dataOutputStream.writeUTF(selectPixelUnit(input));
+                    sendMessage = selectPixelUnit(input);
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SELECT_REGION_UNIT) != null)
-                    dataOutputStream.writeUTF(selectRegionUnit(input));
+                    sendMessage = selectRegionUnit(input);
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.BUILD_SIEGE_WEAPON) != null)
-                    dataOutputStream.writeUTF(buildSiegeWeapon(input));
+                    sendMessage = buildSiegeWeapon(input);
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.MOVE_UNIT) != null)
-                    dataOutputStream.writeUTF(moveUnit(input));
+                    sendMessage = moveUnit(input);
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.PATROL_UNIT) != null)
-                    dataOutputStream.writeUTF(patrolUnit(input));
+                    sendMessage = patrolUnit(input);
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.STOP_UNIT) != null)
-                    dataOutputStream.writeUTF(stopUnit());
+                    sendMessage = stopUnit();
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SET_STANCE) != null)
-                    dataOutputStream.writeUTF(setStance(input));
+                    sendMessage = setStance(input);
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_ENEMY) != null)
-                    dataOutputStream.writeUTF(attackEnemy(input));
+                    sendMessage = attackEnemy(input);
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.ATTACK_BUILDING) != null)
-                    dataOutputStream.writeUTF(attackBuilding(input));
+                    sendMessage = attackBuilding(input);
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.AREA_ATTACK) != null)
-                    dataOutputStream.writeUTF(areaAttack(input));
+                    sendMessage = areaAttack(input);
                 else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.POUR_OIL)) != null)
-                    dataOutputStream.writeUTF(pourOil(matcher));
+                    sendMessage = pourOil(matcher);
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.GIVE_OIL) != null)
-                    dataOutputStream.writeUTF(giveOil());
+                    sendMessage = giveOil();
                 else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.DIG_TUNNEL)) != null
                         && matcher.group("x") != null && matcher.group("y") != null)
-                    dataOutputStream.writeUTF(digTunnel(matcher));
+                    sendMessage = digTunnel(matcher);
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.DISBAND_UNIT) != null)
-                    dataOutputStream.writeUTF(disbandUnit());
+                    sendMessage = disbandUnit();
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULARITY) != null)
-                    dataOutputStream.writeUTF(getPopularity());
+                    sendMessage = getPopularity();
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULARITY_FACTORS) != null)
-                    dataOutputStream.writeUTF(getPopularityFactors());
+                    sendMessage = getPopularityFactors();
                 else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.FEAR_RATE)) != null)
-                    dataOutputStream.writeUTF(setFearRate(matcher));
+                    sendMessage = setFearRate(matcher);
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.FEAR_RATE_SHOW) != null)
-                    dataOutputStream.writeUTF(showFearRate());
+                    sendMessage = showFearRate();
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.FOOD_RATE_SHOW) != null)
-                    dataOutputStream.writeUTF(showFoodRate());
+                    sendMessage = showFoodRate();
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_FOOD_LIST) != null)
-                    dataOutputStream.writeUTF(getFoodList());
+                    sendMessage = getFoodList();
                 else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.FOOD_RATE)) != null)
-                    dataOutputStream.writeUTF(setFoodList(matcher));
+                    sendMessage = setFoodList(matcher);
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_GOLD) != null)
-                    dataOutputStream.writeUTF(showGold());
+                    sendMessage = showGold();
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.TAX_RATE_SHOW) != null)
-                    dataOutputStream.writeUTF(showTaxRate());
+                    sendMessage = showTaxRate();
                 else if ((matcher = GameMenuCommands.getMatcher(input, GameMenuCommands.TAX_RATE)) != null)
-                    dataOutputStream.writeUTF(setTaxRate(matcher));
+                    sendMessage = setTaxRate(matcher);
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.SHOW_POPULATION) != null)
-                    dataOutputStream.writeUTF(getPopulation());
+                    sendMessage = getPopulation();
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.NEXT_TURN) != null) {
                     String returnMessage = gameMenuController.nextTurn();
                     if (returnMessage != null && returnMessage.contains("GAME OVER!")) {
-                        dataOutputStream.writeUTF(returnMessage);
-                        dataOutputStream.writeUTF("\033[1;33m");
-                        dataOutputStream.writeUTF("Reseting maps and users...");
+                        sendMessage = returnMessage;
+                        sendMessage += "\nResetting maps and users...";
                         gameMenuController.resetMapsAndUsers();
-                        dataOutputStream.writeUTF("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
-                        dataOutputStream.writeUTF("\033[0m");
                         return;
                     } else if (returnMessage != null)
-                        dataOutputStream.writeUTF(returnMessage + gameMenuController.nextTurnMessage());
+                        sendMessage = returnMessage + gameMenuController.nextTurnMessage();
                     else
-                        dataOutputStream.writeUTF(gameMenuController.nextTurnMessage());
+                        sendMessage = gameMenuController.nextTurnMessage();
                 } else if (GameMenuCommands.getMatcher(input, GameMenuCommands.ENTER_TRADE_MENU) != null) {
-                    dataOutputStream.writeUTF("You have entered trade menu");
+                    sendMessage = "You have entered trade menu";
                     tradeMenuServer.run(dataInputStream,dataOutputStream);
                 } else
-                    dataOutputStream.writeUTF("Invalid command!");
+                    sendMessage = "Invalid command!";
+                dataOutputStream.writeUTF(sendMessage);
+                sendDataToWatchingUsers(sendMessage);
             }
         }
     }
@@ -723,5 +727,11 @@ public class GameMenuServer {
         }
         return null;
 
+    }
+
+    private void sendDataToWatchingUsers(String data) throws IOException {
+        for (Connection connection : game.getWatchingUsers())
+            if (connection.isAlive())
+                connection.sendData(data + "\n(" + currentUser.getUsername() + ")");
     }
 }

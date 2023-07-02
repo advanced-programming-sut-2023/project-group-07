@@ -1,5 +1,7 @@
 package model;
 
+import Server.view.Connection;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,6 +20,7 @@ public class Game {
     private ArrayList<MapPixel> accessChanged = new ArrayList<>();
     private int[] selectedUnitArea = new int[4];
     private int indexOfCurrentGovernment = 0;
+    private ArrayList<Connection> watchingUsers = new ArrayList<>();
 
     public Game(Map map, ArrayList<Government> governments, int goldToBeginWith) {
         this.map = map;
@@ -935,5 +938,9 @@ public class Game {
             map.getMapPixel(x, y).addPerson(unit);
             owner.addPerson(unit);
         }
+    }
+
+    public ArrayList<Connection> getWatchingUsers() {
+        return watchingUsers;
     }
 }

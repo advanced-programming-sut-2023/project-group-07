@@ -1,5 +1,7 @@
 package Server.view;
 
+import Server.model.Lobby;
+import model.Game;
 import model.User;
 
 import java.io.DataInputStream;
@@ -120,6 +122,8 @@ public class Connection extends Thread {
                         new CreateMapMenuServer(dataInputStream, dataOutputStream).run(currentUser.getUsername());
                     else if (input.equals("enter share maps menu"))
                         new ShareMapsMenu(dataInputStream, dataOutputStream, currentUser).run();
+                    else if (input.equals("enter live stream"))
+                        enterLiveStream();
                     else if (input.matches("\\s*logout\\s*")) {
                         currentUser = null;
                         return;
@@ -134,10 +138,37 @@ public class Connection extends Thread {
         }
     }
 
+    private void enterLiveStream() throws IOException {
+        ArrayList<Lobby> publicLobbies = new ArrayList<>();
+        for (Lobby lobby : GamesMenu.getLobbies())
+            if (lobby.isPublic())
+                publicLobbies.add(lobby);
+        dataOutputStream.writeUTF("These are the streaming games (public lobbies)! choose one to watch:");
+        for (int i = 0 ; i < publicLobbies.size() ; i++)
+            dataOutputStream.writeUTF((i + 1) + ". " + publicLobbies.get(i).getId() + " number of players: " + publicLobbies.get(i).getUsers().size());
+        while (true) {
+            String input = dataInputStream.readUTF();
+            if (!input.matches("\\d+") || Integer.parseInt(input) < 1 || Integer.parseInt(input) > publicLobbies.size())
+                dataOutputStream.writeUTF("Enter a whole number between 1 and " + publicLobbies.size());
+            else {
+                Lobby lobby = publicLobbies.get(Integer.parseInt(input) - 1);
+                lobby.getGame().getWatchingUsers().add(this);
+                dataOutputStream.writeUTF("You joined the live stream of lobby " + lobby.getId());
+                break;
+            }
+        }
+
+
+    }
+
     public static Connection getConnectionByUsername(String username) {
         for (Connection connection : connections())
             if (connection.getCurrentUser().getUsername().equals(username))
                 return connection;
         return null;
+    }
+
+    public void sendData(String data) throws IOException {
+        dataOutputStream.writeUTF(data);
     }
 }
