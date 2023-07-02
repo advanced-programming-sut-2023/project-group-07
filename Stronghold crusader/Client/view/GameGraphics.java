@@ -5,6 +5,7 @@ import Client.controller.Controller;
 import Client.controller.GameMenuController;
 import Client.controller.Messages;
 import Client.controller.TradeMenuController;
+import com.jme3.util.SortUtil;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -18,6 +19,7 @@ import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -41,6 +43,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -55,6 +58,7 @@ public class GameGraphics extends Application {
     private ArrayList<StackPane> buildings = new ArrayList<>();
     private ArrayList<PersonPane> people = new ArrayList<>();
     private ArrayList<PersonPane> selectedUnits = new ArrayList<>();
+    private ArrayList<Building> clipboard = new ArrayList<>();
     private String buildingToBeBuilt;
     private StackPane selectBuildingToBeBuilt;
     private Game game;
@@ -95,20 +99,10 @@ public class GameGraphics extends Application {
     private Camera camera = new PerspectiveCamera(true);
     private double minX;
     private double minY;
+    private ScrollPane clipBoard;
 
     @Override
     public void start(Stage stage) {
-//        Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
-//
-//        // Get data stored in the clipboard that is in the form of a string (text)
-//        try {
-//            System.out.println(c.getContents());
-//            System.out.println(c.getData(DataFlavor.stringFlavor));
-//        } catch (UnsupportedFlavorException e) {
-//            throw new RuntimeException(e);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
         Scene scene = prepareStageElements();
         stage.setScene(scene);
         stage.setFullScreen(true);
@@ -131,6 +125,7 @@ public class GameGraphics extends Application {
         createAttackBanner();
         scene.getStylesheets().add(GameGraphics.class.getResource("/CSS/slideBar.css").toExternalForm());
         setCheatShortCuts(scene);
+        createClipboard();
     }
 
     private void setCamera() {
@@ -154,6 +149,17 @@ public class GameGraphics extends Application {
         pane.setScaleX(1);
         pane.setLayoutX(x);
         pane.setLayoutY(y);
+    }
+
+    private void createClipboard(){
+        clipBoard = new ScrollPane();
+        clipBoard.setPrefSize(150,200);
+        VBox vBox = new VBox(10);
+        clipBoard.setContent(vBox);
+        vBox.setPrefWidth(150);
+        vBox.setMinHeight(200);
+        rootPane.getChildren().add(clipBoard);
+        clipBoard.setVisible(false);
     }
 
     private void setDetailsShortcut() {
@@ -309,6 +315,8 @@ public class GameGraphics extends Application {
                     createBuilding.get(number).setVisible(true);
                 }
             }
+            else if(keyName.equals("Q"))
+                clipBoard.setVisible(!clipBoard.isVisible());
             else if (keyName.equals("G"))
                 enterGovernmentActionButtonsMenu();
             else if (keyName.equals("M"))
@@ -317,6 +325,44 @@ public class GameGraphics extends Application {
                 attackUnitShortcut();
             else if (keyName.equals("I"))
                 mapPixelDetailsShortcut();
+            else if(keyName.equals("C")){
+                Robot robot = new Robot();
+                int x = (int) (Math.floor(robot.getMouseX() / 40 + Math.abs(mapPane.getLayoutX()) / 40));
+                int y = (int) (Math.floor(robot.getMouseY() / 40 + Math.abs(mapPane.getLayoutY()) / 40));
+                if(!game.getMap().getMapPixel(y,x).getBuildings().isEmpty()){
+                    clipboard.add(0,game.getMap().getMapPixel(y,x).getBuildings().get(0));
+                    Text text = new Text(game.getMap().getMapPixel(y,x).getBuildings().get(0).getTypeOfBuilding().getBuildingName());
+                    ((VBox)clipBoard.getContent()).getChildren().add(0,text);
+                    text.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(MouseEvent mouseEvent) {
+                            VBox vBox = ((VBox)clipBoard.getContent());
+                            int i = vBox.getChildren().indexOf(text);
+                            Text text1 = (Text)vBox.getChildren().get(0);
+                            vBox.getChildren().set(i,new Text());
+                            vBox.getChildren().set(0,text);
+                            vBox.getChildren().set(i,text1);
+                            Collections.swap(clipboard,i,0);
+                        }
+                    });
+                }
+            }
+            else if(keyName.equals("P")){
+                Robot robot = new Robot();
+                double X = robot.getMouseX() / 40 + Math.abs(mapPane.getLayoutX()) / 40;
+                double Y = robot.getMouseY() / 40 + Math.abs(mapPane.getLayoutY()) / 40;
+                buildingToBeBuilt = GameGraphics.class.getResource("/Images/Game/Buildings/"+clipboard.get(0).getTypeOfBuilding().getBuildingName()+".png").toExternalForm();
+                buildingToBeBuilt = buildingToBeBuilt.replaceAll("%20"," ");
+                ImageView imageView = new ImageView(new Image(buildingToBeBuilt));
+                imageView.setFitWidth(40 * clipboard.get(0).getTypeOfBuilding().getWidth());
+                imageView.setPreserveRatio(true);
+                selectBuildingToBeBuilt = new StackPane(imageView);
+                int x = (int) (Math.floor(robot.getMouseX() / 40 + Math.abs(mapPane.getLayoutX()) / 40-imageView.getFitWidth()/80));
+                int y =  (int) (Math.floor(robot.getMouseY() / 40 + Math.abs(mapPane.getLayoutY()) / 40-imageView.getFitWidth()/80));
+                selectBuildingToBeBuilt.setLayoutX(x*40);
+                selectBuildingToBeBuilt.setLayoutY(y*40);
+                dropBuilding();
+            }
         });
     }
 
@@ -453,8 +499,8 @@ public class GameGraphics extends Application {
                 oldMouseX = mouseEvent.getX() + Math.abs(mapPane.getLayoutX());
                 oldMouseY = mouseEvent.getY() + Math.abs(mapPane.getLayoutY());
                 Robot robot = new Robot();
-                int x = (int) Math.floor(robot.getMouseX() / 40 + Math.abs(mapPane.getLayoutX()) / 40);
-                int y = (int) Math.floor(robot.getMouseY() / 40 + Math.abs(mapPane.getLayoutY()) / 40);
+                int x = (int) (Math.floor(robot.getMouseX() / 40 + Math.abs(mapPane.getLayoutX()) / 40));
+                int y = (int) (Math.floor(robot.getMouseY() / 40 + Math.abs(mapPane.getLayoutY()) / 40));
                 selectTiles(x, y, x, y);
             }
             else{
@@ -1605,7 +1651,7 @@ public class GameGraphics extends Application {
                 if (mouseEvent.getButton() == MouseButton.PRIMARY) {
                     if (buildingToBeBuilt != null) {
 //                    if(selectBuildingToBeBuilt.getLayoutX())
-                        dropBuilding(mouseEvent);
+                        dropBuilding();
                     }
                 }
             }
@@ -1665,10 +1711,13 @@ public class GameGraphics extends Application {
         buildingToBeBuilt = null;
     }
 
-    private void dropBuilding(MouseEvent mouseEvent) {
+    private void dropBuilding() {
         String string = getPhotoName(buildingToBeBuilt);
-        Messages message = gameMenuController.dropBuilding((int) ((mouseEvent.getY() - selectBuildingToBeBuilt.getWidth() / 2) / 40),
-                (int) ((mouseEvent.getX() - selectBuildingToBeBuilt.getWidth()/ 2) / 40),
+        Robot robot = new Robot();
+        double x = robot.getMouseX();
+        double y = robot.getMouseY();
+        Messages message = gameMenuController.dropBuilding((int) ((y + Math.abs(mapPane.getLayoutY()) - selectBuildingToBeBuilt.getWidth() / 2) / 40),
+                (int) ((x + Math.abs(mapPane.getLayoutX()) - selectBuildingToBeBuilt.getWidth()/ 2) / 40),
                 string);
         switch (message) {
             case THERES_ALREADY_BUILDING -> addToMessageBar("There's already a building here!", Color.RED);
