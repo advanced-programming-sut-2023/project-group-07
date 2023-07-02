@@ -2,3 +2,8 @@
 login -u Rat -p Poop@2
 enter global chat
 show messages
+---------
+2
+login -u Rat -p Poop@2
+enter private chat
+Alireza

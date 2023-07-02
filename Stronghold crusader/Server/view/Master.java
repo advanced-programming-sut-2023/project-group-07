@@ -51,5 +51,4 @@ public class Master {
             e.printStackTrace();
         }
     }
-
 }
