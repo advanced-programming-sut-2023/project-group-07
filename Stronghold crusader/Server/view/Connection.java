@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Connection extends Thread {
     private final Socket socket;
@@ -22,9 +23,20 @@ public class Connection extends Thread {
     private User currentUser = null;
     private boolean isRunning = true;
     private static final ArrayList<Connection> connections = new ArrayList<>();
+    private static final ArrayList<Connection> lostConnections = new ArrayList<>();
+    private static final HashMap<User,Long> disconnectionTime = new HashMap<>();
     public static ArrayList<Connection> connections() {
         pureConnections();
         return connections;
+    }
+
+    public static HashMap<User, Long> getDisconnectionTime() {
+        return disconnectionTime;
+    }
+
+    public static void addToLostConnection(Connection connection){
+        if(!lostConnections.contains(connection))
+            lostConnections.add(connection);
     }
 
     public User getCurrentUser() {
@@ -97,6 +109,16 @@ public class Connection extends Thread {
     private void enterMainMenu() {
         try {
             dataOutputStream.writeUTF("entered main menu");
+            if(disconnectionTime.containsKey(currentUser)){
+                disconnectionTime.remove(currentUser);
+                for(Lobby lobby:GamesMenu.getLobbies())
+                    if(lobby.getUsers().contains(currentUser))
+                        if(lobby.getGame()==null)
+                            new GamesMenu(dataOutputStream,dataInputStream,currentUser).lobbyHandler(lobby);
+                        else{
+                            new GameMenuServer(dataOutputStream,dataInputStream,currentUser,lobby.getGameMenuController(),lobby.getGame()).gameHandler();
+                        }
+            }
             while (true) {
                 if(dataInputStream.available()!=0) {
                     String input = dataInputStream.readUTF();

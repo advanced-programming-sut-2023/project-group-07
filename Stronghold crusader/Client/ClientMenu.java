@@ -12,6 +12,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ClientMenu {
     private static final int port = 8080;
@@ -39,6 +41,8 @@ public class ClientMenu {
                     while (isRunning[0]) {
                         try {
                             String input = authenticatedDataInputStream.readUTF();
+                            if(input.equals("~"))
+                                continue;
                             if (input.equals(toSHA256("connection is dead"))) {
                                 isRunning[0] = false;
                                 break;
