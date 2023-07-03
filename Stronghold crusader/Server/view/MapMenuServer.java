@@ -43,7 +43,8 @@ public class MapMenuServer {
             sendDataToWatchingUsers(input, true);
             String sendMessage = null;
             if (input.matches("\\s*exit\\s*")) {
-               sendMessage = "Exit was successful!";
+                dataOutputStream.writeUTF("Exit was successful");
+                sendDataToWatchingUsers("Exit was successful", false);
                 return;
             } else if (MapMenuCommands.getMatcher(input, MapMenuCommands.SHOW_MAP) != null) {
                 String showMapStr = showMap(input);
@@ -180,13 +181,12 @@ public class MapMenuServer {
     private void sendDataToWatchingUsers(String data, boolean input) throws IOException {
         if (game == null)
             return;
+        if (input)
+            data += " (" + currentUser.getUsername() + ")";
+        game.getGamePlayBack().addData(data);
         for (Connection connection : game.getWatchingUsers())
-            if (connection.isAlive()) {
-                if (input)
-                    data += (" (" + currentUser.getUsername() + ")");
+            if (connection.isAlive())
                 connection.sendData(data);
-            }
-
     }
 
 }

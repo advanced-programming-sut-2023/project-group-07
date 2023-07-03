@@ -187,15 +187,12 @@ public class TradeMenuServer {
     }
 
     private void sendDataToWatchingUsers(String data, boolean input) throws IOException {
-        if (game == null)
-            return;
+        if (input)
+            data += " (" + currentUser.getUsername() + ")";
+        game.getGamePlayBack().addData(data);
         for (Connection connection : game.getWatchingUsers())
-            if (connection.isAlive()) {
-                if (input)
-                    data += (" (" + currentUser.getUsername() + ")");
+            if (connection.isAlive())
                 connection.sendData(data);
-            }
-
     }
 
 }
