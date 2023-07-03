@@ -115,7 +115,7 @@ public class GamesMenu {
                 dataOutputStream.writeUTF("lobby was deleted due to being idle for too long!");
                 return;
             } else if (lobby.getGame() == null && lobby.getUsers().size() == numberOfPlayers && currentUser.equals(lobby.getAdmin())) {
-                Game game = new Game(map, createGovernments(numberOfPlayers, lobby, map), earlyGameGolds);
+                Game game = new Game(map, createGovernments(numberOfPlayers, lobby, map), earlyGameGolds, String.valueOf(lobby.getId()));
                 lobby.setGame(game);
                 lobby.setGameMenuController(new GameMenuController(game));
                 new GameMenuServer(dataOutputStream, dataInputStream, currentUser, lobby.getGameMenuController(), lobby.getGame()).gameHandler();
@@ -132,7 +132,7 @@ public class GamesMenu {
                     if (lobby.getUsers().size() < 2)
                         dataOutputStream.writeUTF("too few players!");
                     else {
-                        Game game = new Game(map, createGovernments(lobby.getUsers().size(), lobby, map), earlyGameGolds);
+                        Game game = new Game(map, createGovernments(lobby.getUsers().size(), lobby, map), earlyGameGolds, String.valueOf(lobby.getId()));
                         lobby.setGame(game);
                         lobby.setGameMenuController(new GameMenuController(game));
                         new GameMenuServer(dataOutputStream, dataInputStream, currentUser, lobby.getGameMenuController(), lobby.getGame()).gameHandler();

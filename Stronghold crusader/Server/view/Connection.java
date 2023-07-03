@@ -2,6 +2,7 @@ package Server.view;
 
 import Server.model.Lobby;
 import model.Game;
+import model.GamePlayBack;
 import model.User;
 
 import java.io.DataInputStream;
@@ -14,6 +15,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Connection extends Thread {
     private final Socket socket;
@@ -22,6 +25,8 @@ public class Connection extends Thread {
     private User currentUser = null;
     private boolean isRunning = true;
     private static final ArrayList<Connection> connections = new ArrayList<>();
+    public int counter;
+    public boolean isPlayingBack;
     public static ArrayList<Connection> connections() {
         pureConnections();
         return connections;
@@ -124,6 +129,8 @@ public class Connection extends Thread {
                         new ShareMapsMenu(dataInputStream, dataOutputStream, currentUser).run();
                     else if (input.equals("enter live stream"))
                         enterLiveStream();
+                    else if (input.equals("enter play back"))
+                        enterPlayBack();
                     else if (input.matches("\\s*logout\\s*")) {
                         currentUser = null;
                         return;
@@ -135,6 +142,59 @@ public class Connection extends Thread {
             e.printStackTrace();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void enterPlayBack() throws IOException {
+        while (true) {
+            dataOutputStream.writeUTF("These are the available play backs! choose one to watch:");
+            int counter = 1;
+            for (GamePlayBack gamePlayBack : Game.getGamePlayBacks()) {
+                dataOutputStream.writeUTF(counter + ". " + gamePlayBack.getId());
+                counter++;
+            }
+            while (true) {
+                String input = dataInputStream.readUTF();
+                if (input.equals("exit"))
+                    return;
+                else if (input.equals("back"))
+                    break;
+                else if (!input.matches("\\d+") || Integer.parseInt(input) < 1 || Integer.parseInt(input) > Game.getGamePlayBacks().size())
+                    dataOutputStream.writeUTF("enter a whole number between 1 and " + Game.getGamePlayBacks().size());
+                else
+                    playBack(Game.getGamePlayBacks().get(Integer.parseInt(input) - 1));
+                    
+            }
+        }
+    }
+
+    private void playBack(GamePlayBack gamePlayBack) throws IOException {
+        ArrayList<String> content = gamePlayBack.getContent();
+        counter = 0;
+        isPlayingBack = true;
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (counter*2 >= content.size() || !isPlayingBack) {
+                    this.cancel();
+                    return;
+                }
+                try {
+                    dataOutputStream.writeUTF(content.get(2*counter) + "\n" + content.get(2*counter + 1));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                counter = counter + 1;
+            }
+        }, 0, 2000);
+
+        while (true) {
+            if (dataInputStream.available() != 0) {
+                if (dataInputStream.readUTF().equals("back")) {
+                    isPlayingBack = false;
+                    return;
+                }
+            }
         }
     }
 
@@ -152,15 +212,15 @@ public class Connection extends Thread {
                 for (Lobby lobby : publicLobbies)
                     if (lobby.getGame().getWatchingUsers().contains(this))
                         lobby.getGame().getWatchingUsers().remove(this);
-                dataOutputStream.writeUTF("Exited successfully!");
+                dataOutputStream.writeUTF("exited successfully!");
                 return;
             }
             if (!input.matches("\\d+") || Integer.parseInt(input) < 1 || Integer.parseInt(input) > publicLobbies.size())
-                dataOutputStream.writeUTF("Enter a whole number between 1 and " + publicLobbies.size());
+                dataOutputStream.writeUTF("enter a whole number between 1 and " + publicLobbies.size());
             else {
                 Lobby lobby = publicLobbies.get(Integer.parseInt(input) - 1);
                 lobby.getGame().getWatchingUsers().add(this);
-                dataOutputStream.writeUTF("You joined the live stream of lobby " + lobby.getId());
+                dataOutputStream.writeUTF("you joined the live stream of lobby " + lobby.getId());
             }
         }
 

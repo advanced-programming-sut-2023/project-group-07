@@ -1,6 +1,7 @@
 package model;
 
 import Server.view.Connection;
+import Server.view.GameMenuServer;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,8 +22,10 @@ public class Game {
     private int[] selectedUnitArea = new int[4];
     private int indexOfCurrentGovernment = 0;
     private ArrayList<Connection> watchingUsers = new ArrayList<>();
+    private GamePlayBack gamePlayBack;
+    private static ArrayList<GamePlayBack> gamePlayBacks = new ArrayList<>();
 
-    public Game(Map map, ArrayList<Government> governments, int goldToBeginWith) {
+    public Game(Map map, ArrayList<Government> governments, int goldToBeginWith, String id) {
         this.map = map;
         this.governments = governments;
         for (Government government : this.governments)
@@ -32,6 +35,8 @@ public class Game {
             governmentsMap.put(government.getColor(), government);
         map.startGame(governmentsMap);
         currentGovernment = governments.get(0);
+        gamePlayBack = new GamePlayBack(id);
+        Game.getGamePlayBacks().add(gamePlayBack);
     }
 
     public Government getCurrentGovernment() {
@@ -938,6 +943,14 @@ public class Game {
             map.getMapPixel(x, y).addPerson(unit);
             owner.addPerson(unit);
         }
+    }
+
+    public static ArrayList<GamePlayBack> getGamePlayBacks() {
+        return gamePlayBacks;
+    }
+
+    public GamePlayBack getGamePlayBack() {
+        return gamePlayBack;
     }
 
     public ArrayList<Connection> getWatchingUsers() {

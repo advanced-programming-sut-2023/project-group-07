@@ -107,6 +107,7 @@ public class GameMenuServer {
                 else if (GameMenuCommands.getMatcher(input, GameMenuCommands.NEXT_TURN) != null) {
                     String returnMessage = gameMenuController.nextTurn();
                     if (returnMessage != null && returnMessage.contains("GAME OVER!")) {
+
                         sendMessage = returnMessage;
                         sendMessage += "\nResetting maps and users...";
                         gameMenuController.resetMapsAndUsers();
@@ -730,13 +731,12 @@ public class GameMenuServer {
     }
 
     private void sendDataToWatchingUsers(String data, boolean input) throws IOException {
+        if (input)
+            data += " (" + currentUser.getUsername() + ")";
+        game.getGamePlayBack().addData(data);
         for (Connection connection : game.getWatchingUsers())
-            if (connection.isAlive()) {
-                if (input)
-                    data += " (" + currentUser.getUsername() + ")";
+            if (connection.isAlive())
                 connection.sendData(data);
-            }
-
     }
 
 }
