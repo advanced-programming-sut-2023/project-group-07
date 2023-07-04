@@ -93,6 +93,7 @@ public class GameGraphics extends Application {
     private ComboBox<TradeRequest> tradesHistoryComboBox;
     private ArrayList<Rectangle> selectionRectangles = new ArrayList<>();
     private ImageView attackBanner;
+    private ImageView faceImage;
     private ArrayList<PopularityFactor> popularityFactors = new ArrayList<>();
     private CursorAnimation cursorAnimation;
     private StackPane miniMapPane;
@@ -100,7 +101,6 @@ public class GameGraphics extends Application {
     private double minX;
     private double minY;
     private ScrollPane clipBoard;
-
     @Override
     public void start(Stage stage) {
         Scene scene = prepareStageElements();
@@ -126,6 +126,16 @@ public class GameGraphics extends Application {
         scene.getStylesheets().add(GameGraphics.class.getResource("/CSS/slideBar.css").toExternalForm());
         setCheatShortCuts(scene);
         createClipboard();
+        FaceAnimation faceAnimation = new FaceAnimation(faceImage, 10);
+        faceAnimation.play();
+    }
+
+    private void setFaceImage() {
+        Image image = new Image(GameGraphics.class.getResource("/Images/Game/Menu/Face/anim (0).png").toString(), 147, 147, false, false);
+        faceImage = new ImageView(image);
+        faceImage.setTranslateX(308);
+        faceImage.setTranslateY(-63);
+        statusPane.getChildren().add(faceImage);
     }
 
     private void setCamera() {
@@ -775,6 +785,7 @@ public class GameGraphics extends Application {
         imageView.setScaleY(1.4);
         stackPane.getChildren().add(imageView);
         rootPane.getChildren().add(stackPane);
+        setFaceImage();
         setCreateBuilding();
         statusBarButtons();
         setGovernmentDetails();
@@ -1332,6 +1343,7 @@ public class GameGraphics extends Application {
         if (popularity < 50) popularityText.setFill(Color.RED);
         else if (popularity < 75) popularityText.setFill(Color.ORANGE);
         else popularityText.setFill(Color.GREEN);
+        new FaceAnimation(faceImage, popularity).play();
     }
 
     private void statusBarButtons() {
