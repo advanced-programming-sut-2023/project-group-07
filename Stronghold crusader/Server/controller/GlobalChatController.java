@@ -43,6 +43,7 @@ public class GlobalChatController {
         for (ChatMessage message : getMessages()){
             if (!message.owner().equals(currentUser)) message.setSeen();
         }
+        GlobalChat.saveMessages();
         return getMessages();
     }
 
@@ -52,6 +53,7 @@ public class GlobalChatController {
         ChatMessage message = getMessageById(id);
         if (message == null) return OutputMessage.INVALID_ID;
         message.setReaction(currentUser, reaction);
+        GlobalChat.saveMessages();
         return OutputMessage.SUCCESSFUL;
     }
 }

@@ -19,7 +19,8 @@ public class GlobalChat {
     }
 
     private static ListDAO<ChatMessage> dao = null;
-    private static ListDAO<ChatMessage> dao(){
+
+    private static ListDAO<ChatMessage> dao() {
         if (dao == null) {
             String globalChatURL = "jdbc:sqlite:globalChatMessages.sqlite";
             dao = new ListDAO<ChatMessage>(globalChatURL,
@@ -31,8 +32,13 @@ public class GlobalChat {
     }
 
     private static void loadMessages() {
-        dao().loadToList();
+        try {
+            dao().loadToList();
+        } catch (Exception e){
+
+        }
     }
+
     public static void saveMessages() {
         dao().saveToListDataBase();
     }

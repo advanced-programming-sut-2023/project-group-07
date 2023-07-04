@@ -23,7 +23,8 @@ public class ListDAO<T> {
         try {
             return DriverManager.getConnection(url);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -57,7 +58,7 @@ public class ListDAO<T> {
             PreparedStatement pstmt = cnn.prepareStatement(sql);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
@@ -70,10 +71,14 @@ public class ListDAO<T> {
             ResultSet rs = stmt.executeQuery(sql);
 
             while (rs.next()) {
-                String objectJson = rs.getString("json");
-                T tObject = (T) gson().fromJson(objectJson, getTClass());
-                System.out.println(tObject);
-                list.add(tObject);
+                try {
+                    String objectJson = rs.getString("json");
+                    T tObject = (T) gson().fromJson(objectJson, getTClass());
+                    System.out.println(tObject);
+                    list.add(tObject);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -94,7 +99,7 @@ public class ListDAO<T> {
         return gson;
     }
 
-    private Class getTClass(){
+    private Class getTClass() {
         try {
             return Class.forName(className);
         } catch (ClassNotFoundException e) {

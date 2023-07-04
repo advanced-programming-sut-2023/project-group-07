@@ -30,10 +30,14 @@ public class GroupChat {
     }
 
     private static void loadChats() {
-        dao().loadToList();
+        try {
+            dao().loadToList();
+        } catch (Exception e){
+
+        }
     }
 
-    private static void saveChats() {
+    public static void saveChats() {
         dao().saveToListDataBase();
     }
 
