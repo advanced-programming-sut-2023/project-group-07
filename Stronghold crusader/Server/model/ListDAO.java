@@ -120,4 +120,11 @@ public class ListDAO<T> {
         }
     }
 
-   }
+//    public static void main(String[] args) {
+//        GlobalChat.saveMessages();
+//        for (ChatMessage message : GlobalChat.messages()){
+//            System.out.println(message);
+//        }
+//    }
+
+}
