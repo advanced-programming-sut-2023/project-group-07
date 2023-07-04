@@ -12,8 +12,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class ClientMenu {
     private static final int port = 8080;

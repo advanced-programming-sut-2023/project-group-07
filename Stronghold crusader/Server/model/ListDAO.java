@@ -1,11 +1,8 @@
 package Server.model;
 
 import com.google.gson.Gson;
-import model.User;
 
-import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ListDAO<T> {
@@ -120,11 +117,5 @@ public class ListDAO<T> {
         }
     }
 
-//    public static void main(String[] args) {
-//        GlobalChat.saveMessages();
-//        for (ChatMessage message : GlobalChat.messages()){
-//            System.out.println(message);
-//        }
-//    }
 
 }

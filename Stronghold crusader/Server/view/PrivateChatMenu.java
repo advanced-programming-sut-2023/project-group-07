@@ -52,6 +52,7 @@ public class PrivateChatMenu {
         HashSet<User> usersSet = new HashSet<>();
         usersSet.add(currentUser);
         usersSet.add(targetUser);
+        System.out.println(usersSet);
         groupChat = groupChatController.getGroupChatBySet(usersSet);
     }
 }

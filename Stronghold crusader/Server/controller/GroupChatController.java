@@ -78,6 +78,8 @@ public class GroupChatController {
     }
 
     public GroupChat getGroupChatBySet(HashSet<User> usersSet) {
-        return GroupChat.getChat(usersSet);
+        GroupChat groupChat = GroupChat.getChat(usersSet);
+        if (groupChat == null) groupChat = new GroupChat(usersSet);
+        return groupChat;
     }
 }

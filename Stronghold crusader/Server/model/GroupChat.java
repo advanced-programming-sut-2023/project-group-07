@@ -17,45 +17,24 @@ public class GroupChat {
         loadChats();
     }
 
+    private static ListDAO<GroupChat> dao = null;
+    private static ListDAO<GroupChat> dao(){
+        if (dao == null) {
+            String globalChatURL = "jdbc:sqlite:groupChat";
+            dao = new ListDAO<GroupChat>(globalChatURL,
+                    groupChats,
+                    "Server.model.GroupChat"
+            );
+        }
+        return dao;
+    }
 
     private static void loadChats() {
-        FileReader file = null;
-        try {
-            String address = "Stronghold crusader/DB/group_chat";
-            file = new FileReader(address);
-
-            Scanner scanner = new Scanner(file);
-            if (!scanner.hasNextLine()) {
-                scanner.close();
-                return;
-            }
-            String allChats = scanner.nextLine();
-            scanner.close();
-            file.close();
-            Gson gson = new Gson();
-            JsonArray jsonArray = gson.fromJson(allChats, JsonArray.class);
-            groupChats.clear();
-            for (JsonElement jsonElement : jsonArray) {
-                groupChats.add(gson.fromJson(jsonElement, GroupChat.class));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        dao().loadToList();
     }
 
     private static void saveChats() {
-        try {
-            Gson gson = new Gson();
-            JsonArray jsonArray = new JsonArray();
-            for (GroupChat chat : groupChats) {
-                jsonArray.add(gson.toJsonTree(chat).getAsJsonObject());
-            }
-            FileWriter file = new FileWriter("Stronghold crusader/DB/group_chat");
-            file.write(jsonArray.toString());
-            file.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        dao().saveToListDataBase();
     }
 
     public static GroupChat getChat(Set<User> users) {

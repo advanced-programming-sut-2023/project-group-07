@@ -32,44 +32,9 @@ public class GlobalChat {
 
     private static void loadMessages() {
         dao().loadToList();
-//        FileReader file = null;
-//        try {
-//            String address = "Stronghold crusader/DB/global_chat_messages";
-//            file = new FileReader(address);
-//
-//            Scanner scanner = new Scanner(file);
-//            if (!scanner.hasNextLine()) {
-//                scanner.close();
-//                return;
-//            }
-//            String allMessages = scanner.nextLine();
-//            scanner.close();
-//            file.close();
-//            Gson gson = new Gson();
-//            JsonArray jsonArray = gson.fromJson(allMessages, JsonArray.class);
-//            messages.clear();
-//            for (JsonElement jsonElement : jsonArray) {
-//                messages.add(gson.fromJson(jsonElement, ChatMessage.class));
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
     }
     public static void saveMessages() {
         dao().saveToListDataBase();
-//        dao().showTable();
-//        try {
-//            Gson gson = new Gson();
-//            JsonArray jsonArray = new JsonArray();
-//            for (ChatMessage message : messages) {
-//                jsonArray.add(gson.toJsonTree(message).getAsJsonObject());
-//            }
-//            FileWriter file = new FileWriter("Stronghold crusader/DB/global_chat_messages");
-//            file.write(jsonArray.toString());
-//            file.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
     }
 
     public static void sendMessage(ChatMessage message) {
