@@ -19,7 +19,7 @@ public class AuthenticatedDataInputStream {
         String input = dataInputStream.readUTF();
         try {
             AuthenticatingPacket packet = gson().fromJson(input, AuthenticatingPacket.class);
-//            System.out.println(packet.id());
+            System.out.println(packet.id());
             if (packet.id().equals(this.id)) return packet.str();
             else return "";
         } catch (JsonSyntaxException e) {
