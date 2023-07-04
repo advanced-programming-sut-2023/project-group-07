@@ -104,6 +104,7 @@ public class GameGraphics extends Application {
     private boolean isDeleting = false;
     private Label deleteLabel;
     private boolean[][] haveDisease;
+    private VBox options;
     @Override
     public void start(Stage stage) {
         Scene scene = prepareStageElements();
@@ -118,6 +119,8 @@ public class GameGraphics extends Application {
         setMap();
         addNextTurn();
         addDeleteButton();
+        addUndoButton();
+        addOptionsButton();
         setMoveMapTimeLine(mapPane, scene);
         settingScreenMinXY(mapPane);
         addStageEventHandlers(stage);
@@ -184,6 +187,97 @@ public class GameGraphics extends Application {
                 int x = unit.getCurrentLocation()[1];
                 int y = unit.getCurrentLocation()[0];
             }
+    private void addOptionsButton() {
+        Button button = new Button("Options");
+        button.setMaxWidth(200);
+        button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if (!rootPane.getChildren().contains(options))
+                    rootPane.getChildren().add(options);
+            }
+        });
+        button.setLayoutX(Main.screenWidth - 570);
+        button.setLayoutY(570);
+        rootPane.getChildren().add(button);
+        createOptions();
+
+    }
+
+    private void createOptions() {
+        options = new VBox();
+        options.setPrefWidth(400);
+        options.setPrefHeight(400);
+        options.setStyle("-fx-background-color: darkgray; -fx-border-color: darkorange; -fx-border-width: 5");
+        options.setSpacing(20);
+        options.setAlignment(Pos.CENTER);
+        options.setLayoutX(400);
+        options.setLayoutY(150);
+        Label label = new Label("Options");
+        label.setAlignment(Pos.CENTER);
+        label.setStyle("-fx-font-size: 28; -fx-border-color: black");
+        label.setPrefWidth(200);
+        Button resume = new Button("Resume");
+        Button exitGame = new Button("Exit game");
+        Button exitCrusader = new Button("Exit crusader");
+        resume.setPrefWidth(200);
+        exitGame.setPrefWidth(200);
+        exitCrusader.setPrefWidth(200);
+        resume.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                rootPane.getChildren().remove(options);
+            }
+        });
+        exitGame.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                try {
+                    new MainMenuGraphics().start(Main.stage);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        exitCrusader.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                System.exit(0);
+            }
+        });
+        options.getChildren().addAll(label, resume, exitGame, exitCrusader);
+    }
+
+    private void addUndoButton() {
+        Button button = new Button("Undo");
+        button.setMaxWidth(200);
+        button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+               if (buildings.isEmpty())
+                   return;
+               StackPane stackPane = buildings.get(buildings.size() - 1);
+               int row = (int) Math.floor(stackPane.getLayoutY() / 40);
+               int column = (int) Math.floor(stackPane.getLayoutX() / 40);
+               MapPixel pixel = map.getMapPixel(row, column);
+               if (pixel.getBuildings().get(0).getGovernment().equals(game.getCurrentGovernment())) {
+                   returnResources(pixel.getBuildings().get(0));
+                   removeBuilding(pixel, stackPane);
+               }
+            }
+        });
+        button.setLayoutX(Main.screenWidth - 370);
+        button.setLayoutY(570);
+        rootPane.getChildren().add(button);
+    }
+
+    private void returnResources(Building building) {
+        Government government = building.getGovernment();
+        Resources resource = building.getTypeOfBuilding().getResourceNeeded();
+        if (resource != null)
+            government.changeResources(resource, building.getTypeOfBuilding().getResourceAmount());
+        government.setGold(government.getGold() + building.getTypeOfBuilding().getCost());
+        updateGoldText();
     }
 
     private void setFaceImage() {
@@ -528,32 +622,7 @@ public class GameGraphics extends Application {
     }
 
     private void mouseReleased(Stage stage) {
-        stage.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseEvent -> {
-            if (mouseEvent.getButton() == MouseButton.PRIMARY && selectionArea.getWidth() > 1) {
-                int y1 = (int) Math.floor(selectionArea.getLayoutY() / 40);
-                int y2 = (int) Math.floor(selectionArea.getLayoutY() / 40 + selectionArea.getHeight() / 40);
-                int x1 = (int) Math.floor(selectionArea.getLayoutX() / 40);
-                int x2 = (int) Math.floor(selectionArea.getLayoutX() / 40 + selectionArea.getWidth() / 40);
-                selectTiles(x1, y1, x2, y2);
-                gameMenuController.getSelectedUnit().clear();
-                selectedUnits.clear();
-                gameMenuController.selectUnit(y1, x1, y2, x2);
-                for (Person person : gameMenuController.getSelectedUnit()) {
-                    for (PersonPane personPane : people) {
-                        if (personPane.getPerson().equals(person)) {
-                            selectedUnits.add(personPane);
-                            break;
-                        }
-                    }
-                }
-                if (!gameMenuController.getSelectedUnit().isEmpty()) {
-                    unitSelectionBar();
-                    clearStatusBar();
-                    selectedUnitBar.setVisible(true);
-                }
-                selectionArea.setVisible(false);
-            }
-        });
+
     }
 
     private void mousePressed(Stage stage) {
@@ -1458,8 +1527,7 @@ public class GameGraphics extends Application {
     }
 
     private void addNextTurn() {
-        Button button = new Button();
-        button.setText("Next turn");
+        Button button = new Button("Next turn");
         button.setMaxWidth(200);
         button.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -1853,17 +1921,8 @@ public class GameGraphics extends Application {
                     int column = (int) Math.floor(stackPane.getLayoutX() / 40);
                     MapPixel pixel = map.getMapPixel(row, column);
                     if (!pixel.getBuildings().isEmpty() && pixel.getBuildings().get(0).getGovernment().equals(game.getCurrentGovernment())) {
-                        if (isDeleting) {
-                            Building building = pixel.getBuildings().get(0);
-                            for (int i = 0; i < building.getTypeOfBuilding().getWidth(); i++)
-                                for (int j = 0; j < building.getTypeOfBuilding().getLength(); j++) {
-                                    MapPixel pixel1 = map.getMapPixel(building.getRow() + i, building.getColumn() + j);
-                                    pixel1.removeBuilding(building);
-                                    pixel1.resetAccess();
-                                }
-                            mapPane.getChildren().remove(stackPane);
-                            buildings.remove(stackPane);
-                        }
+                        if (isDeleting)
+                            removeBuilding(pixel, stackPane);
                         else {
                             gameMenuController.getSelectedUnit().clear();
                             selectedUnits.clear();
@@ -1878,6 +1937,18 @@ public class GameGraphics extends Application {
                 }
             }
         });
+    }
+
+    private void removeBuilding(MapPixel pixel, StackPane stackPane) {
+        Building building = pixel.getBuildings().get(0);
+        for (int i = 0; i < building.getTypeOfBuilding().getWidth(); i++)
+            for (int j = 0; j < building.getTypeOfBuilding().getLength(); j++) {
+                MapPixel pixel1 = map.getMapPixel(building.getRow() + i, building.getColumn() + j);
+                pixel1.removeBuilding(building);
+                pixel1.resetAccess();
+            }
+        mapPane.getChildren().remove(stackPane);
+        buildings.remove(stackPane);
     }
 
     private void clearStatusBar() {
