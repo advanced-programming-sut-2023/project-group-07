@@ -52,7 +52,8 @@ public class GlobalChatController {
         if (reaction == null) return OutputMessage.INVALID_REACT;
         ChatMessage message = getMessageById(id);
         if (message == null) return OutputMessage.INVALID_ID;
-        GlobalChat.react(currentUser, reaction, message);
+        message.setReaction(currentUser, reaction);
+        GlobalChat.saveMessages();
         return OutputMessage.SUCCESSFUL;
     }
 }

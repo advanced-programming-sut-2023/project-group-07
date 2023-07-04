@@ -31,7 +31,11 @@ public class GroupChat {
     }
 
     private static void loadChats() {
-        dao().loadToList();
+        try {
+            dao().loadToList();
+        } catch (Exception e){
+
+        }
     }
 
     public static void saveChats() {

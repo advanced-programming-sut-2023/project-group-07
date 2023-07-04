@@ -74,7 +74,8 @@ public class GroupChatController {
         if (reaction == null) return OutputMessage.INVALID_REACT;
         ChatMessage message = getMessageById(id);
         if (message == null) return OutputMessage.INVALID_ID;
-        groupChat.react(currentUser, reaction, message);
+        message.setReaction(currentUser, reaction);
+        GroupChat.saveChats();
         return OutputMessage.SUCCESSFUL;
     }
 
