@@ -1,6 +1,8 @@
 package Client.model;
 
+import Client.view.CustomAnimation;
 import Client.view.GameGraphics;
+import javafx.scene.layout.StackPane;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -840,6 +842,9 @@ public class Game {
             checkStance(government);
             resourceDelivery(government);
             government.resetMovesLeft();
+            gameGraphics.setBuildingsOnFire();
+            for(CustomAnimation customAnimation: gameGraphics.effects)
+                customAnimation.setNewAge(customAnimation.getNewAge()-1);
         }
         for (Government government : governments)
             attackAllOthers(government);

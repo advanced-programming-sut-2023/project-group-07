@@ -324,7 +324,7 @@ public class Controller {
         imageView.setPreserveRatio(true);
         pane.getChildren().add(imageView);
         imageView.setLayoutX(Main.getScreenWidth()-70);
-        imageView.setLayoutY(550);
+        imageView.setLayoutY(650);
         imageView.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {

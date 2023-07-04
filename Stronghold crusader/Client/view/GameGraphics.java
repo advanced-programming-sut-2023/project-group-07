@@ -105,6 +105,8 @@ public class GameGraphics extends Application {
     private Label deleteLabel;
     private boolean[][] haveDisease;
     private VBox options;
+    private ArrayList<StackPane> onFireBuildings = new ArrayList<>();
+    public ArrayList<CustomAnimation> effects = new ArrayList<>();
     @Override
     public void start(Stage stage) {
         Scene scene = prepareStageElements();
@@ -145,7 +147,7 @@ public class GameGraphics extends Application {
             int x = (int)(Math.random()*20);
             if(!haveDisease[y][x]){
                 haveDisease[y][x] = true;
-                CustomAnimation customAnimation = new CustomAnimation(x,y);
+                CustomAnimation customAnimation = new CustomAnimation(GameGraphics.class.getResource("/Images/Game/BodyEffects/Disease").toExternalForm(),x,y);
                 customAnimation.play();
                 mapPane.getChildren().add(customAnimation.getImageView());
                 Government badGovernment =game.getGovernments().get(0);
@@ -180,13 +182,81 @@ public class GameGraphics extends Application {
         timeline.play();
     }
 
-    private void setBuildingsOnFire() {
-        for(PersonPane personPane:people)
-            if(((Unit)personPane.getPerson()).getType().equals(UnitTypes.SLAVE) || ((Unit)personPane.getPerson()).getType().equals(UnitTypes.FIRE_THROWERS)){
-                Unit unit = (Unit)personPane.getPerson();
+    public void setBuildingsOnFire() {
+        for (PersonPane personPane : people)
+            if (((Unit) personPane.getPerson()).getType().equals(UnitTypes.SLAVE) || ((Unit) personPane.getPerson()).getType().equals(UnitTypes.FIRE_THROWERS)) {
+                Unit unit = (Unit) personPane.getPerson();
                 int x = unit.getCurrentLocation()[1];
                 int y = unit.getCurrentLocation()[0];
+                if(!map.getMapPixel(y-1,x).getBuildings().isEmpty() && !map.getMapPixel(y-1,x).getBuildings().get(0).getGovernment().equals(unit.getGovernment())){
+                    int X = map.getMapPixel(y-1,x).getBuildings().get(0).getColumn();
+                    int Y = map.getMapPixel(y-1,x).getBuildings().get(0).getRow();
+                    for(StackPane stackPane:buildings){
+                        if(stackPane.getLayoutX()==X*40 && stackPane.getLayoutY()==Y*40 && !onFireBuildings.contains(stackPane)){
+                            addFireEffect(stackPane);
+                        }
+                    }
+                }
+                if(!map.getMapPixel(y+1,x).getBuildings().isEmpty() && !map.getMapPixel(y+1,x).getBuildings().get(0).getGovernment().equals(unit.getGovernment())){
+                    int X = map.getMapPixel(y+1,x).getBuildings().get(0).getColumn();
+                    int Y = map.getMapPixel(y+1,x).getBuildings().get(0).getRow();
+                    for(StackPane stackPane:buildings){
+                        if(stackPane.getLayoutX()==X*40 && stackPane.getLayoutY()==Y*40 && !onFireBuildings.contains(stackPane)){
+                            addFireEffect(stackPane);
+                        }
+                    }
+                }
+                if(!map.getMapPixel(y,x-1).getBuildings().isEmpty() && !map.getMapPixel(y,x-1).getBuildings().get(0).getGovernment().equals(unit.getGovernment())){
+                    int X = map.getMapPixel(y,x-1).getBuildings().get(0).getColumn();
+                    int Y = map.getMapPixel(y,x-1).getBuildings().get(0).getRow();
+                    for(StackPane stackPane:buildings){
+                        if(stackPane.getLayoutX()==X*40 && stackPane.getLayoutY()==Y*40 && !onFireBuildings.contains(stackPane)){
+                            addFireEffect(stackPane);
+                        }
+                    }
+                }
+                if(!map.getMapPixel(y,x+1).getBuildings().isEmpty() && !map.getMapPixel(y,x+1).getBuildings().get(0).getGovernment().equals(unit.getGovernment())){
+                    int X = map.getMapPixel(y,x+1).getBuildings().get(0).getColumn();
+                    int Y = map.getMapPixel(y,x+1).getBuildings().get(0).getRow();
+                    for(StackPane stackPane:buildings){
+                        if(stackPane.getLayoutX()==X*40 && stackPane.getLayoutY()==Y*40 && !onFireBuildings.contains(stackPane)){
+                            addFireEffect(stackPane);
+                        }
+                    }
+                }
             }
+    }
+
+    private void addFireEffect(StackPane stackPane){
+        int x = (int)stackPane.getLayoutX()/40;
+        int y = (int)stackPane.getLayoutY()/40;
+        CustomAnimation customAnimation = new CustomAnimation(GameGraphics.class.getResource("/Images/Game/BodyEffects/Fire").toExternalForm(),x,y);
+        customAnimation.play();
+        customAnimation.getImageView().setScaleX(2);
+        customAnimation.getImageView().setPreserveRatio(true);
+        mapPane.getChildren().add(customAnimation.getImageView());
+        onFireBuildings.add(stackPane);
+        effects.add(customAnimation);
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(5000),actionEvent -> {
+            if(customAnimation.getOldAge()==0){
+                onFireBuildings.remove(stackPane);
+                mapPane.getChildren().remove(customAnimation.getImageView());
+                customAnimation.stop();
+                try {
+                    stop();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            else if(customAnimation.getNewAge()!=customAnimation.getOldAge()){
+                customAnimation.setOldAge(customAnimation.getOldAge()-1);
+                if(!map.getMapPixel(y,x).getBuildings().isEmpty())
+                    map.getMapPixel(y,x).getBuildings().get(0).changeHp(-100);
+            }
+        }));
+        timeline.setCycleCount(-1);
+        timeline.play();
+    }
     private void addOptionsButton() {
         Button button = new Button("Options");
         button.setMaxWidth(200);
@@ -198,7 +268,7 @@ public class GameGraphics extends Application {
             }
         });
         button.setLayoutX(Main.screenWidth - 570);
-        button.setLayoutY(570);
+        button.setLayoutY(650);
         rootPane.getChildren().add(button);
         createOptions();
 
@@ -211,8 +281,8 @@ public class GameGraphics extends Application {
         options.setStyle("-fx-background-color: darkgray; -fx-border-color: darkorange; -fx-border-width: 5");
         options.setSpacing(20);
         options.setAlignment(Pos.CENTER);
-        options.setLayoutX(400);
-        options.setLayoutY(150);
+        options.setLayoutX(Main.screenWidth/2-200);
+        options.setLayoutY(Main.screenHeight/2-200);
         Label label = new Label("Options");
         label.setAlignment(Pos.CENTER);
         label.setStyle("-fx-font-size: 28; -fx-border-color: black");
@@ -267,7 +337,7 @@ public class GameGraphics extends Application {
             }
         });
         button.setLayoutX(Main.screenWidth - 370);
-        button.setLayoutY(570);
+        button.setLayoutY(650);
         rootPane.getChildren().add(button);
     }
 
@@ -622,7 +692,32 @@ public class GameGraphics extends Application {
     }
 
     private void mouseReleased(Stage stage) {
-
+        stage.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseEvent -> {
+            if (mouseEvent.getButton() == MouseButton.PRIMARY && selectionArea.getWidth() > 1) {
+                int y1 = (int) Math.floor(selectionArea.getLayoutY() / 40);
+                int y2 = (int) Math.floor(selectionArea.getLayoutY() / 40 + selectionArea.getHeight() / 40);
+                int x1 = (int) Math.floor(selectionArea.getLayoutX() / 40);
+                int x2 = (int) Math.floor(selectionArea.getLayoutX() / 40 + selectionArea.getWidth() / 40);
+                selectTiles(x1, y1, x2, y2);
+                gameMenuController.getSelectedUnit().clear();
+                selectedUnits.clear();
+                gameMenuController.selectUnit(y1, x1, y2, x2);
+                for (Person person : gameMenuController.getSelectedUnit()) {
+                    for (PersonPane personPane : people) {
+                        if (personPane.getPerson().equals(person)) {
+                            selectedUnits.add(personPane);
+                            break;
+                        }
+                    }
+                }
+                if (!gameMenuController.getSelectedUnit().isEmpty()) {
+                    unitSelectionBar();
+                    clearStatusBar();
+                    selectedUnitBar.setVisible(true);
+                }
+                selectionArea.setVisible(false);
+            }
+        });
     }
 
     private void mousePressed(Stage stage) {
@@ -935,7 +1030,7 @@ public class GameGraphics extends Application {
         VBox vBox = new VBox();
         vBox.getChildren().addAll(deleteLabel, button);
         vBox.setLayoutX(Main.screenWidth - 270);
-        vBox.setLayoutY(550);
+        vBox.setLayoutY(630);
         rootPane.getChildren().add(vBox);
     }
 
@@ -1572,7 +1667,7 @@ public class GameGraphics extends Application {
             }
         });
         button.setLayoutX(Main.screenWidth - 170);
-        button.setLayoutY(570);
+        button.setLayoutY(650);
         rootPane.getChildren().add(button);
     }
 

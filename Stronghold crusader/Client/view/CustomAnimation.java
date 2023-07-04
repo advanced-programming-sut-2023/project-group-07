@@ -8,9 +8,30 @@ import javafx.util.Duration;
 
 public class CustomAnimation extends Transition {
     int frameCount = 5;
-    String directory = CustomAnimation.class.getResource("/Images/Game/BodyEffects/Disease").toExternalForm();
-    ImageView imageView = new ImageView(new Image(directory+"/anim (1).png"));
-    public CustomAnimation(int x , int y) {
+    String directory;
+    ImageView imageView;
+    int oldAge = 3;
+    int newAge = 3;
+
+    public int getNewAge() {
+        return newAge;
+    }
+
+    public int getOldAge() {
+        return oldAge;
+    }
+
+    public void setNewAge(int newAge) {
+        this.newAge = newAge;
+    }
+
+    public void setOldAge(int oldAge) {
+        this.oldAge = oldAge;
+    }
+
+    public CustomAnimation(String directory, int x , int y) {
+        this.directory = directory;
+        imageView = new ImageView(new Image(directory+"/anim (1).png"));
         imageView.setLayoutX(x*40);
         imageView.setLayoutY(y*40);
         setCycleCount(-1);
