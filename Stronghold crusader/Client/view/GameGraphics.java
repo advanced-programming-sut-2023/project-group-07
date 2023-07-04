@@ -103,6 +103,7 @@ public class GameGraphics extends Application {
     private ScrollPane clipBoard;
     private boolean isDeleting = false;
     private Label deleteLabel;
+    private boolean[][] haveDisease;
     @Override
     public void start(Stage stage) {
         Scene scene = prepareStageElements();
@@ -121,6 +122,7 @@ public class GameGraphics extends Application {
         settingScreenMinXY(mapPane);
         addStageEventHandlers(stage);
         setHoverTimeLine();
+        diseaseSpreadTimeline();
         setShortcutHbox(moveUnitShortcutHbox, "Move to: ");
         setShortcutHbox(attackUnitShortcutHbox, "Attack to: ");
         setDetailsShortcut();
@@ -131,6 +133,57 @@ public class GameGraphics extends Application {
         createClipboard();
         FaceAnimation faceAnimation = new FaceAnimation(faceImage, 10);
         faceAnimation.play();
+    }
+
+    private void diseaseSpreadTimeline(){
+        haveDisease = new boolean[game.getMap().getSize()][game.getMap().getSize()];
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(30*1000),actionEvent -> {
+            int y = (int)(Math.random()*20);// can change this
+            int x = (int)(Math.random()*20);
+            if(!haveDisease[y][x]){
+                haveDisease[y][x] = true;
+                CustomAnimation customAnimation = new CustomAnimation(x,y);
+                customAnimation.play();
+                mapPane.getChildren().add(customAnimation.getImageView());
+                Government badGovernment =game.getGovernments().get(0);
+                int[] badGovLoc = game.getMap().getKeepPosition(badGovernment.getColor());
+                for(Government government:game.getGovernments()){
+                    int[] location =  game.getMap().getKeepPosition(government.getColor());
+                    if(Math.abs(badGovLoc[0]-y)+Math.abs(badGovLoc[1]-x)>Math.abs(location[0]-y)+Math.abs(location[1]-x)){
+                        badGovLoc = location;
+                        badGovernment =government;
+                    }
+                }
+                if(badGovernment.getPopularity()>=10){
+                    badGovernment.setPopularity(badGovernment.getPopularity()-10);
+                    updateGovernmentInfo();
+                }
+                new java.util.Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                mapPane.getChildren().remove(customAnimation.getImageView());
+                                haveDisease[y][x] = false;
+                                customAnimation.stop();
+                            }
+                        });
+                    }
+                }, 120*1000);
+            }
+        }));
+        timeline.setCycleCount(-1);
+        timeline.play();
+    }
+
+    private void setBuildingsOnFire() {
+        for(PersonPane personPane:people)
+            if(((Unit)personPane.getPerson()).getType().equals(UnitTypes.SLAVE) || ((Unit)personPane.getPerson()).getType().equals(UnitTypes.FIRE_THROWERS)){
+                Unit unit = (Unit)personPane.getPerson();
+                int x = unit.getCurrentLocation()[1];
+                int y = unit.getCurrentLocation()[0];
+            }
     }
 
     private void setFaceImage() {
