@@ -101,6 +101,7 @@ public class GameGraphics extends Application {
     private double minX;
     private double minY;
     private ScrollPane clipBoard;
+    private boolean isDeleting = false;
     @Override
     public void start(Stage stage) {
         Scene scene = prepareStageElements();
@@ -114,6 +115,7 @@ public class GameGraphics extends Application {
         createMiniMap();
         setMap();
         addNextTurn();
+        setDelete();
         setMoveMapTimeLine(mapPane, scene);
         settingScreenMinXY(mapPane);
         addStageEventHandlers(stage);
@@ -511,12 +513,13 @@ public class GameGraphics extends Application {
                 Robot robot = new Robot();
                 int x = (int) (Math.floor(robot.getMouseX() / 40 + Math.abs(mapPane.getLayoutX()) / 40));
                 int y = (int) (Math.floor(robot.getMouseY() / 40 + Math.abs(mapPane.getLayoutY()) / 40));
-                selectTiles(x, y, x, y);
+                //selectTiles(x, y, x, y);
             }
             else{
                 resetCursor();
                 removeTilesSelection();
                 removeDetailsShortcut();
+                isDeleting = false;
             }
         });
     }
@@ -711,6 +714,7 @@ public class GameGraphics extends Application {
         addImageToMiniMap(stackPane.getLayoutX(), stackPane.getLayoutY(), TypeOfBuilding.getBuilding(building.getTypeOfBuilding().toString()).getWidth());
     }
 
+
     private void addPerson(Person person, int i, int j) {
         String name;
         if (person instanceof Unit)
@@ -793,6 +797,20 @@ public class GameGraphics extends Application {
         setTradeMenu();
         statusPane.getChildren().add(selectedUnitBar);
         selectedUnitBar.setVisible(false);
+    }
+
+    private void setDelete() {
+        Button button = new Button("Delete");
+        button.setLayoutX(Main.screenWidth - 270);
+        button.setLayoutY(600);
+        rootPane.getChildren().add(button);
+        button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                System.out.println("salam");
+                isDeleting = !isDeleting;
+            }
+        });
     }
 
     private void updateGovernmentInfo() {
@@ -1370,6 +1388,7 @@ public class GameGraphics extends Application {
                         resetSelectionArea();
                         removeTilesSelection();
                         removeDetailsShortcut();
+                        isDeleting = false;
                         gameMenuController.getSelectedUnit().clear();
                         selectedUnits.clear();
                         clearStatusBar();
@@ -1772,14 +1791,32 @@ public class GameGraphics extends Application {
             public void handle(MouseEvent mouseEvent) {
                 if (mouseEvent.getButton() == MouseButton.PRIMARY) {
                     resetSelectionArea();
-                    gameMenuController.getSelectedUnit().clear();
-                    selectedUnits.clear();
-                    ImageView imageView = (ImageView) stackPane.getChildren().get(0);
-                    String buildingName = getPhotoName(imageView.getImage().getUrl());
-                    clearStatusBar();
-                    for (HBox hBox : buildingMenus)
-                        if (((Text) hBox.getChildren().get(0)).getText().equals(buildingName))
-                            hBox.setVisible(true);
+                    removeTilesSelection();
+                    if (isDeleting) {
+                        int row = (int) Math.floor(stackPane.getLayoutY() / 40);
+                        int column = (int) Math.floor(stackPane.getLayoutX() / 40);
+                        MapPixel pixel = map.getMapPixel(row, column);
+                        if (!pixel.getBuildings().isEmpty() && pixel.getBuildings().get(0).getGovernment().equals(game.getCurrentGovernment())) {
+                            Building building = pixel.getBuildings().get(0);
+                            for (int i = 0; i < building.getTypeOfBuilding().getWidth(); i++)
+                                for (int j = 0; j < building.getTypeOfBuilding().getLength(); j++) {
+                                    MapPixel pixel1 = map.getMapPixel(building.getRow() + i, building.getColumn() + j);
+                                    pixel1.removeBuilding(building);
+                                    pixel1.resetAccess();
+                                }
+                            mapPane.getChildren().remove(stackPane);
+                        }
+                    }
+                    else {
+                        gameMenuController.getSelectedUnit().clear();
+                        selectedUnits.clear();
+                        ImageView imageView = (ImageView) stackPane.getChildren().get(0);
+                        String buildingName = getPhotoName(imageView.getImage().getUrl());
+                        clearStatusBar();
+                        for (HBox hBox : buildingMenus)
+                            if (((Text) hBox.getChildren().get(0)).getText().equals(buildingName))
+                                hBox.setVisible(true);
+                    }
                 }
             }
         });
