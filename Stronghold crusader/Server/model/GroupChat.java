@@ -18,7 +18,8 @@ public class GroupChat {
     }
 
     private static ListDAO<GroupChat> dao = null;
-    private static ListDAO<GroupChat> dao(){
+
+    private static ListDAO<GroupChat> dao() {
         if (dao == null) {
             String globalChatURL = "jdbc:sqlite:groupChat";
             dao = new ListDAO<GroupChat>(globalChatURL,
@@ -33,7 +34,7 @@ public class GroupChat {
         dao().loadToList();
     }
 
-    private static void saveChats() {
+    public static void saveChats() {
         dao().saveToListDataBase();
     }
 
@@ -70,7 +71,8 @@ public class GroupChat {
         saveChats();
     }
 
-    public GroupChat(){}
+    public GroupChat() {
+    }
 
     public boolean deleteMessage(ChatMessage message, User currentUser) {
         if (!message.owner().equals(currentUser) || !messages.contains(message)) return false;
@@ -102,5 +104,10 @@ public class GroupChat {
 
     public ArrayList<ChatMessage> messages() {
         return messages;
+    }
+
+    public void react(User currentUser, MessageReaction reaction, ChatMessage message) {
+        message.setReaction(currentUser,reaction);
+        saveChats();
     }
 }

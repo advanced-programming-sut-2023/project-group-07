@@ -70,4 +70,8 @@ public class GlobalChat {
         saveMessages();
     }
 
+    public static void react(User currentUser, MessageReaction reaction, ChatMessage message) {
+        message.setReaction(currentUser, reaction);
+        saveMessages();
+    }
 }

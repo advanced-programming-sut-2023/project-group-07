@@ -65,6 +65,7 @@ public class GroupChatController {
         for (ChatMessage message : getMessages()) {
             if (!message.owner().equals(currentUser)) message.setSeen();
         }
+        GroupChat.saveChats();
         return getMessages();
     }
 
@@ -73,7 +74,7 @@ public class GroupChatController {
         if (reaction == null) return OutputMessage.INVALID_REACT;
         ChatMessage message = getMessageById(id);
         if (message == null) return OutputMessage.INVALID_ID;
-        message.setReaction(currentUser, reaction);
+        groupChat.react(currentUser, reaction, message);
         return OutputMessage.SUCCESSFUL;
     }
 

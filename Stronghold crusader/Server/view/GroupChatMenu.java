@@ -49,8 +49,6 @@ public class GroupChatMenu {
         Matcher matcher;
         while (true) {
             String input = dataInputStream.readUTF();
-            System.out.println(input);
-            System.out.println("react -i (?<id>\\d+) -r (?<reaction>\\S+)");
             if (GlobalChatCommands.getMatcher(input, GlobalChatCommands.SHOW_MESSAGES) != null)
                 dataOutputStream.writeUTF(showMessagesPrivateChat());
             else if ((matcher = GlobalChatCommands.getMatcher(input, GlobalChatCommands.SEND_MESSAGE)) != null)
