@@ -102,6 +102,7 @@ public class GameGraphics extends Application {
     private double minY;
     private ScrollPane clipBoard;
     private boolean isDeleting = false;
+    private Label deleteLabel;
     @Override
     public void start(Stage stage) {
         Scene scene = prepareStageElements();
@@ -115,7 +116,7 @@ public class GameGraphics extends Application {
         createMiniMap();
         setMap();
         addNextTurn();
-        setDelete();
+        addDeleteButton();
         setMoveMapTimeLine(mapPane, scene);
         settingScreenMinXY(mapPane);
         addStageEventHandlers(stage);
@@ -513,13 +514,13 @@ public class GameGraphics extends Application {
                 Robot robot = new Robot();
                 int x = (int) (Math.floor(robot.getMouseX() / 40 + Math.abs(mapPane.getLayoutX()) / 40));
                 int y = (int) (Math.floor(robot.getMouseY() / 40 + Math.abs(mapPane.getLayoutY()) / 40));
-                //selectTiles(x, y, x, y);
+                selectTiles(x, y, x, y);
             }
             else{
                 resetCursor();
                 removeTilesSelection();
                 removeDetailsShortcut();
-                isDeleting = false;
+                setDelete(false);
             }
         });
     }
@@ -799,18 +800,21 @@ public class GameGraphics extends Application {
         selectedUnitBar.setVisible(false);
     }
 
-    private void setDelete() {
+    private void addDeleteButton() {
         Button button = new Button("Delete");
-        button.setLayoutX(Main.screenWidth - 270);
-        button.setLayoutY(600);
-        rootPane.getChildren().add(button);
         button.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                System.out.println("salam");
-                isDeleting = !isDeleting;
+                setDelete(!isDeleting);
             }
         });
+        deleteLabel = new Label();
+        deleteLabel.setStyle("-fx-font-size: 15");
+        VBox vBox = new VBox();
+        vBox.getChildren().addAll(deleteLabel, button);
+        vBox.setLayoutX(Main.screenWidth - 270);
+        vBox.setLayoutY(550);
+        rootPane.getChildren().add(vBox);
     }
 
     private void updateGovernmentInfo() {
@@ -1388,7 +1392,7 @@ public class GameGraphics extends Application {
                         resetSelectionArea();
                         removeTilesSelection();
                         removeDetailsShortcut();
-                        isDeleting = false;
+                        setDelete(false);
                         gameMenuController.getSelectedUnit().clear();
                         selectedUnits.clear();
                         clearStatusBar();
@@ -1447,7 +1451,7 @@ public class GameGraphics extends Application {
             }
         });
         button.setLayoutX(Main.screenWidth - 170);
-        button.setLayoutY(600);
+        button.setLayoutY(570);
         rootPane.getChildren().add(button);
     }
 
@@ -1792,11 +1796,11 @@ public class GameGraphics extends Application {
                 if (mouseEvent.getButton() == MouseButton.PRIMARY) {
                     resetSelectionArea();
                     removeTilesSelection();
-                    if (isDeleting) {
-                        int row = (int) Math.floor(stackPane.getLayoutY() / 40);
-                        int column = (int) Math.floor(stackPane.getLayoutX() / 40);
-                        MapPixel pixel = map.getMapPixel(row, column);
-                        if (!pixel.getBuildings().isEmpty() && pixel.getBuildings().get(0).getGovernment().equals(game.getCurrentGovernment())) {
+                    int row = (int) Math.floor(stackPane.getLayoutY() / 40);
+                    int column = (int) Math.floor(stackPane.getLayoutX() / 40);
+                    MapPixel pixel = map.getMapPixel(row, column);
+                    if (!pixel.getBuildings().isEmpty() && pixel.getBuildings().get(0).getGovernment().equals(game.getCurrentGovernment())) {
+                        if (isDeleting) {
                             Building building = pixel.getBuildings().get(0);
                             for (int i = 0; i < building.getTypeOfBuilding().getWidth(); i++)
                                 for (int j = 0; j < building.getTypeOfBuilding().getLength(); j++) {
@@ -1805,17 +1809,18 @@ public class GameGraphics extends Application {
                                     pixel1.resetAccess();
                                 }
                             mapPane.getChildren().remove(stackPane);
+                            buildings.remove(stackPane);
                         }
-                    }
-                    else {
-                        gameMenuController.getSelectedUnit().clear();
-                        selectedUnits.clear();
-                        ImageView imageView = (ImageView) stackPane.getChildren().get(0);
-                        String buildingName = getPhotoName(imageView.getImage().getUrl());
-                        clearStatusBar();
-                        for (HBox hBox : buildingMenus)
-                            if (((Text) hBox.getChildren().get(0)).getText().equals(buildingName))
-                                hBox.setVisible(true);
+                        else {
+                            gameMenuController.getSelectedUnit().clear();
+                            selectedUnits.clear();
+                            ImageView imageView = (ImageView) stackPane.getChildren().get(0);
+                            String buildingName = getPhotoName(imageView.getImage().getUrl());
+                            clearStatusBar();
+                            for (HBox hBox : buildingMenus)
+                                if (((Text) hBox.getChildren().get(0)).getText().equals(buildingName))
+                                    hBox.setVisible(true);
+                        }
                     }
                 }
             }
@@ -1861,6 +1866,11 @@ public class GameGraphics extends Application {
         timeline.play();
         if (messageBar.getChildren().size() == 6)
             messageBar.getChildren().remove(0);
+    }
+    
+    private void setDelete(boolean isDeleting) {
+        this.isDeleting = isDeleting;
+        deleteLabel.setText(isDeleting ? "deleting..." : "");
     }
 
     private boolean customIntersection(Node node1, Node node2) {
@@ -1912,6 +1922,8 @@ public class GameGraphics extends Application {
     public Game getGame() {
         return game;
     }
+    
+    
 
     //    private void setZoomOut(Pane pane) {     //TODO just zooooooooooooooooooooooooooom
 //        pane.setOnScroll(new EventHandler<ScrollEvent>() {
