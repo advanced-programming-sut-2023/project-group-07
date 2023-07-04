@@ -74,7 +74,6 @@ public class ListDAO<T> {
                 try {
                     String objectJson = rs.getString("json");
                     T tObject = (T) gson().fromJson(objectJson, getTClass());
-                    System.out.println(tObject);
                     list.add(tObject);
                 }catch (Exception e){
                     e.printStackTrace();
