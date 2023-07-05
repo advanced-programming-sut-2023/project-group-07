@@ -185,7 +185,7 @@ public class Connection extends Thread {
                     dataOutputStream.writeUTF("enter a whole number between 1 and " + Game.getGamePlayBacks().size());
                 else
                     playBack(Game.getGamePlayBacks().get(Integer.parseInt(input) - 1));
-                    
+
             }
         }
     }
@@ -197,7 +197,7 @@ public class Connection extends Thread {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                if (counter*2 >= content.size() || !isPlayingBack) {
+                if (counter*2 + 1 >= content.size() || !isPlayingBack) {
                     this.cancel();
                     return;
                 }
@@ -208,7 +208,7 @@ public class Connection extends Thread {
                 }
                 counter = counter + 1;
             }
-        }, 0, 2000);
+        }, 0, 4000);
 
         while (true) {
             if (dataInputStream.available() != 0) {
