@@ -373,10 +373,15 @@ public class GameGraphics extends Application {
                int row = (int) Math.floor(stackPane.getLayoutY() / 40);
                int column = (int) Math.floor(stackPane.getLayoutX() / 40);
                MapPixel pixel = map.getMapPixel(row, column);
-               if (pixel.getBuildings().get(0).getGovernment().equals(game.getCurrentGovernment())) {
-                   returnResources(pixel.getBuildings().get(0));
-                   removeBuilding(pixel, stackPane);
+               try {
+                   if (pixel.getBuildings().get(0).getGovernment().equals(game.getCurrentGovernment())) {
+                       returnResources(pixel.getBuildings().get(0));
+                       removeBuilding(pixel, stackPane);
+                   }
                }
+               catch (Exception e) {
+               }
+
             }
         });
         button.setLayoutX(Main.screenWidth - 370);
