@@ -5,7 +5,6 @@ import Client.controller.Controller;
 import Client.controller.GameMenuController;
 import Client.controller.Messages;
 import Client.controller.TradeMenuController;
-import com.jme3.util.SortUtil;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -13,7 +12,6 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -28,23 +26,16 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.robot.Robot;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import Client.model.*;
 
-import javax.swing.*;
-import java.awt.datatransfer.*;
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Objects;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
@@ -105,6 +96,7 @@ public class GameGraphics extends Application {
     private Label deleteLabel;
     private boolean[][] haveDisease;
     private VBox options;
+    private VBox briefings;
     private ArrayList<StackPane> onFireBuildings = new ArrayList<>();
     public ArrayList<CustomAnimation> effects = new ArrayList<>();
     @Override
@@ -122,6 +114,7 @@ public class GameGraphics extends Application {
         addNextTurn();
         addDeleteButton();
         addUndoButton();
+        addBriefingsButton();
         addOptionsButton();
         setMoveMapTimeLine(mapPane, scene);
         settingScreenMinXY(mapPane);
@@ -138,6 +131,63 @@ public class GameGraphics extends Application {
         createClipboard();
         FaceAnimation faceAnimation = new FaceAnimation(faceImage, 10);
         faceAnimation.play();
+    }
+
+    private void addBriefingsButton() {
+        Button button = new Button("Briefings");
+        button.setMaxWidth(200);
+        button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if (!rootPane.getChildren().contains(briefings))
+                    rootPane.getChildren().add(briefings);
+            }
+        });
+        button.setLayoutX(Main.screenWidth - 470);
+        button.setLayoutY(650);
+        rootPane.getChildren().add(button);
+        createBriefings();
+    }
+
+    private void createBriefings() {
+        briefings = getVbox(600, 500);
+        Label label = new Label("Briefings");
+        label.setAlignment(Pos.CENTER);
+        label.setStyle("-fx-font-size: 28; -fx-border-color: black");
+        label.setPrefWidth(200);
+        Button resume = new Button("Resume");
+        resume.setPrefWidth(200);
+        resume.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                rootPane.getChildren().remove(briefings);
+            }
+        });
+        Image image = new Image(GameGraphics.class.getResource("/Images/Game/briefings.jpg").toString(), 300, 195, false, false);
+        ImageView imageView = new ImageView(image);
+        Label briefingsText = new Label("The Crusades were a series of religious wars initiated, supported, and sometimes directed by " +
+                "\nthe Christian Latin Church in the medieval period. The best known of these" +
+                "\n military expeditions are those to the Holy Land in the period between 1095" +
+                "\n and 1291 that were intended to conquer Jerusalem and its surrounding area" +
+                "\n from Muslim rule. Beginning with the First Crusade, which resulted in the" +
+                "\n conquest of Jerusalem in 1099, dozens of military campaigns were organised," +
+                "\n providing a focal point of European history for centuries." +
+                "\n Crusading declined rapidly after the 15th century.");
+        briefingsText.setStyle("-fx-font-size: 12");
+        briefingsText.setAlignment(Pos.CENTER);
+        briefings.getChildren().addAll(label, imageView, briefingsText, resume);
+    }
+
+    private VBox getVbox(int width, int height) {
+        VBox vBox = new VBox();
+        vBox.setPrefWidth(width);
+        vBox.setPrefHeight(height);
+        vBox.setStyle("-fx-background-color: darkgray; -fx-border-color: darkorange; -fx-border-width: 5");
+        vBox.setSpacing(20);
+        vBox.setAlignment(Pos.CENTER);
+        vBox.setLayoutX(Main.screenWidth/2-200);
+        vBox.setLayoutY(Main.screenHeight/2-200);
+        return vBox;
     }
 
     private void diseaseSpreadTimeline(){
@@ -275,14 +325,7 @@ public class GameGraphics extends Application {
     }
 
     private void createOptions() {
-        options = new VBox();
-        options.setPrefWidth(400);
-        options.setPrefHeight(400);
-        options.setStyle("-fx-background-color: darkgray; -fx-border-color: darkorange; -fx-border-width: 5");
-        options.setSpacing(20);
-        options.setAlignment(Pos.CENTER);
-        options.setLayoutX(Main.screenWidth/2-200);
-        options.setLayoutY(Main.screenHeight/2-200);
+        options = getVbox(400, 400);
         Label label = new Label("Options");
         label.setAlignment(Pos.CENTER);
         label.setStyle("-fx-font-size: 28; -fx-border-color: black");
